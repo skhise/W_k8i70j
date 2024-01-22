@@ -2,6 +2,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Client;
+use App\Models\ContactPerson;
+use App\Models\Employee;
+use Exception;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -18,6 +22,8 @@ use App\Models\Service;
 use App\Models\Account_Setting;
 use App\Http\Controllers\MailController;
 use Illuminate\Support\Facades\DB;
+use Redirect;
+use Throwable;
 
 class ClientController extends Controller
 {
@@ -82,8 +88,127 @@ class ClientController extends Controller
             'client_code' => $code,
             'update' => false,
             'client' => new Client(),
-            "customer_type" => [],
+            "refrences" => Employee::all(),
         ]);
+    }
+    function store(Request $request)
+    {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                "Customer_Name" => "required|unique:clients,CST_Name",
+                "CCP_Name" => "required",
+                "CCP_Mobile" => "required",
+            ]
+        );
+        if ($validator->fails()) {
+            return back()
+                ->withInput()
+                ->withErrors($validator->messages());
+        }
+        try {
+            $uniqId = $this->GetCustomerCode();
+            $isOk = 1;
+            if (!isset($request->CNT_Name)) {
+
+                return back()
+                    ->withInput()
+                    ->withErrors("Contact person information missing.");
+
+            } else {
+                $CNT_Name = $request->CNT_Name ?? [];
+                foreach ($CNT_Name as $index => $row) {
+                    if (empty($CNT_Name[$index])) {
+                        $ok = 0;
+                        return back()
+                            ->withInput()
+                            ->withErrors("Contact person information missing.");
+                    }
+                }
+            }
+            if ($isOk == 1) {
+
+                $iscustomer = Client::where("CST_Code", $uniqId)->first();
+                if (is_null($iscustomer)) {
+                    try {
+                        $ref = 0;
+                        if ($request->Ref_Employee != "") {
+                            $ref = $request->Ref_Employee;
+                        }
+                        DB::beginTransaction();
+                        $customer = Client::create([
+                            'CST_Code' => $uniqId,
+                            'CST_Name' => $request->Customer_Name,
+                            'CST_Website' => $request->CST_Website,
+                            'CST_OfficeAddress' => $request->CST_OfficeAddress,
+                            'CST_SiteAddress' => $request->CST_SiteAddress,
+                            'CST_Note' => $request->CST_Note,
+                            'CCP_Name' => $request->CCP_Name,
+                            'CCP_Mobile' => $request->CCP_Mobile,
+                            'CCP_Department' => $request->CCP_Department,
+                            'CCP_Email' => $request->CCP_Email,
+                            'CCP_Phone1' => $request->CCP_Phone1,
+                            'CCP_Phone2' => $request->CCP_Phone2,
+                            "Ref_Employee" => $ref,
+                        ]);
+                        if ($customer) {
+
+                            $CNT_Name = $request->CNT_Name ?? [];
+                            $CNT_Mobile = $request->CNT_Mobile ?? [];
+                            $CNT_Department = $request->CNT_Department ?? [];
+                            $CNT_Email = $request->CNT_Email ?? [];
+                            $CNT_Phone1 = $request->CNT_Phone1 ?? [];
+
+                            foreach ($CNT_Name as $index => $row) {
+                                $CNTName = $CNT_Name[$index];
+                                $CNTMobile = $CNT_Mobile[$index];
+                                $CNTDepartment = $CNT_Department[$index];
+                                $CNTEmail = $CNT_Email[$index];
+                                $CNTPhone1 = $CNT_Phone1[$index];
+
+                                if ($CNTName != null) {
+                                    ContactPerson::create([
+                                        "CST_ID" => $customer->CST_ID,
+                                        "CNT_Name" => $CNTName,
+                                        "CNT_Mobile" => $CNTMobile,
+                                        "CNT_Department" => $CNTDepartment,
+                                        "CNT_Email" => $CNTEmail,
+                                        "CNT_Phone1" => $CNTPhone1,
+                                        "CNT_Phone2" => ''
+                                    ]);
+                                }
+                            }
+                            DB::commit();
+                            return Redirect("clients")->with("success", "Client added!");
+                        } else {
+                            DB::rollBack();
+                            return back()
+                                ->withInput()
+                                ->withErrors("Actin failed, Try again. 1");
+                        }
+                    } catch (Throwable $e) {
+                        DB::rollBack();
+                        return back()
+                            ->withInput()
+                            ->withErrors("Actin failed, Try again. " . $e->getMessage());
+                    }
+                } else {
+                    return back()
+                        ->withInput()
+                        ->withErrors("Duplicate customer code.");
+                }
+            } else {
+                return back()
+                    ->withInput()
+                    ->withErrors("Check contact person information");
+            }
+
+
+        } catch (Exception $ex) {
+            return back()
+                ->withInput()
+                ->withErrors($ex->getMessage());
+        }
     }
     public function GetAccountSettings()
     {
@@ -324,7 +449,7 @@ class ClientController extends Controller
     {
 
         $cust_code = "";
-        $last = Customer::latest()->first();
+        $last = Client::latest()->first();
         $accountsetting = $this->GetAccountSettings();
         $cust_code = $accountsetting->customer_ins;
         $cust_code = isset($cust_code) ? $cust_code : "CST";
@@ -389,160 +514,11 @@ class ClientController extends Controller
 
 
 
-        } catch (Illuminate\Database\QueryException $ex) {
+        } catch (QueryException $ex) {
             return response()->json(['success' => false, 'message' => "Exception:" . $ex->errorInfo]);
         }
     }
-    function addCustomer(Request $request)
-    {
-        $validator = Validator::make(
-            $request->all(),
-            [
-                "CST_Code" => "required|unique:customers",
-                "Customer_Name" => "required|unique:customers,CST_Name",
-                "CCP_Name" => "required",
-                "CCP_Mobile" => "required",
-            ]
-        );
-        if ($validator->fails()) {
-            return response()->json(["success" => false, "message" => $validator->errors()->first(), "validation_error" => $validator->errors()]);
-        }
-        try {
-            $uniqId = $this->GetCustomerCode();
-            $isOk = 0;
-            if (isset($request->contacts) && sizeof($request->contacts) > 0) {
-                $contacts = $request->contacts;
-                foreach ($contacts as $contact) {
-                    if ($contact['CNT_Name'] == "" || $contact['CNT_Mobile'] == "") {
-                        return response()->json(["success" => false, "message" => "customer contact information missing."]);
-                    } else {
-                        $isOk = 1;
-                    }
-                }
-            } else if (isset($request->customersites) && sizeof($request->customersites) > 0) {
-                $customersites = $request->customersites;
-                foreach ($customersites as $customersite) {
-                    if ($customersite['Site_Name'] == "") {
-                        return response()->json(["success" => false, "message" => "customer site information missing."]);
-                    } else {
-                        $isOk = 1;
-                    }
-                }
-            } else {
-                $isOk = 1;
-            }
-            if ($isOk == 1) {
 
-                $iscustomer = Customer::where("CST_Code", $uniqId)->first();
-                if (is_null($iscustomer)) {
-                    try {
-                        $ref = 0;
-                        if ($request->Ref_Employee != "") {
-                            $ref = $request->Ref_Employee;
-                        }
-                        DB::beginTransaction();
-                        $customer = Customer::create([
-                            'CST_Code' => $uniqId,
-                            'CST_Name' => $request->Customer_Name,
-                            'CST_Website' => $request->CST_Website,
-                            'CST_OfficeAddress' => $request->CST_OfficeAddress,
-                            'CST_SiteAddress' => $request->CST_SiteAddress,
-                            'CST_Note' => $request->CST_Note,
-                            'CCP_Name' => $request->CCP_Name,
-                            'CCP_Mobile' => $request->CCP_Mobile,
-                            'CCP_Department' => $request->CCP_Department,
-                            'CCP_Email' => $request->CCP_Email,
-                            'CCP_Phone1' => $request->CCP_Phone1,
-                            'CCP_Phone2' => $request->CCP_Phone2,
-                            "Ref_Employee" => $ref,
-                        ]);
-                        if ($customer) {
-                            $sites = 0;
-                            $inS = 0;
-                            if (isset($request->customersites) && sizeof($request->customersites) > 0) {
-                                $customersites = $request->customersites;
-
-                                foreach ($customersites as $customersite) {
-
-                                    $contactF = CustomerSites::create([
-                                        'CustomerId' => $customer->CST_ID,
-                                        'SiteNumber' => $customersite['Site_Number'],
-                                        'SiteName' => $customersite['Site_Name'],
-                                        'AreaName' => $customersite['Site_Area'],
-                                        'SiteOther' => $customersite['Site_Other'],
-                                    ]);
-                                    if ($contactF) {
-                                        $inS++;
-                                    }
-                                }
-                                if (sizeof($customersites) == $inS) {
-                                    $sites = 1;
-                                }
-                            } else {
-                                $sites = 1;
-                            }
-                            $address = 0;
-                            $inC = 0;
-                            if (isset($request->contacts) && sizeof($request->contacts) > 0) {
-                                $contacts = $request->contacts;
-
-                                foreach ($contacts as $contact) {
-
-                                    $contactF = CustomerContact::create([
-                                        'CST_ID' => $customer->CST_ID,
-                                        'CNT_Name' => $contact['CNT_Name'],
-                                        'CNT_Mobile' => $contact['CNT_Mobile'],
-                                        'CNT_Department' => $contact['CNT_Department'],
-                                        'CNT_Email' => $contact['CNT_Email'],
-                                        'CNT_Phone1' => $contact['CNT_Phone1'],
-                                        'CNT_Phone2' => ''
-                                    ]);
-                                    if ($contactF) {
-                                        $inC++;
-                                    }
-                                }
-                                if (sizeof($contacts) == $inC) {
-                                    $address = 1;
-                                }
-                            } else {
-                                $address = 1;
-                            }
-                            if ($sites == 1 && $address == 1) {
-                                try {
-                                    $action = "Customer created,Name:" . $request->Customer_Name . ", Email:" . $request->CCP_Email;
-                                    $log = App(\App\Http\Controllers\LogController::class);
-                                    $log->SystemLog($request->loginId, $action);
-                                    DB::commit();
-                                    return response()->json(["success" => true, "message" => "Customer created."]);
-                                } catch (Exception $e) {
-                                    DB::rollBack();
-                                    return response()->json(["success" => false, "message" => "Actin failed, Try again."]);
-                                }
-
-                            } else {
-                                DB::rollBack();
-                            }
-                        } else {
-                            DB::rollBack();
-                            return response()->json(["success" => false, "message" => "Actin failed, Try again."]);
-                        }
-                    } catch (Throwable $e) {
-                        return response()->json(["success" => false, "message" => "Actin failed, Try again."]);
-                    }
-
-
-                } else {
-                    return response()->json(["success" => false, "message" => "Duplicate customer code."]);
-                }
-            } else {
-                return response()->json(["success" => false, "message" => "Customer contact details missing."]);
-            }
-
-
-        } catch (Illuminate\Database\QueryException $ex) {
-            return response()->json(['success' => false, 'message' => "Exception:" . $ex->errorInfo]);
-        }
-    }
     function GetCustomerById(Request $request)
     {
         try {

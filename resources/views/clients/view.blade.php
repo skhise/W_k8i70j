@@ -301,12 +301,12 @@ $add_cp_url = "{{route('clients.view',$client->id)}}";
                                                                         <th>Email</th>
                                                                         <th>Phone</th>
                                                                         <th>Mobile</th>
-                                                                        <th>Type</th>
+                                                                        <th>Department</th>
                                                                         <th></th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
-                                                                    @if(count($contacts) == 0)
+                                                                    @if($contacts->count() == 0)
                                                                     <tr>
                                                                         <td colspan="6" class="text-center">No
                                                                             contacts
@@ -316,21 +316,20 @@ $add_cp_url = "{{route('clients.view',$client->id)}}";
                                                                     @foreach($contacts as $index => $contact)
                                                                     <tr>
                                                                         <td>
-                                                                            {{$contact['full_name']}}
+                                                                            {{$contact->CNT_Name}}
                                                                         </td>
-                                                                        <td>{{$contact['email']}}</td>
-                                                                        <td>{{$contact['work_phone']}}</td>
-                                                                        <td>{{$contact['mobile']}}</td>
-                                                                        <th>{{$contact['mobile']}}</th>
+                                                                        <td>{{$contact['CNT_Email']}}</td>
+                                                                        <td>{{$contact['CNT_Mobile']}}</td>
+                                                                        <td>{{$contact['CNT_Phone1']}}</td>
+                                                                        <th>{{$contact['CNT_Department']}}</th>
                                                                         <td><a href="#" data-toggle="modal"
                                                                                 id="showEditModal"
-                                                                                data-prefix="{{$contact['prefix']}}"
-                                                                                data-fname="{{$contact['first_name']}}"
-                                                                                data-lname="{{$contact['last_name']}}"
-                                                                                data-email="{{$contact['email']}}"
-                                                                                data-wphone="{{$contact['work_phone']}}"
-                                                                                data-mobile="{{$contact['mobile']}}"
-                                                                                data-cpid="{{$contact['id']}}"
+                                                                                data-name="{{$contact['CNT_Name']}}"
+                                                                                data-department="{{$contact['CNT_Department']}}"
+                                                                                data-email="{{$contact['CNT_Email']}}"
+                                                                                data-mobile="{{$contact['CNT_Mobile']}}"
+                                                                                data-phone="{{$contact['CNT_Phone1']}}"
+                                                                                data-cpid="{{$contact['CNT_ID']}}"
                                                                                 class="btn btn-icon btn-sm btn-primary"><i
                                                                                     class="far fa-edit"></i></a></td>
                                                                     </tr>
@@ -366,45 +365,54 @@ $add_cp_url = "{{route('clients.view',$client->id)}}";
                 <div class="modal-body">
                     <form id="form_cp" onsubmit="return false;">
                         @csrf
-                        <input type="hidden" id="cp_id" name="cp_id" value="0" style="display:none;" />
-                        <div class="row">
-                            <div class="col-lg-2">
-                                <div class="form-group">
-                                    <select name="prefix" class="form-control select mr-1" id="prefix">
-                                        <option value="1">Mr.</option>
-                                        <option value="2">Mrs.</option>
-                                        <option value="4">Miss.</option>
-                                        <option value="5">Dr.</option>
-                                        <option value="3">Ms.</option>
-                                    </select>
-
-                                </div>
-                            </div>
-                            <div class="col-lg-5">
-                                <div class="form-group">
-                                    <input class="form-control" name="first_name" id="first_name" placeholder="Vorname"
+                        <input type="hidden" id="CNT_ID" name="CNT_ID" value="0" style="display:none;" />
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-lg-2"><label for="CNT_Name">Name <span
+                                            class="text-danger">*</span></label></div>
+                                <div class="col-lg-4">
+                                    <input class="form-control" name="CNT_Name" id="CNT_Name" placeholder="Name"
                                         type="text" value="" />
                                 </div>
-                            </div>
-                            <div class="col-lg-5">
-                                <div class="form-group">
-                                    <input class="form-control mr-1" name="last_name" id="last_name"
-                                        placeholder="Nachname " type="text" value="" />
+                                <div class="col-lg-2"><label for="CNT_Mobile">Mobile <span
+                                            class="text-danger">*</span></label>
                                 </div>
+
+                                <div class="col-lg-4">
+                                    <input class="form-control mr-1" maxlength="10" name="CNT_Mobile" id="CNT_Mobile"
+                                        placeholder="Mobile" type="number" value="" />
+                                </div>
+
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-lg-4">
-                                <input class="form-control" name="email" id="email" placeholder="Email" type="text" />
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-lg-2">
+                                    <label for="CNT_Email">Email </label>
+                                </div>
+                                <div class="col-lg-4">
+                                    <input type="email" class="form-control mr-1" name="CNT_Email" id="CNT_Email"
+                                        placeholder="Email" />
+                                </div>
+                                <div class="col-lg-2">
+                                    <label for="CNT_Email">Alt Mobile </label>
+                                </div>
+                                <div class="col-lg-4">
+                                    <input type="number" maxlength="10" class="form-control" name="CNT_Phone1"
+                                        id="CNT_Phone1" placeholder="Alt Mobile" />
+                                </div>
+
                             </div>
-                            <div class="col-lg-4">
-                                <input type="number" class="form-control mr-1" name="work_phone" id="work_phone"
-                                    placeholder="Arbeitshandy" />
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-2"><label for="CNT_Department">Department</label></div>
+                                <div class="col-lg-4">
+                                    <input class="form-control" name="CNT_Department" id="CNT_Department"
+                                        placeholder="Department" type="text" />
+                                </div>
                             </div>
-                            <div class="col-lg-4">
-                                <input type="number" class="form-control" name="mobile" id="mobile"
-                                    placeholder="Mobiltelefon" />
-                            </div>
+
                         </div>
                     </form>
                 </div>
@@ -420,14 +428,13 @@ $add_cp_url = "{{route('clients.view',$client->id)}}";
         <script>
             $(document).on("click", "#showEditModal", function () {
                 $("#btn_cp_add").trigger('click');
-                $("#prefix").val($(this).data('prefix'));
-                $("#first_name").val($(this).data('fname'));
-                $("#last_name").val($(this).data('lname'));
-                $("#email").val($(this).data('email'));
-                $("#work_phone").val($(this).data('wphone'));
-                $("#mobile").val($(this).data('mobile'));
+                $("#CNT_Name").val($(this).data('name'));
+                $("#CNT_Department").val($(this).data('department'));
+                $("#CNT_Email").val($(this).data('email'));
+                $("#CNT_Mobile").val($(this).data('mobile'));
+                $("#CNT_Phone1").val($(this).data('phone'));
                 var cpid = $(this).data('cpid');
-                $("#cp_id").val(cpid);
+                $("#CNT_ID").val(cpid);
             });
             function SaveContactPerson() {
                 $.ajax({

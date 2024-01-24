@@ -68,7 +68,7 @@ class ClientController extends Controller
         }
         return view('clients/view', [
             'client' => $client,
-            'contacts' => [],
+            'contacts' => ContactPerson::where('CST_ID', $client->CST_ID)->get(),
             'customer_type' => "",
             'type' => "",
             'project_count' => 0,
@@ -271,15 +271,15 @@ class ClientController extends Controller
             return false;
         }
     }
-    public function AddCustomerContact(Request $request)
+    public function add_cp(Request $request, $id)
     {
 
         $validator = Validator::make(
             $request->all(),
             [
-                "CustomerId" => "required",
                 "CNT_Name" => "required",
                 "CNT_Mobile" => "required",
+                "CNT_ID" => "required"
 
 
             ]
@@ -287,110 +287,39 @@ class ClientController extends Controller
         if ($validator->fails()) {
             return response()->json(["success" => false, "message" => "all * marked fields required.", "validation_error" => $validator->errors()]);
         }
-        $customerContact = CustomerContact::create([
-            "CST_ID" => $request->CustomerId,
-            'CNT_Name' => $request->CNT_Name,
-            'CNT_Mobile' => $request->CNT_Mobile,
-            'CNT_Department' => $request->CNT_Department,
-            'CNT_Email' => $request->CNT_Email,
-            'CNT_Phone1' => $request->CNT_Phone1,
-            'CNT_Phone2' => ''
-        ]);
-        if ($customerContact) {
-            return response()->json(["success" => true, "message" => "contact added."]);
+        if ($request->CNT_ID == 0) {
+            $customerContact = ContactPerson::create([
+                "CST_ID" => $id,
+                'CNT_Name' => $request->CNT_Name,
+                'CNT_Mobile' => $request->CNT_Mobile,
+                'CNT_Department' => $request->CNT_Department,
+                'CNT_Email' => $request->CNT_Email,
+                'CNT_Phone1' => $request->CNT_Phone1,
+                'CNT_Phone2' => ''
+            ]);
+            if ($customerContact) {
+                return response()->json(["success" => true, "message" => "contact added."]);
+            } else {
+                return response()->json(["success" => false, "message" => "action failed, try again."]);
+            }
+        } else if ($request->CNT_ID > 0) {
+            $customerContact = ContactPerson::where("CNT_ID", $request->CNT_ID)->where("CST_ID", $id)->update([
+                'CNT_Name' => $request->CNT_Name,
+                'CNT_Mobile' => $request->CNT_Mobile,
+                'CNT_Department' => $request->CNT_Department,
+                'CNT_Email' => $request->CNT_Email,
+                'CNT_Phone1' => $request->CNT_Phone1,
+                'CNT_Phone2' => ''
+            ]);
+            if ($customerContact) {
+                return response()->json(["success" => true, "message" => "Contact Updated."]);
+            } else {
+                return response()->json(["success" => false, "message" => "action failed, try again."]);
+            }
         } else {
             return response()->json(["success" => false, "message" => "action failed, try again."]);
         }
 
-    }
-    public function UpdateCustomerContact(Request $request)
-    {
-
-        $validator = Validator::make(
-            $request->all(),
-            [
-                "CustomerId" => "required",
-                "ContactId" => "required",
-                "CNT_Name" => "required",
-                "CNT_Mobile" => "required",
-            ]
-        );
-        if ($validator->fails()) {
-            return response()->json(["success" => false, "message" => "all * marked fields required.", "validation_error" => $validator->errors()]);
-        }
-        $customerContact = CustomerContact::where("CNT_ID", $request->ContactId)->where("CST_ID", $request->CustomerId)->update([
-            'CNT_Name' => $request->CNT_Name,
-            'CNT_Mobile' => $request->CNT_Mobile,
-            'CNT_Department' => $request->CNT_Department,
-            'CNT_Email' => $request->CNT_Email,
-            'CNT_Phone1' => $request->CNT_Phone1,
-            'CNT_Phone2' => ''
-        ]);
-        if ($customerContact) {
-            return response()->json(["success" => true, "message" => "Contact Updated."]);
-        } else {
-            return response()->json(["success" => false, "message" => "action failed, try again."]);
-        }
-
-    }
-    public function AddCustomerSite(Request $request)
-    {
-
-        $validator = Validator::make(
-            $request->all(),
-            [
-                "CustomerId" => "required",
-                "SiteName" => "required",
-                "SiteArea" => "required",
-
-
-            ]
-        );
-        if ($validator->fails()) {
-            return response()->json(["success" => false, "message" => "all * marked fields required.", "validation_error" => $validator->errors()]);
-        }
-        $customerSite = CustomerSites::create([
-            'CustomerId' => $request->CustomerId,
-            'SiteNumber' => $request->SiteNumber,
-            'SiteName' => $request->SiteName,
-            'AreaName' => $request->SiteArea,
-            'SiteOther' => $request->SiteOther,
-        ]);
-        if ($customerSite) {
-            return response()->json(["success" => true, "message" => "site added."]);
-        } else {
-            return response()->json(["success" => false, "message" => "action failed, try again."]);
-        }
-
-    }
-    public function UpdateCustomerSite(Request $request)
-    {
-
-        $validator = Validator::make(
-            $request->all(),
-            [
-                "CustomerId" => "required",
-                "SiteId" => "required",
-                "SiteName" => "required",
-                "SiteArea" => "required",
-
-
-            ]
-        );
-        if ($validator->fails()) {
-            return response()->json(["success" => false, "message" => "all * marked fields required.", "validation_error" => $validator->errors()]);
-        }
-        $customerSite = CustomerSites::where("id", $request->SiteId)->where("CustomerId", $request->CustomerId)->update([
-            'SiteNumber' => $request->SiteNumber,
-            'SiteName' => $request->SiteName,
-            'AreaName' => $request->SiteArea,
-            'SiteOther' => $request->SiteOther,
-        ]);
-        if ($customerSite) {
-            return response()->json(["success" => true, "message" => "Site Updated."]);
-        } else {
-            return response()->json(["success" => false, "message" => "action failed, try again."]);
-        }
 
     }
     public function GetAreaNameMaster(Request $request)

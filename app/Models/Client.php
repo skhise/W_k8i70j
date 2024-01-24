@@ -50,7 +50,7 @@ class Client extends Model
     }
     public function contact()
     {
-        return $this->hasMany(CustomerContact::class, 'CST_ID', 'CST_ID');
+        return $this->hasMany(ContactPerson::class, 'CST_ID', 'CST_ID');
 
     }
     public static function boot()

@@ -11,6 +11,7 @@ class ContactPerson extends Model
 
     protected $table = 'contact_person';
     protected $fillable = [
+        'CNT_ID',
         'CST_ID',
         'CNT_Name',
         'CNT_Mobile',

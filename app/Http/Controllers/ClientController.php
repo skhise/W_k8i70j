@@ -38,11 +38,12 @@ class ClientController extends Controller
     {
 
         return view("clients.index", [
-            'filters' => $request->all('search', 'trashed', 'search_field'),
+            'filters' => $request->all('search', 'trashed', 'search_field', 'filter_status'),
             'search_field' => $request->search_field ?? '',
+            'filter_status' => $request->filter_status ?? '',
             'search' => $request->search ?? '',
-            'clients' => Client::orderBy('CST_ID', "DESC")
-                ->filter($request->only('search', 'trashed', 'search_field'))
+            'clients' => Client::orderBy('updated_at', "DESC")
+                ->filter($request->only('search', 'trashed', 'search_field', 'filter_status'))
                 ->paginate(10)
                 ->withQueryString()
                 ->through(fn($client) => [
@@ -75,6 +76,30 @@ class ClientController extends Controller
 
         ]);
     }
+    public function update(Request $request, Client $client)
+    {
+        $request->validate([
+            "Customer_Name" => ["required|unique:clients,CST_Name"],
+            "CCP_Name" => ["required"],
+            "CCP_Mobile" => ["required"],
+            "Ref_Employee" => ["nullable"],
+            'updated_by' => ['required'],
+        ]);
+
+        $client->update($request->all());
+        // Redirect::route('clients')->with('success', 'Client Added.');
+        return redirect()->back()->with('success', 'Client updated successfully.');
+    }
+    public function edit(Client $client)
+    {
+
+        return view('clients.create', [
+            'client_code' => $client->CST_Code,
+            'update' => true,
+            'client' => $client,
+            "refrences" => Employee::all(),
+        ]);
+    }
     public function create(Request $request)
     {
         $client = Client::all()->last();
@@ -83,8 +108,6 @@ class ClientController extends Controller
             $code = $client->id + 1;
         }
         return view('clients.create', [
-            "states" => [],
-            "country" => [],
             'client_code' => $code,
             'update' => false,
             'client' => new Client(),

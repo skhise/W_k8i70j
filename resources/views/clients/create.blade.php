@@ -10,7 +10,7 @@
                             </div>
                             <div class="card-body">
                                 <form id="frmcreateclient" method="post" enctype="multipart/form-data"
-                                    action="{{$update ? route('clients.update', $client->id) : route('clients.store')}}">
+                                    action="{{$update ? route('clients.update', $client->CST_ID) : route('clients.store')}}">
                                     @csrf
                                     @if(!$update)
                                     <input type="hidden" id="created_by" name="created_by"
@@ -44,16 +44,16 @@
                                                 </div>
                                                 <div class="col-md-5">
                                                     <input
-                                                        class="form-control text-box single-line @error('Customer_Name') is-invalid @enderror"
+                                                        class="form-control text-box single-line @error('CST_Name') is-invalid @enderror"
                                                         data-val="true"
                                                         data-val-required="The Customer Name field is required."
-                                                        id="Customer_Name" name="Customer_Name" placeholder="Name *"
+                                                        id="CST_Name" name="CST_Name" placeholder="Name *"
                                                         required="required" type="text"
-                                                        value="{{$client->Customer_Name ?? old('Customer_Name')}}" />
-                                                    @if($errors->has('Customer_Name'))
+                                                        value="{{$client->CST_Name ?? old('CST_Name')}}" />
+                                                    @if($errors->has('CST_Name'))
                                                     <span class="text-danger field-validation-valid"
-                                                        data-valmsg-for="Customer_Name" data-valmsg-replace="true">{{
-                                                        $errors->first('Customer_Name') }}</span>
+                                                        data-valmsg-for="CST_Name" data-valmsg-replace="true">{{
+                                                        $errors->first('CST_Name') }}</span>
 
                                                     @endif
                                                 </div>
@@ -69,34 +69,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="form-group">
-                                            <div class="row">
-                                                <div class="col-md-2">
-                                                    <span
-                                                        style="float:right ;color:blue; font-weight:bold; text-decoration:underline">Reference
-                                                    </span>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <select
-                                                        class="form-control @error('Ref_Employee') is-invalid @enderror select2"
-                                                        id="Ref_Employee" name="Ref_Employee">
-                                                        <option value="">-- Select Reference --</option>
-                                                        @foreach($refrences as $refrence )
-                                                        <option value="{{$refrence->id}}" {{$refrence->id ==
-                                                            old('Ref_Employee') ? 'selected' : ''}} {{$refrence->id ==
-                                                            $client->Ref_Employee && $update ? 'selected' : ''}}>
-                                                            {{$refrence->EMP_Name}}
-                                                        </option>
-                                                        @endforeach
-                                                    </select>
-                                                    @if($errors->has('Ref_Employee'))
-                                                    <span class=" text-danger field-validation-valid"
-                                                        data-valmsg-for="Ref_Employee" data-valmsg-replace="true">
-                                                        {{ $errors->first('Ref_Employee') }}</span>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                        </div>
+
                                         <div class="form-group">
                                             <div class="row">
                                                 <div class="col-md-2">
@@ -164,7 +137,34 @@
                                                 </div>
                                             </div>
                                         </div>
-
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    <span style="float:right ;font-weight:bold;">Reference
+                                                    </span>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <select
+                                                        class="form-control @error('Ref_Employee') is-invalid @enderror select2"
+                                                        id="Ref_Employee" name="Ref_Employee">
+                                                        <option value="">-- Select Reference --</option>
+                                                        @foreach($refrences as $refrence )
+                                                        <option value="{{$refrence->EMP_ID}}" {{$refrence->EMP_ID ==
+                                                            old('Ref_Employee') ? 'selected' : ''}} {{$refrence->EMP_ID
+                                                            ==
+                                                            $client->Ref_Employee && $update ? 'selected' : ''}}>
+                                                            {{$refrence->EMP_Name}}
+                                                        </option>
+                                                        @endforeach
+                                                    </select>
+                                                    @if($errors->has('Ref_Employee'))
+                                                    <span class=" text-danger field-validation-valid"
+                                                        data-valmsg-for="Ref_Employee" data-valmsg-replace="true">
+                                                        {{ $errors->first('Ref_Employee') }}</span>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
                                         <div class="form-group">
                                             <div class="row">
                                                 <div class="col-md-2">
@@ -232,9 +232,11 @@
                                         <hr />
                                         <div class="form-group">
                                             <div class="card-footer text-right">
-                                                <input type="button" id="btnAddClient"
-                                                    value="{{$update ? 'Update' : 'Save'}}" class="btn btn-primary">
-                                                <a type="button" class="btn btn-danger"
+
+
+                                                <button type="submit" id="btnAddClient ml-2"
+                                                    class="btn btn-primary">{{$update ? 'Update' : 'Save'}}</button>
+                                                <a type="button" class="btn btn-danger mr-2"
                                                     href="{{route('clients')}}">Back</a>
                                             </div>
                                         </div>

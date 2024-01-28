@@ -73,23 +73,19 @@ class Client extends Model
     }
     public function scopeFilter($query, array $filters)
     {
+
         $query->when($filters['search'] ?? null, function ($query, $search) use ($filters) {
+
             $search_field = $filters['search_field'] ?? '';
             if (empty($search_field)) {
-                $query->where('client_name', 'like', '%' . $search . '%')
-                    ->orWhere('phone', 'like', '%' . $search . '%')
-                    ->orWhere('email', 'like', '%' . $search . '%')
-                    ->orWhere('client_code', 'like', '%' . $search . '%')
-                    ->orWhere('website', 'like', '%' . $search . '%');
+                $query->where('CST_Name', 'like', '%' . $search . '%')
+                    ->orWhere('CST_Code', 'like', '%' . $search . '%');
             }
-            if ($search_field == "client_name") {
-                $query->where('client_name', 'like', '%' . $search . '%');
+            if ($search_field == "CST_Name") {
+                $query->where('CST_Name', 'like', '%' . $search . '%');
             }
-            if ($search_field == "phone") {
-                $query->where('phone', 'like', '%' . $search . '%');
-            }
-            if ($search_field == "email") {
-                $query->where('email', 'like', '%' . $search . '%');
+            if ($search_field == "CST_Code") {
+                $query->where('CST_Code', 'like', '%' . $search . '%');
             }
 
         })->when($filters['trashed'] ?? null, function ($query, $trashed) {
@@ -98,6 +94,8 @@ class Client extends Model
             } elseif ($trashed === 'only') {
                 $query->onlyTrashed();
             }
+        })->when($filters['filter_status'] ?? null, function ($query, $search) {
+            $query->where('CST_Status', 'like', '%' . $search . '%');
         });
     }
 }

@@ -1,11 +1,9 @@
 <?php
-$document_type = [
-    "1"=>'<div class="badge badge-info badge-shadow">Prufing</div>',
-];
+
 $status = [
-    "1"=>'<div class="badge badge-info badge-shadow">Angebot</div>',
-    "2"=>'<div class="badge badge-success badge-shadow">AktiV</div>',
-    "3"=>'<div class="badge badge-danger badge-shadow">Unaktiv</div>',
+    "1"=>'<div class="badge badge-success badge-shadow">Active</div>',
+    "2"=>'<div class="badge badge-info badge-shadow">Suspendes</div>',
+    "3"=>'<div class="badge badge-danger badge-shadow">Deactive</div>',
     "4"=>'<div class="badge badge-secondary badge-shadow">Ferting</div>',
     "5"=>'<div class="badge badge-warning badge-shadow">Archiv</div>',
 ];
@@ -44,31 +42,31 @@ $add_cp_url = "{{route('clients.view',$client->id)}}";
                                             <div class="col-md-3">
                                                 <div class="card card-primary">
                                                     <div class="card-header">
-                                                        <h4 class="text-uppercase">{{$client->name}}</h4>
+                                                        <h4 class="text-uppercase">{{$client->CST_Name}}</h4>
                                                     </div>
                                                     <div class="card-body">
                                                         <ul class="list-group ">
                                                             <li class="list-group-item">
-                                                                <div class="box-body">m
+                                                                <div class="box-body">
                                                                     <strong>
                                                                         <i
-                                                                            class="fa fa-book margin-r-5"></i>&nbsp;&nbsp;Kunde
-                                                                        Nummer
+                                                                            class="fa fa-book margin-r-5"></i>&nbsp;&nbsp;Client
+                                                                        Code
                                                                     </strong>
                                                                     <p class="text-muted">
-                                                                        {{$client->client_code}}
+                                                                        {{$client->CST_Code}}
                                                                     </p>
                                                                     <hr>
                                                                     <strong>
                                                                         <i
-                                                                            class="fa fa-ellipsis-h margin-r-5"></i>&nbsp;&nbsp;Kundentyp
+                                                                            class="fa fa-ellipsis-h margin-r-5"></i>&nbsp;&nbsp;Website
                                                                     </strong>
-                                                                    <p class="text-muted">{{$customer_type}}</p>
+                                                                    <p class="text-muted">{{$client->CST_Website}}</p>
                                                                     <hr>
                                                                     <strong><i
-                                                                            class="fa fa-map-marker margin-r-5"></i>&nbsp;&nbsp;Kunde
-                                                                        Typ</strong>
-                                                                    <p class="text-muted">{{$type}}</p>
+                                                                            class="fa fa-map-marker margin-r-5"></i>&nbsp;&nbsp;Status</strong>
+                                                                    <p class="text-muted">{!! $client->CST_Status !=0 ?
+                                                                        $status[$client->CST_Status] : 'NA' !!}</p>
                                                                     <hr>
                                                                     <strong><i
                                                                             class="fa fa-map-marker margin-r-5"></i>&nbsp;&nbsp;Total
@@ -92,180 +90,77 @@ $add_cp_url = "{{route('clients.view',$client->id)}}";
                                                         <hr />
                                                         <div class="row">
                                                             <div class="col-md-3">
-                                                                <span
-                                                                    style="float:right ;color:blue; font-weight:bold; text-decoration:underline">Kunde</span>
-                                                                <br />
                                                                 <span style="float:right ;font-weight:bold">Client
                                                                     Name</span>
                                                             </div>
-                                                            <div class="col-md-9">{{$client->client_name}}</div>
+                                                            <div class="col-md-9">{{$client->CST_Name}}</div>
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-3">
-                                                                <span
-                                                                    style="float:right ;color:blue; font-weight:bold; text-decoration:underline">
-                                                                    Telefon
-                                                                </span>
-                                                                <br />
-                                                                <span
-                                                                    style="float:right ;font-weight:bold">Telphone</span>
+                                                                <span style="float:right ;font-weight:bold">Office
+                                                                    Address</span>
                                                             </div>
                                                             <div class="col-md-3">
-                                                                {{$client->phone}}<br />{{$client->phone_alt}}</div>
-                                                            <div class="col-md-3">
-                                                                <span
-                                                                    style="float:right ;color:blue; font-weight:bold; text-decoration:underline">
-                                                                    Fax
-                                                                </span>
-                                                            </div>
-                                                            <div class="col-md-3">{{$client->fax}}</div>
+                                                                {{$client->CST_OfficeAddress}}</div>
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-3">
-                                                                <span
-                                                                    style="float:right ;color:blue; font-weight:bold; text-decoration:underline">
-                                                                    Webseite
+                                                                <span style="float:right ;font-weight:bold">
+                                                                    Site Address
                                                                 </span>
                                                             </div>
-                                                            <div class="col-md-3">{{$client->website}}</div>
-                                                            <div class="col-md-3">
-                                                                <span
-                                                                    style="float:right ;color:blue; font-weight:bold; text-decoration:underline">
-                                                                    E-Mail
-                                                                </span>
-                                                            </div>
-                                                            <div class="col-md-3">
-                                                                {{$client->email}}<br />{{$client->email_alt}}</div>
+                                                            <div class="col-md-3">{{$client->CST_SiteAddress}}</div>
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-3">
-                                                                <span
-                                                                    style="float:right ;color:blue; font-weight:bold; text-decoration:underline;">Anmerkungen</span>
-                                                                <br />
                                                                 <span
                                                                     style="float:right ;font-weight:bold">Description</span>
                                                             </div>
-                                                            <div class="col-md-3">{{$client->description}}</div>
-                                                            <div class="col-md-3">
-                                                                <span
-                                                                    style="float:right ;color:blue; font-weight:bold; text-decoration:underline;">Memo</span>
-                                                            </div>
-                                                            <div class="col-md-3">{{$client->memo}}</div>
-
+                                                            <div class="col-md-6">{{$client->CST_Note}}</div>
                                                         </div>
 
                                                         <hr />
                                                         <div>
-                                                            <h5 class="">ADDRESS DETAILS</h5>
+                                                            <h5 class="">Contact Person Details</h5>
                                                         </div>
                                                         <hr />
                                                         <div class="row">
                                                             <div class="col-md-3">
-                                                                <span
-                                                                    style="float:right ;color:blue; font-weight:bold; text-decoration:underline">Anschrift</span>
-                                                                <br />
-                                                                <span
-                                                                    style="float:right ;font-weight:bold">Address</span>
+                                                                <span style="float:right ;font-weight:bold">Name</span>
                                                             </div>
-                                                            <div class="col-md-3">{{$client->address_default}}</div>
+                                                            <div class="col-md-3">{{$client->CCP_Name}}</div>
                                                             <div class="col-md-3">
                                                                 <span
-                                                                    style="float:right ;color:blue; font-weight:bold; text-decoration:underline">Ort</span>
-                                                                <br />
-                                                                <span
-                                                                    style="float:right ;font-weight:bold">Place/location</span>
+                                                                    style="float:right ;font-weight:bold">Mobile</span>
                                                             </div>
-                                                            <div class="col-md-3">{{$client->place_default}}</div>
+                                                            <div class="col-md-3">{{$client->CCP_Mobile}}</div>
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-3">
-                                                                <span
-                                                                    style="float:right ;color:blue; font-weight:bold; text-decoration:underline">
-                                                                    PLZ
-                                                                </span>
-                                                                <br />
-                                                                <span style="float:right ;font-weight:bold">Zip
-                                                                    Code</span>
+                                                                <span style="float:right ;font-weight:bold">Email</span>
                                                             </div>
-                                                            <div class="col-md-3">{{$client->zipcode_default}}</div>
+                                                            <div class="col-md-3">{{$client->CCP_Email}}</div>
 
                                                             <div class="col-md-3">
                                                                 <span
-                                                                    style="float:right ;color:blue; font-weight:bold; text-decoration:underline">Bundesland</span>
-                                                                <br />
-                                                                <span style="float:right ;font-weight:bold">Federal
-                                                                    State</span>
+                                                                    style="float:right ;font-weight:bold">Department</span>
                                                             </div>
                                                             <div class="col-md-3">
-                                                                {{$default_state_name ?? ""}}
+                                                                {{$client->CCP_Department !=null ?
+                                                                $client->CCP_Department : "NA"}}
                                                             </div>
                                                             <div class="col-md-3">
-                                                                <span
-                                                                    style="float:right ;color:blue; font-weight:bold; text-decoration:underline">Land</span>
-                                                                <br />
-                                                                <span
-                                                                    style="float:right ;font-weight:bold">Country</span>
+                                                                <span style="float:right ;font-weight:bold">Alt.
+                                                                    Mobile</span>
                                                             </div>
                                                             <div class="col-md-3">
-                                                                {{$default_country_name ?? ""}}
+                                                                {{$client->CCP_Phone1 != null ? $client->CCP_Phone1 :
+                                                                'NA'}}
                                                             </div>
                                                         </div>
                                                         <hr />
-                                                        <div>
-                                                            <h5 class="">INVOICE ADDRESS DETAILS</h5>
-                                                        </div>
-                                                        <hr />
-                                                        <div class="row">
-                                                            <div class="col-md-3">
-                                                                <span
-                                                                    style="float:right ;color:blue; font-weight:bold; text-decoration:underline">Anschrift</span>
-                                                                <br />
-                                                                <span
-                                                                    style="float:right ;font-weight:bold">Address</span>
-                                                            </div>
-                                                            <div class="col-md-3">{{$client->address_invoice}}</div>
-                                                            <div class="col-md-3">
-                                                                <span
-                                                                    style="float:right ;color:blue; font-weight:bold; text-decoration:underline">Ort</span>
-                                                                <br />
-                                                                <span
-                                                                    style="float:right ;font-weight:bold">Place/location</span>
-                                                            </div>
-                                                            <div class="col-md-3">{{$client->place_invoice}}</div>
-                                                        </div>
-                                                        <div class="row">
-                                                            <div class="col-md-3">
-                                                                <span
-                                                                    style="float:right ;color:blue; font-weight:bold; text-decoration:underline">
-                                                                    PLZ
-                                                                </span>
-                                                                <br />
-                                                                <span style="float:right ;font-weight:bold">Zip
-                                                                    Code</span>
-                                                            </div>
-                                                            <div class="col-md-3">{{$client->zipcode_invoice}}</div>
 
-                                                            <div class="col-md-3">
-                                                                <span
-                                                                    style="float:right ;color:blue; font-weight:bold; text-decoration:underline">Bundesland</span>
-                                                                <br />
-                                                                <span style="float:right ;font-weight:bold">Federal
-                                                                    State</span>
-                                                            </div>
-                                                            <div class="col-md-3">
-                                                                {{$invoice_state_name ?? ""}}
-                                                            </div>
-                                                            <div class="col-md-3">
-                                                                <span
-                                                                    style="float:right ;color:blue; font-weight:bold; text-decoration:underline">Land</span>
-                                                                <br />
-                                                                <span
-                                                                    style="float:right ;font-weight:bold">Country</span>
-                                                            </div>
-                                                            <div class="col-md-3">
-                                                                {{$invoice_country_name ?? ""}}
-                                                            </div>
-                                                        </div>
+
 
                                                     </div>
                                                     <hr />

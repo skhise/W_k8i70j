@@ -78,12 +78,7 @@ body.disable-scroll {
     transition: all 0.2s ease;
   }
   
-  .filter-remove{
-    /* color: rgba(255,255,255,0.8); */
-    transition: all 0.2s ease;
-  }
-  
-  .filter:hover, .filter-remove:hover{
+  .filter:hover {
     color: white;
     background-color: #585858;
   }
@@ -92,10 +87,6 @@ body.disable-scroll {
     color: rgba(255,255,255,0.5);
   }
   
-  .filter-remove{
-    color: rgba(255,255,255,0.5);
-    cursor: pointer;
-  }
   
   .remove:hover{
     color: white;

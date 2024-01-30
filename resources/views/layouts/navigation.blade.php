@@ -136,8 +136,8 @@
                 <ul class="dropdown-menu">
                     <li class="{{Request::is('clients') ? 'active' : '' }}"><a class="nav-link"
                             href="{{route('clients')}}">Clients</a></li>
-                    <li class="{{Request::is('clients/persons') ? 'active' : '' }}"><a class="nav-link"
-                            href="{{route('persons')}}">Persons</a></li>
+                    <!-- <li class="{{Request::is('clients/persons') ? 'active' : '' }}"><a class="nav-link"
+                            href="{{route('persons')}}">Persons</a></li> -->
                     <!-- <li class="{{Request::is('clients/sites') ? 'active' : '' }}"><a class="nav-link"
                             href="{{route('sites')}}">Sites</a></li> -->
                 </ul>

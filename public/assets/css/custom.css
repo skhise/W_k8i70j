@@ -18,7 +18,9 @@
     border: 0;
     border-radius: 0;
 }
-
+.update-x{
+  font-family: 'Courier New', Courier, monospace;
+}
 .modal-fullscreen .modal-footer,
 .modal-fullscreen .modal-header {
     border-radius: 0;

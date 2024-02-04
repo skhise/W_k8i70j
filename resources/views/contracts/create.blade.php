@@ -283,7 +283,7 @@
                                                 <div class="col-md-5 floating-label">
                                                     <input class="form-control text-box single-line"
                                                         id="CNRT_SiteLocation" name="CNRT_SiteLocation" placeholder=""
-                                                        type="number"
+                                                        type="text"
                                                         value="{{$contract->CNRT_SiteLocation ?? old('CNRT_SiteLocation') }}" />
                                                     <label>Google Location Link
                                                     </label>

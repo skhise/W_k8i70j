@@ -1,3 +1,8 @@
+<style>
+    .select2-container {
+        margin-bottom: 5px !important;
+    }
+</style>
 <x-app-layout>
     <div class="main-content">
         <section class="section">
@@ -6,17 +11,17 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header">
-                                <h4>Clients</h4>
+                                <h4>Contracts</h4>
                                 <div class="card-header-action">
-                                    <a href="{{route('client.create')}}" class="btn btn-icon icon-left btn-primary"><i
-                                            class="
+                                    <a href="{{route('contracts.create')}}"
+                                        class="btn btn-icon icon-left btn-primary"><i class="
 fas fa-plus-square"></i>
-                                        Add Client</a>
+                                        Add Contract</a>
                                 </div>
                             </div>
                             <div class="card-body">
                                 <div class="float-right">
-                                    <form action="{{route('clients')}}" id="search_form">
+                                    <form action="{{route('contracts')}}" id="search_form">
                                         <input type="hidden" name="search_field" value="{{$search_field}}"
                                             id="search_field" />
                                         <div class="input-group">
@@ -37,6 +42,17 @@ fas fa-plus-square"></i>
                                                         <option value="3" {{$filter_status==3 ? 'selected' : '' }}>
                                                             Suspended</option>
                                                     </select>
+                                                    <br />
+                                                    <select class="mt-2 select2" name="filter_contract_type"
+                                                        id="filter_contract_type">
+                                                        <option value="" selected>Contact Type</option>
+                                                    </select>
+                                                    <br />
+                                                    <select class="mt-2 select2" name="filter_site_type"
+                                                        id="filter_site_type">
+                                                        <option value="" selected>Site Type</option>
+                                                    </select>
+
                                                     <button type="submit"
                                                         class="mt-2 ml-2 apply-button btn btn-primary btn-sm">Apply</button>
                                                     <button type="button"
@@ -55,37 +71,42 @@ fas fa-plus-square"></i>
                                                 <th>
                                                     #Code
                                                 </th>
-                                                <th class="table-width-30">Name</th>
-                                                <th>Phone</th>
-                                                <th>Email</th>
-                                                <th>Department</th>
+                                                <th class="table-width-30">Customer Name</th>
+                                                <th>Contract Type</th>
+                                                <th>Site Type</th>
+                                                <th>Expiry Date</th>
+                                                <th>Status</th>
                                                 <th class="action-1">Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @if(count($clients) == 0)
+                                            @if(count($contracts) == 0)
                                             <tr>
-                                                <td colspan="6" class="text-center">No clients to show</td>
+                                                <td colspan="6" class="text-center">No contracts to show</td>
                                             </tr>
                                             @endif
-                                            @foreach($clients as $key=>$client)
+                                            @foreach($contracts as $key=>$contract)
                                             <tr>
                                                 <td>
-                                                    {{$client['client_code']}}
-                                                </td>
-                                                <td>{{$client['client_name']}}</td>
-                                                <td>
-                                                    {{$client['phone']}}
+                                                    {{$contract['CNRT_Number']}}
                                                 </td>
                                                 <td>
-                                                    {{$client['email']}}
+                                                    {{$contract['CNRT_CustomerName']}}
                                                 </td>
-                                                <td>{{$client['department']}}</td>
+                                                <td>{{$contract['contract_type_name']}}</td>
                                                 <td>
-                                                    <a href="{{route('clients.view',$client['id'])}}"
+                                                    {{$contract['site_type_name']}}
+                                                </td>
+                                                <td>
+                                                    {{$contract['CNRT_EndDate']!="" ?
+                                                    date('d-M-Y',strtotime($contract['CNRT_EndDate'])) : 'NA'}}
+                                                </td>
+                                                <td>{!!$status[$contract['CNRT_Status']]!!}</td>
+                                                <td>
+                                                    <a href="{{route('contracts.view',$contract['CNRT_ID'])}}"
                                                         class="btn btn-icon btn-sm btn-primary"><i
                                                             class="far fa-eye"></i></a>
-                                                    <a href="{{route('client.edit',$client['id'])}}"
+                                                    <a href="{{route('contracts.edit',$contract['CNRT_ID'])}}"
                                                         class="btn btn-icon btn-sm btn-primary"><i
                                                             class="far fa-edit"></i></a>
 
@@ -96,12 +117,12 @@ fas fa-plus-square"></i>
                                         </tbody>
                                     </table>
                                     <div class="float-left">
-                                        @if($clients->total())
-                                        <p>Found {{ $clients->total()}} records</p>
+                                        @if($contracts->total())
+                                        <p>Found {{ $contracts->total()}} records</p>
                                         @endif
                                     </div>
                                     <div class="float-right">
-                                        {{ $clients->links() }}
+                                        {{ $contracts->links() }}
                                     </div>
                                 </div>
                             </div>

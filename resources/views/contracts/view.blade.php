@@ -1,15 +1,3 @@
-<?php
-
-$status = [
-    "1"=>'<div class="badge badge-success badge-shadow">Active</div>',
-    "2"=>'<div class="badge badge-info badge-shadow">Suspendes</div>',
-    "3"=>'<div class="badge badge-danger badge-shadow">Deactive</div>',
-    "4"=>'<div class="badge badge-secondary badge-shadow">Ferting</div>',
-    "5"=>'<div class="badge badge-warning badge-shadow">Archiv</div>',
-];
-$add_cp_url = "{{route('clients.view',$client->id)}}";
-?>
-
 <x-app-layout>
     <div class="main-content">
         <section class="section">
@@ -18,7 +6,7 @@ $add_cp_url = "{{route('clients.view',$client->id)}}";
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header">
-                                <h4>Contract Details</h4>
+                                <h4>Client Details</h4>
                             </div>
                             <div class="card-body">
                                 <ul class="nav nav-tabs" id="myTab2" role="tablist">
@@ -28,9 +16,9 @@ $add_cp_url = "{{route('clients.view',$client->id)}}";
                                             aria-selected="true">Details</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" id="profile-tab2" data-toggle="tab" href="#ContactPersons"
-                                            role="tab" aria-controls="refclient" aria-selected="false">Contact
-                                            Persons</a>
+                                        <a class="nav-link" id="profile-tab2" data-toggle="tab" href="#ContractProduct"
+                                            role="tab" aria-controls="refclient" aria-selected="false">Contract
+                                            Product</a>
                                     </li>
 
                                 </ul>
@@ -42,7 +30,7 @@ $add_cp_url = "{{route('clients.view',$client->id)}}";
                                             <div class="col-md-3">
                                                 <div class="card card-primary">
                                                     <div class="card-header">
-                                                        <h4 class="text-uppercase">{{$client->CST_Name}}</h4>
+                                                        <h4 class="text-uppercase">{{$contract->CST_Name}}</h4>
                                                     </div>
                                                     <div class="card-body">
                                                         <ul class="list-group ">
@@ -54,26 +42,56 @@ $add_cp_url = "{{route('clients.view',$client->id)}}";
                                                                         Code
                                                                     </strong>
                                                                     <p class="text-muted">
-                                                                        {{$client->CST_Code}}
+                                                                        {{$contract->CST_Code}}
                                                                     </p>
                                                                     <hr>
                                                                     <strong>
                                                                         <i
+                                                                            class="fa fa-book margin-r-5"></i>&nbsp;&nbsp;Contact
+                                                                        Name
+                                                                    </strong>
+                                                                    <p class="text-muted">
+                                                                        {{$contract->CNRT_CustomerContactPerson}}
+                                                                    </p>
+                                                                    <hr>
+                                                                    <strong>
+                                                                        <i
+                                                                            class="fa fa-book margin-r-5"></i>&nbsp;&nbsp;Contact
+                                                                        Mobile
+                                                                    </strong>
+                                                                    <p class="text-muted">
+                                                                        {{$contract->CNRT_CustomerContactNumber}}
+                                                                    </p>
+                                                                    <hr>
+                                                                    <strong>
+                                                                        <i
+                                                                            class="fa fa-book margin-r-5"></i>&nbsp;&nbsp;Contact
+                                                                        Email
+                                                                    </strong>
+                                                                    <p class="text-muted">
+                                                                        {{$contract->CNRT_CustomerEmail}}
+                                                                    </p>
+
+
+                                                                    <hr>
+
+                                                                    <strong>
+                                                                        <i
                                                                             class="fa fa-ellipsis-h margin-r-5"></i>&nbsp;&nbsp;Website
                                                                     </strong>
-                                                                    <p class="text-muted">{{$client->CST_Website}}</p>
+                                                                    <p class="text-muted">{{$contract->CST_Website}}</p>
                                                                     <hr>
                                                                     <strong><i
                                                                             class="fa fa-map-marker margin-r-5"></i>&nbsp;&nbsp;Status</strong>
-                                                                    <p class="text-muted">{!! $client->CST_Status !=0 ?
-                                                                        $status[$client->CST_Status] : 'NA' !!}</p>
+                                                                    <p class="text-muted">{!!$contract->CST_Status !=0 ?
+                                                                        $status[$contract->CST_Status] : 'NA' !!}</p>
                                                                     <hr>
-                                                                    <strong><i
+                                                                    <!-- <strong><i
                                                                             class="fa fa-map-marker margin-r-5"></i>&nbsp;&nbsp;Total
                                                                         Projects
                                                                     </strong>
                                                                     <p class="text-muted">{{$project_count}}</p>
-                                                                    <hr>
+                                                                    <hr> -->
                                                                 </div>
                                                             </li>
                                                         </ul>
@@ -85,77 +103,126 @@ $add_cp_url = "{{route('clients.view',$client->id)}}";
                                                 <div class="card card-success">
                                                     <div class="card-body">
                                                         <div>
-                                                            <h5 class="">DETAILS</h5>
+                                                            <h5 class="">Contract Information
+                                                            </h5>
                                                         </div>
                                                         <hr />
                                                         <div class="row">
                                                             <div class="col-md-3">
-                                                                <span style="float:right ;font-weight:bold">Client
-                                                                    Name</span>
+                                                                <span style="float:right ;font-weight:bold">
+                                                                    Contract Number</span>
                                                             </div>
-                                                            <div class="col-md-9">{{$client->CST_Name}}</div>
+                                                            <div class="col-md-9">{{$contract->CNRT_Number}}</div>
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-3">
-                                                                <span style="float:right ;font-weight:bold">Office
-                                                                    Address</span>
+                                                                <span style="float:right ;font-weight:bold">Contrcat
+                                                                    Type</span>
                                                             </div>
                                                             <div class="col-md-3">
-                                                                {{$client->CST_OfficeAddress}}</div>
+                                                                {{$contract->contract_type_name}}</div>
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-3">
                                                                 <span style="float:right ;font-weight:bold">
-                                                                    Site Address
+                                                                    Site Type
                                                                 </span>
                                                             </div>
-                                                            <div class="col-md-3">{{$client->CST_SiteAddress}}</div>
+                                                            <div class="col-md-3">{{$contract->site_type_name}}</div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-3">
+                                                                <span style="float:right ;font-weight:bold">
+                                                                    Start Date
+                                                                </span>
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                                {{date("d-M-Y",strtotime($contract->CNRT_StartDate)) ??
+                                                                "NA"}}
+                                                            </div>
+                                                            <div class="col-md-2">
+                                                                <span style="float:right ;font-weight:bold">
+                                                                    End Date
+                                                                </span>
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                                {{date("d-M-Y",strtotime($contract->CNRT_EndDate)) ??
+                                                                "NA"}}
+                                                            </div>
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-3">
                                                                 <span
-                                                                    style="float:right ;font-weight:bold">Description</span>
+                                                                    style="float:right ;font-weight:bold">Charges</span>
                                                             </div>
-                                                            <div class="col-md-6">{{$client->CST_Note}}</div>
+                                                            <div class="col-md-2 " style="float:left ;font-weight:bold">
+                                                                {{$contract->CNRT_Charges}}</div>
+                                                            <div class="col-md-1">
+                                                                <span style="float:right ;font-weight:bold">Paid</span>
+                                                            </div>
+                                                            <div class="col-md-2" style="float:left ;font-weight:bold">
+                                                                {{$contract->CNRT_Charges_Paid}}</div>
+                                                            <div class="col-md-2">
+                                                                <span
+                                                                    style="float:right ;font-weight:bold">Pending</span>
+                                                            </div>
+                                                            <div class="col-md-2" style="float:left ;font-weight:bold">
+                                                                {{$contract->CNRT_Charges_Paid}}</div>
                                                         </div>
 
                                                         <hr />
                                                         <div>
-                                                            <h5 class="">Contact Person Details</h5>
+                                                            <h5 class="">Other Information</h5>
                                                         </div>
                                                         <hr />
                                                         <div class="row">
                                                             <div class="col-md-3">
-                                                                <span style="float:right ;font-weight:bold">Name</span>
+                                                                <span style="float:right ;font-weight:bold">Google
+                                                                    Location Link
+                                                                </span>
                                                             </div>
-                                                            <div class="col-md-3">{{$client->CCP_Name}}</div>
-                                                            <div class="col-md-3">
-                                                                <span
-                                                                    style="float:right ;font-weight:bold">Mobile</span>
+                                                            <div class="col-md-1"><a
+                                                                    href="{{$contract->CNRT_SiteLocation ?? '#'}}"
+                                                                    target="_blank"><i class="fa fa-map-marker"
+                                                                        aria-hidden="true"></i>
+                                                                </a></div>
+                                                            <div class="col-md-2">
+                                                                <span style="float:right ;font-weight:bold">Site
+                                                                    Address</span>
                                                             </div>
-                                                            <div class="col-md-3">{{$client->CCP_Mobile}}</div>
+                                                            <div class="col-md-4">{{$contract->CNRT_SiteAddress ??
+                                                                "NA"}}</div>
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-3">
-                                                                <span style="float:right ;font-weight:bold">Email</span>
+                                                                <span style="float:right ;font-weight:bold">Office
+                                                                    Address
+                                                                </span>
                                                             </div>
-                                                            <div class="col-md-3">{{$client->CCP_Email}}</div>
+                                                            <div class="col-md-3">{{$contract->CNRT_OfficeAddress ??
+                                                                "NA"}}
+                                                            </div>
 
+                                                        </div>
+                                                        <div class="row">
                                                             <div class="col-md-3">
-                                                                <span
-                                                                    style="float:right ;font-weight:bold">Department</span>
+                                                                <span style="float:right ;font-weight:bold">Note</span>
                                                             </div>
-                                                            <div class="col-md-3">
-                                                                {{$client->CCP_Department !=null ?
-                                                                $client->CCP_Department : "NA"}}
-                                                            </div>
-                                                            <div class="col-md-3">
-                                                                <span style="float:right ;font-weight:bold">Alt.
-                                                                    Mobile</span>
-                                                            </div>
-                                                            <div class="col-md-3">
-                                                                {{$client->CCP_Phone1 != null ? $client->CCP_Phone1 :
+                                                            <div class="col-md-6">
+                                                                {{ $contract->CNRT_Note != null ? $contract->CNRT_Note
+                                                                :
                                                                 'NA'}}
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-3">
+                                                                <span style="float:right ;font-weight:bold">Term &
+                                                                    Condition
+                                                                </span>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                {{$contract->CNRT_TNC !=null ?
+                                                                $contract->CNRT_TNC : "NA"}}
                                                             </div>
                                                         </div>
                                                         <hr />
@@ -170,22 +237,14 @@ $add_cp_url = "{{route('clients.view',$client->id)}}";
 
 
                                     </div>
-                                    <div class="tab-pane fade" id="ContactPersons" role="tabpanel"
+                                    <div class="tab-pane fade" id="ContractProduct" role="tabpanel"
                                         aria-labelledby="profile-tab2">
 
                                         <div class="row">
                                             <div class="col-12">
                                                 <div class="card card-primary">
                                                     <div class="card-header">
-                                                        <h4>Contact Person</h4>
-                                                        <div class="card-header-action">
-                                                            <input type="button" id="btn_cp_add" value="Add Contact"
-                                                                class="btn btn-primary" data-toggle="modal"
-                                                                data-target=".bd-RefClient-modal-lg" />
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-12">
-
+                                                        <h4>Contract Product</h4>
                                                     </div>
                                                     <div class="card-body">
                                                         <div class="table-responsive">
@@ -193,38 +252,43 @@ $add_cp_url = "{{route('clients.view',$client->id)}}";
                                                                 <thead>
                                                                     <tr>
                                                                         <th>Name</th>
-                                                                        <th>Email</th>
-                                                                        <th>Phone</th>
-                                                                        <th>Mobile</th>
-                                                                        <th>Department</th>
-                                                                        <th></th>
+                                                                        <th>Type</th>
+                                                                        <th>Sr. Number</th>
+                                                                        <th>Description</th>
+                                                                        <th>Price</th>
+                                                                        <th>Branch</th>
+                                                                        <th>Other</th>
+                                                                        <th>Schedules</th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
-                                                                    @if($contacts->count() == 0)
+                                                                    @if($products->count() == 0)
                                                                     <tr>
-                                                                        <td colspan="6" class="text-center">No
-                                                                            contacts
+                                                                        <td colspan="8" class="text-center">No
+                                                                            products
                                                                             added yet.</td>
                                                                     </tr>
                                                                     @endif
-                                                                    @foreach($contacts as $index => $contact)
+                                                                    @foreach($products as $index => $product)
                                                                     <tr>
                                                                         <td>
-                                                                            {{$contact->CNT_Name}}
+                                                                            {{$product->product_name}}
                                                                         </td>
-                                                                        <td>{{$contact['CNT_Email']}}</td>
-                                                                        <td>{{$contact['CNT_Mobile']}}</td>
-                                                                        <td>{{$contact['CNT_Phone1']}}</td>
-                                                                        <th>{{$contact['CNT_Department']}}</th>
+                                                                        <td>{{$product['product_type']}}</td>
+                                                                        <td>{{$product['nrnumber']}}</td>
+                                                                        <td>{{$product['product_description']}}</td>
+                                                                        <th>{{$product['product_price']}}</th>
+                                                                        <th>{{$product['branch']}}</th>
+                                                                        <th>{{$product['other']}}</th>
+                                                                        <th>{{$product['no_of_service']}}</th>
                                                                         <td><a href="#" data-toggle="modal"
                                                                                 id="showEditModal"
-                                                                                data-name="{{$contact['CNT_Name']}}"
-                                                                                data-department="{{$contact['CNT_Department']}}"
-                                                                                data-email="{{$contact['CNT_Email']}}"
-                                                                                data-mobile="{{$contact['CNT_Mobile']}}"
-                                                                                data-phone="{{$contact['CNT_Phone1']}}"
-                                                                                data-cpid="{{$contact['CNT_ID']}}"
+                                                                                data-name="{{$product['CNT_Name']}}"
+                                                                                data-department="{{$product['CNT_Department']}}"
+                                                                                data-email="{{$product['CNT_Email']}}"
+                                                                                data-mobile="{{$product['CNT_Mobile']}}"
+                                                                                data-phone="{{$product['CNT_Phone1']}}"
+                                                                                data-cpid="{{$product   ['CNT_ID']}}"
                                                                                 class="btn btn-icon btn-sm btn-primary"><i
                                                                                     class="far fa-edit"></i></a></td>
                                                                     </tr>
@@ -313,7 +377,7 @@ $add_cp_url = "{{route('clients.view',$client->id)}}";
                 </div>
                 <div class="modal-footer">
                     <div class="pull-right">
-                        <button type="button" class="btn btn-success" onclick="SaveContactPerson()">Save</button>
+                        <button type="button" class="btn btn-success" onclick="SaveContractProduct()">Save</button>
                         <button class="btn btn-danger" onclick="CancelModelBox()">Cancel</button>
                     </div>
                 </div>
@@ -331,7 +395,7 @@ $add_cp_url = "{{route('clients.view',$client->id)}}";
                 var cpid = $(this).data('cpid');
                 $("#CNT_ID").val(cpid);
             });
-            function SaveContactPerson() {
+            function SaveContractProduct() {
                 $.ajax({
                     url: 'add_cp',
                     type: "POST",

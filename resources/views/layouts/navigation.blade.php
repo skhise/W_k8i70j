@@ -142,6 +142,10 @@
                             href="{{route('sites')}}">Sites</a></li> -->
                 </ul>
             </li>
+
+            <li class="dropdown {{Request::is('contracts/*')  ? 'active' : '' }}">
+                <a href="{{route('contracts')}}" class="nav-link"><i data-feather="file"></i><span>Contract</span></a>
+            </li>
             <li class="dropdown {{Request::is('projects') ? 'active' : '' }}">
                 <a href="{{route('projects')}}" class="nav-link"><i data-feather="figma"></i><span>Projects</span></a>
             </li>

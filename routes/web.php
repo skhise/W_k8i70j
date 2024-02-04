@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ContractController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ClientController;
@@ -71,7 +72,18 @@ Route::middleware(['prevent-back-history'])->group(function () {
         ->name('clients.view')
         ->middleware('auth');
 
+    /*Contract Route*/
 
+    Route::middleware('auth')->group(function () {
+        Route::get('/contracts', [ContractController::class, 'index'])->name('contracts');
+        Route::get('/contracts/create', [ContractController::class, 'create'])->name('contracts.create');
+        Route::post('/contracts', [ContractController::class, 'store'])->name('contracts.store');
+        Route::get('/contracts/{contract}/view', [ContractController::class, 'view'])->name('contracts.view');
+        Route::get('/contracts/{contract}/edit', [ContractController::class, 'edit'])->name('contracts.edit');
+        Route::post('/contracts/{contract}/update', [ContractController::class, 'update'])->name('contracts.update');
+    });
+
+    /*end contractt*/
     /*Project Route*/
     Route::middleware('auth')->group(function () {
         Route::get('/projects/create', [ProjectController::class, 'create'])->name('projects.create');

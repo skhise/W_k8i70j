@@ -219,12 +219,12 @@
                                                         id="CNT_Department" placeholder="Department" type="text"
                                                         value="{{old('CNT_Department[]')}}" />
                                                     &nbsp;&nbsp;&nbsp;&nbsp;
-                                                    <input type="button" onclick="fnAddPersonrow()" id="btnaddPerson"
-                                                        value="+" class="btn btn-icon btn-success" />
+                                                    <button type="button" onclick="fnAddPersonrow()" id="btnaddPerson"
+                                                        value="+" class="btn btn-icon btn-success">+</button>
                                                     &nbsp;&nbsp;
-                                                    <input type="button" onclick="fnDeletePersonrow('', this)"
-                                                        id="btndeletePerson" value="x"
-                                                        class="hie btn btn-icon btn-danger" />
+                                                    <button type="button" onclick="fnDeletePersonrow('', this)"
+                                                        id="btndeletePerson"
+                                                        class="hie btn btn-icon btn-danger">x</button>
                                                 </div>
                                             </div>
                                         </div>

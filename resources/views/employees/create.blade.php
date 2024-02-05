@@ -13,7 +13,7 @@
                             </div>
                             <div class="card-body">
                                 <form id="frmcreateemployee" method="post" enctype="multipart/form-data"
-                                    action="{{$update ? route('employees.update',$employee->id) : route('employees.store')}}">
+                                    action="{{$update ? route('employees.update',$employee->EMP_ID) : route('employees.store')}}">
                                     @csrf
                                     @if(!$update)
                                     <input type="hidden" id="created_by" name="created_by"
@@ -39,116 +39,65 @@
                                         <div class="form-group">
                                             <div class="row">
                                                 <div class="col-md-2">
-                                                    <span
-                                                        style="float:right ;color:blue; font-weight:bold; text-decoration:underline">Employee
-                                                    </span>
-                                                    <br />
-                                                    <span style="float:right ;font-weight:bold">Employee Name</span>
+                                                    <span style="float:right ;font-weight:bold">Employee</span>
                                                 </div>
-                                                <div class="col-lg-2">
-                                                    <div class="form-group">
-                                                        <select name="prefix" class="form-control select mr-1"
-                                                            id="prefix">
-                                                            <option value="5" {{old('prefix')==5 ? 'selected' :''}}
-                                                                {{$employee->prefix == 5 ? 'selected':''}}>Dr.</option>
-                                                            <option value="4" {{old('prefix')==4 ? 'selected' :''}}
-                                                                {{$employee->prefix == 4 ? 'selected':''}}>Miss.
-                                                            </option>
-                                                            <option value="1" {{old('prefix')==1 ? 'selected' :''}}
-                                                                {{$employee->prefix == 1 ? 'selected':''}}>Mr.</option>
-                                                            <option value="2" {{old('prefix')==2 ? 'selected' :''}}
-                                                                {{$employee->prefix == 2 ? 'selected':''}}>Mrs.</option>
-                                                            <option value="3" {{old('prefix')==3 ? 'selected' :''}}
-                                                                {{$employee->prefix == 3 ? 'selected':''}}>Ms.</option>
-                                                        </select>
 
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4">
+                                                <div class="col-md-4 floating-label">
                                                     <input
-                                                        class="form-control text-box single-line @error('first_name') is-invalid @enderror"
-                                                        data-val="true" id="first_name" name="first_name"
-                                                        placeholder="Name *" required="required" type="text"
-                                                        value="{{old('first_name') ?? $employee->first_name}}" />
-                                                    @if($errors->has('first_name'))
+                                                        class="form-control text-box single-line @error('EMP_Name') is-invalid @enderror"
+                                                        data-val="true" id="EMP_Name" name="EMP_Name" placeholder=""
+                                                        required="required" type="text"
+                                                        value="{{old('EMP_Name') ?? $employee->EMP_Name}}" />
+                                                    <label for="EMP_Name">Name *</label>
+                                                    @if($errors->has('EMP_Name'))
                                                     <span class="text-danger field-validation-valid"
-                                                        data-valmsg-for="first_name" data-valmsg-replace="true">{{
-                                                        $errors->first('first_name') }}</span>
+                                                        data-valmsg-for="EMP_Name" data-valmsg-replace="true">{{
+                                                        $errors->first('EMP_Name') }}</span>
 
                                                     @endif
                                                 </div>
-                                                <div class="col-lg-4">
-                                                    <div class="form-group">
-                                                        <input class="form-control text-box single-line"
-                                                            name="last_name" id="last_name" placeholder="Nachname "
-                                                            type="text"
-                                                            value="{{old('last_name')  ?? $employee->last_name}}" />
-                                                        @if($errors->has('last_name'))
-                                                        <span class="text-danger field-validation-valid"
-                                                            data-valmsg-for="last_name" data-valmsg-replace="true">{{
-                                                            $errors->first('last_name') }}</span>
-
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <div class="row">
-                                                <div class="col-md-2">
-                                                    <span style="float:right ;font-weight:bold">Employee Info</span>
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <input
-                                                        class="disable form-control text-box single-line @error('emp_id') is-invalid @enderror"
-                                                        data-val="true" id="emp_id" name="emp_id"
-                                                        placeholder="Employee Id *" required="required" type="text"
-                                                        value="{{old('emp_id') ?? $emp_id}}" />
-                                                    @if($errors->has('emp_id'))
+                                                <div class="col-md-3 floating-label">
+                                                    <select name="EMP_Designation"
+                                                        class="select2 form-control select2 mr-1" id="EMP_Designation">
+                                                        <option value="">Designation</option>
+                                                        @foreach($designations as $designation)
+                                                        <option value="{{$designation->id}}" {{$designation->id ==
+                                                            old('EMP_Designation') ? 'selected' :
+                                                            ''}} {{$designation->id ==
+                                                            $employee->EMP_Designation ? 'selected' :
+                                                            ''}}>
+                                                            {{$designation->designation_name}}</option>
+                                                        @endforeach
+                                                    </select>
+                                                    <!-- <label>Designation</label> -->
+                                                    @if($errors->has('EMP_Designation'))
                                                     <span class="text-danger field-validation-valid"
-                                                        data-valmsg-for="emp_id" data-valmsg-replace="true">{{
-                                                        $errors->first('emp_id') }}</span>
+                                                        data-valmsg-for="EMP_Designation" data-valmsg-replace="true">{{
+                                                        $errors->first('EMP_Designation') }}</span>
 
                                                     @endif
                                                 </div>
-                                                <div class="col-md-3">
-                                                    <select name="role" class="form-control select2 mr-1" id="role">
-                                                        <option value="">Role</option>
+                                                <div class="col-md-3 floating-label">
+                                                    <select name="Access_Role" class="select2 form-control select2 mr-1"
+                                                        id="Access_Role">
+                                                        <option value="">Access Role</option>
                                                         @foreach($roles as $role)
                                                         <option value="{{$role->id}}" {{$role->id ==
-                                                            old('role') ? 'selected' :
+                                                            old('Access_Role') ? 'selected' :
                                                             ''}} {{$role->id ==
-                                                            $employee->role ? 'selected' :
-                                                            ''}}>{{$role->name}}</option>
+                                                            $employee->Access_Role ? 'selected' :
+                                                            ''}}>{{$role->access_role_name}}</option>
                                                         @endforeach
                                                     </select>
-                                                    @if($errors->has('role'))
+                                                    <!-- <label>Access Role</label> -->
+                                                    @if($errors->has('Access_Role'))
                                                     <span class="text-danger field-validation-valid"
-                                                        data-valmsg-for="role" data-valmsg-replace="true">{{
-                                                        $errors->first('role') }}</span>
+                                                        data-valmsg-for="Access_Role" data-valmsg-replace="true">{{
+                                                        $errors->first('Access_Role') }}</span>
 
                                                     @endif
                                                 </div>
-                                                <div class="col-md-4">
-                                                    <select name="qualification" class="form-control select2 mr-1"
-                                                        id="qualification">
-                                                        <option value="">Qualification</option>
-                                                        @foreach($qualifications as $qualification)
-                                                        <option value="{{$qualification->id}}" {{$qualification->id ==
-                                                            old('qualification') ? 'selected' :
-                                                            ''}} {{$qualification->id ==
-                                                            $employee->qualification ? 'selected' :
-                                                            ''}}>
-                                                            {{$qualification->name}}</option>
-                                                        @endforeach
-                                                    </select>
-                                                    @if($errors->has('qualification'))
-                                                    <span class="text-danger field-validation-valid"
-                                                        data-valmsg-for="qualification" data-valmsg-replace="true">{{
-                                                        $errors->first('qualification') }}</span>
 
-                                                    @endif
-                                                </div>
                                             </div>
                                         </div>
                                         <div class="form-group">
@@ -156,44 +105,48 @@
                                                 <div class="col-md-2">
                                                     <span style="float:right ;font-weight:bold">Employee Contact</span>
                                                 </div>
-                                                <div class="col-md-3">
+                                                <div class="col-md-3 floating-label">
                                                     <input
-                                                        class="form-control text-box single-line @error('phone') is-invalid @enderror"
-                                                        data-val="true" id="phone" name="phone" placeholder="Phone *"
-                                                        required="required" type="text"
+                                                        class="form-control text-box single-line @error('EMP_MobileNumber') is-invalid @enderror"
+                                                        data-val="true" id="EMP_MobileNumber" name="EMP_MobileNumber"
+                                                        placeholder="" required="required" type="text"
                                                         onkeypress="return isNumberKey(event)"
-                                                        value="{{old('phone') ?? $employee->phone}}" />
-                                                    @if($errors->has('phone'))
+                                                        value="{{old('EMP_MobileNumber') ?? $employee->EMP_MobileNumber}}" />
+                                                    <label>Mobile *</label>
+                                                    @if($errors->has('EMP_MobileNumber'))
                                                     <span class="text-danger field-validation-valid"
-                                                        data-valmsg-for="phone" data-valmsg-replace="true">{{
-                                                        $errors->first('phone') }}</span>
+                                                        data-valmsg-for="EMP_MobileNumber" data-valmsg-replace="true">{{
+                                                        $errors->first('EMP_MobileNumber') }}</span>
 
                                                     @endif
                                                 </div>
-                                                <div class="col-md-3">
+                                                <div class="col-md-3 floating-label">
                                                     <input
-                                                        class="form-control text-box single-line @error('phone_1') is-invalid @enderror"
-                                                        data-val="true" id="phone_1" name="phone_1"
-                                                        placeholder="Phone Alt *" onkeypress="return isNumberKey(event)"
+                                                        class="form-control text-box single-line @error('EMP_CompanyMobile') is-invalid @enderror"
+                                                        data-val="true" id="EMP_CompanyMobile" name="EMP_CompanyMobile"
+                                                        placeholder="" onkeypress="return isNumberKey(event)"
                                                         required="required" type="text"
-                                                        value="{{old('phone_1') ?? $employee->phone_1}}" />
-                                                    @if($errors->has('phone_1'))
+                                                        value="{{old('EMP_CompanyMobile') ?? $employee->EMP_CompanyMobile}}" />
+                                                    <label>Alternate Mobile</label>
+                                                    @if($errors->has('EMP_CompanyMobile'))
                                                     <span class="text-danger field-validation-valid"
                                                         data-valmsg-for="phone" data-valmsg-replace="true">{{
-                                                        $errors->first('phone_1') }}</span>
+                                                        $errors->first('EMP_CompanyMobile') }}</span>
+
 
                                                     @endif
                                                 </div>
-                                                <div class="col-md-4">
+                                                <div class="col-md-4 floating-label">
                                                     <input
-                                                        class="form-control text-box single-line @error('emp_email') is-invalid @enderror"
-                                                        data-val="true" id="emp_email" name="emp_email"
-                                                        placeholder="Email *" required="required" type="text"
-                                                        value="{{old('emp_email') ?? $employee->emp_email}}" />
-                                                    @if($errors->has('emp_email'))
+                                                        class="form-control text-box single-line @error('EMP_Email') is-invalid @enderror"
+                                                        data-val="true" id="EMP_Email" name="EMP_Email" placeholder=""
+                                                        required="required" type="text"
+                                                        value="{{old('EMP_Email') ?? $employee->EMP_Email}}" />
+                                                    <label>Email</label>
+                                                    @if($errors->has('EMP_Email'))
                                                     <span class="text-danger field-validation-valid"
-                                                        data-valmsg-for="emp_email" data-valmsg-replace="true">{{
-                                                        $errors->first('emp_email') }}</span>
+                                                        data-valmsg-for="EMP_Email" data-valmsg-replace="true">{{
+                                                        $errors->first('EMP_Email') }}</span>
 
                                                     @endif
                                                 </div>
@@ -204,29 +157,45 @@
                                                 <div class="col-md-2">
                                                     <!-- <span style="float:right ;font-weight:bold">Employee Contact</span> -->
                                                 </div>
-                                                <div class="col-md-5">
+                                                <div class="col-md-4">
                                                     <textarea
-                                                        class="form-control text-box single-line @error('address') is-invalid @enderror"
-                                                        data-val="true" id="address" name="address"
-                                                        placeholder="Address *" required="required"
-                                                        type="text">{{old('address') ?? $employee->address}}</textarea>
-                                                    @if($errors->has('address'))
+                                                        class="form-control text-box single-line @error('EMP_Address') is-invalid @enderror"
+                                                        data-val="true" id="EMP_Address" name="EMP_Address"
+                                                        placeholder="" required="required"
+                                                        type="text">{{old('EMP_Address') ?? $employee->EMP_Address}}</textarea>
+                                                    @if($errors->has('EMP_Address'))
                                                     <span class="text-danger field-validation-valid"
-                                                        data-valmsg-for="address" data-valmsg-replace="true">{{
-                                                        $errors->first('address') }}</span>
+                                                        data-valmsg-for="EMP_Address" data-valmsg-replace="true">{{
+                                                        $errors->first('EMP_Address') }}</span>
 
                                                     @endif
                                                 </div>
-                                                <div class="col-md-5">
+                                                <div class="col-md-3">
                                                     <textarea
-                                                        class="form-control text-box single-line @error('memo') is-invalid @enderror"
-                                                        data-val="true" id="memo" name="memo" placeholder="Memo *"
-                                                        required="required"
-                                                        type="text">{{old('memo') ?? $employee->memo}}</textarea>
-                                                    @if($errors->has('memo'))
+                                                        class="form-control text-box single-line @error('EMP_Qualification') is-invalid @enderror"
+                                                        data-val="true" id="EMP_Qualification" name="EMP_Qualification"
+                                                        placeholder="Qualification" required="required"
+                                                        type="text">{{old('EMP_Qualification') ?? $employee->EMP_Qualification}}</textarea>
+                                                    @if($errors->has('EMP_Qualification'))
                                                     <span class="text-danger field-validation-valid"
-                                                        data-valmsg-for="memo" data-valmsg-replace="true">{{
-                                                        $errors->first('memo') }}</span>
+                                                        data-valmsg-for="EMP_Qualification"
+                                                        data-valmsg-replace="true">{{
+                                                        $errors->first('EMP_Qualification') }}</span>
+
+                                                    @endif
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <textarea
+                                                        class="form-control text-box single-line @error('EMP_TechnicalAbilities') is-invalid @enderror"
+                                                        data-val="true" id="EMP_TechnicalAbilities"
+                                                        name="EMP_TechnicalAbilities" placeholder="Technical Abilities"
+                                                        required="required"
+                                                        type="text">{{old('EMP_TechnicalAbilities') ?? $employee->EMP_TechnicalAbilities}}</textarea>
+                                                    @if($errors->has('EMP_TechnicalAbilities'))
+                                                    <span class="text-danger field-validation-valid"
+                                                        data-valmsg-for="EMP_TechnicalAbilities"
+                                                        data-valmsg-replace="true">{{
+                                                        $errors->first('EMP_TechnicalAbilities') }}</span>
 
                                                     @endif
                                                 </div>
@@ -239,13 +208,14 @@
                                                     <span style="float:right ;font-weight:bold">Status</span>
                                                 </div>
                                                 <div class="col-md-2">
-                                                    <select name="status" class="form-control select mr-1" id="status">
+                                                    <select name="EMP_Status" class="form-control select mr-1"
+                                                        id="EMP_Status">
                                                         <option value="">Status</option>
-                                                        <option value="1" {{old('status')==1 ? 'selected' : '' }}
-                                                            {{$employee->status==1 ? 'selected' : '' }}>Active
+                                                        <option value="1" {{old('EMP_Status')==1 ? 'selected' : '' }}
+                                                            {{$employee->EMP_Status==1 ? 'selected' : '' }}>Active
                                                         </option>
-                                                        <option value="2" {{old('status')==2 ? 'selected' : '' }}
-                                                            {{$employee->status==2 ? 'selected' : '' }}>
+                                                        <option value="2" {{old('EMP_Status')==2 ? 'selected' : '' }}
+                                                            {{$employee->EMP_Status==2 ? 'selected' : '' }}>
                                                             Deactive</option>
                                                     </select>
                                                     @if($errors->has('status'))
@@ -255,7 +225,17 @@
 
                                                     @endif
                                                 </div>
+
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="row">
+
                                                 @if(!$update)
+                                                <div class="col-md-2">
+                                                    <span style="float:right ;font-weight:bold">Login</span>
+                                                </div>
+
                                                 <div class="col-md-4">
                                                     <input
                                                         class="form-control text-box single-line @error('email') is-invalid @enderror"
@@ -290,7 +270,7 @@
                                             <div class="card-footer text-right">
                                                 <input type="button" id="btnAddEmployee"
                                                     value="{{$update ? 'Update' :'Save'}}" class="btn btn-primary">
-                                                <a type="button" class="btn btn-primary"
+                                                <a type="button" class="btn btn-danger"
                                                     href="{{route('clients')}}">Back</a>
                                             </div>
                                         </div>

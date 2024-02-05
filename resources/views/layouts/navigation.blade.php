@@ -127,6 +127,9 @@
                 <a href="{{route('dashboard')}}" class="nav-link"><i
                         data-feather="monitor"></i><span>Dashboard</span></a>
             </li>
+            <li class="dropdown {{Request::is('employees') ? 'active' : '' }}">
+                <a href="{{route('employees')}}" class="nav-link"><i data-feather="users"></i><span>Employees</span></a>
+            </li>
             <li
                 class="dropdown {{(Request::is('clients/*') || Request::is('clients') || Request::is('persons') || Request::is('sites')) ? 'active' : '' }}">
                 <a href="#"
@@ -152,9 +155,7 @@
             <li class="dropdown {{Request::is('documents') ? 'active' : '' }}">
                 <a href="{{route('documents')}}" class="nav-link"><i data-feather="file"></i><span>Documents</span></a>
             </li>
-            <li class="dropdown {{Request::is('employees') ? 'active' : '' }}">
-                <a href="{{route('employees')}}" class="nav-link"><i data-feather="users"></i><span>Employees</span></a>
-            </li>
+
             <li class="dropdown {{Request::is('settings/document') ? 'active' : '' }}">
                 <a href="#"
                     class="menu-toggle nav-link has-dropdown {{Request::is('settings/document') ? 'toggled' : '' }}"><i

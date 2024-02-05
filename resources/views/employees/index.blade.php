@@ -61,7 +61,6 @@ fas fa-plus-square"></i>
                                                 <th>Name</th>
                                                 <th>Mobile</th>
                                                 <th>Email</th>
-                                                <th>Status</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -74,15 +73,14 @@ fas fa-plus-square"></i>
                                             @foreach($employees as $index=>$employee)
                                             <tr key="{{$employee['id']}}">
                                                 <td>{{$index+1}}</td>
-                                                <td>{{$employee['full_name']}}</td>
-                                                <td>{{$employee['phone']}}</td>
-                                                <td>{{$employee['emp_email']}}</td>
-                                                <td>{!!$status[$employee['status']]!!}</td>
+                                                <td>{{$employee['EMP_Name']}}</td>
+                                                <td>{{$employee['EMP_MobileNumber']}}</td>
+                                                <td>{{$employee['EMP_Email']}}</td>
                                                 <td>
-                                                    <a href="{{route('employees.view',$employee['id'])}}"
+                                                    <a href="{{route('employees.view',$employee['EMP_ID'])}}"
                                                         class="btn btn-icon btn-sm btn-primary"><i
                                                             class="far fa-eye"></i></a>
-                                                    <a href="{{route('employees.edit',$employee['id'])}}"
+                                                    <a href="{{route('employees.edit',$employee['EMP_ID'])}}"
                                                         class="btn btn-icon btn-sm btn-primary"><i
                                                             class="far fa-edit"></i></a>
                                                 </td>
@@ -92,6 +90,11 @@ fas fa-plus-square"></i>
 
                                         </tbody>
                                     </table>
+                                    <div class="float-left">
+                                        @if($employees->total())
+                                        <p>Found {{ $employees->total()}} records</p>
+                                        @endif
+                                    </div>
                                     <div class="float-right">
                                         {{ $employees->links() }}
                                     </div>

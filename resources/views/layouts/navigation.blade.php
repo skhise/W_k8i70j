@@ -149,6 +149,9 @@
             <li class="dropdown {{Request::is('contracts/*')  ? 'active' : '' }}">
                 <a href="{{route('contracts')}}" class="nav-link"><i data-feather="file"></i><span>Contract</span></a>
             </li>
+            <li class="dropdown {{Request::is('products/*') ? 'active' : '' }}">
+                <a href="{{route('products')}}" class="nav-link"><i data-feather="figma"></i><span>Products</span></a>
+            </li>
             <li class="dropdown {{Request::is('projects') ? 'active' : '' }}">
                 <a href="{{route('projects')}}" class="nav-link"><i data-feather="figma"></i><span>Projects</span></a>
             </li>

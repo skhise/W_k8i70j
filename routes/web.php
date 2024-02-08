@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ContractController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ProjectController;
@@ -144,7 +145,14 @@ Route::middleware(['prevent-back-history'])->group(function () {
             ->name('employees.store')
             ->middleware('auth');
     });
-
+    Route::middleware('auth')->group(function () {
+        Route::get('/products', [ProductController::class, 'index'])->name("products");
+        Route::get('/products/create', [ProductController::class, 'create'])->name("products.create");
+        Route::get('/products/{product}/view', [ProductController::class, 'view'])->name("products.view");
+        Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name("products.edit");
+        Route::post('/products/{product}/update', [ProductController::class, 'update'])->name("products.update");
+        Route::post('/products/store', [ProductController::class, 'store'])->name("products.store");
+    });
     Route::get('employees/{employee}/edit', [EmployeeController::class, 'edit'])
         ->name('employees.edit')
         ->middleware('auth');

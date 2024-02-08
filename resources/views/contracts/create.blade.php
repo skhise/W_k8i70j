@@ -142,7 +142,13 @@
                                                     <span style="float:right ;font-weight:bold">Customer Details</span>
                                                 </div>
                                                 <div class="col-md-4 floating-label">
-                                                    <select
+                                                    @if($update)
+                                                            <input value="{{$contract->CNRT_CustomerID}}" type="text" style="display:none;"/>
+                                                            <input value="{{$contract->CNRT_CustomerName}}" type="text" class="form-control text-box single-line disabled"/>
+                                                            <label>Customer Name</labe>
+                                                            
+                                                    @else
+                                                        <select
                                                         class="form-control select2 text-box single-line @error('CNRT_CustomerID') is-invalid @enderror"
                                                         data-val="true"
                                                         data-val-required="The Customer Name field is required."
@@ -164,6 +170,7 @@
                                                         data-valmsg-for="CNRT_CustomerID" data-valmsg-replace="true">{{
                                                         $errors->first('CNRT_CustomerID') }}</span>
 
+                                                    @endif
                                                     @endif
                                                 </div>
 

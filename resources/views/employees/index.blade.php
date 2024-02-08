@@ -10,7 +10,7 @@
                                 <div class="card-header-action">
                                     <a href="{{route('employees.create')}}"
                                         class="btn btn-icon icon-left btn-primary"><i class="
-fas fa-plus-square"></i>
+                                        fas fa-plus-square"></i>
                                         Add Employee</a>
 
                                 </div>

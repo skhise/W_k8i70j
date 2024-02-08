@@ -181,8 +181,7 @@ class ProductController extends Controller
             'search_field' => $request->search_field ?? '',
             'filter_status' => $request->filter_status ?? '',
             'search' => $request->search ?? '',
-            'products' => Product::leftJoin("master_product_type", "master_product_type.id", "products.Product_Type")
-                ->orderBy('products.updated_at', "DESC")
+            'products' => Product::orderBy('products.updated_at', "DESC")
                 ->filter($request->only('search', 'trashed', 'search_field', 'filter_status'))
                 ->paginate(10)
                 ->withQueryString()
@@ -200,8 +199,7 @@ class ProductController extends Controller
     }
     public function view(Request $request, Product $product)
     {
-        $product1 = Product::join("master_product_type", "master_product_type.id", "products.Product_Type")
-            ->where("Product_ID", $product->Product_ID)->first();
+        $product1 = Product::where("Product_ID", $product->Product_ID)->first();
         // dd(url('images/') . "/" . $product->Image_Path);
         return view("products.view", [
             "status" => $this->status,

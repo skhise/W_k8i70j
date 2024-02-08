@@ -71,7 +71,7 @@
                                                         </span>
                                                     </div>
                                                     <div class="col-md-3">
-                                                        <image src="{{$img_url}}" alt="" />
+                                                        <image src="{{$img_url}}" alt="" width="200" height="200" />
                                                         <form method="post"
                                                             action="{{route('products.upload',$product->Product_ID)}}"
                                                             enctype="multipart/form-data" id="image_upload">

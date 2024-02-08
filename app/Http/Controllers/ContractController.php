@@ -1016,7 +1016,10 @@ class ContractController extends Controller
             ]
         );
         if ($validator->fails()) {
-            return response()->json(["success" => false, "message" => "all * marked fields required.", "validation_error" => $validator->errors()]);
+            return back()
+                ->withInput()
+                ->withErrors("Actin failed, Try again.");
+            // return response()->json(["success" => false, "message" => "all * marked fields required.", "validation_error" => $validator->errors()]);
         }
         try {
             $update = Contract::where("CNRT_ID", $contract->CNRT_ID)->update([

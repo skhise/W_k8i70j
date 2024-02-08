@@ -143,7 +143,7 @@
                                                 </div>
                                                 <div class="col-md-4 floating-label">
                                                     @if($update)
-                                                            <input value="{{$contract->CNRT_CustomerID}}" type="text" style="display:none;"/>
+                                                            <input id="CNRT_CustomerID" name="CNRT_CustomerID" value="{{$contract->CNRT_CustomerID}}" type="text" style="display:none;"/>
                                                             <input value="{{$contract->CNRT_CustomerName}}" type="text" class="form-control text-box single-line disabled"/>
                                                             <label>Customer Name</labe>
                                                             

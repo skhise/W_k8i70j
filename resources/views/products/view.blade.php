@@ -72,16 +72,20 @@
                                                     </div>
                                                     <div class="col-md-3">
                                                         <image src="{{$img_url}}" alt="" />
-                                                        <form>
-
+                                                        <form method="post"
+                                                            action="{{route('products.upload',$product->Product_ID)}}"
+                                                            enctype="multipart/form-data" id="image_upload">
+                                                            @csrf
+                                                            <div class="form-group">
+                                                                <label>Change Image</label>
+                                                                <input
+                                                                    class="form-control text-box single-line @error('Image_Path') is-invalid @enderror"
+                                                                    data-val="true" id="Image_Path" name="Image_Path"
+                                                                    placeholder="" required="required" type="file"
+                                                                    accept="image/png, image/jpeg,, image/jpg" />
+                                                            </div>
                                                         </form>
-                                                        <label>Change Image</label>
-                                                        <input
-                                                            class="form-control text-box single-line @error('Image_Path') is-invalid @enderror"
-                                                            data-val="true" id="Image_Path" name="Image_Path"
-                                                            placeholder="" required="required" type="file"
-                                                            accept="image/png, image/jpeg,, image/jpg"
-                                                            value="{{old('Image_Path') ?? $product->Image_Path}}" />
+
                                                     </div>
 
                                                 </div>
@@ -99,4 +103,14 @@
         </section>
 
     </div>
+    @section('script')
+    <script>
+        $(document).on('change', '#Image_Path', function () {
+            var value = $(this).val();
+            if (value != "") {
+                $('#image_upload')[0].submit();
+            }
+        });
+    </script>
+    @stop
 </x-app-layout>

@@ -338,14 +338,13 @@ class ProductController extends Controller
             // return response()->json(["success" => false, "message" => "Action failed, Try again."]);
         }
     }
-    public function UpdateProductImage(Request $request)
+    public function upload(Request $request, Product $product)
     {
 
         $validator = Validator::make(
             $request->all(),
             [
-                "product_name" => "required",
-                "productId" => "required",
+                "Image_Path" => "required",
             ]
         );
 
@@ -355,19 +354,31 @@ class ProductController extends Controller
         $upload = $this->UploadProductImage($request);
         if ($upload != "") {
             try {
-                $product = Product::where("Product_ID", $request->productId)->update([
+                $product = Product::where("Product_ID", $product->Product_ID)->update([
                     'Image_Path' => $upload,
                 ]);
                 if ($product) {
-                    return response()->json(['success' => true, 'message' => 'Product Image Updated.']);
+                    return back()
+                        ->withInput()
+                        ->withErrors("Product Image Updated");
+                    // return response()->json(['success' => true, 'message' => 'Product Image Updated.']);
                 } else {
-                    return response()->json(['success' => false, 'message' => 'Action failed, Try again.']);
+                    return back()
+                        ->withInput()
+                        ->withErrors("Action failed, Try again.");
+                    // return response()->json(['success' => false, 'message' => 'Action failed, Try again.']);
                 }
-            } catch (Illuminate\Database\QueryException $ex) {
-                return response()->json(['success' => false, 'message' => $ex->errorInfo]);
+            } catch (Exception $ex) {
+                return back()
+                    ->withInput()
+                    ->withErrors("Action failed, Try again.");
+                // return response()->json(['success' => false, 'message' => $ex->getMessage()]);
             }
         } else {
-            return response()->json(['success' => false, 'message' => 'Product Image Update Failed.']);
+            return back()
+                ->withInput()
+                ->withErrors("Action failed, Try again.");
+            // return response()->json(['success' => false, 'message' => 'Product Image Update Failed.']);
         }
     }
     public function UploadProductImage($request)

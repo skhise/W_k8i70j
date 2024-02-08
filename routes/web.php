@@ -152,6 +152,7 @@ Route::middleware(['prevent-back-history'])->group(function () {
         Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name("products.edit");
         Route::post('/products/{product}/update', [ProductController::class, 'update'])->name("products.update");
         Route::post('/products/store', [ProductController::class, 'store'])->name("products.store");
+        Route::post('/products/{product}/upload', [ProductController::class, 'upload'])->name("products.upload");
     });
     Route::get('employees/{employee}/edit', [EmployeeController::class, 'edit'])
         ->name('employees.edit')

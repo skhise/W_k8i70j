@@ -97,6 +97,20 @@ $add_cp_url = "{{route('clients.view',$client->id)}}";
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-3">
+                                                                <span style="float:right ;font-weight:bold">GSTIN
+                                                                    No.</span>
+                                                            </div>
+                                                            <div class="col-md-9">{{$client->gst_no}}</div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-3">
+                                                                <span style="float:right ;font-weight:bold">Pan
+                                                                    No.</span>
+                                                            </div>
+                                                            <div class="col-md-9">{{$client->pan_no}}</div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-3">
                                                                 <span style="float:right ;font-weight:bold">Office
                                                                     Address</span>
                                                             </div>

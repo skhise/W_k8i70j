@@ -25,6 +25,8 @@ class Client extends Model
         'CCP_Name',
         'CCP_Mobile',
         'CCP_Department',
+        'pan_no',
+        "gst_no",
         'CCP_Email',
         'CCP_Phone1',
         'CCP_Phone2',

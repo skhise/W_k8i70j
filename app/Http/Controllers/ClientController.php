@@ -119,7 +119,7 @@ class ClientController extends Controller
         $validator = Validator::make(
             $request->all(),
             [
-                "Customer_Name" => "required|unique:clients,CST_Name",
+                "CST_Name" => "required|unique:clients,CST_Name",
                 "CCP_Name" => "required",
                 "CCP_Mobile" => "required",
             ]
@@ -132,23 +132,16 @@ class ClientController extends Controller
         try {
             $uniqId = $this->GetCustomerCode();
             $isOk = 1;
-            if (!isset($request->CNT_Name)) {
-
-                return back()
-                    ->withInput()
-                    ->withErrors("Contact person information missing.");
-
-            } else {
-                $CNT_Name = $request->CNT_Name ?? [];
-                foreach ($CNT_Name as $index => $row) {
-                    if (empty($CNT_Name[$index])) {
-                        $ok = 0;
-                        return back()
-                            ->withInput()
-                            ->withErrors("Contact person information missing.");
-                    }
-                }
-            }
+            // dd($request->CNT_Name);
+            // $CNT_Name = $request->CNT_Name ?? [];
+            // foreach ($CNT_Name as $index => $row) {
+            //     if (empty($CNT_Name[$index])) {
+            //         $ok = 0;
+            //         return back()
+            //             ->withInput()
+            //             ->withErrors("Contact person information missing.");
+            //     }
+            // }
             if ($isOk == 1) {
 
                 $iscustomer = Client::where("CST_Code", $uniqId)->first();
@@ -161,7 +154,7 @@ class ClientController extends Controller
                         DB::beginTransaction();
                         $customer = Client::create([
                             'CST_Code' => $uniqId,
-                            'CST_Name' => $request->Customer_Name,
+                            'CST_Name' => $request->CST_Name,
                             'CST_Website' => $request->CST_Website,
                             'CST_OfficeAddress' => $request->CST_OfficeAddress,
                             'CST_SiteAddress' => $request->CST_SiteAddress,
@@ -172,6 +165,8 @@ class ClientController extends Controller
                             'CCP_Email' => $request->CCP_Email,
                             'CCP_Phone1' => $request->CCP_Phone1,
                             'CCP_Phone2' => $request->CCP_Phone2,
+                            'gst_no' => $request->gst_no,
+                            'pan_no' => $request->pan_no,
                             "Ref_Employee" => $ref,
                         ]);
                         if ($customer) {

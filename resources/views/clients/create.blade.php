@@ -140,6 +140,28 @@
                                         <div class="form-group">
                                             <div class="row">
                                                 <div class="col-md-2">
+                                                    <span style="float:right ;font-weight:bold;">Taxes
+                                                    </span>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <input class="form-control text-box single-line" id="gst_no"
+                                                        name="gst_no" placeholder="GSTIN No." type="text"
+                                                        value="{{$client->gst_no ?? old('gst_no')}}" />
+                                                    <span class="text-danger field-validation-valid"
+                                                        data-valmsg-for="gst_no" data-valmsg-replace="true"></span>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <input class="form-control text-box single-line" id="pan_no"
+                                                        name="pan_no" placeholder="Pan No." type="text"
+                                                        value="{{$client->pan_no ?? old('pan_no')}}" />
+                                                    <span class="text-danger field-validation-valid"
+                                                        data-valmsg-for="pan_no" data-valmsg-replace="true"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-2">
                                                     <span style="float:right ;font-weight:bold;">Reference
                                                     </span>
                                                 </div>

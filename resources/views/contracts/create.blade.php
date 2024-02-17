@@ -20,12 +20,7 @@
                                         value="{{Auth::user()->id}}" />
                                     <input type="hidden" id="CNRT_Number" name="CNRT_Number"
                                         value="{{$contract->CNRT_Number ?? $contract_code}}" />
-                                    <div class="form-horizontal">
-
-                                        <h3 style="color:orangered"></h3>
-
-
-                                        <div class="form-group">
+                                    <div class="form-group">
                                             <div class="row">
                                                 <div class="col-md-10">
                                                     <h4><i class="fa fa-user"></i> Contract Information</h4>
@@ -33,14 +28,14 @@
                                             </div>
                                         </div>
                                         <div class="form-group">
-                                            <div class="row">@if($errors->any())
+                                            <div class="row">
+                                                @if($errors->any())
                                                 {!! implode('', $errors->all('<div class="alert alert-danger">:message
                                                 </div>')) !!}
                                                 @endif</div>
                                             <div class="row">
                                                 <div class="col-md-2">
-                                                    <span style="float:right ;font-weight:bold">Contract Details <span
-                                                            class="text-danger">*</span></span>
+                                                    <span style="float:right;font-weight:bold">Contract Details </span>
                                                 </div>
                                                 <div class="col-md-3 floating-label">
                                                     <input
@@ -61,8 +56,8 @@
                                                 <div class="col-md-3 floating-label">
 
                                                     <input class="form-control text-box single-line" id="CNRT_Date"
-                                                        name="CNRT_Date" placeholder="" type="text"
-                                                        value="{{$contract->CNRT_Date ?? old('CNRT_Date') == '' ? date('d-m-Y') :old ('CNRT_Date')}}" />
+                                                        name="CNRT_Date" placeholder="" type="date"
+                                                        value="{{$contract->CNRT_Date ?? old('CNRT_Date') == '' ? date('Y-m-d') :old ('CNRT_Date')}}" />
                                                     <label for="CNRT_Number">Contract Date</label>
                                                     <span class="text-danger field-validation-valid"
                                                         data-valmsg-for="CNRT_Date" data-valmsg-replace="true"></span>
@@ -128,7 +123,7 @@
                                                     <input class="form-control text-box single-line" id="CNRT_RefNumber"
                                                         name="CNRT_RefNumber" placeholder="" type="text"
                                                         value="{{$contract->CNRT_RefNumber ?? old('CNRT_RefNumber')}}" />
-                                                    <label for="CNRT_RefNumber">Ref. Number</label>
+                                                    <label for="CNRT_RefNumber">Ref. Name</label>
                                                     <span class="text-danger field-validation-valid"
                                                         data-valmsg-for="CNRT_RefNumber"
                                                         data-valmsg-replace="true"></span>
@@ -143,35 +138,39 @@
                                                 </div>
                                                 <div class="col-md-4 floating-label">
                                                     @if($update)
-                                                            <input id="CNRT_CustomerID" name="CNRT_CustomerID" value="{{$contract->CNRT_CustomerID}}" type="text" style="display:none;"/>
-                                                            <input value="{{$contract->CNRT_CustomerName}}" type="text" class="form-control text-box single-line disabled"/>
-                                                            <label>Customer Name</labe>
-                                                            
-                                                    @else
-                                                        <select
-                                                        class="form-control select2 text-box single-line @error('CNRT_CustomerID') is-invalid @enderror"
-                                                        data-val="true"
-                                                        data-val-required="The Customer Name field is required."
-                                                        id="CNRT_CustomerID" name="CNRT_CustomerID" placeholder=""
-                                                        required="required" type="text"
-                                                        value="{{$contract->CNRT_CustomerID ?? old('CNRT_CustomerID')}}">
-                                                        <option value="">Select client</option>
-                                                        @foreach($clients as $client)
-                                                        <option value="{{$client->CST_ID}}" {{$client->CST_ID ==
-                                                            $contract->CNRT_CustomerID ? 'selected':
-                                                            (old('CNRT_CustomerID')
-                                                            ==
-                                                            $client->CST_ID ? 'selected' :'') }}>
-                                                            {{$client->CST_Name}}</option>
-                                                        @endforeach
-                                                    </select>
-                                                    @if($errors->has('CNRT_Type'))
-                                                    <span class="text-danger field-validation-valid"
-                                                        data-valmsg-for="CNRT_CustomerID" data-valmsg-replace="true">{{
-                                                        $errors->first('CNRT_CustomerID') }}</span>
+                                                    <input id="CNRT_CustomerID" name="CNRT_CustomerID"
+                                                        value="{{$contract->CNRT_CustomerID}}" type="text"
+                                                        style="display:none;" />
+                                                    <input value="{{$contract->CST_Name}}" type="text"
+                                                        class="form-control text-box single-line disabled" />
+                                                    <label>Customer Name</label>
 
-                                                    @endif
-                                                    @endif
+                                                        @else
+                                                        <select
+                                                            class="form-control select2 text-box single-line @error('CNRT_CustomerID') is-invalid @enderror"
+                                                            data-val="true"
+                                                            data-val-required="The Customer Name field is required."
+                                                            id="CNRT_CustomerID" name="CNRT_CustomerID" placeholder=""
+                                                            required="required" type="text"
+                                                            value="{{$contract->CNRT_CustomerID ?? old('CNRT_CustomerID')}}">
+                                                            <option value="">Select client</option>
+                                                            @foreach($clients as $client)
+                                                            <option value="{{$client->CST_ID}}" {{$client->CST_ID ==
+                                                                $contract->CNRT_CustomerID ? 'selected':
+                                                                (old('CNRT_CustomerID')
+                                                                ==
+                                                                $client->CST_ID ? 'selected' :'') }} data-client="{{$client}}">
+                                                                {{$client->CST_Name}}</option>
+                                                            @endforeach
+                                                        </select>
+                                                        @if($errors->has('CNRT_Type'))
+                                                        <span class="text-danger field-validation-valid"
+                                                            data-valmsg-for="CNRT_CustomerID"
+                                                            data-valmsg-replace="true">{{
+                                                            $errors->first('CNRT_CustomerID') }}</span>
+
+                                                        @endif
+                                                        @endif
                                                 </div>
 
                                             </div>
@@ -179,7 +178,7 @@
                                         <div class="form-group">
                                             <div class="row">
                                                 <div class="col-md-2">
-
+                                                <label class="col-form-label font-bold text-right" style="display: block">Contact Details</label>
                                                 </div>
                                                 <div class="col-md-3 floating-label">
                                                     <input class="form-control text-box single-line"
@@ -192,14 +191,51 @@
                                                         data-valmsg-replace="true"></span>
                                                 </div>
                                                 <div class="col-md-3 floating-label">
-                                                    <input class="form-control text-box single-line"
-                                                        id="CNRT_CustomerContactNumber"
-                                                        name="CNRT_CustomerContactNumber" placeholder="" type="text"
-                                                        value="{{$contract->CNRT_CustomerContactNumber ?? old('CNRT_CustomerContactNumber')}}" />
+                                                    <input class="form-control text-box single-line" id="CNRT_Phone1"
+                                                        name="CNRT_Phone1" placeholder="" type="text"
+                                                        value="{{$contract->CNRT_Phone1 ?? old('CNRT_Phone1')}}" />
                                                     <label for="first">Contact Mobile</label>
                                                     <span class="text-danger field-validation-valid"
-                                                        data-valmsg-for="CNRT_CustomerContactNumber"
+                                                        data-valmsg-for="CNRT_Phone1" data-valmsg-replace="true"></span>
+                                                </div>
+                                                <div class="col-md-3 floating-label">
+                                                    <input class="form-control text-box single-line" id="CNRT_Phone2"
+                                                        name="CNRT_Phone2" placeholder="" type="text"
+                                                        value="{{$contract->CNRT_Phone2 ?? old('CNRT_Phone2')}}" />
+                                                    <label for="first">Alternate Number</label>
+                                                    <span class="text-danger field-validation-valid"
+                                                        data-valmsg-for="CNRT_Phone2" data-valmsg-replace="true"></span>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    <label class="col-form-label font-bold text-right"
+                                                        for="CNRT_OfficeAddress" style="display: block">Address</label>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <textarea class="form-control" id="CNRT_OfficeAddress"
+                                                        name="CNRT_OfficeAddress" placeholder=""
+                                                        rows="2">{{$contract->CNRT_OfficeAddress ?? old('CNRT_OfficeAddress')}}</textarea>
+                                                    </textarea>
+                                                    <span class="text-danger field-validation-valid"
+                                                        data-valmsg-for="CNRT_OfficeAddress"
                                                         data-valmsg-replace="true"></span>
+                                                </div>
+                                                <div class="col-md-3 floating-label">
+
+                                                    <select name="CNRT_Site" id="CNRT_Site" class="form-control text-box single-line select2" palceholder="">
+                                                        <option value="">Select site location</option>
+                                                        @foreach($sitelocation as $location)
+                                                            <option value="{{$location->id}}" {{$location->id ==
+                                                                $contract->CNRT_Site ? 'selected':
+                                                                (old('CNRT_Site')
+                                                                ==
+                                                                $location->id ? 'selected' :'') }}>{{$location->SiteAreaName}}</option>    
+                                                        @endforeach
+                                                    </select>
                                                 </div>
                                                 <div class="col-md-3 floating-label">
                                                     <input class="form-control text-box single-line"
@@ -221,18 +257,28 @@
                                                 <div class="col-md-3 floating-label">
 
                                                     <input class="form-control text-box single-line" id="CNRT_StartDate"
-                                                        name="CNRT_StartDate" placeholder="" type="text"
-                                                        value="{{$update ? date('d-m-Y',strtotime($contract->CNRT_StartDate)) : (old('CNRT_StartDate') != '' ? old('CNRT_StartDate') : date('d-m-Y')) }}" />
+                                                        name="CNRT_StartDate" placeholder="" type="date"
+                                                        value="{{$update ? date('Y-m-d',strtotime($contract->CNRT_StartDate)) : (old('CNRT_StartDate') != '' ? old('CNRT_StartDate') : date('Y-m-d')) }}" />
                                                     <label>Start Date</label>
                                                     <span class="text-danger field-validation-valid"
                                                         data-valmsg-for="CNRT_StartDate"
                                                         data-valmsg-replace="true"></span>
                                                 </div>
+                                                <div class="col-md-3 floating-label">
+
+                                                    <select id="period_span" class="form-control text-box single-line">
+                                                        <option value="1">1 Year</option>
+                                                        <option value="2">2 Year</option>
+                                                        <option value="3">3 Year</option>
+                                                        <option value="0">Custom</option>
+                                                    </select>
+                                                    <label>Contract Period Span</label>
+                                                </div>
 
                                                 <div class="col-md-3 floating-label">
-                                                    <input class="form-control text-box single-line" id="CNRT_EndDate"
-                                                        name="CNRT_EndDate" placeholder="" type="text"
-                                                        value="{{$update ? date('d-m-Y',strtotime($contract->CNRT_EndDate)) : (old('CNRT_EndDate') != '' ? old('CNRT_EndDate') : date('d-m-Y',strtotime('+1 year', strtotime(date('d-m-Y')))))}}" />
+                                                    <input class="form-control text-box single-line disabled" id="CNRT_EndDate"
+                                                        name="CNRT_EndDate" placeholder="" type="date"
+                                                        value="{{$update ? date('Y-m-d',strtotime($contract->CNRT_EndDate)) : (old('CNRT_EndDate') != '' ? old('CNRT_EndDate') : date('Y-m-d',strtotime('+1 year', strtotime(date('d-m-Y')))))}}" />
                                                     <label>End Date</label>
                                                     <span class="text-danger field-validation-valid"
                                                         data-valmsg-for="CNRT_EndDate"
@@ -243,7 +289,7 @@
                                         <div class="form-group">
                                             <div class="row">
                                                 <div class="col-md-2">
-                                                    <span style="float:right ;font-weight:bold">Charges</span>
+                                                    <span style="float:right ;font-weight:bold">Contract Cost</span>
                                                 </div>
                                                 <div class="col-md-3 floating-label">
 
@@ -256,21 +302,21 @@
                                                         data-valmsg-replace="true"></span>
                                                 </div>
 
-                                                <div class="col-md-3 floating-label">
+                                                <div class="col-md-3 floating-label" style="display:none;">
                                                     <input class="form-control text-box single-line"
                                                         id="CNRT_Charges_Paid" name="CNRT_Charges_Paid" placeholder=""
                                                         type="number"
-                                                        value="{{$contract->CNRT_Charges_Paid ?? old('CNRT_Charges_Paid')}}" />
+                                                        value="0" />
                                                     <label>Paid Amount</label>
                                                     <span class="text-danger field-validation-valid"
                                                         data-valmsg-for="CNRT_Charges_Paid"
                                                         data-valmsg-replace="true"></span>
                                                 </div>
-                                                <div class="col-md-3 floating-label">
+                                                <div class="col-md-3 floating-label"  style="display:none;">
                                                     <input class="disabled form-control text-box single-line"
                                                         id="CNRT_Charges_Pending" name="CNRT_Charges_Pending"
                                                         placeholder="" type="number"
-                                                        value="{{$contract->CNRT_Charges_Pending ?? old('CNRT_Charges_Pending') }}" />
+                                                        value="0" />
                                                     <label>Charges Pending</label>
                                                     <span class="text-danger field-validation-valid"
                                                         data-valmsg-for="CNRT_Charges_Pending"
@@ -302,19 +348,7 @@
                                         </div>
                                         <div class="form-group">
                                             <div class="row">
-                                                <div class="col-md-2">
-                                                    <label class="col-form-label font-bold text-right"
-                                                        for="CNRT_OfficeAddress" style="display: block">Address</label>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <textarea class="form-control" id="CNRT_OfficeAddress"
-                                                        name="CNRT_OfficeAddress" placeholder=""
-                                                        rows="2">{{$contract->CNRT_OfficeAddress ?? old('CNRT_OfficeAddress')}}</textarea>
-                                                    </textarea>
-                                                    <span class="text-danger field-validation-valid"
-                                                        data-valmsg-for="CNRT_OfficeAddress"
-                                                        data-valmsg-replace="true"></span>
-                                                </div>
+                                                
                                                 <div class="col-md-2">
                                                     <label class="col-form-label font-bold text-right" for="CNRT_Note"
                                                         style="display: block">Note</label>
@@ -370,17 +404,71 @@
 
     @section('script')
     <script>
-        $(document).on('change', "#CNRT_Charges", function () {
+        $(document).on('change', '#CNRT_Charges', function () {
             var total = $(this).val();
             var paid = $("#CNRT_Charges_Paid").val();
             var pending = total - paid;
             $("#CNRT_Charges_Pending").val(pending);
         });
-        $(document).on('change', "#CNRT_Charges_Paid", function () {
+        $(document).on('change', '#CNRT_Charges_Paid', function () {
             var total = $("#CNRT_Charges").val();
             var paid = $(this).val();
             var pending = total - paid;
             $("#CNRT_Charges_Pending").val(pending);
+        });
+        $(document).on('change','#CNRT_CustomerID',function(){
+            var client = $("#CNRT_CustomerID option:selected").data('client');
+            if(typeof client!='undefined'){
+                $('#CNRT_CustomerContactPerson').val(client.CCP_Name);
+                $('#CNRT_Phone1').val(client.CCP_Mobile);
+                $('#CNRT_Phone2').val(client.CCP_Phone1);
+                $('#CNRT_CustomerEmail').val(client.CCP_Email);
+                $('#CNRT_OfficeAddress').val(client.CST_OfficeAddress);
+            } else {
+                $('#CNRT_CustomerContactPerson').val("");
+                $('#CNRT_Phone1').val("");
+                $('#CNRT_Phone2').val("");
+                $('#CNRT_CustomerEmail').val("");
+                $('#CNRT_OfficeAddress').val("");
+            }
+        });
+        $(document).on('change','#period_span',function(){
+            var span = $(this).val();
+            if(span == 0){
+                $("#CNRT_EndDate").removeClass("disabled");
+            } else {
+                $("#CNRT_EndDate").addClass("disabled");
+            }
+            span = span == "" || span == 0 ? 1 : span;
+            var date =$('#CNRT_StartDate').val();
+            var nd = date.split("-");
+            date = nd[0]+"/"+nd[1]+"/"+nd[2];
+            var d = new Date(date);
+                var year = d.getFullYear();
+                var month = d.getMonth();
+                var day = d.getDate();
+                var c = new Date(year + parseInt(span), month+1, day-1);
+                var month = c.getMonth() <10 ? "0"+c.getMonth():c.getMonth();
+                var nday = c.getDate() <10 ? "0"+c.getDate():c.getDate();
+                var fd = c.getFullYear()+"-"+month+"-"+nday;
+            $("#CNRT_EndDate").val(fd);
+        });
+        $(document).on('change','#CNRT_StartDate',function(){
+            var date =$(this).val();
+            var span = $("#period_span").val();
+            span = span == "" || span == 0 ? 1 : span;
+            var nd = date.split("-");
+            date = nd[0]+"/"+nd[1]+"/"+nd[2];
+            var d = new Date(date);
+                var year = d.getFullYear();
+                var month = d.getMonth();
+                var day = d.getDate();
+                var c = new Date(year + parseInt(span), month+1, day-1);
+                var month = c.getMonth() <10 ? "0"+c.getMonth():c.getMonth();
+                var nday = c.getDate() <10 ? "0"+c.getDate():c.getDate();
+                //var fd = nday+"-"+month+"-"+c.getFullYear();
+                var fd = c.getFullYear()+"-"+month+"-"+nday;
+            $("#CNRT_EndDate").val(fd);
         });
     </script>
     @stop

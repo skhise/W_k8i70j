@@ -22,9 +22,9 @@ class Contract extends Model
         'CNRT_RefNumber',
         'CNRT_Date',
         'CNRT_CustomerID',
-        'CNRT_CustomerName',
+        'CNRT_Phone1',
         'CNRT_CustomerContactPerson',
-        'CNRT_CustomerContactNumber',
+        'CNRT_Phone2',
         'CNRT_CustomerEmail',
         'CNRT_SiteLocation',
         'CNRT_SiteAddress',
@@ -106,10 +106,6 @@ class Contract extends Model
                 $query->where('CNRT_Number', 'like', '%' . $search . '%')
                     ->orWhere('CNRT_Number', 'like', '%' . $search . '%');
             }
-            if ($search_field == "CNRT_CustomerName") {
-                $query->where('CNRT_CustomerName', 'like', '%' . $search . '%');
-            }
-
         })->when($filters['trashed'] ?? null, function ($query, $trashed) {
             if ($trashed === 'with') {
                 $query->withTrashed();

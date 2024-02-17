@@ -327,8 +327,8 @@ $add_cp_url = "{{route('clients.view',$client->id)}}";
                 </div>
                 <div class="modal-footer">
                     <div class="pull-right">
-                        <button type="button" class="btn btn-success" onclick="SaveContactPerson()">Save</button>
-                        <button class="btn btn-danger" onclick="CancelModelBox()">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="SaveContactPerson()">Save</button> &nbsp;
+                        <button class="btn btn-danger pull-right" onclick="CancelModelBox()">Cancel</button>&nbsp;&nbsp;
                     </div>
                 </div>
             </div>

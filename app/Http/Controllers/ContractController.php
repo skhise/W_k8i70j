@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AreaName;
 use App\Models\Client;
+use App\Models\ProductType;
 use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use App\Models\Employee;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -859,63 +862,78 @@ class ContractController extends Controller
 
 
     }
-    public function AddContractProduct(Request $request)
+    public function AddContractProduct(Request $request, Contract $contract)
     {
 
-        $contract_product = $request->test;
-        $contractID = $request->contractID;
-        $updatedby = $request->updatedby;
+        $messages = array(
+            'nrnumber' => 'Serial number required',
+            'nrnumber.*' => 'Serial number must be unique',
+            'contractId' => 'Contract information required',
+            'product_type' => 'Product type required',
+            'product_name' => 'Product name required',
+        );
+        $validator = Validator::make(
+            $request->all(),
+            [
+                "nrnumber" => "required|array",
+                'nrnumber.*' => 'distinct',
+                'contractId' => "required",
+                'product_type' => "required",
+                'product_name' => "required",
+            ],
+            $messages
+        );
+        if ($validator->fails()) {
+            return response()->json(["success" => false, "message" => "all * marked fields required.", "validation_error" => $validator->errors()]);
+        }
+        $nrnumber = $request->nrnumber;
         $isOk = 0;
-        if (!is_null($contract_product)) {
-            if (sizeof($contract_product) > 0) {
-                foreach ($contract_product as $cp) {
-                    if ($cp['productId'] == "" || $cp['productName'] == "") {
-                        return response()->json(['success' => false, 'message' => 'All Fields Required']);
-                        exit;
-                    } else {
-                        $isOk = 1;
-                    }
-
-                }
+        foreach ($nrnumber as $index => $sr) {
+            if ($sr == "") {
+                return response()->json(["success" => false, "index" => $index, "message" => "Serial number must be unique."]);
             } else {
-                return response()->json(['success' => false, 'message' => 'All Fields Required']);
+                $is_unique = ContractUnderProduct::where(['nrnumber' => $sr])->get();
+                if (count($is_unique) > 0) {
+                    return response()->json(["success" => false, "index" => $index, "message" => "Serial number must be unique."]);
+                }
+                $isOk = 1;
             }
-            if ($isOk == 1) {
-                $size = 0;
-                foreach ($contract_product as $cp) {
+
+        }
+        if ($isOk == 1) {
+            $size = 0;
+            DB::beginTransaction();
+            foreach ($nrnumber as $sr) {
+
+                $iscp = ContractUnderProduct::create([
+                    'contractId' => $request->contractId,
+                    'product_name' => $request->product_name,
+                    'product_type' => $request->product_type,
+                    'product_price' => $request->product_price,
+                    'product_description' => $request->product_description,
+                    'nrnumber' => $sr,
+                    'branch' => $request->branch,
+                    'remark' => $request->remark,
+                    'service_period' => $request->service_period,
+                    'no_of_service' => 0,
+                    'serviceDay' => 0,
+                    'updated_by' => Auth::user()->id,
+                ]);
+                if ($iscp) {
                     $size++;
-                    $iscp = ContractUnderProduct::create([
-                        'contractId' => $contractID,
-                        'productId' => $cp['productId'],
-                        'product_name' => $cp['productName'],
-                        'product_type' => $cp['product_type'],
-                        'product_price' => $cp['price'],
-                        'product_description' => $cp['description'],
-                        'nrnumber' => $cp['nrnumber'],
-                        'other' => $cp['other'],
-                        'branch' => $cp['branch'],
-                        'no_of_service' => $cp['noOfService'],
-                        'serviceDay' => $cp['serviceDay'],
-                        'updated_by' => $updatedby,
-                        "contractId" => $contractID,
-
-                    ]);
-
                 }
-                if ($size == sizeof($contract_product)) {
-                    return response()->json(['success' => true, 'message' => 'Product Added']);
-                } else {
-                    $failed = sizeof($contract_product) - $size;
-                    return response()->json(['success' => true, 'message' => $failed . ' Product Failed to add.']);
-                }
-
+            }
+            if ($size == sizeof($nrnumber)) {
+                DB::commit();
+                return response()->json(['success' => true, 'message' => 'Product Added']);
             } else {
-                return response()->json(['success' => false, 'message' => 'Something went wrong, Try again.']);
+                DB::rollBack();
+                return response()->json(['success' => false, 'message' => 'Something went wrong,try again']);
             }
         } else {
-            return response()->json(['success' => false, 'message' => 'Empty Input Values.']);
-        }
+            return response()->json(['success' => false, 'message' => 'Serial number should not be blank.']);
 
+        }
     }
     public function CheckContractProduct($ContractId, $productId)
     {
@@ -943,6 +961,7 @@ class ContractController extends Controller
                 ->join("master_site_type", "master_site_type.id", "contracts.CNRT_SiteType")
                 ->join("master_contract_status", "master_contract_status.id", "contracts.CNRT_Status")
                 ->leftJoin("clients", "clients.CST_ID", "contracts.CNRT_CustomerID")
+                ->leftJoin("master_site_area", "master_site_area.id", "contracts.CNRT_Site")
                 ->orderBy('contracts.updated_at', "DESC")
                 ->filter($request->only('search', 'trashed', 'search_field', 'filter_status'))
                 ->where("CNRT_Status", "!=", 0)
@@ -964,7 +983,8 @@ class ContractController extends Controller
             'contract' => $contract_obj,
             'project_count' => 0,
             'status' => $this->status,
-            'products' => ContractBaseProduct::where("CNRT_ID", $contract->CNRT_ID)->get(),
+            'productType' => ProductType::all(),
+            'products' => ContractUnderProduct::where("contractId", $contract->CNRT_ID)->get(),
             'contract_services' => ContractScheduleModel::where("Contract_Id", $contract->CNRT_ID)->get(),
 
         ]);
@@ -973,12 +993,18 @@ class ContractController extends Controller
     public function edit(Contract $contract)
     {
         // dd($contract->CNRT_EndDate);
+        $contract_obj = Contract::join("master_contract_type", "master_contract_type.id", "contracts.CNRT_Type")
+            ->join("master_site_type", "master_site_type.id", "contracts.CNRT_SiteType")
+            ->join("master_contract_status", "master_contract_status.id", "contracts.CNRT_Status")
+            ->leftJoin("clients", "clients.CST_ID", "contracts.CNRT_CustomerID")
+            ->where("CNRT_ID", $contract->CNRT_ID)->first();
         return view('contracts.create', [
             'contract_type' => ContractType::all(),
             'site_type' => ContractSiteType::all(),
             'clients' => Client::all(),
             'update' => true,
-            'contract' => $contract,
+            'contract' => $contract_obj,
+            'sitelocation' => AreaName::all(),
         ]);
     }
     public function create(Request $request)
@@ -996,6 +1022,7 @@ class ContractController extends Controller
             'site_type' => ContractSiteType::all(),
             'clients' => Client::all(),
             'contract' => new Contract(),
+            'sitelocation' => AreaName::all(),
         ]);
     }
     public function update(Request $request, Contract $contract)
@@ -1009,7 +1036,7 @@ class ContractController extends Controller
                 'CNRT_Date' => "required",
                 'CNRT_CustomerID' => "required",
                 'CNRT_CustomerContactPerson' => "required",
-                'CNRT_CustomerContactNumber' => "required",
+                'CNRT_Phone1' => "required",
                 'CNRT_CustomerEmail' => "required",
                 'CNRT_StartDate' => "required",
                 'CNRT_EndDate' => "required",
@@ -1029,7 +1056,8 @@ class ContractController extends Controller
                 'CNRT_RefNumber' => $request->CNRT_RefNumber,
                 'CNRT_Date' => date('Y-m-d H:i:s', strtotime($request->CNRT_Date)),
                 'CNRT_CustomerContactPerson' => $request->CNRT_CustomerContactPerson,
-                'CNRT_CustomerContactNumber' => $request->CNRT_CustomerContactNumber,
+                'CNRT_Phone2' => $request->CNRT_Phone2,
+                'CNRT_Phone1' => $request->CNRT_Phone1,
                 'CNRT_CustomerEmail' => $request->CNRT_CustomerEmail,
                 'CNRT_Site' => $request->CNRT_Site,
                 'CNRT_SiteLocation' => $request->CNRT_SiteLocation,
@@ -1098,7 +1126,7 @@ class ContractController extends Controller
                 'CNRT_Date' => "required",
                 'CNRT_CustomerID' => "required",
                 'CNRT_CustomerContactPerson' => "required",
-                'CNRT_CustomerContactNumber' => "required",
+                'CNRT_Phone1' => "required",
                 'CNRT_CustomerEmail' => "required",
                 'CNRT_StartDate' => "required",
                 'CNRT_EndDate' => "required",
@@ -1129,9 +1157,9 @@ class ContractController extends Controller
                         'CNRT_RefNumber' => $request->CNRT_RefNumber,
                         'CNRT_Date' => date('Y-m-d H:i:s', strtotime($request->CNRT_Date)),
                         'CNRT_CustomerID' => $request->CNRT_CustomerID,
-                        'CNRT_CustomerName' => Client::where("CST_ID", $request->CNRT_CustomerID)->first()['CST_Name'] ?? "",
                         'CNRT_CustomerContactPerson' => $request->CNRT_CustomerContactPerson,
-                        'CNRT_CustomerContactNumber' => $request->CNRT_CustomerContactNumber,
+                        'CNRT_Phone1' => $request->CNRT_Phone1,
+                        'CNRT_Phone2' => $request->CNRT_Phone2,
                         'CNRT_CustomerEmail' => $request->CNRT_CustomerEmail,
                         'CNRT_Site' => $request->CNRT_Site,
                         'CNRT_SiteLocation' => $request->CNRT_SiteLocation,
@@ -1175,7 +1203,7 @@ class ContractController extends Controller
                     DB::rollBack();
                     return back()
                         ->withInput()
-                        ->withErrors($exp->getMessage());
+                        ->withErrors("Someting went wrong, try again");
                 }
 
             } else {
@@ -1189,7 +1217,7 @@ class ContractController extends Controller
         } catch (Exception $ex) {
             return back()
                 ->withInput()
-                ->withErrors($ex->getMessage());
+                ->withErrors("Someting went wrong, try again");
             // return response()->json(['success' => false, 'message' => $ex->errorInfo]);
         }
 

@@ -146,7 +146,7 @@
                 </ul>
             </li>
 
-            <li class="dropdown {{Request::is('contracts/*')  ? 'active' : '' }}">
+            <li class="dropdown {{Request::is('contracts/*') || Request::is('contracts')  ? 'active' : '' }}">
                 <a href="{{route('contracts')}}" class="nav-link"><i data-feather="file"></i><span>Contract</span></a>
             </li>
             <li class="dropdown {{Request::is('products/*') ? 'active' : '' }}">

@@ -82,6 +82,7 @@ Route::middleware(['prevent-back-history'])->group(function () {
         Route::get('/contracts/{contract}/view', [ContractController::class, 'view'])->name('contracts.view');
         Route::get('/contracts/{contract}/edit', [ContractController::class, 'edit'])->name('contracts.edit');
         Route::post('/contracts/{contract}/update', [ContractController::class, 'update'])->name('contracts.update');
+        Route::post('/contracts/{contract}/add_product', [ContractController::class, 'AddContractProduct'])->name('contracts.add_product');
     });
 
     /*end contractt*/

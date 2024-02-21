@@ -7,6 +7,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\EmployeeController;
@@ -60,6 +61,9 @@ Route::middleware(['prevent-back-history'])->group(function () {
     Route::middleware('auth')->group(function () {
         Route::post('/clients/{client}', [ClientController::class, 'update'])->name('clients.update');
     });
+    Route::middleware('auth')->group(function () {
+        Route::post('/clients/all', [ContractController::class, 'GetCustomerList'])->name('clients.all');
+    });
     Route::post('clients/{id}/add_cp', [ClientController::class, 'add_cp'])
         ->name('clients.add_cp')
         ->middleware('auth');
@@ -83,9 +87,23 @@ Route::middleware(['prevent-back-history'])->group(function () {
         Route::get('/contracts/{contract}/edit', [ContractController::class, 'edit'])->name('contracts.edit');
         Route::post('/contracts/{contract}/update', [ContractController::class, 'update'])->name('contracts.update');
         Route::post('/contracts/{contract}/add_product', [ContractController::class, 'AddContractProduct'])->name('contracts.add_product');
+        Route::get('/contracts/customer_contract', [ContractController::class, 'GetContractByCustId'])->name('contracts.customer_contract');
+        Route::get('/contracts/contract_by_id', [ContractController::class, 'GetContractById'])->name('contracts.contract_by_id');
     });
 
     /*end contractt*/
+    // services
+    Route::middleware('auth')->group(function () {
+        Route::get('/services', [ServiceController::class, 'index'])->name('services');
+        Route::get('/services/create', [ServiceController::class, 'create'])->name('services.create');
+        Route::post('/services', [ServiceController::class, 'store'])->name('services.store');
+        Route::get('/services/{service}/view', [ServiceController::class, 'view'])->name('services.view');
+        Route::get('/services/{service}/edit', [ServiceController::class, 'edit'])->name('services.edit');
+        Route::post('/services/{service}/update', [ServiceController::class, 'update'])->name('services.update');
+        Route::post('/services/{service}/add_product', [ServiceController::class, 'AddServiceProduct'])->name('services.add_product');
+
+    });
+    //services end
     /*Project Route*/
     Route::middleware('auth')->group(function () {
         Route::get('/projects/create', [ProjectController::class, 'create'])->name('projects.create');

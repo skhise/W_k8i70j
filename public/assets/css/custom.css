@@ -161,23 +161,23 @@ body.disable-scroll {
   }
   .floating-label input:focus  + label,
   .floating-label input:not(:placeholder-shown) + label {
-    top: -6px;
+    top: -13px;
     font-size: 12px;
     color: #007bff;
     background-color: #ffffff;
     padding: 0 4px;
     border-radius: 4px;
-    left: 8px;
+    /* left: 8px; */
   }
   .floating-label select:focus  + label,
   .floating-label select:not(:placeholder-shown) + label {
-    top: -6px;
+    top: -13px;
     font-size: 12px;
     color: #007bff;
     background-color: #ffffff;
     padding: 0 4px;
     border-radius: 4px;
-    left: 8px;
+    /* left: 8px; */
   }
   .disabled {
     pointer-events:none !important;

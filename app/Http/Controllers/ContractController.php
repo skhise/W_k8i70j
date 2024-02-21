@@ -804,7 +804,7 @@ class ContractController extends Controller
         $Customer = array();
         try {
 
-            $Customer = Customer::where("CST_Status", "1")->get();
+            $Customer = Client::where("CST_Status", "1")->get();
             foreach ($Customer as $c) {
                 $c->name = $c->CST_Name;
                 $c->value = $c->CST_ID;
@@ -947,6 +947,38 @@ class ContractController extends Controller
             return 0;
         }
 
+    }
+    public function GetContractByCustId(Request $request)
+    {
+        $contrcats = array();
+        try {
+            $CustomerId = $request->customer_id;
+            $contrcats = Contract::join("master_contract_type", "master_contract_type.id", "contracts.CNRT_Type")
+                ->where("CNRT_Status", 1)
+                ->where("CNRT_CustomerID", $CustomerId)->get();
+            foreach ($contrcats as $contrcat) {
+                $contrcat->title = $contrcat->CNRT_Number . " / " . $contrcat->contract_type_name;
+                $contrcat->id = $contrcat->CNRT_ID;
+            }
+
+        } catch (Exception $ex) {
+            // return [];
+        }
+        return $contrcats;
+    }
+    public function GetContractDetailsById(Request $request)
+    {
+        $contrcat = array();
+        try {
+            $ContractId = $request->contract_id;
+            $contrcat = Contract::join("master_contract_status", "master_contract_status.id", "contracts.CNRT_Status")
+                ->join("master_contract_type", "master_contract_type.id", "contracts.CNRT_Type")
+                ->where("CNRT_ID", $ContractId)->first();
+
+        } catch (Illuminate\Database\QueryException $ex) {
+            return $ex->errorInfo;
+        }
+        return $contrcat;
     }
     public function index(Request $request)
     {
@@ -1238,17 +1270,18 @@ class ContractController extends Controller
                     ->leftJoin("master_site_area", "master_site_area.id", "customer_sites.AreaName")
                     ->where("CNRT_ID", $contractID)->first();
                 $contract->contractDate = Carbon::parse($contract->CNRT_Date)->format("d-M-Y");
-                $contract->contractStartDate = Carbon::parse($contract->CNRT_StartDate)->format("d-M-Y");
-                $contract->contractEndDate = Carbon::parse($contract->CNRT_EndDate)->format("d-M-Y");
+                $contract->contractStartDate = Carbon::parse($contract->CNRT_StartDate)->format("Y-m-d");
+                $contract->contractEndDate = Carbon::parse($contract->CNRT_EndDate)->format("Y-m-d");
                 $contract->sites = $this->GetCustomerSiteList($contract->CNRT_CustomerID);
                 $contract->CNRT_Status = intval($contract->CNRT_Status);
-                return response()->json(['success' => true, 'message' => '', 'contract' => $contract]);
+                $products = ContractUnderProduct::where(['contractId' => $contractID])->get();
+                return response()->json(['products' => $products, 'success' => true, 'message' => '', 'contract' => $contract]);
             } else {
-                return response()->json(['success' => false, 'message' => 'Something went wrong.', 'contract' => null]);
+                return response()->json(['products' => null, 'success' => false, 'message' => 'Something went wrong.', 'contract' => null]);
             }
 
-        } catch (Illuminate\Database\QueryException $ex) {
-            return response()->json(['success' => false, 'message' => "Error:" . $ex->errorInfo, 'contract' => null]);
+        } catch (Exception $ex) {
+            return response()->json(['products' => null, 'success' => false, 'message' => "Error:" . $ex->getMessage(), 'contract' => null]);
         }
 
     }

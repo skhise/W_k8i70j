@@ -11,17 +11,17 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header">
-                                <h4>Contracts</h4>
+                                <h4>Services</h4>
                                 <div class="card-header-action">
-                                    <a href="{{route('contracts.create')}}"
-                                        class="btn btn-icon icon-left btn-primary"><i class="
+                                    <a href="{{route('services.create')}}" class="btn btn-icon icon-left btn-primary"><i
+                                            class="
 fas fa-plus-square"></i>
-                                        Add Contract</a>
+                                        Add Service</a>
                                 </div>
                             </div>
                             <div class="card-body">
                                 <div class="float-right">
-                                    <form action="{{route('contracts')}}" id="search_form">
+                                    <form action="{{route('services')}}" id="search_form">
                                         <input type="hidden" name="search_field" value="{{$search_field}}"
                                             id="search_field" />
                                         <div class="input-group">
@@ -71,42 +71,43 @@ fas fa-plus-square"></i>
                                                 <th>
                                                     #Code
                                                 </th>
+                                                <th>Date</th>
                                                 <th class="table-width-30">Customer Name</th>
-                                                <th>Contract Type</th>
-                                                <th>Site Type</th>
-                                                <th>Expiry Date</th>
+                                                <th>Issue Type</th>
                                                 <th>Status</th>
                                                 <th class="action-1">Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @if(count($contracts) == 0)
+                                            @if(count($services) == 0)
                                             <tr>
-                                                <td colspan="6" class="text-center">No contracts to show</td>
+                                                <td colspan="6" class="text-center">No services to show</td>
                                             </tr>
                                             @endif
-                                            @foreach($contracts as $key=>$contract)
+                                            @foreach($services as $key=>$service)
                                             <tr>
                                                 <td>
-                                                    {{$contract['CNRT_Number']}}
+                                                    {{$service['service_no']}}
                                                 </td>
                                                 <td>
-                                                    {{$contract['CST_Name']}}
+                                                    {{$service['service_date']!="" ?
+                                                    date('d-M-Y',strtotime($service['service_date'])) : 'NA'}}
                                                 </td>
-                                                <td>{{$contract['contract_type_name']}}</td>
+
                                                 <td>
-                                                    {{$contract['site_type_name']}}
+                                                    {{$service['CST_Name']}}
+                                                </td>
+                                                <td>{{$service['issue_name']}}</td>
+                                                <td>
+                                                    <div
+                                                        class="badge badge-shadow {{$service['status_color'] ?? 'bg-primary'}}">
+                                                        {{$service['Status_Name']}}</div>
                                                 </td>
                                                 <td>
-                                                    {{$contract['CNRT_EndDate']!="" ?
-                                                    date('d-M-Y',strtotime($contract['CNRT_EndDate'])) : 'NA'}}
-                                                </td>
-                                                <td>{!!$status[$contract['CNRT_Status']]!!}</td>
-                                                <td>
-                                                    <a href="{{route('contracts.view',$contract['CNRT_ID'])}}"
+                                                    <a href="{{route('services.view',$service['service_id'])}}"
                                                         class="btn btn-icon btn-sm btn-primary"><i
                                                             class="far fa-eye"></i></a>
-                                                    <a href="{{route('contracts.edit',$contract['CNRT_ID'])}}"
+                                                    <a href="{{route('services.edit',$service['service_id'])}}"
                                                         class="btn btn-icon btn-sm btn-primary"><i
                                                             class="far fa-edit"></i></a>
 
@@ -117,12 +118,12 @@ fas fa-plus-square"></i>
                                         </tbody>
                                     </table>
                                     <div class="float-left">
-                                        @if($contracts->total())
-                                        <p>Found {{ $contracts->total()}} records</p>
+                                        @if($services->total())
+                                        <p>Found {{ $services->total()}} records</p>
                                         @endif
                                     </div>
                                     <div class="float-right">
-                                        {{ $contracts->links() }}
+                                        {{ $services->links() }}
                                     </div>
                                 </div>
                             </div>

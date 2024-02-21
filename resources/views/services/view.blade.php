@@ -8,9 +8,8 @@
                             <div class="card-header">
                                 <h4 class="card-title">Contract Details</h4>
                                 <div class="card-header-action"><a class="btn btn-danger"
-                                        href="{{route('contracts')}}">Back</a>
-                                    <a class="btn btn-primary"
-                                        href="{{route('contracts.edit',$contract['CNRT_ID'])}}">Edit</a>
+                                        href="{{route('services')}}">Back</a>
+                                    <a class="btn btn-primary" href="{{route('services.edit',$service['id'])}}">Edit</a>
                                 </div>
                             </div>
                             <div class="card-body">
@@ -20,12 +19,6 @@
                                             href="#ClientDetails" role="tab" aria-controls="home"
                                             aria-selected="true">Details</a>
                                     </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" id="profile-tab2" data-toggle="tab" href="#ContractProduct"
-                                            role="tab" aria-controls="refclient" aria-selected="false">Contract
-                                            Product</a>
-                                    </li>
-
                                 </ul>
                                 <div class="tab-content tab-bordered">
                                     <div class="tab-pane fade show active" id="ClientDetails" role="tabpanel"
@@ -35,7 +28,7 @@
                                             <div class="col-md-3">
                                                 <div class="card card-primary">
                                                     <div class="card-header">
-                                                        <h4 class="text-uppercase">{{$contract->CST_Name}}</h4>
+                                                        <h4 class="text-uppercase">{{$service->CST_Name}}</h4>
 
                                                     </div>
                                                     <div class="card-body">
@@ -48,7 +41,7 @@
                                                                         Code
                                                                     </strong>
                                                                     <p class="text-muted">
-                                                                        {{$contract->CST_Code}}
+                                                                        {{$service->CST_Code}}
                                                                     </p>
                                                                     <hr>
                                                                     <strong>
@@ -57,7 +50,7 @@
                                                                         Name
                                                                     </strong>
                                                                     <p class="text-muted">
-                                                                        {{$contract->CNRT_CustomerContactPerson}}
+                                                                        {{$service->CNRT_CustomerContactPerson}}
                                                                     </p>
                                                                     <hr>
                                                                     <strong>
@@ -66,7 +59,7 @@
                                                                         Name
                                                                     </strong>
                                                                     <p class="text-muted">
-                                                                        {{$contract->CNRT_CustomerContactPerson}}
+                                                                        {{$service->CNRT_CustomerContactPerson}}
                                                                     </p>
                                                                     <hr>
                                                                     <strong>
@@ -75,7 +68,7 @@
                                                                         Number
                                                                     </strong>
                                                                     <p class="text-muted">
-                                                                        {{$contract->CNRT_Phone1}}
+                                                                        {{$service->CNRT_Phone1}}
                                                                     </p>
                                                                     <hr>
                                                                     <strong>
@@ -84,7 +77,7 @@
                                                                         Number
                                                                     </strong>
                                                                     <p class="text-muted">
-                                                                        {{$contract->CNRT_Phone2}}
+                                                                        {{$service->CNRT_Phone2}}
                                                                     </p>
                                                                     <hr>
                                                                     <strong>
@@ -93,7 +86,7 @@
                                                                         Email
                                                                     </strong>
                                                                     <p class="text-muted">
-                                                                        {{$contract->CNRT_CustomerEmail}}
+                                                                        {{$service->CNRT_CustomerEmail}}
                                                                     </p>
 
 
@@ -103,19 +96,13 @@
                                                                         <i
                                                                             class="fa fa-ellipsis-h margin-r-5"></i>&nbsp;&nbsp;Website
                                                                     </strong>
-                                                                    <p class="text-muted">{{$contract->CST_Website}}</p>
+                                                                    <p class="text-muted">{{$service->CST_Website}}</p>
                                                                     <hr>
                                                                     <strong><i
                                                                             class="fa fa-map-marker margin-r-5"></i>&nbsp;&nbsp;Status</strong>
-                                                                    <p class="text-muted">{!!$contract->CST_Status !=0 ?
-                                                                        $status[$contract->CST_Status] : 'NA' !!}</p>
+                                                                    <p class="text-muted">{!!$service->CST_Status !=0 ?
+                                                                        $status[$service->CST_Status] : 'NA' !!}</p>
                                                                     <hr>
-                                                                    <!-- <strong><i
-                                                                            class="fa fa-map-marker margin-r-5"></i>&nbsp;&nbsp;Total
-                                                                        Projects
-                                                                    </strong>
-                                                                    <p class="text-muted">{{$project_count}}</p>
-                                                                    <hr> -->
                                                                 </div>
                                                             </li>
                                                         </ul>
@@ -136,7 +123,7 @@
                                                                 <span style="float:right ;font-weight:bold">
                                                                     Contract Number</span>
                                                             </div>
-                                                            <div class="col-md-9">{{$contract->CNRT_Number}}</div>
+                                                            <div class="col-md-9">{{$service->CNRT_Number}}</div>
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-3">
@@ -144,7 +131,7 @@
                                                                     Type</span>
                                                             </div>
                                                             <div class="col-md-3">
-                                                                {{$contract->contract_type_name}}</div>
+                                                                {{$service->contract_type_name}}</div>
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-3">
@@ -152,7 +139,7 @@
                                                                     Site Type
                                                                 </span>
                                                             </div>
-                                                            <div class="col-md-3">{{$contract->site_type_name}}</div>
+                                                            <div class="col-md-3">{{$service->site_type_name}}</div>
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-3">
@@ -161,7 +148,7 @@
                                                                 </span>
                                                             </div>
                                                             <div class="col-md-3">
-                                                                {{date("d-M-Y",strtotime($contract->CNRT_StartDate)) ??
+                                                                {{date("d-M-Y",strtotime($service->CNRT_StartDate)) ??
                                                                 "NA"}}
                                                             </div>
                                                             <div class="col-md-2">
@@ -170,7 +157,7 @@
                                                                 </span>
                                                             </div>
                                                             <div class="col-md-3">
-                                                                {{date("d-M-Y",strtotime($contract->CNRT_EndDate)) ??
+                                                                {{date("d-M-Y",strtotime($service->CNRT_EndDate)) ??
                                                                 "NA"}}
                                                             </div>
                                                         </div>
@@ -180,18 +167,18 @@
                                                                     Cost</span>
                                                             </div>
                                                             <div class="col-md-2 " style="float:left ;font-weight:bold">
-                                                                {{$contract->CNRT_Charges}}</div>
+                                                                {{$service->CNRT_Charges}}</div>
                                                             <div class="col-md-1">
                                                                 <span style="float:right ;font-weight:bold">Paid</span>
                                                             </div>
                                                             <div class="col-md-2" style="float:left ;font-weight:bold">
-                                                                {{$contract->CNRT_Charges_Paid}}</div>
+                                                                {{$service->CNRT_Charges_Paid}}</div>
                                                             <div class="col-md-2">
                                                                 <span
                                                                     style="float:right ;font-weight:bold">Pending</span>
                                                             </div>
                                                             <div class="col-md-2" style="float:left ;font-weight:bold">
-                                                                {{$contract->CNRT_Charges_Paid}}</div>
+                                                                {{$service->CNRT_Charges_Paid}}</div>
                                                         </div>
 
                                                         <hr />
@@ -206,7 +193,7 @@
                                                                 </span>
                                                             </div>
                                                             <div class="col-md-1"><a
-                                                                    href="{{$contract->CNRT_SiteLocation ?? '#'}}"
+                                                                    href="{{$service->CNRT_SiteLocation ?? '#'}}"
                                                                     target="_blank"><i class="fa fa-map-marker"
                                                                         aria-hidden="true"></i>
                                                                 </a></div>
@@ -214,7 +201,7 @@
                                                                 <span style="float:right ;font-weight:bold">Site
                                                                     Location</span>
                                                             </div>
-                                                            <div class="col-md-4">{{$contract->SiteAreaName ??
+                                                            <div class="col-md-4">{{$service->SiteAreaName ??
                                                                 "NA"}}</div>
                                                         </div>
                                                         <div class="row">
@@ -222,7 +209,7 @@
                                                                 <span style="float:right ;font-weight:bold">Address
                                                                 </span>
                                                             </div>
-                                                            <div class="col-md-3">{{$contract->CNRT_OfficeAddress ??
+                                                            <div class="col-md-3">{{$service->CNRT_OfficeAddress ??
                                                                 "NA"}}
                                                             </div>
 
@@ -232,7 +219,7 @@
                                                                 <span style="float:right ;font-weight:bold">Note</span>
                                                             </div>
                                                             <div class="col-md-6">
-                                                                {{ $contract->CNRT_Note != null ? $contract->CNRT_Note
+                                                                {{ $service->CNRT_Note != null ? $service->CNRT_Note
                                                                 :
                                                                 'NA'}}
                                                             </div>
@@ -244,8 +231,8 @@
                                                                 </span>
                                                             </div>
                                                             <div class="col-md-6">
-                                                                {{$contract->CNRT_TNC !=null ?
-                                                                $contract->CNRT_TNC : "NA"}}
+                                                                {{$service->CNRT_TNC !=null ?
+                                                                $service->CNRT_TNC : "NA"}}
                                                             </div>
                                                         </div>
                                                         <hr />
@@ -260,83 +247,7 @@
 
 
                                     </div>
-                                    <div class="tab-pane fade" id="ContractProduct" role="tabpanel"
-                                        aria-labelledby="profile-tab2">
 
-                                        <div class="row">
-                                            <div class="col-12">
-                                                <div class="card card-primary">
-                                                    <div class="card-header">
-                                                        <h4>Contract Product</h4>
-                                                        <div class="card-header-action">
-                                                            <input type="button" id="btn_cp_add" value="Add Contact"
-                                                                class="btn btn-primary" data-toggle="modal"
-                                                                data-target=".bd-RefClient-modal-lg" />
-                                                        </div>
-                                                    </div>
-                                                    <div class="card-body">
-                                                        <div class="table-responsive">
-                                                            <table class="table table-striped" id="tbRefClient">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th>Sr. No.</th>
-                                                                        <th>Name</th>
-                                                                        <th>Type</th>
-                                                                        <th>Sr. Number</th>
-                                                                        <th>Description</th>
-                                                                        <th>Price</th>
-                                                                        <th>Location</th>
-                                                                        <th>Remark</th>
-                                                                        <th>Service Period</th>
-                                                                        <th>Actions</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    @if($products->count() == 0)
-                                                                    <tr>
-                                                                        <td colspan="8" class="text-center">No
-                                                                            products
-                                                                            added yet.</td>
-                                                                    </tr>
-                                                                    @endif
-                                                                    @foreach($products as $index => $product)
-                                                                    <tr>
-                                                                        <td>
-                                                                            {{$index+1}}
-                                                                        </td>
-                                                                        <td>
-                                                                            {{$product->product_name}}
-                                                                        </td>
-                                                                        <td>{{$product['product_type']}}</td>
-                                                                        <td>{{$product['nrnumber']}}</td>
-                                                                        <td>{{$product['product_description']}}</td>
-                                                                        <th>{{$product['product_price']}}</th>
-                                                                        <th>{{$product['branch']}}</th>
-                                                                        <th>{{$product['remark']}}</th>
-                                                                        <th>{{$product['service_period']}}</th>
-                                                                        <td><a href="#" data-toggle="modal"
-                                                                                id="showEditModal"
-                                                                                data-product_type="{{$product['product_type']}}"
-                                                                                data-nrnumber="{{$product['nrnumber']}}"
-                                                                                data-product_description="{{$product['product_description']}}"
-                                                                                data-product_price="{{$product['product_price']}}"
-                                                                                data-branch="{{$product['branch']}}"
-                                                                                data-remark="{{$product['remark']}}"
-                                                                                data-service_period="{{$product['service_period']}}"
-                                                                                data-cpid="{{$product['CNT_ID']}}"
-                                                                                class="btn btn-icon btn-sm btn-primary"><i
-                                                                                    class="far fa-edit"></i></a></td>
-                                                                    </tr>
-                                                                    @endforeach
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -345,111 +256,7 @@
             </div>
         </section>
     </div>
-    <div class="modal fade bd-RefClient-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="myLargeModalLabel">Add Contract Products</h5>
-                    <button type="button" id="btn_close" data-toggle="modal" data-target=".bd-RefClient-modal-lg"
-                        class="close" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="errorMsgntainer"></div>
-                    <form id="form_cp" onsubmit="return false;">
-                        @csrf
-                        <input type="hidden" id="contractId" name="contractId" value="{{$contract['CNRT_ID']}}"
-                            style="display:none;" />
-                        <div class="form-group">
-                            <div class="row">
-                                <div class="col-md-6 floating-label">
-                                    <select class="form-control text-box single-line" id="product_type"
-                                        name="product_type" placeholder="">
-                                        <option value="">Select Type</option>
-                                        @foreach($productType as $product_type)
-                                        <option value="{{$product_type->id}}">{{$product_type->type_name}}</option>
-                                        @endforeach
-                                    </select>
-                                    <label for="first">Product Type</label>
-                                </div>
-                                <div class="col-md-6 floating-label">
-                                    <input class="form-control text-box single-line" id="product_name"
-                                        name="product_name" placeholder="" type="text" value="" />
-                                    <label for="first">Name</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="row">
-                                <div class="col-md-6 floating-label">
-                                    <input class="form-control text-box single-line" id="product_description"
-                                        name="product_description" placeholder="" type="text" value="" />
-                                    <label for="first">Description</label>
-                                </div>
-                                <div class="col-md-6 floating-label">
-                                    <input class="form-control text-box single-line" id="product_price"
-                                        name="product_price" placeholder="" type="number" value="" />
-                                    <label for="first">Product Value</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label">Sr. Number (Total: <span id="add_sr_no"></span>)</label>
-                            <div class="row">
-                                <div class="col-md-12 mb-2" id="multipeInput">
 
-                                </div>
-                                <div class="col-md-12">
-                                    <div class="input-group">
-                                        <input class="form-control text-box single-line" id="nrnumber.0"
-                                            name="nrnumber[]" placeholder="" type="text" value="" />
-                                        <span class="btn btn-primary input-group-addon add_form_field"><i
-                                                class="fa fa-plus" aria-hidden="true"></i></span>
-
-                                    </div>
-
-
-                                </div>
-
-                            </div>
-
-                        </div>
-                        <div class="form-group">
-                            <div class="row">
-                                <div class="col-md-6 floating-label">
-                                    <input class="form-control text-box single-line" id="branch" name="branch"
-                                        placeholder="" type="text" value="" />
-                                    <label for="first">Location</label>
-                                </div>
-                                <div class="col-md-6 floating-label">
-                                    <input class="form-control text-box single-line" id="service_period"
-                                        name="service_period" placeholder="" type="text" value="" />
-                                    <label for="first">Support Period</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="row">
-                                <div class="col-md-6 floating-label">
-                                    <input class="form-control text-box single-line" id="remark" name="remark"
-                                        placeholder="" type="text" value="" />
-                                    <label for="first">Remark (Note)</label>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <div class="pull-right">
-                        <button type="button" class="btn btn-primary" onclick="SaveContractProduct()">Save</button>
-                        <button class="btn btn-danger mr-2" onclick="CancelModelBox()">Cancel</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
     @section('script')
     <script>
         $(document).ready(function () {

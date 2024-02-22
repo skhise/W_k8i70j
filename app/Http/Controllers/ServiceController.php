@@ -1049,7 +1049,7 @@ class ServiceController extends Controller
                     'service_no' => $request->service_no,
                     'service_date' => date('Y-m-d H:i:s', strtotime($request->service_date)),
                     'customer_id' => $request->customer_id,
-                    'contract_id' => $request->customer_id,
+                    'contract_id' => $request->contract_id ?? 0,
                     'contact_person' => $request->contact_person,
                     'contact_number1' => $request->contact_number1,
                     'contact_number2' => $request->contact_number2,

@@ -71,6 +71,7 @@ fas fa-plus-square"></i>
                                                 <th>
                                                     #Code
                                                 </th>
+                                                <th>Type</th>
                                                 <th>Date</th>
                                                 <th class="table-width-30">Customer Name</th>
                                                 <th>Issue Type</th>
@@ -88,6 +89,10 @@ fas fa-plus-square"></i>
                                             <tr>
                                                 <td>
                                                     {{$service['service_no']}}
+                                                </td>
+                                                <td>
+                                                    {{$service['contract_id'] == 0 || empty($service['contract_id']) ?
+                                                    'Non-Contracted' : 'Contracted'}}
                                                 </td>
                                                 <td>
                                                     {{$service['service_date']!="" ?

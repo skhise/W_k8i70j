@@ -23,11 +23,11 @@
                                             aria-selected="false">Non Contracted</a>
                                     </li>
                                 </ul>
-                                <form id="frmcreateclient" method="post" enctype="multipart/form-data"
+                                <form id="frmcreateService" method="post" enctype="multipart/form-data"
                                     action="{{$update ? route('services.update', $service->id) : route('services.store')}}">
                                     @csrf
-                                    <input name="selectedtab" value="{{old('selectedtab') ?? 'tab1'}}" id="selectedtab"
-                                        style="display:none;" />
+                                    <input style="display:none;" type="text" value="tab1" name="selectedtab"
+                                        id="selectedtab" />
                                     <div class="row">
                                         @if($errors->any())
                                         {!! implode('', $errors->all('<div class="alert alert-danger">
@@ -58,12 +58,13 @@
                                                     value="{{$service->customer_id ?? old('customer_id')}}">
                                                     <option value="">Select client</option>
                                                     @foreach($clients as $client)
-                                                    <option value="{{$client->CST_ID}}" {{$client->CST_ID ==
+                                                    <option data-client="{{$client}}" value="{{$client->CST_ID}}"
+                                                        {{$client->CST_ID ==
                                                         $service->customer_id ? 'selected':
                                                         (old('customer_id')
                                                         ==
                                                         $client->CST_ID ? 'selected' :'') }}
-                                                        data-client="{{$client}}">
+                                                        >
                                                         {{$client->CST_Name}}</option>
                                                     @endforeach
                                                 </select>
@@ -77,7 +78,8 @@
 
                                         </div>
                                     </div>
-                                    <div class="form-group contracted">
+                                    <div
+                                        class="form-group contracted {{old('selectedtab')=='tab1' || old('selectedtab') == ''  ? '':'hide' }}">
                                         <div class="row">
                                             <div class="col-md-2">
                                                 <span style="float:right ;font-weight:bold">Select
@@ -88,7 +90,7 @@
                                                     class="form-control select2 text-box single-line @error('contract_id') is-invalid @enderror"
                                                     data-val="true" id="contract_id" name="contract_id" placeholder=""
                                                     type="text" value="{{$service->contract_id ?? old('contract_id')}}">
-                                                    <option value="">Select Contract</option>
+                                                    <option value="0">Select Contract</option>
                                                 </select>
                                                 @if($errors->has('contract_id'))
                                                 <span class="text-danger field-validation-valid"
@@ -99,7 +101,8 @@
 
                                         </div>
                                     </div>
-                                    <div class="form-group contracted">
+                                    <div
+                                        class="form-group contracted {{old('selectedtab')=='tab1' || old('selectedtab') == ''  ? '':'hide' }}">
                                         <div class="row">
                                             <div class="col-md-2">
                                                 <span style="float:right ;font-weight:bold">Select
@@ -130,7 +133,8 @@
                                         </div>
                                     </div>
 
-                                    <div class="form-group contracted">
+                                    <div
+                                        class="form-group contracted {{old('selectedtab')=='tab1' || old('selectedtab') == ''  ? '':'hide' }}">
                                         <div class="row">
                                             <div class="col-md-2">
                                                 <span style="float:right ;font-weight:bold">Contract
@@ -166,7 +170,8 @@
 
                                         </div>
                                     </div>
-                                    <div class="form-group contracted">
+                                    <div
+                                        class="form-group contracted {{old('selectedtab')=='tab1' || old('selectedtab') == ''  ? '':'hide' }}">
                                         <div class="row">
                                             <div class="col-md-2">
                                                 <span style="float:right ;font-weight:bold"></span>
@@ -266,7 +271,7 @@
 
                                         </div>
                                     </div>
-                                    <div class="form-group noncontracted hide">
+                                    <div class="form-group noncontracted {{old('selectedtab')=='tab2' ? '':'hide' }}">
                                         <div class="row">
                                             <div class="col-md-2">
                                                 <span style="float:right ;font-weight:bold">Product
@@ -305,7 +310,6 @@
                                                 <textarea class="form-control text-box single-line"
                                                     id="product_description" name="product_description"
                                                     placeholder="">{{old('product_description')}}</textarea>
-                                                <label>Product Description</label>
                                                 <span class="text-danger field-validation-valid"
                                                     data-valmsg-for="product_description"
                                                     data-valmsg-replace="true"></span>
@@ -419,9 +423,7 @@
                                                 @endif
                                             </div>
                                             <div class="col-md-3 floating-label">
-                                                <select
-                                                    class="form-control text-box single-line @error('service_priority') is-invalid @enderror"
-                                                    data-val="true"
+                                                <select class="form-control text-box single-line" data-val="true"
                                                     data-val-required="The Customer Name field is required."
                                                     id="service_priority" name="service_priority" placeholder=""
                                                     required="required" type="text"
@@ -470,7 +472,7 @@
                                     <hr />
                                     <div class="form-group">
                                         <div class="card-footer text-right">
-
+                                            <button style='display:none;' type='reset' id="btn_reset"></button>
 
                                             <button type="submit" id="btnAddClient ml-2"
                                                 class="btn btn-primary">{{$update ? 'Update' :
@@ -491,7 +493,6 @@
     @section('script')
     <script>
         function toggleForm(tab) {
-            $('#selectedtab').val(tab);
             if (tab == 'tab1') {
                 $('.noncontracted').hide();
                 $('.contracted').show();
@@ -500,6 +501,9 @@
                 $('.contracted').hide();
                 $('.noncontracted').show();
             }
+            $('#btn_reset').trigger('click');
+            $('.select2').val('').trigger('change')
+            $('#selectedtab').val(tab);
 
         }
         $(document).ready(function () {
@@ -557,32 +561,51 @@
         });
         $(document).on('change', '#customer_id', function () {
             $('#contract_id').empty();
-            $.ajax({
-                method: 'GET',
-                url: '/contracts/customer_contract',
-                data: {
-                    customer_id: $('#customer_id option:selected').val(),
-                },
-                success: function (contracts) {
-                    var options = '<option>Select Contract</option>';
+            var tab = $('#selectedtab').val();
+            if (tab == 'tab1') {
+                $.ajax({
+                    method: 'GET',
+                    url: '/contracts/customer_contract',
+                    data: {
+                        customer_id: $('#customer_id option:selected').val(),
+                    },
+                    success: function (contracts) {
+                        var options = '<option>Select Contract</option>';
 
-                    console.log(contracts);
-                    if (contracts.length > 0) {
+                        console.log(contracts);
+                        if (contracts.length > 0) {
 
-                        contracts.forEach(function (contract) {
-                            options += '<option value="' + contract.id + '">' + contract.title + '</option>'
-                        });
+                            contracts.forEach(function (contract) {
+                                options += '<option value="' + contract.id + '">' + contract.title + '</option>'
+                            });
+                        }
+                        console.log(options);
+                        console.log(contracts.length);
+                        $('#contract_id').html(options);
+
+                    },
+                    error: function () {
+                        $('#contract_id').html('<option>Select Contract</option>');
+                        alert('Something went wrong, try again');
                     }
-                    console.log(options);
-                    console.log(contracts.length);
-                    $('#contract_id').html(options);
-
-                },
-                error: function () {
-                    $('#contract_id').html('<option>Select Contract</option>');
-                    alert('Something went wrong, try again');
+                });
+            } else {
+                var client = $('#customer_id option:selected').data('client');
+                console.log(client);
+                if (typeof client != 'undefined') {
+                    $('#contact_person').val(client.CCP_Name);
+                    $('#contact_number1').val(client.CCP_Mobile);
+                    $('#contact_number2').val(client.CCP_Phone1);
+                    $('#contact_email').val(client.CCP_Email);
+                } else {
+                    $('#contact_person').val('');
+                    $('#contact_number1').val('');
+                    $('#contact_number2').val('');
+                    $('#contact_email').val('');
                 }
-            });
+
+            }
+
         });
         $(document).on('change', '#CNRT_Charges', function () {
             var total = $(this).val();

@@ -104,9 +104,9 @@ fas fa-plus-square"></i>
                                                 </td>
                                                 <td>{{$service['issue_name']}}</td>
                                                 <td>
-                                                    <div
-                                                        class="badge badge-shadow {{$service['status_color'] ?? 'bg-primary'}}">
-                                                        {{$service['Status_Name']}}</div>
+                                                    <span
+                                                        class="text-white badge badge-shadow {{$service['status_color'] ?? 'bg-primary'}}">
+                                                        {{$service['Status_Name']}}</span>
                                                 </td>
                                                 <td>
                                                     <a href="{{route('services.view',$service['service_id'])}}"

@@ -997,8 +997,27 @@ class ServiceController extends Controller
     }
     public function view(Request $request, Service $service)
     {
+        $services = Service::select("*", "services.id as service_id")
+            ->join("master_service_status", "master_service_status.Status_Id", "services.service_status")
+            ->join("master_service_priority", "master_service_priority.id", "services.service_priority")
+            ->join("master_issue_type", "master_issue_type.id", "services.issue_type")
+            ->join("master_service_type", "master_service_type.id", "services.service_type")
+            ->join("clients", "clients.CST_ID", "services.customer_id")
+            ->leftJoin("users", "users.id", "services.assigned_to")
+            ->where('services.id', $service->id)->first();
+
+        $product = ContractUnderProduct::where('contract_under_product.id', $service->product_id)->leftJoin("master_product_type", "master_product_type.id", "contract_under_product.product_type")->first();
+        $contract = Contract::leftJoin("master_contract_type", "master_contract_type.id", "contracts.CNRT_Type")
+            ->leftJoin("master_site_type", "master_site_type.id", "contracts.CNRT_SiteType")->where("CNRT_ID", $service->contract_id)->first();
+        $timeline = ServiceHistory::leftJoin("master_service_status", "master_service_status.Status_Id", "service_action_history.status_id")
+            ->where("service_id", $service->id)
+            ->get();
+
         return view("services.view", [
-            "service" => $service,
+            "product" => $product,
+            "service" => $services,
+            "contract" => $contract,
+            'timeline' => $timeline,
         ]);
     }
     public function edit(Request $request, Service $service)
@@ -1059,7 +1078,7 @@ class ServiceController extends Controller
                     'issue_type' => $request->issue_type,
                     'service_type' => $request->service_type,
                     'service_priority' => $request->service_priority,
-                    'productId' => $request->productId,
+                    'product_id' => $request->product_id,
                     'product_name' => $request->product_name,
                     'product_type' => $request->product_type,
                     'product_description' => $request->product_description,

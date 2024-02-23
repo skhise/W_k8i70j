@@ -30,7 +30,12 @@ class Service extends Model
       'assigned_to',
       'ClosedBy',
       'resolved_datetime',
-      'areaId'
+      'areaId',
+      'product_id',
+      'product_name',
+      'product_description',
+      'product_type',
+      'deleted_at'
    ];
 
    public function history()

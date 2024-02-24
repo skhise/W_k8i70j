@@ -24,6 +24,9 @@ input[type=number] {
 .table-width-30 {
     width: 30%;
 }
+.table-width-20 {
+    width: 20%;
+}
 .m-t--125 {
     margin-top: -125px
 }

@@ -71,12 +71,12 @@ fas fa-plus-square"></i>
                                                 <th>
                                                     #Code
                                                 </th>
-                                                <th class="table-width-30">Customer Name</th>
+                                                <th class="table-width-20">Customer Name</th>
                                                 <th>Contract Type</th>
                                                 <th>Site Type</th>
                                                 <th>Expiry Date</th>
                                                 <th>Status</th>
-                                                <th class="action-1">Action</th>
+                                                <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -104,11 +104,9 @@ fas fa-plus-square"></i>
                                                 <td>{!!$status[$contract['CNRT_Status']]!!}</td>
                                                 <td>
                                                     <a href="{{route('contracts.view',$contract['CNRT_ID'])}}"
-                                                        class="btn btn-icon btn-sm btn-primary"><i
-                                                            class="far fa-eye"></i></a>
+                                                        class="btn btn-primary"><i class="far fa-eye"></i></a>
                                                     <a href="{{route('contracts.edit',$contract['CNRT_ID'])}}"
-                                                        class="btn btn-icon btn-sm btn-primary"><i
-                                                            class="far fa-edit"></i></a>
+                                                        class="btn btn-primary"><i class="far fa-edit"></i></a>
 
                                             </tr>
                                             @endforeach

@@ -1270,8 +1270,8 @@ class ContractController extends Controller
                     ->leftJoin("master_site_area", "master_site_area.id", "customer_sites.AreaName")
                     ->where("CNRT_ID", $contractID)->first();
                 $contract->contractDate = Carbon::parse($contract->CNRT_Date)->format("d-M-Y");
-                $contract->contractStartDate = Carbon::parse($contract->CNRT_StartDate)->format("Y-m-d");
-                $contract->contractEndDate = Carbon::parse($contract->CNRT_EndDate)->format("Y-m-d");
+                $contract->contractStartDate = Carbon::parse($contract->CNRT_StartDate)->format("d-m-Y");
+                $contract->contractEndDate = Carbon::parse($contract->CNRT_EndDate)->format("d-m-Y");
                 $contract->sites = $this->GetCustomerSiteList($contract->CNRT_CustomerID);
                 $contract->CNRT_Status = intval($contract->CNRT_Status);
                 $products = ContractUnderProduct::where(['contractId' => $contractID])->get();

@@ -7,6 +7,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use App\Models\Employee;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -909,18 +910,12 @@ class ServiceController extends Controller
         }
 
     }
-    public function UpdateServiceCallById(Request $request)
+    public function update(Request $request, Service $service)
     {
 
         $validator = Validator::make(
             $request->all(),
             [
-                "service_no" => "required",
-                "serviceId" => "required",
-                "service_date" => "required",
-                'CST_ID' => "required",
-                'CCP_Name' => "required",
-                'CCP_Mobile' => "required",
                 'issue_type' => "required",
                 'service_type' => "required",
                 'service_priority' => "required"
@@ -928,80 +923,80 @@ class ServiceController extends Controller
         );
 
         if ($validator->fails()) {
-            return response()->json(["success" => false, "message" => "all * marked fields required.", "validation_error" => $validator->errors()]);
+            return back()
+                ->withInput()
+                ->withErrors("all * marked fields required, check and try again.");
+            // return response()->json(["success" => false, "message" => "", "validation_error" => $validator->errors()]);
         }
         try {
             $userId = $request->userId;
-            $check = Service::where("id", $request->serviceId)->where("service_no", $request->service_no)->count();
+            $check = Service::where("id", $service->id)->where("service_no", $service->service_no)->count();
             if ($check > 0) {
-                $service = Service::where("id", $request->serviceId)->update([
-                    'service_no' => $request->service_no,
+                $update = Service::where("id", $service->id)->update([
                     'service_date' => date('Y-m-d H:i:s', strtotime($request->service_date)),
-                    'customer_id' => $request->customer_id,
-                    'contract_id' => $request->contract_id,
                     'contact_person' => $request->contact_person,
                     'contact_number1' => $request->contact_number1,
                     'contact_number2' => $request->contact_number2,
                     'contact_email' => $request->contact_email,
-                    'site_location' => $request->site_location,
+                    'areaId' => $request->areaId,
                     'site_google_link' => $request->site_google_link,
                     'issue_type' => $request->issue_type,
                     'service_type' => $request->service_type,
                     'service_priority' => $request->service_priority,
                     'service_note' => $request->service_note,
                 ]);
-                if ($service) {
-                    if ($request->productId != 0) {
-                        try {
-                            $product = ServiceUnderProduct::where("productId", $request->productId)->where("serviceId", $request->serviceId)->update([
-                                'serviceId' => $service->id,
-                                'contractId' => $request->Call_Contract_Id,
-                                'productId' => $request->productId,
-                                'product_name' => $request->product_name,
-                                'product_type' => $request->product_type,
-                                'product_price' => $request->product_price,
-                                'product_description' => $request->product_description,
-                                'nrnumber' => $request->nrnumber,
-                                'other' => $request->other,
-                                'branch' => $request->branch,
-                                'updated_by' => $request->userId,
-                            ]);
-                            if ($product) {
-                                return response()->json(['success' => true, 'message' => 'Service Updated']);
-                            } else {
-                                return response()->json(['success' => true, 'message' => 'Service Updated, Failed to update product.']);
-                            }
-                        } catch (Exception $e) {
-                            return response()->json(['success' => true, 'message' => 'Service Updated']);
-                        }
-
+                if ($update) {
+                    $this->SendNewCallMail($service);
+                    $userId = Auth::user()->id;
+                    $history = ServiceHistory::create([
+                        'service_id' => $service->id,
+                        'status_id' => 1,
+                        'user_id' => $userId,
+                        'reason_id' => 1,
+                        'action_description' => "Service details updated",
+                    ]);
+                    if ($history) {
+                        DB::commit();
+                        return Redirect("services")->with("success", "Service Update!");
+                        // return response()->json(['success' => true, 'message' => 'Service Created.']);
                     } else {
-                        return response()->json(['success' => true, 'message' => 'Service Updated.']);
+                        DB::rollBack();
+                        return back()
+                            ->withInput()
+                            ->withErrors("Action failed, try again0.");
+                        //return response()->json(['success' => true, 'message' => 'Action failed, try again.']);
                     }
-
                 } else {
-                    return response()->json(['success' => false, 'message' => 'Service Action failed, Try again.']);
+                    return back()
+                        ->withInput()
+                        ->withErrors("Action failed, try again1.");
                 }
             } else {
-                return response()->json(['success' => false, 'message' => 'Service not found to update.']);
+                return back()
+                    ->withInput()
+                    ->withErrors("Action failed, try again2.");
             }
 
 
 
 
-        } catch (Illuminate\Database\QueryException $ex) {
-
-            return response()->json(['success' => false, 'message' => $ex->errorInfo]);
+        } catch (Exception $ex) {
+            DB::commit();
+            return back()
+                ->withInput()
+                ->withErrors("Action failed, try again." . $ex->getMessage());
         }
 
     }
     public function view(Request $request, Service $service)
     {
+        // dd(config('app.timezone'));
         $services = Service::select("*", "services.id as service_id")
             ->join("master_service_status", "master_service_status.Status_Id", "services.service_status")
             ->join("master_service_priority", "master_service_priority.id", "services.service_priority")
             ->join("master_issue_type", "master_issue_type.id", "services.issue_type")
             ->join("master_service_type", "master_service_type.id", "services.service_type")
+            ->join("master_site_area", "master_site_area.id", "services.areaId")
             ->join("clients", "clients.CST_ID", "services.customer_id")
             ->leftJoin("users", "users.id", "services.assigned_to")
             ->where('services.id', $service->id)->first();
@@ -1022,6 +1017,19 @@ class ServiceController extends Controller
     }
     public function edit(Request $request, Service $service)
     {
+        $services = Service::select("*", "services.id as service_id")
+            ->join("master_service_status", "master_service_status.Status_Id", "services.service_status")
+            ->join("master_service_priority", "master_service_priority.id", "services.service_priority")
+            ->join("master_issue_type", "master_issue_type.id", "services.issue_type")
+            ->join("master_service_type", "master_service_type.id", "services.service_type")
+            ->join("clients", "clients.CST_ID", "services.customer_id")
+            ->leftJoin("users", "users.id", "services.assigned_to")
+            ->where('services.id', $service->id)->first();
+
+        $product = ContractUnderProduct::where('contract_under_product.id', $service->product_id)->leftJoin("master_product_type", "master_product_type.id", "contract_under_product.product_type")->first();
+        $contract = Contract::leftJoin("master_contract_type", "master_contract_type.id", "contracts.CNRT_Type")
+            ->leftJoin("master_site_type", "master_site_type.id", "contracts.CNRT_SiteType")->where("CNRT_ID", $service->contract_id)->get();
+
 
         return view(
             'services.create',
@@ -1031,9 +1039,9 @@ class ServiceController extends Controller
                 'priorities' => Priority::all(),
                 'clients' => Client::all(),
                 'serviceType' => ServiceType::all(),
-                'update' => false,
+                'update' => true,
                 'service_no' => $service->service_no,
-                'service' => $service,
+                'service' => $services,
                 'sitelocation' => AreaName::all(),
             ]
         );

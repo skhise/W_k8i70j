@@ -10,21 +10,21 @@
                             </div>
                             <div class="card-body">
                                 <ul class="nav nav-tabs mb-3" id="myTabs" role="tablist">
-                                    <li class="nav-item">
-                                        <a class="nav-link {{old('selectedtab')=='tab1' || old('selectedtab') == ''  ? 'active':'' }}"
+                                    <li class="nav-item {{$service->contract_id ==0 && $update ? 'hide':''}}">
+                                        <a class="nav-link {{old('selectedtab')=='tab1' || old('selectedtab') == '' || $service->contract_id !=0  ? 'active':'' }}"
                                             name="tab1" id="tab1" onclick="toggleForm('tab1')" data-toggle="tab"
                                             href="#contracted" role="tab" aria-controls="tab1"
                                             aria-selected="true">Contracted</a>
                                     </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link {{old('selectedtab')=='tab2' ? 'active':'' }}" name="tab2"
-                                            id="tab2" data-toggle="tab" onclick="toggleForm('tab2')"
+                                    <li class="nav-item {{$service->contract_id !=0 && $update ? 'hide':''}}">
+                                        <a class="nav-link {{old('selectedtab')=='tab2' || $service->contract_id==0 ? 'active':'' }}"
+                                            name="tab2" id="tab2" data-toggle="tab" onclick="toggleForm('tab2')"
                                             href="#noncontracted" role="tab" aria-controls="tab2"
                                             aria-selected="false">Non Contracted</a>
                                     </li>
                                 </ul>
                                 <form id="frmcreateService" method="post" enctype="multipart/form-data"
-                                    action="{{$update ? route('services.update', $service->id) : route('services.store')}}">
+                                    action="{{$update ? route('services.update', $service->service_id) : route('services.store')}}">
                                     @csrf
                                     <input style="display:none;" type="text" value="tab1" name="selectedtab"
                                         id="selectedtab" />
@@ -43,14 +43,8 @@
                                                     Customer</span>
                                             </div>
                                             <div class="col-md-4 floating-label">
-                                                @if($update)
-                                                <input id="customer_id" name="customer_id"
-                                                    value="{{$service->customer_id}}" type="text"
-                                                    style="display:none;" />
-                                                <label>Customer Name</label>
-                                                @else
                                                 <select
-                                                    class="form-control select2 text-box single-line @error('customer_id') is-invalid @enderror"
+                                                    class="{{$update ? 'disabled' : 'select2'}} form-control text-box single-line @error('customer_id') is-invalid @enderror"
                                                     data-val="true"
                                                     data-val-required="The Customer Name field is required."
                                                     id="customer_id" name="customer_id" placeholder=""
@@ -73,13 +67,12 @@
                                                     data-valmsg-for="customer_id" data-valmsg-replace="true">{{
                                                     $errors->first('customer_id') }}</span>
                                                 @endif
-                                                @endif
                                             </div>
 
                                         </div>
                                     </div>
                                     <div
-                                        class="form-group contracted {{old('selectedtab')=='tab1' || old('selectedtab') == ''  ? '':'hide' }}">
+                                        class="form-group contracted {{$service->contract_id ==0 && $update ? 'hide':''}} {{old('selectedtab')=='tab1' || old('selectedtab') == ''  ? '':'hide' }}">
                                         <div class="row">
                                             <div class="col-md-2">
                                                 <span style="float:right ;font-weight:bold">Select
@@ -102,7 +95,7 @@
                                         </div>
                                     </div>
                                     <div
-                                        class="form-group contracted {{old('selectedtab')=='tab1' || old('selectedtab') == ''  ? '':'hide' }}">
+                                        class="form-group contracted {{$service->contract_id ==0 && $update ? 'hide':''}} {{old('selectedtab')=='tab1' || old('selectedtab') == ''  ? '':'hide' }}">
                                         <div class="row">
                                             <div class="col-md-2">
                                                 <span style="float:right ;font-weight:bold">Select
@@ -124,7 +117,9 @@
                                             <div class="col-md-4">
                                                 <div class="form-check pt-3">
                                                     <input class="form-check-input" type="checkbox" value="0"
-                                                        id="without_product" name="without_product">
+                                                        id="without_product" name="without_product"
+                                                        {{$service->product_id==0 || $service->product_id==null ?
+                                                    'checked' : '' }}>
                                                     <label class="form-check-label" for="without_product">
                                                         Without Product
                                                     </label>
@@ -134,7 +129,7 @@
                                     </div>
 
                                     <div
-                                        class="form-group contracted {{old('selectedtab')=='tab1' || old('selectedtab') == ''  ? '':'hide' }}">
+                                        class="form-group contracted {{$service->contract_id ==0 && $update ? 'hide':''}} {{old('selectedtab')=='tab1' || old('selectedtab') == ''  ? '':'hide' }}">
                                         <div class="row">
                                             <div class="col-md-2">
                                                 <span style="float:right ;font-weight:bold">Contract
@@ -142,16 +137,17 @@
                                             </div>
                                             <div class="col-md-3 floating-label">
 
-                                                <input class="form-control text-box single-line" id="contract_no"
-                                                    name="contract_no" placeholder="" value="{{old('contract_no')}}" />
+                                                <input class="disabled form-control text-box single-line"
+                                                    id="contract_no" name="contract_no" placeholder=""
+                                                    value="{{old('contract_no')}}" />
                                                 <label>Contract Number</label>
                                                 <span class="text-danger field-validation-valid"
                                                     data-valmsg-for="contract_no" data-valmsg-replace="true"></span>
                                             </div>
                                             <div class="col-md-3 floating-label">
 
-                                                <input class="form-control text-box single-line" id="contract_type"
-                                                    name="contract_type" placeholder=""
+                                                <input class="disabled form-control text-box single-line"
+                                                    id="contract_type" name="contract_type" placeholder=""
                                                     value="{{old('contract_type')}}" />
                                                 <label>Contract Type</label>
                                                 <span class="text-danger field-validation-valid"
@@ -159,8 +155,8 @@
                                             </div>
                                             <div class="col-md-3 floating-label">
 
-                                                <input class="form-control text-box single-line" id="contract_status"
-                                                    name="contract_status" placeholder=""
+                                                <input class="disabled form-control text-box single-line"
+                                                    id="contract_status" name="contract_status" placeholder=""
                                                     value="{{old('contract_status')}}" />
                                                 <label>Contract Status</label>
                                                 <span class="text-danger field-validation-valid"
@@ -171,24 +167,23 @@
                                         </div>
                                     </div>
                                     <div
-                                        class="form-group contracted {{old('selectedtab')=='tab1' || old('selectedtab') == ''  ? '':'hide' }}">
+                                        class="form-group contracted {{$service->contract_id ==0 && $update ? 'hide':''}} {{old('selectedtab')=='tab1' || old('selectedtab') == ''  ? '':'hide' }}">
                                         <div class="row">
                                             <div class="col-md-2">
                                                 <span style="float:right ;font-weight:bold"></span>
                                             </div>
                                             <div class="col-md-3 floating-label">
 
-                                                <input class="form-control text-box single-line" id="CNRT_StartDate"
-                                                    name="CNRT_StartDate" placeholder="" type="date"
-                                                    value="{{$update ? date('Y-m-d',strtotime($service->CNRT_StartDate)) : (old('CNRT_StartDate') != '' ? old('CNRT_StartDate') : date('Y-m-d')) }}" />
+                                                <input class="disabled form-control text-box single-line"
+                                                    id="CNRT_EndDate" name="CNRT_EndDate" placeholder="" value="" />
                                                 <label>Contract Expriy Date</label>
                                                 <span class="text-danger field-validation-valid"
-                                                    data-valmsg-for="CNRT_StartDate" data-valmsg-replace="true"></span>
+                                                    data-valmsg-for="CNRT_EndDate" data-valmsg-replace="true"></span>
                                             </div>
                                             <div class="col-md-3 floating-label">
 
-                                                <input class="form-control text-box single-line" id="CNRT_Charges"
-                                                    name="CNRT_Charges" placeholder="" type="number"
+                                                <input class="disabled form-control text-box single-line"
+                                                    id="CNRT_Charges" name="CNRT_Charges" placeholder="" type="number"
                                                     value="{{$service->CNRT_Charges ?? old('CNRT_Charges')}}" />
                                                 <label>Total Amount</label>
                                                 <span class="text-danger field-validation-valid"
@@ -259,8 +254,8 @@
                                                     <option value="">Select site location</option>
                                                     @foreach($sitelocation as $location)
                                                     <option value="{{$location->id}}" {{$location->id ==
-                                                        $service->CNRT_Site ? 'selected':
-                                                        (old('CNRT_Site')
+                                                        $service->areaId ? 'selected':
+                                                        (old('areaId')
                                                         ==
                                                         $location->id ? 'selected' :'')
                                                         }}>{{$location->SiteAreaName}}
@@ -320,16 +315,16 @@
                                         <div class="row">
 
                                             <div class="col-md-2">
-                                                <label class="col-form-label font-bold text-right" for="CNRT_Note"
+                                                <label class="col-form-label font-bold text-right" for="service_note"
                                                     style="display: block">Note</label>
                                             </div>
                                             <div class="col-md-4">
-                                                <textarea class="form-control" id="CNRT_Note" name="CNRT_Note"
+                                                <textarea class="form-control" id="service_note" name="service_note"
                                                     placeholder="Note"
-                                                    rows="2">{{$service->CNRT_Note?? old('CNRT_Note')}}</textarea>
+                                                    rows="2">{{$service->service_note?? old('service_note')}}</textarea>
                                                 </textarea>
                                                 <span class="text-danger field-validation-valid"
-                                                    data-valmsg-for="CNRT_Note" data-valmsg-replace="true"></span>
+                                                    data-valmsg-for="service_note" data-valmsg-replace="true"></span>
                                             </div>
                                         </div>
                                     </div>
@@ -362,7 +357,7 @@
                                                 <input class="form-control text-box single-line" id="service_date"
                                                     name="service_date" placeholder="" type="date"
                                                     value="{{$service->service_date ?? old('service_date') == '' ? date('Y-m-d') :old ('service_date')}}" />
-                                                <label for="CNRT_Number">Service Date</label>
+                                                <label for="service_date">Service Date</label>
                                                 <span class="text-danger field-validation-valid"
                                                     data-valmsg-for="service_date" data-valmsg-replace="true"></span>
                                             </div>
@@ -509,7 +504,7 @@
         $(document).ready(function () {
 
             $('#customer_id').trigger('change');
-            $('#customer_id').trigger('change');
+
 
         });
         $(document).on('change', '#contract_id', function () {
@@ -520,7 +515,7 @@
             $('#CNRT_EndDate').val('');
             $('#CNRT_Charges').val('');
             $('#CNRT_Charges_Pending').val('');
-
+            var product_id = '{{$service->product_id}}';
             $.ajax({
                 method: 'GET',
                 url: '/contracts/contract_by_id',
@@ -546,7 +541,13 @@
                         var options = '<option>Select product</option>';
                         if (products.length > 0) {
                             products.forEach(function (product) {
-                                options += '<option value="' + product.id + '">' + product.product_name + '</option>'
+                                if (product_id == product.id) {
+                                    options += '<option value="' + product.id + '" selected>' + product.product_name + '</option>'
+
+                                } else {
+                                    options += '<option value="' + product.id + '" selected>' + product.product_name + '</option>'
+
+                                }
                             });
                         }
                         $('#product_id').html(options);
@@ -562,6 +563,7 @@
         $(document).on('change', '#customer_id', function () {
             $('#contract_id').empty();
             var tab = $('#selectedtab').val();
+            var constract_id = '{{$service->contract_id}}';
             if (tab == 'tab1') {
                 $.ajax({
                     method: 'GET',
@@ -576,13 +578,18 @@
                         if (contracts.length > 0) {
 
                             contracts.forEach(function (contract) {
-                                options += '<option value="' + contract.id + '">' + contract.title + '</option>'
-                            });
-                        }
-                        console.log(options);
-                        console.log(contracts.length);
-                        $('#contract_id').html(options);
+                                if (constract_id == contract.id) {
+                                    options += '<option value="' + contract.id + '" selected>' + contract.title + '</option>'
 
+                                } else {
+                                    options += '<option value="' + contract.id + '">' + contract.title + '</option>'
+
+                                }
+                            });
+
+                        }
+                        $('#contract_id').html(options);
+                        $('#contract_id').trigger('change');
                     },
                     error: function () {
                         $('#contract_id').html('<option>Select Contract</option>');
@@ -590,6 +597,7 @@
                     }
                 });
             } else {
+                alert('in else');
                 var client = $('#customer_id option:selected').data('client');
                 console.log(client);
                 if (typeof client != 'undefined') {
@@ -607,72 +615,7 @@
             }
 
         });
-        $(document).on('change', '#CNRT_Charges', function () {
-            var total = $(this).val();
-            var paid = $('#CNRT_Charges_Paid').val();
-            var pending = total - paid;
-            $('#CNRT_Charges_Pending').val(pending);
-        });
-        $(document).on('change', '#CNRT_Charges_Paid', function () {
-            var total = $('#CNRT_Charges').val();
-            var paid = $(this).val();
-            var pending = total - paid;
-            $('#CNRT_Charges_Pending').val(pending);
-        });
-        $(document).on('change', '#CNRT_CustomerID', function () {
-            var client = $('#CNRT_CustomerID option:selected').data('client');
-            if (typeof client != 'undefined') {
-                $('#CNRT_CustomerContactPerson').val(client.CCP_Name);
-                $('#CNRT_Phone1').val(client.CCP_Mobile);
-                $('#CNRT_Phone2').val(client.CCP_Phone1);
-                $('#CNRT_CustomerEmail').val(client.CCP_Email);
-                $('#CNRT_OfficeAddress').val(client.CST_OfficeAddress);
-            } else {
-                $('#CNRT_CustomerContactPerson').val("");
-                $('#CNRT_Phone1').val("");
-                $('#CNRT_Phone2').val("");
-                $('#CNRT_CustomerEmail').val("");
-                $('#CNRT_OfficeAddress').val("");
-            }
-        });
-        $(document).on('change', '#period_span', function () {
-            var span = $(this).val();
-            if (span == 0) {
-                $('#CNRT_EndDate').removeClass('disabled');
-            } else {
-                $('#CNRT_EndDate').addClass('disabled');
-            }
-            span = span == '' || span == 0 ? 1 : span;
-            var date = $('#CNRT_StartDate').val();
-            var nd = date.split('-');
-            date = nd[0] + '/' + nd[1] + '/' + nd[2];
-            var d = new Date(date);
-            var year = d.getFullYear();
-            var month = d.getMonth();
-            var day = d.getDate();
-            var c = new Date(year + parseInt(span), month + 1, day - 1);
-            var month = c.getMonth() < 10 ? '0' + c.getMonth() : c.getMonth();
-            var nday = c.getDate() < 10 ? '0' + c.getDate() : c.getDate();
-            var fd = c.getFullYear() + '-' + month + '-' + nday;
-            $('#CNRT_EndDate').val(fd);
-        });
-        $(document).on('change', '#CNRT_StartDate', function () {
-            var date = $(this).val();
-            var span = $('#period_span').val();
-            span = span == '' || span == 0 ? 1 : span;
-            var nd = date.split('-');
-            date = nd[0] + "/" + nd[1] + "/" + nd[2];
-            var d = new Date(date);
-            var year = d.getFullYear();
-            var month = d.getMonth();
-            var day = d.getDate();
-            var c = new Date(year + parseInt(span), month + 1, day - 1);
-            var month = c.getMonth() < 10 ? '0' + c.getMonth() : c.getMonth();
-            var nday = c.getDate() < 10 ? '0' + c.getDate() : c.getDate();
-            //var fd = nday+'-'+month+'-'+c.getFullYear();
-            var fd = c.getFullYear() + '-' + month + '-' + nday;
-            $('#CNRT_EndDate')(fd);
-        });
+
     </script>
     @stop
 </x-app-layout>

@@ -73,10 +73,10 @@ fas fa-plus-square"></i>
                                                 </th>
                                                 <th>Type</th>
                                                 <th>Date</th>
-                                                <th class="table-width-30">Customer Name</th>
+                                                <th class="table-width-20">Customer Name</th>
                                                 <th>Issue Type</th>
                                                 <th>Status</th>
-                                                <th class="action-1">Action</th>
+                                                <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -110,11 +110,9 @@ fas fa-plus-square"></i>
                                                 </td>
                                                 <td>
                                                     <a href="{{route('services.view',$service['service_id'])}}"
-                                                        class="btn btn-icon btn-sm btn-primary"><i
-                                                            class="far fa-eye"></i></a>
+                                                        class="btn btn-icon btn-primary"><i class="far fa-eye"></i></a>
                                                     <a href="{{route('services.edit',$service['service_id'])}}"
-                                                        class="btn btn-icon btn-sm btn-primary"><i
-                                                            class="far fa-edit"></i></a>
+                                                        class="btn btn-icon btn-primary"><i class="far fa-edit"></i></a>
 
                                             </tr>
                                             @endforeach

@@ -78,6 +78,14 @@
                                                                         {{$service->issue_name}}
                                                                     </p>
                                                                     <hr>
+                                                                    <strong>
+                                                                        <i
+                                                                            class="fa fa-book margin-r-5"></i>&nbsp;&nbsp;Priority
+                                                                    </strong>
+                                                                    <p class="text-muted">
+                                                                        {{$service->priority_name}}
+                                                                    </p>
+                                                                    <hr>
                                                                     <strong><i
                                                                             class="fa fa-map-marker margin-r-5"></i>&nbsp;&nbsp;Status</strong>
                                                                     <p class="text-white"><span
@@ -270,8 +278,8 @@
                                                                 </span>
                                                             </div>
                                                             <div class="col-md-1">
-                                                                @if($service->site_location !="")
-                                                                <a href="{{$service->site_location ?? '#'}}"
+                                                                @if($service->site_google_link !="")
+                                                                <a href="{{$service->site_google_link ?? '#'}}"
                                                                     target="_blank"><i class="fa fa-map-marker"
                                                                         aria-hidden="true"></i>
 
@@ -333,8 +341,10 @@
                                                                         class="badge badge-shadow {{$time_line['status_color'] ?? 'bg-primary'}}">
                                                                         {{$time_line['Status_Name']}}</span></a>
                                                                 <span class="text-job float-right"
-                                                                    style="font-size: 14px;">{{date("d.m.Y
-                                                                    H:i:s",strtotime($time_line['created_at']))}}</span>
+                                                                    style="font-size: 14px;">{{date("d-m-Y
+                                                                    h:i:s",strtotime($time_line['created_at']."
+                                                                    ".config('app.timezone')))
+                                                                    }}</span>
 
                                                             </div>
                                                             <p style="font-size: 14px;">

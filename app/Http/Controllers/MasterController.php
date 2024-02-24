@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ProductType;
 use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -169,7 +170,51 @@ class MasterController extends Controller
         }
         return $issueType;
     }
+    public function ct_saveupdate(Request $request)
+    {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                "id" => "required",
+                "name" => "required",
+                "flag" => "required",
+            ]
+        );
+        if ($validator->fails()) {
+            return response()->json(["success" => false, "message" => "data missing, try again.", "validation_error" => $validator->errors()]);
+        }
+        if ($request->flag == 1) {
+            $checkName = ContractType::where('contract_type_name', $request->name)
+                ->where('id', "!=", $request->id)->get();
+            if ($checkName->count() > 0) {
+                return response()->json(["success" => false, "message" => "duplicate contract type.", "validation_error" => $validator->errors()]);
+            } else {
+                $update = ContractType::where('id', $request->id)->update([
+                    'contract_type_name' => $request->name
+                ]);
+                if ($update) {
+                    return response()->json(["success" => true, "message" => "contract type updated.", "validation_error" => $validator->errors()]);
+                } else {
+                    return response()->json(["success" => false, "message" => "action failed, try again.", "validation_error" => $validator->errors()]);
+                }
+            }
 
+        } else {
+            $checkName = ContractType::where('contract_type_name', $request->name)->get();
+            if ($checkName->count() == 0) {
+                $create = ContractType::create([
+                    'contract_type_name' => $request->name
+                ]);
+                if ($create) {
+                    return response()->json(["success" => true, "message" => "contract type created", "validation_error" => $validator->errors()]);
+                } else {
+                    return response()->json(["success" => false, "message" => "action failed, try again.", "validation_error" => $validator->errors()]);
+                }
+            } else {
+                return response()->json(["success" => false, "message" => "duplicate contract type.", "validation_error" => $validator->errors()]);
+            }
+        }
+    }
     public function ContractType(Request $request)
     {
         $validator = Validator::make(
@@ -224,7 +269,117 @@ class MasterController extends Controller
         }
         return $contractType;
     }
+    public function ct_index(Request $request)
+    {
+        $contractType = array();
+        try {
+            $contractType = ContractType::paginate(10)
+                ->withQueryString();
+        } catch (Exception $ex) {
+            // return $ex->getMessage();
+        }
+        // dd($contractType);
+        return view(
+            'masters.contract_type.index',
+            [
+                'contractTypes' => $contractType
+            ]
+        );
+    }
+    public function ct_delete(Request $request)
+    {
+        $id = $request->id ?? 0;
+        $res['message'] = 'action failed, try again';
+        $res['code'] = 400;
+        try {
+            $delete = ContractType::where('id', $id)->delete();
+            if ($delete) {
+                $res['message'] = 'Deleted';
+                $res['code'] = 200;
+            }
+        } catch (Exception $ex) {
+            // return $ex->getMessage();
+            $res['message'] = 'action failed, try again' . $ex->getMessage();
+            $res['code'] = 400;
+        }
+        return json_encode($res);
+    }
 
+    public function pt_index(Request $request)
+    {
+        $productType = array();
+        try {
+            $productType = ProductType::paginate(10)
+                ->withQueryString();
+        } catch (Exception $ex) {
+            // return $ex->getMessage();
+        }
+        return view('masters.product_type.index', ['productTypes' => $productType]);
+    }
+
+    public function pt_delete(Request $request)
+    {
+        $id = $request->id ?? 0;
+        $res['message'] = 'action failed, try again';
+        $res['code'] = 400;
+        try {
+            $delete = ProductType::where('id', $id)->delete();
+            if ($delete) {
+                $res['message'] = 'Deleted';
+                $res['code'] = 200;
+            }
+        } catch (Exception $ex) {
+            // return $ex->getMessage();
+            $res['message'] = 'action failed, try again' . $ex->getMessage();
+            $res['code'] = 400;
+        }
+        return json_encode($res);
+    }
+    public function pt_saveupdate(Request $request)
+    {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                "id" => "required",
+                "name" => "required",
+                "flag" => "required",
+            ]
+        );
+        if ($validator->fails()) {
+            return response()->json(["success" => false, "message" => "data missing, try again.", "validation_error" => $validator->errors()]);
+        }
+        if ($request->flag == 1) {
+            $checkName = ProductType::where('type_name', $request->name)
+                ->where('id', "!=", $request->id)->get();
+            if ($checkName->count() > 0) {
+                return response()->json(["success" => false, "message" => "duplicate product type.", "validation_error" => $validator->errors()]);
+            } else {
+                $update = ProductType::where('id', $request->id)->update([
+                    'type_name' => $request->name
+                ]);
+                if ($update) {
+                    return response()->json(["success" => true, "message" => "product type updated.", "validation_error" => $validator->errors()]);
+                } else {
+                    return response()->json(["success" => false, "message" => "action failed, try again.", "validation_error" => $validator->errors()]);
+                }
+            }
+
+        } else {
+            $checkName = ProductType::where('type_name', $request->name)->get();
+            if ($checkName->count() == 0) {
+                $create = ProductType::create([
+                    'type_name' => $request->name
+                ]);
+                if ($create) {
+                    return response()->json(["success" => true, "message" => "product type created", "validation_error" => $validator->errors()]);
+                } else {
+                    return response()->json(["success" => false, "message" => "action failed, try again.", "validation_error" => $validator->errors()]);
+                }
+            } else {
+                return response()->json(["success" => false, "message" => "duplicate product type.", "validation_error" => $validator->errors()]);
+            }
+        }
+    }
     public function UploadImage($request)
     {
         $imagesName = "";
@@ -380,6 +535,81 @@ class MasterController extends Controller
             return $ex->errorInfo;
         }
         return $area;
+    }
+    public function sa_index(Request $request)
+    {
+        $area = array();
+        try {
+            $area = AreaName::paginate(10)
+                ->withQueryString();
+
+        } catch (Exception $ex) {
+            // return $ex->errorInfo;
+        }
+        return view("masters.site_area.index", ["siteAreas" => $area]);
+    }
+    public function sa_delete(Request $request)
+    {
+        $id = $request->id ?? 0;
+        $res['message'] = 'action failed, try again';
+        $res['code'] = 400;
+        try {
+            $delete = AreaName::where('id', $id)->delete();
+            if ($delete) {
+                $res['message'] = 'Deleted';
+                $res['code'] = 200;
+            }
+        } catch (Exception $ex) {
+            // return $ex->getMessage();
+            $res['message'] = 'action failed, try again' . $ex->getMessage();
+            $res['code'] = 400;
+        }
+        return json_encode($res);
+    }
+    public function sa_saveupdate(Request $request)
+    {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                "id" => "required",
+                "name" => "required",
+                "flag" => "required",
+            ]
+        );
+        if ($validator->fails()) {
+            return response()->json(["success" => false, "message" => "data missing, try again.", "validation_error" => $validator->errors()]);
+        }
+        if ($request->flag == 1) {
+            $checkName = AreaName::where('SiteAreaName', $request->name)
+                ->where('id', "!=", $request->id)->get();
+            if ($checkName->count() > 0) {
+                return response()->json(["success" => false, "message" => "duplicate area name.", "validation_error" => $validator->errors()]);
+            } else {
+                $update = AreaName::where('id', $request->id)->update([
+                    'SiteAreaName' => $request->name
+                ]);
+                if ($update) {
+                    return response()->json(["success" => true, "message" => "product type updated.", "validation_error" => $validator->errors()]);
+                } else {
+                    return response()->json(["success" => false, "message" => "action failed, try again.", "validation_error" => $validator->errors()]);
+                }
+            }
+
+        } else {
+            $checkName = AreaName::where('SiteAreaName', $request->name)->get();
+            if ($checkName->count() == 0) {
+                $create = AreaName::create([
+                    'SiteAreaName' => $request->name
+                ]);
+                if ($create) {
+                    return response()->json(["success" => true, "message" => "area created", "validation_error" => $validator->errors()]);
+                } else {
+                    return response()->json(["success" => false, "message" => "action failed, try again.", "validation_error" => $validator->errors()]);
+                }
+            } else {
+                return response()->json(["success" => false, "message" => "duplicate area name.", "validation_error" => $validator->errors()]);
+            }
+        }
     }
     public function SiteArea(Request $request)
     {

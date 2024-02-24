@@ -104,54 +104,26 @@ Route::middleware(['prevent-back-history'])->group(function () {
 
     });
     //services end
-    /*Project Route*/
+    /* master routes*/
     Route::middleware('auth')->group(function () {
-        Route::get('/projects/create', [ProjectController::class, 'create'])->name('projects.create');
+        Route::get('/masters/contract-type', [MasterController::class, 'ct_index'])->name('masters.contract-type');
+        Route::post('/masters/contract-type', [MasterController::class, 'ct_saveupdate'])->name('masters.contract-type-store');
+        Route::delete('/masters/contract-type', [MasterController::class, 'ct_delete'])->name('masters.contract-type-delete');
     });
+
     Route::middleware('auth')->group(function () {
-        Route::get('/projects', [ProjectController::class, 'index'])->name('projects');
-        Route::post('/add_ref_client', [ProjectController::class, 'AddRefClient'])->name('add_ref_client');
-        Route::post('/ref_client/{ref_client}/delete', [ProjectController::class, 'DeleteRefClient'])->name('delete_ref_client');
-
+        Route::get('/masters/product-type', [MasterController::class, 'pt_index'])->name('masters.product-type');
+        Route::post('/masters/product-type', [MasterController::class, 'pt_saveupdate'])->name('masters.product-type-store');
+        Route::delete('/masters/product-type', [MasterController::class, 'pt_delete'])->name('masters.product-type-delete');
     });
-    Route::post('projects.store', [ProjectController::class, 'store'])
-        ->name('projects.store')
-        ->middleware('auth');
 
-    Route::get('charakteristisch', [ProjectController::class, 'charakteristisch'])
-        ->name('charakteristisch')
-        ->middleware('auth');
-
-    Route::get('projects/{project}/view', [ProjectController::class, 'view'])
-        ->name('projects.view');
-
-    Route::get('projects/{project}/edit', [ProjectController::class, 'edit'])
-        ->name('projects.edit')
-        ->middleware('auth');
     Route::middleware('auth')->group(function () {
-        Route::post('/projects/{project}', [ProjectController::class, 'update'])->name('projects.update');
+        Route::get('/masters/site-area', [MasterController::class, 'sa_index'])->name('masters.site-area');
+        Route::post('/masters/site-area', [MasterController::class, 'sa_saveupdate'])->name('masters.site-area-store');
+        Route::delete('/masters/site-area', [MasterController::class, 'sa_delete'])->name('masters.site-area-delete');
     });
-    Route::get('projects/{project}/document', [ProjectController::class, 'document'])
-        ->name('projects.document')
-        ->middleware('auth');
-    Route::post('projects.document_store', [ProjectController::class, 'document_store'])
-        ->name('projects.document_store')
-        ->middleware('auth');
-    Route::post('projects/{document}/document_update', [ProjectController::class, 'document_update'])
-        ->name('projects.document_update')
-        ->middleware('auth');
-    Route::get('projects/{document}/doc_view', [ProjectController::class, 'document_view'])
-        ->name('projects.document_view')
-        ->middleware('auth');
-    Route::get('projects.client_info', [ProjectController::class, 'client_info'])
-        ->name('projects.client_info')
-        ->middleware('auth');
-    Route::post('projects/{project}/project_status', [ProjectController::class, 'change_status'])
-        ->name('project_status')
-        ->middleware('auth');
+    /*end master routes*/
 
-
-    /*Employee Route*/
     Route::middleware('auth')->group(function () {
         Route::get('/employees', [EmployeeController::class, 'index'])->name('employees');
     });
@@ -178,58 +150,6 @@ Route::middleware(['prevent-back-history'])->group(function () {
         ->middleware('auth');
     Route::middleware('auth')->group(function () {
         Route::post('/employees/{employee}', [EmployeeController::class, 'update'])->name('employees.update');
-    });
-
-    /*Documents Route*/
-    Route::middleware('auth')->group(function () {
-        Route::get('/documents', [DocumentController::class, 'index'])->name('documents');
-    });
-
-    /*Setting Route*/
-    Route::middleware('auth')->group(function () {
-        Route::get('/settings/document', [SettingController::class, 'index'])->name('document-settings');
-    });
-
-
-    /*export to pdf*/
-    Route::middleware('auth')->group(function () {
-        Route::get('projects/{document}/prufing_pdf_export', [PDFExportController::class, 'prufing_pdf_export'])->name('projects.prufing_pdf_export');
-    });
-
-    /*Invoices Route*/
-    Route::middleware('auth')->group(function () {
-        Route::get('/invoices', [InvoiceController::class, 'index'])->name('invoices');
-    });
-    Route::middleware('auth')->group(function () {
-        Route::get('/invoices/create', [InvoiceController::class, 'create'])->name('invoices.create');
-        Route::get('invoices/get_p_info', [InvoiceController::class, 'get_p_info'])
-            ->name('get_p_info');
-        Route::get('invoices/{invoice}/view', [InvoiceController::class, 'view'])
-            ->name('invoices.view');
-
-        Route::post('invoices/store', [InvoiceController::class, 'store'])
-            ->name('store');
-        Route::get('invoices/{invoice}/edit', [InvoiceController::class, 'edit'])
-            ->name('invoices.edit');
-        Route::get('invoices/{invoice}/view', [InvoiceController::class, 'view'])
-            ->name('invoices.view');
-        Route::post('/invoices/{invoice}', [InvoiceController::class, 'update'])->name('invoices.update');
-    });
-    Route::middleware('auth')->group(function () {
-        Route::get('/invoice-items', [MasterController::class, 'invoice_item_index'])->name("invoice-items");
-        Route::get('/invoice-item/create', [MasterController::class, 'invoice_item_create'])->name("invoice-item-create");
-        Route::post('/invoice-item/store', [MasterController::class, 'invoice_item_store'])->name("invoice-item-store");
-        Route::get('/invoice-item/{invoiceItem}/edit', [MasterController::class, 'invoice_item_edit'])->name("invoice-item-edit");
-        Route::post('/invoice-item/update/{invoiceItem}', [MasterController::class, 'invoice_item_update'])->name("invoice-item-update");
-    });
-    Route::middleware('auth')->group(function () {
-        Route::get('/doc-master/prufing_document', [DocMasterController::class, 'index_prufing_document'])->name("doc-master.prufing_document");
-        Route::post('/doc-master/{prufing_document}/update', [DocMasterController::class, 'update_prufing_document'])->name("prufing_document.update");
-        Route::post('/doc-master/sub_heading/{prufing_content}/update', [DocMasterController::class, 'update_prufing_prufing_content'])->name("prufing_sub_heading.update");
-        Route::post('/doc-master/sub_heading/{prufing_heading}/add', [DocMasterController::class, 'add_prufing_prufing_content'])->name("prufing_sub_heading.add");
-        Route::post('/doc-master/sub_content/{content_sub_content}/update', [DocMasterController::class, 'update_content_sub_content'])->name("content_sub_content.update");
-        Route::post('/doc-master/sub_content/{prufing_content}/add', [DocMasterController::class, 'add_content_sub_content'])->name("content_sub_content.add");
-
     });
 
     Route::middleware('auth')->group(function () {

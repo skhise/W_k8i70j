@@ -152,56 +152,25 @@
             <li class="dropdown {{Request::is('services') || Request::is('services/*') ? 'active' : '' }}">
                 <a href="{{route('services')}}" class="nav-link"><i data-feather="figma"></i><span>Services</span></a>
             </li>
-            <li class="dropdown {{Request::is('products/*') ? 'active' : '' }}">
+            <li class="dropdown {{Request::is('products/*') || Request::is('products') ? 'active' : '' }}">
                 <a href="{{route('products')}}" class="nav-link"><i data-feather="figma"></i><span>Products</span></a>
             </li>
-            <li class="dropdown {{Request::is('projects') ? 'active' : '' }}">
-                <a href="{{route('projects')}}" class="nav-link"><i data-feather="figma"></i><span>Projects</span></a>
-            </li>
-            <li class="dropdown {{Request::is('documents') ? 'active' : '' }}">
-                <a href="{{route('documents')}}" class="nav-link"><i data-feather="file"></i><span>Documents</span></a>
-            </li>
-
-            <li class="dropdown {{Request::is('settings/document') ? 'active' : '' }}">
+            <li class="dropdown {{Request::is('masters/*') || Request::is('masters') ? 'active' : '' }}">
                 <a href="#"
                     class="menu-toggle nav-link has-dropdown {{Request::is('settings/document') ? 'toggled' : '' }}"><i
-                        data-feather="settings"></i><span>Settings</span></a>
+                        data-feather="settings"></i><span>Master Settings</span></a>
                 <ul class="dropdown-menu">
-                    <li class="{{Request::is('settings/document') ? 'active' : '' }}"><a class="nav-link"
-                            href="{{route('document-settings')}}">Document Settings</a></li>
+                    <li class="{{Request::is('masters/contract-type') ? 'active' : '' }}"><a class="nav-link"
+                            href="{{route('masters.contract-type')}}">Contract Type</a></li>
+                    <li class="{{Request::is('masters/product-type') ? 'active' : '' }}"><a class="nav-link"
+                            href="{{route('masters.product-type')}}">Product Type</a></li>
+                    <li class="{{Request::is('masters/site-area') ? 'active' : '' }}"><a class="nav-link"
+                            href="{{route('masters.site-area')}}">Site Location</a></li>
                 </ul>
             </li>
-            <li class="dropdown {{Request::is('invoices') || Request::is('invoices/create') ? 'active' : '' }}">
-                <a href="#"
-                    class="menu-toggle nav-link has-dropdown {{Request::is('invoices') || Request::is('invoices/create') ? 'toggled' : '' }}"><i
-                        data-feather="settings"></i><span>Invoice Management</span></a>
-                <ul class="dropdown-menu">
-                    <li class="{{Request::is('invoices') || Request::is('invoices/create') ? 'active' : '' }}">
-                        <a class="nav-link" href="{{route('invoices')}}">Invoices</a>
-                    </li>
-                </ul>
-            </li>
-            <li
-                class="dropdown {{Request::is('doc-master') || Request::is('doc-master/prufing_document') ? 'active' : '' }}">
-                <a href="#"
-                    class="menu-toggle nav-link has-dropdown {{Request::is('doc-master') || Request::is('doc-master/prufing_document') ? 'toggled' : '' }}"><i
-                        data-feather="settings"></i><span>Document Master</span></a>
-                <ul class="dropdown-menu">
-                    <li class="{{Request::is('doc-master/prufing_document') ? 'active' : '' }}">
-                        <a class="nav-link" href="{{route('doc-master.prufing_document')}}">Prufing Documents</a>
-                    </li>
-                </ul>
-            </li>
-            <li class="dropdown {{Request::is('reports') || Request::is('reports/invoice') ? 'active' : '' }}">
-                <a href="#"
-                    class="menu-toggle nav-link has-dropdown {{Request::is('reports') || Request::is('reports/invoice') ? 'toggled' : '' }}"><i
-                        data-feather="settings"></i><span>Reports</span></a>
-                <ul class="dropdown-menu">
-                    <li class="{{Request::is('reports/invoice') ? 'active' : '' }}">
-                        <a class="nav-link" href="{{route('reports.invoice')}}">Invoice Report</a>
-                    </li>
-                </ul>
-            </li>
+
+
+
         </ul>
     </aside>
 </div>

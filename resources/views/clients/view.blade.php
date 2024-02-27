@@ -18,7 +18,7 @@ $add_cp_url = "{{route('clients.view',$client->id)}}";
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header">
-                                <h4>Contract Details</h4>
+                                <h4>Client Details</h4>
                             </div>
                             <div class="card-body">
                                 <ul class="nav nav-tabs" id="myTab2" role="tablist">
@@ -135,7 +135,7 @@ $add_cp_url = "{{route('clients.view',$client->id)}}";
 
                                                         <hr />
                                                         <div>
-                                                            <h5 class="">Contact Person Details</h5>
+                                                            <h5 class="">Contact Details</h5>
                                                         </div>
                                                         <hr />
                                                         <div class="row">
@@ -145,24 +145,17 @@ $add_cp_url = "{{route('clients.view',$client->id)}}";
                                                             <div class="col-md-3">{{$client->CCP_Name}}</div>
                                                             <div class="col-md-3">
                                                                 <span
-                                                                    style="float:right ;font-weight:bold">Mobile</span>
-                                                            </div>
-                                                            <div class="col-md-3">{{$client->CCP_Mobile}}</div>
-                                                        </div>
-                                                        <div class="row">
-                                                            <div class="col-md-3">
-                                                                <span style="float:right ;font-weight:bold">Email</span>
-                                                            </div>
-                                                            <div class="col-md-3">{{$client->CCP_Email}}</div>
-
-                                                            <div class="col-md-3">
-                                                                <span
                                                                     style="float:right ;font-weight:bold">Department</span>
                                                             </div>
                                                             <div class="col-md-3">
                                                                 {{$client->CCP_Department !=null ?
                                                                 $client->CCP_Department : "NA"}}
                                                             </div>
+                                                            <div class="col-md-3">
+                                                                <span
+                                                                    style="float:right ;font-weight:bold">Mobile</span>
+                                                            </div>
+                                                            <div class="col-md-3">{{$client->CCP_Mobile}}</div>
                                                             <div class="col-md-3">
                                                                 <span style="float:right ;font-weight:bold">Alt.
                                                                     Mobile</span>
@@ -171,6 +164,15 @@ $add_cp_url = "{{route('clients.view',$client->id)}}";
                                                                 {{$client->CCP_Phone1 != null ? $client->CCP_Phone1 :
                                                                 'NA'}}
                                                             </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-3">
+                                                                <span style="float:right ;font-weight:bold">Email</span>
+                                                            </div>
+                                                            <div class="col-md-3">{{$client->CCP_Email}}</div>
+
+
+
                                                         </div>
                                                         <hr />
 
@@ -208,8 +210,8 @@ $add_cp_url = "{{route('clients.view',$client->id)}}";
                                                                     <tr>
                                                                         <th>Name</th>
                                                                         <th>Email</th>
-                                                                        <th>Phone</th>
                                                                         <th>Mobile</th>
+                                                                        <th>Alt Mobile</th>
                                                                         <th>Department</th>
                                                                         <th></th>
                                                                     </tr>
@@ -328,7 +330,7 @@ $add_cp_url = "{{route('clients.view',$client->id)}}";
                 <div class="modal-footer">
                     <div class="pull-right">
                         <button type="button" class="btn btn-primary" onclick="SaveContactPerson()">Save</button> &nbsp;
-                        <button class="btn btn-danger pull-right" onclick="CancelModelBox()">Cancel</button>&nbsp;&nbsp;
+                        <button class="btn btn-danger mr-2" onclick="CancelModelBox()">Cancel</button>&nbsp;&nbsp;
                     </div>
                 </div>
             </div>

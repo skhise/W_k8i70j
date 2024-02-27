@@ -269,7 +269,7 @@
                                                     <div class="card-header">
                                                         <h4>Contract Product</h4>
                                                         <div class="card-header-action">
-                                                            <input type="button" id="btn_cp_add" value="Add Contact"
+                                                            <input type="button" id="btn_cp_add" value="Add Product"
                                                                 class="btn btn-primary" data-toggle="modal"
                                                                 data-target=".bd-RefClient-modal-lg" />
                                                         </div>
@@ -373,11 +373,15 @@
                                         @endforeach
                                     </select>
                                     <label for="first">Product Type</label>
+                                    <span class="text-danger-error text-danger product_type-field-validation-valid"
+                                        data-valmsg-replace="true"></span>
                                 </div>
                                 <div class="col-md-6 floating-label">
                                     <input class="form-control text-box single-line" id="product_name"
                                         name="product_name" placeholder="" type="text" value="" />
                                     <label for="first">Name</label>
+                                    <span class="text-danger-error text-danger product_name-field-validation-valid"
+                                        data-valmsg-replace="true"></span>
                                 </div>
                             </div>
                         </div>
@@ -396,20 +400,23 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="control-label">Sr. Number (Total: <span id="add_sr_no"></span>)</label>
+                            <label class="control-label">Sr. Number (Total: <span id="add_sr_no">1</span>) <span
+                                    class="text-danger-error text-danger srnumber-field-validation-valid"
+                                    data-valmsg-replace="true"></span></label>
                             <div class="row">
-                                <div class="col-md-12 mb-2" id="multipeInput">
 
-                                </div>
                                 <div class="col-md-12">
                                     <div class="input-group">
-                                        <input class="form-control text-box single-line" id="nrnumber.0"
+                                        <input class="form-control text-box single-line" id="nrnumber_0"
                                             name="nrnumber[]" placeholder="" type="text" value="" />
                                         <span class="btn btn-primary input-group-addon add_form_field"><i
                                                 class="fa fa-plus" aria-hidden="true"></i></span>
 
                                     </div>
 
+
+                                </div>
+                                <div class="col-md-12 mb-2" id="multipeInput">
 
                                 </div>
 
@@ -427,6 +434,7 @@
                                     <input class="form-control text-box single-line" id="service_period"
                                         name="service_period" placeholder="" type="text" value="" />
                                     <label for="first">Support Period</label>
+
                                 </div>
                             </div>
                         </div>
@@ -456,13 +464,13 @@
             var max_fields = 100;
             var wrapper = $("#multipeInput");
             var add_button = $(".add_form_field");
-            var x = 0;
+            var x = 1;
             $(add_button).click(function (e) {
                 e.preventDefault();
                 if (x < max_fields) {
                     x++;
                     $("#add_sr_no").text(x);
-                    $(wrapper).prepend('<div class="input-group mt-2"><input type="text" class="form-control nrnumber" id="nrnumber.' + x + '" name="nrnumber[]"/><span class="btn btn-danger input-group-addon add_form_field delete"><i class="fa fa-trash" aria-hidden="true"></i></span></div > '); //add input box
+                    $(wrapper).prepend('<div class="input-group mt-2"><input type="text" class="form-control nrnumber" id="nrnumber_' + x + '" name="nrnumber[]"/><span class="btn btn-danger input-group-addon add_form_field delete"><i class="fa fa-trash" aria-hidden="true"></i></span></div > '); //add input box
                 } else {
                     alert('You Reached the limits')
                 }
@@ -486,6 +494,8 @@
             $("#CNT_ID").val(cpid);
         });
         function SaveContractProduct() {
+            $('.text-danger-error').html('');
+            $(".nrnumber").removeClass("error_border");
             $.ajax({
                 url: 'add_product',
                 type: "POST",
@@ -499,11 +509,19 @@
                         $('.errorMsgntainer').html("");
                         if (typeof response.validation_error != 'undefined') {
                             $.each(response.validation_error, function (index, value) {
-                                $("#" + index).addClass('required');
-                                $('.errorMsgntainer').append('<span class="text-danger">' + value + '<span>' + '<br>');
+                                console.log(index);
+                                if (index == "product_type" || index == "product_name") {
+                                    $('.' + index + "-field-validation-valid").html(value);
+
+                                } else {
+                                    var id = index.replace(".", "_");
+                                    $("#" + id).addClass('error_border');
+                                    $('.srnumber-field-validation-valid').html("markd sr. number dublicate");
+                                    // $("#" + index).('<div id="cmprivacy">' + value + '</div>');
+                                }
                             });
                         } else {
-                            alert(response.message);
+                            $('.srnumber-field-validation-valid').html(response.message);
                         }
 
 

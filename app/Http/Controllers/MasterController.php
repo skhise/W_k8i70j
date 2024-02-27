@@ -269,6 +269,13 @@ class MasterController extends Controller
         }
         return $contractType;
     }
+
+    public function index(Request $request)
+    {
+        return view(
+            'masters.index',
+        );
+    }
     public function ct_index(Request $request)
     {
         $contractType = array();

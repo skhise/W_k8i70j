@@ -156,21 +156,9 @@
                 <a href="{{route('products')}}" class="nav-link"><i data-feather="figma"></i><span>Products</span></a>
             </li>
             <li class="dropdown {{Request::is('masters/*') || Request::is('masters') ? 'active' : '' }}">
-                <a href="#"
-                    class="menu-toggle nav-link has-dropdown {{Request::is('settings/document') ? 'toggled' : '' }}"><i
-                        data-feather="settings"></i><span>Master Settings</span></a>
-                <ul class="dropdown-menu">
-                    <li class="{{Request::is('masters/contract-type') ? 'active' : '' }}"><a class="nav-link"
-                            href="{{route('masters.contract-type')}}">Contract Type</a></li>
-                    <li class="{{Request::is('masters/product-type') ? 'active' : '' }}"><a class="nav-link"
-                            href="{{route('masters.product-type')}}">Product Type</a></li>
-                    <li class="{{Request::is('masters/site-area') ? 'active' : '' }}"><a class="nav-link"
-                            href="{{route('masters.site-area')}}">Site Location</a></li>
-                </ul>
+                <a href="{{route('masters')}}" class="nav-link"><i data-feather="figma"></i><span>Master
+                        Settings</span></a>
             </li>
-
-
-
         </ul>
     </aside>
 </div>

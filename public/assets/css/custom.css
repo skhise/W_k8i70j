@@ -182,4 +182,11 @@ body.disable-scroll {
   .disabled {
     pointer-events:none !important;
   }
+  .error_border {
+    /* border: 1px red solid !important;
+     */
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-color: red;
+  }
   

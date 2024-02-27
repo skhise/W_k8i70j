@@ -4,6 +4,15 @@ $(window).on("load", function () {
     $(".loader").fadeOut("slow");
 });
 
+$(document).on("keypress", ".numberType", function (evt) {
+    evt = evt ? evt : window.event;
+    var charCode = evt.which ? evt.which : evt.keyCode;
+    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+        return false;
+    }
+    return true;
+});
+
 feather.replace();
 // Global
 $(function () {

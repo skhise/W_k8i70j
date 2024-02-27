@@ -83,12 +83,21 @@ class ClientController extends Controller
             "CCP_Name" => ["required"],
             "CCP_Mobile" => ["required"],
             "Ref_Employee" => ["nullable"],
+            "CCP_Email" => ["nullable", "email"],
             'updated_by' => ['required'],
+        ], [
+            'CCP_Name.required' => 'Contcat person name required!',
+            'CCP_Mobile.required' => 'Contcat person phone required!',
+            'CCP_Email.email' => 'Valid email required!'
         ]);
 
-        $client->update($request->all());
-        // Redirect::route('clients')->with('success', 'Client Added.');
-        return redirect()->back()->with('success', 'Client updated successfully.');
+        $update = $client->update($request->all());
+        if ($update) {
+            return Redirect::route('clients')->with('success', 'Client updated.');
+        }
+        return redirect()->back()->with('error', 'Something went wrong, try again.');
+
+
     }
     public function edit(Client $client)
     {

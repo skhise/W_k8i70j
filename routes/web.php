@@ -106,6 +106,7 @@ Route::middleware(['prevent-back-history'])->group(function () {
     //services end
     /* master routes*/
     Route::middleware('auth')->group(function () {
+        Route::get('/masters', [MasterController::class, 'index'])->name('masters');
         Route::get('/masters/contract-type', [MasterController::class, 'ct_index'])->name('masters.contract-type');
         Route::post('/masters/contract-type', [MasterController::class, 'ct_saveupdate'])->name('masters.contract-type-store');
         Route::delete('/masters/contract-type', [MasterController::class, 'ct_delete'])->name('masters.contract-type-delete');

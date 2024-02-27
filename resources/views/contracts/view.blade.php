@@ -535,6 +535,8 @@
         }
         function CancelModelBox() {
 
+            $('.text-danger-error').html('');
+            $(".nrnumber").removeClass("error_border");
             $("#form_cp")[0].reset();
             $("#btn_close").trigger('click');
         }

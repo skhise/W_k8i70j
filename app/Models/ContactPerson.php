@@ -10,6 +10,7 @@ class ContactPerson extends Model
     use HasFactory;
 
     protected $table = 'contact_person';
+    protected $primaryKey = "CNT_ID";
     protected $fillable = [
         'CNT_ID',
         'CST_ID',

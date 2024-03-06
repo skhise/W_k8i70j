@@ -1,11 +1,11 @@
 <?php
 
 $status = [
-    "1"=>'<div class="badge badge-success badge-shadow">Active</div>',
-    "2"=>'<div class="badge badge-info badge-shadow">Suspendes</div>',
-    "3"=>'<div class="badge badge-danger badge-shadow">Deactive</div>',
-    "4"=>'<div class="badge badge-secondary badge-shadow">Ferting</div>',
-    "5"=>'<div class="badge badge-warning badge-shadow">Archiv</div>',
+    "1" => '<div class="badge badge-success badge-shadow">Active</div>',
+    "2" => '<div class="badge badge-info badge-shadow">Suspendes</div>',
+    "3" => '<div class="badge badge-danger badge-shadow">Deactive</div>',
+    "4" => '<div class="badge badge-secondary badge-shadow">Ferting</div>',
+    "5" => '<div class="badge badge-warning badge-shadow">Archiv</div>',
 ];
 $add_cp_url = "{{route('clients.view',$client->id)}}";
 ?>
@@ -65,8 +65,8 @@ $add_cp_url = "{{route('clients.view',$client->id)}}";
                                                                     <hr>
                                                                     <strong><i
                                                                             class="fa fa-map-marker margin-r-5"></i>&nbsp;&nbsp;Status</strong>
-                                                                    <p class="text-muted">{!! $client->CST_Status !=0 ?
-                                                                        $status[$client->CST_Status] : 'NA' !!}</p>
+                                                                    <p class="text-muted">{!! $client->CST_Status != 0 ?
+    $status[$client->CST_Status] : 'NA' !!}</p>
                                                                     <hr>
                                                                     <strong><i
                                                                             class="fa fa-map-marker margin-r-5"></i>&nbsp;&nbsp;Total
@@ -95,21 +95,7 @@ $add_cp_url = "{{route('clients.view',$client->id)}}";
                                                             </div>
                                                             <div class="col-md-9">{{$client->CST_Name}}</div>
                                                         </div>
-                                                        <div class="row">
-                                                            <div class="col-md-3">
-                                                                <span style="float:right ;font-weight:bold">GSTIN
-                                                                    No.</span>
-                                                            </div>
-                                                            <div class="col-md-9">{{$client->gst_no}}</div>
-                                                        </div>
-                                                        <div class="row">
-                                                            <div class="col-md-3">
-                                                                <span style="float:right ;font-weight:bold">Pan
-                                                                    No.</span>
-                                                            </div>
-                                                            <div class="col-md-9">{{$client->pan_no}}</div>
-                                                        </div>
-                                                        <div class="row">
+                                                        <div class="row mt-2">
                                                             <div class="col-md-3">
                                                                 <span style="float:right ;font-weight:bold">Office
                                                                     Address</span>
@@ -125,14 +111,28 @@ $add_cp_url = "{{route('clients.view',$client->id)}}";
                                                             </div>
                                                             <div class="col-md-3">{{$client->CST_SiteAddress}}</div>
                                                         </div>
-                                                        <div class="row">
+                                                        <div class="row mt-2">
                                                             <div class="col-md-3">
                                                                 <span
                                                                     style="float:right ;font-weight:bold">Description</span>
                                                             </div>
                                                             <div class="col-md-6">{{$client->CST_Note}}</div>
                                                         </div>
-
+                                                        
+                                                        <div class="row mt-2">
+                                                            <div class="col-md-3">
+                                                                <span style="float:right ;font-weight:bold">GSTIN
+                                                                    No.</span>
+                                                            </div>
+                                                            <div class="col-md-9">{{$client->gst_no}}</div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-3">
+                                                                <span style="float:right ;font-weight:bold">Pan
+                                                                    No.</span>
+                                                            </div>
+                                                            <div class="col-md-9">{{$client->pan_no}}</div>
+                                                        </div>
                                                         <hr />
                                                         <div>
                                                             <h5 class="">Contact Details</h5>
@@ -148,8 +148,8 @@ $add_cp_url = "{{route('clients.view',$client->id)}}";
                                                                     style="float:right ;font-weight:bold">Department</span>
                                                             </div>
                                                             <div class="col-md-3">
-                                                                {{$client->CCP_Department !=null ?
-                                                                $client->CCP_Department : "NA"}}
+                                                                {{$client->CCP_Department != null ?
+    $client->CCP_Department : "NA"}}
                                                             </div>
                                                             <div class="col-md-3">
                                                                 <span
@@ -162,7 +162,7 @@ $add_cp_url = "{{route('clients.view',$client->id)}}";
                                                             </div>
                                                             <div class="col-md-3">
                                                                 {{$client->CCP_Phone1 != null ? $client->CCP_Phone1 :
-                                                                'NA'}}
+    'NA'}}
                                                             </div>
                                                         </div>
                                                         <div class="row">
@@ -242,7 +242,11 @@ $add_cp_url = "{{route('clients.view',$client->id)}}";
                                                                                 data-phone="{{$contact['CNT_Phone1']}}"
                                                                                 data-cpid="{{$contact['CNT_ID']}}"
                                                                                 class="btn btn-icon btn-sm btn-primary"><i
-                                                                                    class="far fa-edit"></i></a></td>
+                                                                                    class="far fa-edit"></i></a>
+                                                                                    <a type="submit" href="{{route('contacts.delete', $contact['CNT_ID'])}}" class="btn btn-sm btn-danger"><i
+                                                                                    class="fa fa-trash"></i></a
+                                                                                
+                                                                            </td>
                                                                     </tr>
                                                                     @endforeach
                                                                 </tbody>

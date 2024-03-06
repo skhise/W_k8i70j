@@ -62,8 +62,12 @@ Route::middleware(['prevent-back-history'])->group(function () {
         Route::post('/clients/{client}', [ClientController::class, 'update'])->name('clients.update');
     });
     Route::middleware('auth')->group(function () {
+        Route::get('/contacts/{contactPerson}/delete', [ClientController::class, 'DeleteContact'])->name('contacts.delete');
+    });
+    Route::middleware('auth')->group(function () {
         Route::post('/clients/all', [ContractController::class, 'GetCustomerList'])->name('clients.all');
     });
+
     Route::post('clients/{id}/add_cp', [ClientController::class, 'add_cp'])
         ->name('clients.add_cp')
         ->middleware('auth');
@@ -145,6 +149,7 @@ Route::middleware(['prevent-back-history'])->group(function () {
         Route::post('/products/{product}/update', [ProductController::class, 'update'])->name("products.update");
         Route::post('/products/store', [ProductController::class, 'store'])->name("products.store");
         Route::post('/products/{product}/upload', [ProductController::class, 'upload'])->name("products.upload");
+        Route::get('/products/product_by_id', [ProductController::class, 'product_by_id'])->name("products.product_by_id");
     });
     Route::get('employees/{employee}/edit', [EmployeeController::class, 'edit'])
         ->name('employees.edit')

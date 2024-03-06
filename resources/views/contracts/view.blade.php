@@ -10,7 +10,7 @@
                                 <div class="card-header-action"><a class="btn btn-danger"
                                         href="{{route('contracts')}}">Back</a>
                                     <a class="btn btn-primary"
-                                        href="{{route('contracts.edit',$contract['CNRT_ID'])}}">Edit</a>
+                                        href="{{route('contracts.edit', $contract['CNRT_ID'])}}">Edit</a>
                                 </div>
                             </div>
                             <div class="card-body">
@@ -22,8 +22,16 @@
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link" id="profile-tab2" data-toggle="tab" href="#ContractProduct"
-                                            role="tab" aria-controls="refclient" aria-selected="false">Contract
+                                            role="tab" aria-selected="false">Contract
                                             Product</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="profile-tab3" data-toggle="tab" href="#ContractServices"
+                                            role="tab" aria-selected="false">Services</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="profile-tab4" data-toggle="tab" href="#ContractCheckList"
+                                            role="tab" aria-selected="false">CheckList</a>
                                     </li>
 
                                 </ul>
@@ -34,71 +42,29 @@
                                         <div class="row">
                                             <div class="col-md-3">
                                                 <div class="card card-primary">
-                                                    <div class="card-header">
-                                                        <h4 class="text-uppercase">{{$contract->CST_Name}}</h4>
-
-                                                    </div>
                                                     <div class="card-body">
                                                         <ul class="list-group ">
                                                             <li class="list-group-item">
                                                                 <div class="box-body">
-                                                                    <strong>
+                                                                <strong>
                                                                         <i
-                                                                            class="fa fa-book margin-r-5"></i>&nbsp;&nbsp;Client
-                                                                        Code
+                                                                            class="fa fa-book margin-r-5"></i>&nbsp;&nbsp;Contract Type
+                                                                        
                                                                     </strong>
                                                                     <p class="text-muted">
-                                                                        {{$contract->CST_Code}}
+                                                                        {{$contract->contract_type_name}}
                                                                     </p>
-                                                                    <hr>
+                                                                    <hr/>
                                                                     <strong>
                                                                         <i
-                                                                            class="fa fa-book margin-r-5"></i>&nbsp;&nbsp;Client
-                                                                        Name
+                                                                            class="fa fa-ellipsis-h margin-r-5"></i>&nbsp;&nbsp;Total Service
                                                                     </strong>
-                                                                    <p class="text-muted">
-                                                                        {{$contract->CNRT_CustomerContactPerson}}
-                                                                    </p>
+                                                                    <p class="text-muted">{{$contract->Total_Services ?? 0}}</p>
                                                                     <hr>
-                                                                    <strong>
-                                                                        <i
-                                                                            class="fa fa-book margin-r-5"></i>&nbsp;&nbsp;Contact
-                                                                        Name
-                                                                    </strong>
-                                                                    <p class="text-muted">
-                                                                        {{$contract->CNRT_CustomerContactPerson}}
-                                                                    </p>
-                                                                    <hr>
-                                                                    <strong>
-                                                                        <i
-                                                                            class="fa fa-book margin-r-5"></i>&nbsp;&nbsp;Mobile
-                                                                        Number
-                                                                    </strong>
-                                                                    <p class="text-muted">
-                                                                        {{$contract->CNRT_Phone1}}
-                                                                    </p>
-                                                                    <hr>
-                                                                    <strong>
-                                                                        <i
-                                                                            class="fa fa-book margin-r-5"></i>&nbsp;&nbsp;Alternate
-                                                                        Number
-                                                                    </strong>
-                                                                    <p class="text-muted">
-                                                                        {{$contract->CNRT_Phone2}}
-                                                                    </p>
-                                                                    <hr>
-                                                                    <strong>
-                                                                        <i
-                                                                            class="fa fa-book margin-r-5"></i>&nbsp;&nbsp;Contact
-                                                                        Email
-                                                                    </strong>
-                                                                    <p class="text-muted">
-                                                                        {{$contract->CNRT_CustomerEmail}}
-                                                                    </p>
-
-
-                                                                    <hr>
-
+                                                                    <strong><i
+                                                                            class="fa fa-calendar margin-r-5"></i>&nbsp;&nbsp;End Date</strong>
+                                                                    <p class="text-muted">{{date("d-M-Y", strtotime($contract->CNRT_EndDate)) ??
+    "NA"}}</p><hr/>
                                                                     <strong>
                                                                         <i
                                                                             class="fa fa-ellipsis-h margin-r-5"></i>&nbsp;&nbsp;Website
@@ -107,15 +73,10 @@
                                                                     <hr>
                                                                     <strong><i
                                                                             class="fa fa-map-marker margin-r-5"></i>&nbsp;&nbsp;Status</strong>
-                                                                    <p class="text-muted">{!!$contract->CST_Status !=0 ?
-                                                                        $status[$contract->CST_Status] : 'NA' !!}</p>
+                                                                    <p class="text-muted">{!!$contract->CST_Status != 0 ?
+    $status[$contract->CST_Status] : 'NA' !!}</p>
+                                                                    
                                                                     <hr>
-                                                                    <!-- <strong><i
-                                                                            class="fa fa-map-marker margin-r-5"></i>&nbsp;&nbsp;Total
-                                                                        Projects
-                                                                    </strong>
-                                                                    <p class="text-muted">{{$project_count}}</p>
-                                                                    <hr> -->
                                                                 </div>
                                                             </li>
                                                         </ul>
@@ -131,6 +92,13 @@
                                                             </h5>
                                                         </div>
                                                         <hr />
+                                                        <div class="row">
+                                                            <div class="col-md-3"><span style="float:right ;font-weight:bold">Client Name</span></div>
+                                                            <div class="col-md-9">
+                                                            <h6 class="text-uppercase">{{$contract->CST_Name}}</h6>
+
+                                                            </div>
+                                                        </div>
                                                         <div class="row">
                                                             <div class="col-md-3">
                                                                 <span style="float:right ;font-weight:bold">
@@ -161,8 +129,8 @@
                                                                 </span>
                                                             </div>
                                                             <div class="col-md-3">
-                                                                {{date("d-M-Y",strtotime($contract->CNRT_StartDate)) ??
-                                                                "NA"}}
+                                                                {{date("d-M-Y", strtotime($contract->CNRT_StartDate)) ??
+    "NA"}}
                                                             </div>
                                                             <div class="col-md-2">
                                                                 <span style="float:right ;font-weight:bold">
@@ -170,8 +138,8 @@
                                                                 </span>
                                                             </div>
                                                             <div class="col-md-3">
-                                                                {{date("d-M-Y",strtotime($contract->CNRT_EndDate)) ??
-                                                                "NA"}}
+                                                                {{date("d-M-Y", strtotime($contract->CNRT_EndDate)) ??
+    "NA"}}
                                                             </div>
                                                         </div>
                                                         <div class="row">
@@ -195,6 +163,40 @@
                                                         </div>
 
                                                         <hr />
+                                                        
+                                                        <div>
+                                                            <h5 class="">Contact Information</h5>
+                                                        </div>
+                                                        <hr/>
+                                                        <div class="row">
+                                                            <div class="col-md-3">
+                                                                <span style="float:right ;font-weight:bold">Contact Person
+                                                                </span>
+                                                            </div>
+                                                            <div class="col-md-9">{{$contract->CCP_Name ?? ""}}</div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-3">
+                                                                <span style="float:right ;font-weight:bold">Mobile Number
+                                                                </span>
+                                                            </div>
+                                                            <div class="col-md-9">{{$contract->CCP_Mobile ?? ""}}</div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-3">
+                                                                <span style="float:right ;font-weight:bold">Alternate Number
+                                                                </span>
+                                                            </div>
+                                                            <div class="col-md-9">{{$contract->CCP_Phone1 ?? ""}}</div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-3">
+                                                                <span style="float:right ;font-weight:bold">Contact Email
+                                                                </span>
+                                                            </div>
+                                                            <div class="col-md-9">{{$contract->CCP_Email ?? ""}}</div>
+                                                        </div>
+                                                        <hr/>
                                                         <div>
                                                             <h5 class="">Other Information</h5>
                                                         </div>
@@ -215,7 +217,7 @@
                                                                     Location</span>
                                                             </div>
                                                             <div class="col-md-4">{{$contract->SiteAreaName ??
-                                                                "NA"}}</div>
+    "NA"}}</div>
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-3">
@@ -223,7 +225,7 @@
                                                                 </span>
                                                             </div>
                                                             <div class="col-md-3">{{$contract->CNRT_OfficeAddress ??
-                                                                "NA"}}
+    "NA"}}
                                                             </div>
 
                                                         </div>
@@ -233,8 +235,8 @@
                                                             </div>
                                                             <div class="col-md-6">
                                                                 {{ $contract->CNRT_Note != null ? $contract->CNRT_Note
-                                                                :
-                                                                'NA'}}
+    :
+    'NA'}}
                                                             </div>
                                                         </div>
                                                         <div class="row">
@@ -244,8 +246,8 @@
                                                                 </span>
                                                             </div>
                                                             <div class="col-md-6">
-                                                                {{$contract->CNRT_TNC !=null ?
-                                                                $contract->CNRT_TNC : "NA"}}
+                                                                {{$contract->CNRT_TNC != null ?
+    $contract->CNRT_TNC : "NA"}}
                                                             </div>
                                                         </div>
                                                         <hr />
@@ -294,7 +296,7 @@
                                                                 <tbody>
                                                                     @if($products->count() == 0)
                                                                     <tr>
-                                                                        <td colspan="8" class="text-center">No
+                                                                        <td colspan="10" class="text-center">No
                                                                             products
                                                                             added yet.</td>
                                                                     </tr>
@@ -302,7 +304,7 @@
                                                                     @foreach($products as $index => $product)
                                                                     <tr>
                                                                         <td>
-                                                                            {{$index+1}}
+                                                                            {{$index + 1}}
                                                                         </td>
                                                                         <td>
                                                                             {{$product->product_name}}
@@ -336,6 +338,18 @@
                                             </div>
                                         </div>
 
+                                    </div>
+                                    <div class="tab-pane fade" role="tabpanel"
+                                        aria-labelledby="profile-tab3" id="ContractServices">
+                                        <div class="row">
+                                                                        
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" role="tabpanel"
+                                        aria-labelledby="profile-tab4" id="ContractCheckList">
+                                        <div class="row">
+                                                                        
+                                        </div>
                                     </div>
                                 </div>
                             </div>

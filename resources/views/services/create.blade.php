@@ -6,18 +6,18 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header">
-                                <h4>{{$update ?'Update Service' :'Add Service'}}</h4>
+                                <h4>{{$update ? 'Update Service' : 'Add Service'}}</h4>
                             </div>
                             <div class="card-body">
                                 <ul class="nav nav-tabs mb-3" id="myTabs" role="tablist">
-                                    <li class="nav-item {{$service->contract_id ==0 && $update ? 'hide':''}}">
-                                        <a class="nav-link {{old('selectedtab')=='tab1' || old('selectedtab') == '' || $service->contract_id !=0  ? 'active':'' }}"
+                                    <li class="nav-item {{$service->contract_id == 0 && $update ? 'hide' : ''}}">
+                                        <a class="nav-link {{old('selectedtab') == 'tab1' || old('selectedtab') == '' || $service->contract_id != 0 ? 'active' : '' }}"
                                             name="tab1" id="tab1" onclick="toggleForm('tab1')" data-toggle="tab"
                                             href="#contracted" role="tab" aria-controls="tab1"
                                             aria-selected="true">Contracted</a>
                                     </li>
-                                    <li class="nav-item {{$service->contract_id !=0 && $update ? 'hide':''}}">
-                                        <a class="nav-link {{old('selectedtab')=='tab2' || $service->contract_id==0 ? 'active':'' }}"
+                                    <li class="nav-item {{$service->contract_id != 0 && $update ? 'hide' : ''}}">
+                                        <a class="nav-link {{old('selectedtab') == 'tab2' || ($update && $service->contract_id == 0) ? 'active' : '' }}"
                                             name="tab2" id="tab2" data-toggle="tab" onclick="toggleForm('tab2')"
                                             href="#noncontracted" role="tab" aria-controls="tab2"
                                             aria-selected="false">Non Contracted</a>
@@ -35,12 +35,45 @@
                                         </div>')) !!}
                                         @endif
                                     </div>
+                                    <div class="form-group">
 
+                                        <div class="row">
+                                            <div class="col-md-2">
+                                                <span style="float:right;font-weight:bold">Service No.
+                                                </span>
+                                            </div>
+                                            <div class="col-md-3 floating-label">
+                                                <input
+                                                    class="disabled form-control text-box single-line @error('service_no') is-invalid @enderror"
+                                                    data-val="true"
+                                                    data-val-required="The Customer Name field is required."
+                                                    id="service_no" name="service_no" placeholder="" required="required"
+                                                    type="text"
+                                                    value="{{$service->service_no ?? old('service_no') ?? $service_no}}" />
+                                                <label for="service_no">Contract Number</label>
+                                                @if($errors->has('service_no'))
+                                                <span class="text-danger field-validation-valid"
+                                                    data-valmsg-for="service_no" data-valmsg-replace="true">{{
+        $errors->first('service_no') }}</span>
+
+                                                @endif
+                                            </div>
+                                            <div class="col-md-3 floating-label">
+
+                                                <input class="form-control text-box single-line" id="service_date"
+                                                    name="service_date" placeholder="" type="date"
+                                                    value="{{$service->service_date ?? old('service_date') == '' ? date('Y-m-d') : old('service_date')}}" />
+                                                <label for="service_date">Service Date</label>
+                                                <span class="text-danger field-validation-valid"
+                                                    data-valmsg-for="service_date" data-valmsg-replace="true"></span>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="form-group">
                                         <div class="row">
                                             <div class="col-md-2">
                                                 <span style="float:right ;font-weight:bold">Select
-                                                    Customer</span>
+                                                    Customer <span class="text-danger">*</span></span>
                                             </div>
                                             <div class="col-md-4 floating-label">
                                                 <select
@@ -54,31 +87,39 @@
                                                     @foreach($clients as $client)
                                                     <option data-client="{{$client}}" value="{{$client->CST_ID}}"
                                                         {{$client->CST_ID ==
-                                                        $service->customer_id ? 'selected':
-                                                        (old('customer_id')
-                                                        ==
-                                                        $client->CST_ID ? 'selected' :'') }}
+        $service->customer_id ? 'selected' :
+        (old('customer_id')
+            ==
+            $client->CST_ID ? 'selected' : '') }}
                                                         >
                                                         {{$client->CST_Name}}</option>
                                                     @endforeach
                                                 </select>
                                                 @if($errors->has('customer_id'))
-                                                <span class="text-danger field-validation-valid"
+                                                <span class="texnpm runnpm nnnnt-danger field-validation-valid"
                                                     data-valmsg-for="customer_id" data-valmsg-replace="true">{{
-                                                    $errors->first('customer_id') }}</span>
+        $errors->first('customer_id') }}</span>
                                                 @endif
                                             </div>
-
+                                            <div class="col-md-3 floating-label contracted  {{$service->contract_id == 0 && $update ? 'hide' : ''}} {{old('selectedtab') == 'tab1' || old('selectedtab') == '' ? '' : 'hide' }}">
+                                                
+                                                <div class="input-group">
+                                                <input type="text"class="form-control" id="product_sr_no" name="product_sr_no"/>
+                                                <button type="button" class="btn btn-icon btn-danger" onclick="javascript:window.location.reload()"><i class="material-icons">refresh</i></button>
+                                                </div>
+                                                
+                                                <label for="product_sr_no">Product S/N Number</label>
+                                            </div>
                                         </div>
                                     </div>
                                     <div
-                                        class="form-group contracted {{$service->contract_id ==0 && $update ? 'hide':''}} {{old('selectedtab')=='tab1' || old('selectedtab') == ''  ? '':'hide' }}">
+                                        class="form-group contracted {{$service->contract_id == 0 && $update ? 'hide' : ''}} {{old('selectedtab') == 'tab1' || old('selectedtab') == '' ? '' : 'hide' }}">
                                         <div class="row">
                                             <div class="col-md-2">
                                                 <span style="float:right ;font-weight:bold">Select
-                                                    Contract</span>
+                                                    Contract <span class="text-danger">*</span></span>
                                             </div>
-                                            <div class="col-md-4 floating-label">
+                                            <diphpphpv class="col-md-4 floating-label">
                                                 <select
                                                     class="form-control select2 text-box single-line @error('contract_id') is-invalid @enderror"
                                                     data-val="true" id="contract_id" name="contract_id" placeholder=""
@@ -88,48 +129,14 @@
                                                 @if($errors->has('contract_id'))
                                                 <span class="text-danger field-validation-valid"
                                                     data-valmsg-for="contract_id" data-valmsg-replace="true">{{
-                                                    $errors->first('contract_id') }}</span>
+        $errors->first('contract_id') }}</span>
                                                 @endif
                                             </div>
 
                                         </div>
                                     </div>
                                     <div
-                                        class="form-group contracted {{$service->contract_id ==0 && $update ? 'hide':''}} {{old('selectedtab')=='tab1' || old('selectedtab') == ''  ? '':'hide' }}">
-                                        <div class="row">
-                                            <div class="col-md-2">
-                                                <span style="float:right ;font-weight:bold">Select
-                                                    Product</span>
-                                            </div>
-                                            <div class="col-md-4 floating-label">
-                                                <select
-                                                    class="form-control select2 text-box single-line @error('product_id') is-invalid @enderror"
-                                                    data-val="true" id="product_id" name="product_id" placeholder=""
-                                                    type="text" value="{{$service->product_id ?? old('product_id')}}">
-                                                    <option value="">Select Product</option>
-                                                </select>
-                                                @if($errors->has('product_id'))
-                                                <span class="text-danger field-validation-valid"
-                                                    data-valmsg-for="product_id" data-valmsg-replace="true">{{
-                                                    $errors->first('product_id') }}</span>
-                                                @endif
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div class="form-check pt-3">
-                                                    <input class="form-check-input" type="checkbox" value="0"
-                                                        id="without_product" name="without_product"
-                                                        {{$service->product_id==0 || $service->product_id==null ?
-                                                    'checked' : '' }}>
-                                                    <label class="form-check-label" for="without_product">
-                                                        Without Product
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div
-                                        class="form-group contracted {{$service->contract_id ==0 && $update ? 'hide':''}} {{old('selectedtab')=='tab1' || old('selectedtab') == ''  ? '':'hide' }}">
+                                        class="form-group contracted {{$service->contract_id == 0 && $update ? 'hide' : ''}} {{old('selectedtab') == 'tab1' || old('selectedtab') == '' ? '' : 'hide' }}">
                                         <div class="row">
                                             <div class="col-md-2">
                                                 <span style="float:right ;font-weight:bold">Contract
@@ -167,7 +174,7 @@
                                         </div>
                                     </div>
                                     <div
-                                        class="form-group contracted {{$service->contract_id ==0 && $update ? 'hide':''}} {{old('selectedtab')=='tab1' || old('selectedtab') == ''  ? '':'hide' }}">
+                                        class="form-group contracted {{$service->contract_id == 0 && $update ? 'hide' : ''}} {{old('selectedtab') == 'tab1' || old('selectedtab') == '' ? '' : 'hide' }}">
                                         <div class="row">
                                             <div class="col-md-2">
                                                 <span style="float:right ;font-weight:bold"></span>
@@ -200,6 +207,131 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div
+                                        class="form-group contracted {{$service->contract_id == 0 && $update ? 'hide' : ''}} {{old('selectedtab') == 'tab1' || old('selectedtab') == '' ? '' : 'hide' }}">
+                                        <div class="row">
+                                            <div class="col-md-2">
+                                                <span style="float:right ;font-weight:bold">Select
+                                                    Product</span>
+                                            </div>
+                                            <div class="col-md-4 floating-label">
+                                                <select
+                                                    class="form-control select2 text-box single-line @error('product_id') is-invalid @enderror"
+                                                    data-val="true" id="product_id" name="product_id" placeholder=""
+                                                    type="text" value="{{$service->product_id ?? old('product_id')}}">
+                                                    <option value="">Select Product</option>
+                                                </select>
+                                                @if($errors->has('product_id'))
+                                                <span class="text-danger field-validation-valid"
+                                                    data-valmsg-for="product_id" data-valmsg-replace="true">{{
+        $errors->first('product_id') }}</span>
+                                                @endif
+                                            </div>
+                                            <div class="col-md-4" id="without_product_div">
+                                                <div class="form-check pt-3">
+                                                    <input class="form-check-input" type="checkbox" value="0"
+                                                        id="without_product" name="without_product"
+                                                        {{$update && ($service->product_id == 0 || $service->product_id == null) ?
+    'checked' : '' }}>
+                                                    <label class="form-check-label" for="without_product">
+                                                        Without Product
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group contracted {{$service->contract_id == 0 && $update ? 'hide' : ''}} {{old('selectedtab') == 'tab1' || old('selectedtab') == '' ? '' : 'hide' }}">
+                                        <div class="row">
+                                            <div class="col-md-2">
+                                                <span style="float:right ;font-weight:bold">Product
+                                                    Information</span>
+                                            </div>
+                                            <div class="col-md-3 floating-label">
+
+                                                <input class="disabled form-control text-box single-line" id="product_name"
+                                                    name="product_name" placeholder=""
+                                                    value="{{old('product_name')}}" />
+                                                <label>Product Name</label>
+                                                <span class="text-danger field-validation-valid"
+                                                    data-valmsg-for="product_name" data-valmsg-replace="true"></span>
+                                            </div>
+                                            <div class="col-md-3 floating-label">
+
+                                                <input class="disabled form-control text-box single-line" id="product_type"
+                                                    name="product_type" placeholder=""
+                                                    value="{{old('product_type')}}" />
+                                                <label>Product Type</label>
+                                                <span class="text-danger field-validation-valid"
+                                                    data-valmsg-for="product_type" data-valmsg-replace="true"></span>
+                                            </div>
+                                            <div class="col-md-3 floating-label">
+
+                                                <input class="disabled form-control text-box single-line" id="product_sn"
+                                                    name="product_sn" placeholder=""
+                                                    value="{{old('product_sn')}}" />
+                                                <label>Product S/N</label>
+                                                <span class="text-danger field-validation-valid"
+                                                    data-valmsg-for="product_sn" data-valmsg-replace="true"></span>
+                                            </div>
+
+
+
+                                        </div>
+                                    </div>
+                                    <div class="form-group noncontracted {{old('selectedtab') == 'tab2' ? '' : 'hide' }}">
+                                        <div class="row">
+                                            <div class="col-md-2">
+                                                <span style="float:right ;font-weight:bold">Product
+                                                    Information</span>
+                                            </div>
+                                            <div class="col-md-4 floating-label">
+
+                                                <input class="form-control text-box single-line" id="product_name"
+                                                    name="product_name" placeholder=""
+                                                    value="{{old('product_name')}}" />
+                                                <label>Product Name</label>
+                                                <span class="text-danger field-validation-valid"
+                                                    data-valmsg-for="product_name" data-valmsg-replace="true"></span>
+                                            </div>
+                                            <div class="col-md-3 floating-label">
+
+                                                <input class="form-control text-box single-line" id="product_type"
+                                                    name="product_type" placeholder=""
+                                                    value="{{old('product_type')}}" />
+                                                <label>Product Type</label>
+                                                <span class="text-danger field-validation-valid"
+                                                    data-valmsg-for="product_type" data-valmsg-replace="true"></span>
+                                            </div>
+                                            <div class="col-md-3 floating-label">
+
+                                            <input class="form-control text-box single-line" id="product_sn"
+                                                name="product_sn" placeholder=""
+                                                value="{{old('product_sn')}}" />
+                                            <label>Product S/N</label>
+                                            <span class="text-danger field-validation-valid"
+                                                data-valmsg-for="product_sn" data-valmsg-replace="true"></span>
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+                                    <div class="form-group noncontracted hide">
+                                        <div class="row">
+                                            <div class="col-md-2">
+                                                <span style="float:right ;font-weight:bold">Product Description</span>
+                                            </div>
+                                            <div class="col-md-6 floating-label">
+
+                                                <textarea class="form-control text-box single-line"
+                                                    id="product_description" name="product_description"
+                                                    placeholder="">{{old('product_description')}}</textarea>
+                                                <span class="text-danger field-validation-valid"
+                                                    data-valmsg-for="product_description"
+                                                    data-valmsg-replace="true"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
                                     <div class="form-group">
                                         <div class="row">
                                             <div class="col-md-2">
@@ -254,10 +386,10 @@
                                                     <option value="">Select site location</option>
                                                     @foreach($sitelocation as $location)
                                                     <option value="{{$location->id}}" {{$location->id ==
-                                                        $service->areaId ? 'selected':
-                                                        (old('areaId')
-                                                        ==
-                                                        $location->id ? 'selected' :'')
+        $service->areaId ? 'selected' :
+        (old('areaId')
+            ==
+            $location->id ? 'selected' : '')
                                                         }}>{{$location->SiteAreaName}}
                                                     </option>
                                                     @endforeach
@@ -266,62 +398,18 @@
 
                                         </div>
                                     </div>
-                                    <div class="form-group noncontracted {{old('selectedtab')=='tab2' ? '':'hide' }}">
-                                        <div class="row">
-                                            <div class="col-md-2">
-                                                <span style="float:right ;font-weight:bold">Product
-                                                    Information</span>
-                                            </div>
-                                            <div class="col-md-4 floating-label">
-
-                                                <input class="form-control text-box single-line" id="product_name"
-                                                    name="product_name" placeholder=""
-                                                    value="{{old('product_name')}}" />
-                                                <label>Product Name</label>
-                                                <span class="text-danger field-validation-valid"
-                                                    data-valmsg-for="product_name" data-valmsg-replace="true"></span>
-                                            </div>
-                                            <div class="col-md-3 floating-label">
-
-                                                <input class="form-control text-box single-line" id="product_type"
-                                                    name="product_type" placeholder=""
-                                                    value="{{old('product_type')}}" />
-                                                <label>Product Type</label>
-                                                <span class="text-danger field-validation-valid"
-                                                    data-valmsg-for="product_type" data-valmsg-replace="true"></span>
-                                            </div>
-
-
-
-                                        </div>
-                                    </div>
-                                    <div class="form-group noncontracted hide">
-                                        <div class="row">
-                                            <div class="col-md-2">
-                                                <span style="float:right ;font-weight:bold">Product Description</span>
-                                            </div>
-                                            <div class="col-md-6 floating-label">
-
-                                                <textarea class="form-control text-box single-line"
-                                                    id="product_description" name="product_description"
-                                                    placeholder="">{{old('product_description')}}</textarea>
-                                                <span class="text-danger field-validation-valid"
-                                                    data-valmsg-for="product_description"
-                                                    data-valmsg-replace="true"></span>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    
                                     <div class="form-group">
                                         <div class="row">
 
                                             <div class="col-md-2">
                                                 <label class="col-form-label font-bold text-right" for="service_note"
-                                                    style="display: block">Note</label>
+                                                    style="display: block">Issue Description</label>
                                             </div>
                                             <div class="col-md-4">
                                                 <textarea class="form-control" id="service_note" name="service_note"
                                                     placeholder="Note"
-                                                    rows="2">{{$service->service_note?? old('service_note')}}</textarea>
+                                                    rows="2">{{$service->service_note ?? old('service_note')}}</textarea>
                                                 </textarea>
                                                 <span class="text-danger field-validation-valid"
                                                     data-valmsg-for="service_note" data-valmsg-replace="true"></span>
@@ -329,40 +417,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="form-group">
 
-                                        <div class="row">
-                                            <div class="col-md-2">
-                                                <span style="float:right;font-weight:bold">Service No.
-                                                </span>
-                                            </div>
-                                            <div class="col-md-3 floating-label">
-                                                <input
-                                                    class="disabled form-control text-box single-line @error('service_no') is-invalid @enderror"
-                                                    data-val="true"
-                                                    data-val-required="The Customer Name field is required."
-                                                    id="service_no" name="service_no" placeholder="" required="required"
-                                                    type="text"
-                                                    value="{{$service->service_no ?? old('service_no') ?? $service_no}}" />
-                                                <label for="service_no">Contract Number</label>
-                                                @if($errors->has('service_no'))
-                                                <span class="text-danger field-validation-valid"
-                                                    data-valmsg-for="service_no" data-valmsg-replace="true">{{
-                                                    $errors->first('service_no') }}</span>
-
-                                                @endif
-                                            </div>
-                                            <div class="col-md-3 floating-label">
-
-                                                <input class="form-control text-box single-line" id="service_date"
-                                                    name="service_date" placeholder="" type="date"
-                                                    value="{{$service->service_date ?? old('service_date') == '' ? date('Y-m-d') :old ('service_date')}}" />
-                                                <label for="service_date">Service Date</label>
-                                                <span class="text-danger field-validation-valid"
-                                                    data-valmsg-for="service_date" data-valmsg-replace="true"></span>
-                                            </div>
-                                        </div>
-                                    </div>
                                     <div class="form-group">
                                         <div class="row">
                                             <div class="col-md-2">
@@ -379,9 +434,9 @@
                                                     <option value="">Select issue type</option>
                                                     @foreach($serviceType as $issuetype)
                                                     <option value="{{$issuetype->id}}" {{$issuetype->id ==
-                                                        $service->service_type ? 'selected':
-                                                        (old('service_type') ==
-                                                        $issuetype->id ? 'selected' :'') }}>
+        $service->service_type ? 'selected' :
+        (old('service_type') ==
+            $issuetype->id ? 'selected' : '') }}>
                                                         {{$issuetype->type_name}}</option>
                                                     @endforeach
                                                 </select>
@@ -389,7 +444,7 @@
                                                 @if($errors->has('service_type'))
                                                 <span class="text-danger field-validation-valid"
                                                     data-valmsg-for="issue_type" data-valmsg-replace="true">{{
-                                                    $errors->first('service_type') }}</span>
+        $errors->first('service_type') }}</span>
 
                                                 @endif
                                             </div>
@@ -403,9 +458,9 @@
                                                     <option value="">Select issue type</option>
                                                     @foreach($issue_type as $issuetype)
                                                     <option value="{{$issuetype->id}}" {{$issuetype->id ==
-                                                        $service->issue_type ? 'selected':
-                                                        (old('issue_type') ==
-                                                        $issuetype->id ? 'selected' :'') }}>
+        $service->issue_type ? 'selected' :
+        (old('issue_type') ==
+            $issuetype->id ? 'selected' : '') }}>
                                                         {{$issuetype->issue_name}}</option>
                                                     @endforeach
                                                 </select>
@@ -413,7 +468,7 @@
                                                 @if($errors->has('issue_type'))
                                                 <span class="text-danger field-validation-valid"
                                                     data-valmsg-for="issue_type" data-valmsg-replace="true">{{
-                                                    $errors->first('issue_type') }}</span>
+        $errors->first('issue_type') }}</span>
 
                                                 @endif
                                             </div>
@@ -426,10 +481,10 @@
                                                     <option value="">Select priority</option>
                                                     @foreach($priorities as $priority)
                                                     <option value="{{$priority->id}}" {{$priority->id ==
-                                                        $service->service_priority ? 'selected':
-                                                        (old('service_priority')
-                                                        ==
-                                                        $priority->id ? 'selected' :'') }}>
+        $service->service_priority ? 'selected' :
+        (old('service_priority')
+            ==
+            $priority->id ? 'selected' : '') }}>
                                                         {{$priority->priority_name}}</option>
                                                     @endforeach
                                                 </select>
@@ -437,7 +492,7 @@
                                                 @if($errors->has('service_priority'))
                                                 <span class="text-danger field-validation-valid"
                                                     data-valmsg-for="service_priority" data-valmsg-replace="true">{{
-                                                    $errors->first('service_priority') }}</span>
+        $errors->first('service_priority') }}</span>
 
                                                 @endif
                                             </div>
@@ -471,7 +526,7 @@
 
                                             <button type="submit" id="btnAddClient ml-2"
                                                 class="btn btn-primary">{{$update ? 'Update' :
-                                                'Save'}}</button>
+    'Save'}}</button>
                                             <a type="button" class="btn btn-danger mr-2"
                                                 href="{{route('services')}}">Back</a>
                                         </div>
@@ -487,6 +542,91 @@
     </section>
     @section('script')
     <script>
+       $(document).on('change', '#product_sr_no', function () {
+
+            $('#contract_no').val('');
+            $('#contract_type').val('');
+            $('#contract_status').val('');
+            $('#CNRT_EndDate').val('');
+            $('#CNRT_Charges').val('');
+            $('#CNRT_Charges_Pending').val('');
+            $('#product_id').html('');
+            var value = $(this).val();
+            $.ajax({
+                method: 'GET',
+                url: '/products/product_by_id',
+                data: {
+                    product_id: value,
+                },
+                success: function (resp) {
+                    var obj = resp;
+                    if (obj.success) {
+                        var product = obj.product;
+                        $('#contract_no').val(product.CNRT_Number);
+                        $('#contract_type').val(product.contract_type_name);
+                        $('#contract_status').val(product.contract_status_name);
+                        $('#CNRT_EndDate').val(product.contractEndDate);
+                        $('#CNRT_Charges').val(product.CNRT_Charges);
+                        $('#CNRT_Charges_Pending').val(product.CNRT_Charges_Pending);
+                        $('#contact_person').val(product.CNRT_CustomerContactPerson);
+                        $('#contact_number1').val(product.CNRT_Phone1);
+                        $('#contact_number2').val(product.CNRT_Phone2);
+                        $('#contact_email').val(product.CNRT_CustomerEmail);
+                        $('#contact_email').val(product.CNRT_CustomerEmail);
+                        $('#product_id').html('');
+                        $('#contract_id').html('');
+                        $('#customer_id').html('');
+                        $("#without_product_div").hide();
+                        var options = '';
+                        options +='<option value="' + product.mainPId + '" selected>' + product.product_name + '</option>';
+                        $('#product_id').html(options);
+                        var optionsC ='<option value="' + product.contractId + '" selected>' + product.CNRT_Number + " / " + product.contract_type_name + '</option>';
+                        $('#contract_id').html(optionsC);
+                        var optionsCustomer ='<option value="' + product.CNRT_CustomerID + '" selected>' + product.client_name + '</option>';
+                        $('#customer_id').html(optionsCustomer);
+
+                    }
+
+                },
+                error: function () {
+                    alert('Something went wrong, try again');
+                }
+            });
+            });
+        $(document).on("change","#product_id",function(){
+            var value = $('#product_id option:selected').val();
+            if(value !=""){
+                $.ajax({
+                method: 'GET',
+                url: '/products/product_by_id',
+                data: {
+                    product_id: value,
+                },
+                success: function (resp) {
+                    var obj = resp;
+                    if (obj.success) {
+                        var product = obj.product;
+                        $('.product_name').val(product.product_name);
+                        $('.product_type').val(product.type_name);
+                        $('.prodcut_sn').val(product.prodcut_sn );
+                   } else {
+                    $('.product_name').val("");
+                        $('.product_type').val("");
+                        $('.prodcut_sn').val("");
+                   }
+
+                },
+                error: function () {
+                    alert('Something went wrong, try again');
+                }
+            });
+            } else {
+                $('.product_name').val("");
+                        $('.product_type').val("");
+                        $('.prodcut_sn').val("");
+            }
+            
+        });
         function toggleForm(tab) {
             if (tab == 'tab1') {
                 $('.noncontracted').hide();

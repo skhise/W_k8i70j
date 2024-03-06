@@ -42,14 +42,16 @@
                                                     <span style="float:right ;font-weight:bold">Client Name<span
                                                             class="text-danger">*</span></span>
                                                 </div>
-                                                <div class="col-md-5">
+                                                <div class="col-md-5 floating-label">
                                                     <input
                                                         class="form-control text-box single-line @error('CST_Name') is-invalid @enderror"
                                                         data-val="true"
+                                                        
+                                                        id="CST_Name" name="CST_Name" placeholder=""
                                                         data-val-required="The Customer Name field is required."
-                                                        id="CST_Name" name="CST_Name" placeholder="Name *"
                                                         required="required" type="text"
                                                         value="{{$client->CST_Name ?? old('CST_Name')}}" />
+                                                           <label>Name</label> 
                                                     @if($errors->has('CST_Name'))
                                                     <span class="text-danger field-validation-valid"
                                                         data-valmsg-for="CST_Name" data-valmsg-replace="true">{{
@@ -57,13 +59,11 @@
 
                                                     @endif
                                                 </div>
-                                                <div class="col-md-1">
-                                                    <span style="float:right ;font-weight:bold">Website</span>
-                                                </div>
-                                                <div class="col-md-3">
+                                                <div class="col-md-4 floating-label">
                                                     <input class="form-control text-box single-line" id="CST_Website"
-                                                        name="CST_Website" placeholder="Website" type="text"
+                                                        name="CST_Website" placeholder="" type="text"
                                                         value="{{$client->CST_Website ?? old('CST_Website')}}" />
+                                                        <label>Website</label>
                                                     <span class="text-danger field-validation-valid"
                                                         data-valmsg-for="CST_Website" data-valmsg-replace="true"></span>
                                                 </div>
@@ -73,27 +73,34 @@
                                         <div class="form-group">
                                             <div class="row">
                                                 <div class="col-md-2">
-                                                    <span style="float:right ;font-weight:bold">Contact Person<span
-                                                            class="text-danger"> *</span></span>
+                                                    <span style="float:right ;font-weight:bold">Contact Person</span>
                                                 </div>
-                                                <div class="col-md-3">
+                                                <div class="col-md-3 floating-label">
                                                     <input class="form-control text-box single-line" id="CCP_Name"
-                                                        min="0" name="CCP_Name" placeholder="Name *" step="1"
+                                                        min="0" name="CCP_Name" placeholder="" step="1"
                                                         type="text" value="{{$client->CCP_Name ?? old('CCP_Name')}}" />
+                                                        <label for="CCP_Name">Name</label>
                                                     <span class="text-danger field-validation-valid"
                                                         data-valmsg-for="CCP_Name" data-valmsg-replace="true"></span>
                                                 </div>
-                                                <div class="col-md-3">
-                                                    <input class="form-control text-box single-line" id="CCP_Mobile"
-                                                        name="CCP_Mobile" placeholder="Mobile *" type="number"
+                                                <div class="col-md-3 floating-label">
+                                                    <input class="form-control text-box single-line @error('CCP_Mobile') is-invalid @enderror" id="CCP_Mobile"
+                                                        name="CCP_Mobile" placeholder="" 
+                                                        data-val-required="This field is required."
+                                                        required="required" type="number"
                                                         value="{{$client->CCP_Mobile ?? old('CCP_Mobile')}}" />
-                                                    <span class="text-danger field-validation-valid"
-                                                        data-valmsg-for="Mobile" data-valmsg-replace="true"></span>
+                                                        <label for="CCP_Name">Mobile<span class="text-danger">*</span></label>
+                                                        @if($errors->has('CCP_Mobile'))
+                                                    <span class=" text-danger field-validation-valid"
+                                                        data-valmsg-for="CCP_Mobile" data-valmsg-replace="true">
+                                                        {{ $errors->first('CCP_Mobile') }}</span>
+                                                    @endif
                                                 </div>
-                                                <div class="col-md-3">
+                                                <div class="col-md-3 floating-label">
                                                     <input class="form-control text-box single-line" id="CCP_Department"
-                                                        name="CCP_Department" placeholder="Department" type="text"
+                                                        name="CCP_Department" placeholder="" type="text"
                                                         value="{{$client->CCP_Department ??  old('CCP_Department')}}" />
+                                                        <label>Department</label>
                                                     <span class="text-danger field-validation-valid"
                                                         data-valmsg-for="CCP_Department"
                                                         data-valmsg-replace="true"></span>
@@ -103,13 +110,13 @@
                                         <div class="form-group">
                                             <div class="row">
                                                 <div class="col-md-2">
-                                                    <span style="float:right ;font-weight:bold">Contact Email<span
-                                                            class="text-danger"> *</span></span>
+                                                    <!-- <span style="float:right ;font-weight:bold">Contact Email</span> -->
                                                 </div>
-                                                <div class="col-md-3">
+                                                <div class="col-md-3 floating-label">
                                                     <input class="form-control text-box single-line @error('CCP_Email') is-invalid @enderror" id="CCP_Email"
-                                                        name="CCP_Email" placeholder="Email" type="text"
+                                                        name="CCP_Email" placeholder="" type="text"
                                                         value="{{$client->CCP_Email ?? old('CCP_Email')}}" />
+                                                        <label>Email</label>
                                                     <span class="text-danger field-validation-valid"
                                                         data-valmsg-for="CCP_Email" data-valmsg-replace="true"></span>
                                                         @if($errors->has('CCP_Email'))
@@ -125,18 +132,20 @@
                                                 <div class="col-md-2">
                                                     <span style="float:right ;font-weight:bold">Contact Phone</span>
                                                 </div>
-                                                <div class="col-md-3">
+                                                <div class="col-md-3 floating-label">
                                                     <input class="form-control text-box single-line numberType" id="CCP_Phone1"
-                                                        name="CCP_Phone1" placeholder="Phone" type="text"  maxlength="12"
+                                                        name="CCP_Phone1" placeholder="" type="text"  maxlength="12"
                                                         value="{{$client->CCP_Phone1 ?? old('CCP_Phone1')}}" />
+                                                        <label>Phone</label>
                                                     <span class="text-danger field-validation-valid"
                                                         data-valmsg-for="CCP_Phone1" data-valmsg-replace="true"></span>
                                                 </div>
 
-                                                <div class="col-md-3">
+                                                <div class="col-md-3 floating-label">
                                                     <input class="form-control text-box single-line numberType" id="CCP_Phone2"
-                                                        name="CCP_Phone2" placeholder="Alt Phone" type="text" maxlength="12"
+                                                        name="CCP_Phone2" placeholder="" type="text" maxlength="12"
                                                         value="{{$client->CCP_Phone2 ?? old('CCP_Phone2')}}" />
+                                                        <label>Alt Phone</label>
                                                     <span class="text-danger field-validation-valid"
                                                         data-valmsg-for="CCP_Phone2" data-valmsg-replace="true"></span>
                                                 </div>
@@ -148,17 +157,19 @@
                                                     <span style="float:right ;font-weight:bold;">Taxes
                                                     </span>
                                                 </div>
-                                                <div class="col-md-3">
+                                                <div class="col-md-3 floating-label">
                                                     <input class="form-control text-box single-line" id="gst_no"
-                                                        name="gst_no" placeholder="GSTIN No." type="text"
+                                                        name="gst_no" placeholder="" type="text"
                                                         value="{{$client->gst_no ?? old('gst_no')}}" />
+                                                        <label>GSTIN No.</label>
                                                     <span class="text-danger field-validation-valid"
                                                         data-valmsg-for="gst_no" data-valmsg-replace="true"></span>
                                                 </div>
-                                                <div class="col-md-3">
+                                                <div class="col-md-3 floating-label">
                                                     <input class="form-control text-box single-line" id="pan_no"
-                                                        name="pan_no" placeholder="Pan No." type="text"
+                                                        name="pan_no" placeholder="" type="text"
                                                         value="{{$client->pan_no ?? old('pan_no')}}" />
+                                                        <label>Pan No.</label>
                                                     <span class="text-danger field-validation-valid"
                                                         data-valmsg-for="pan_no" data-valmsg-replace="true"></span>
                                                 </div>

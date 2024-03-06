@@ -10,7 +10,7 @@
                                 <div class="card-header-action"><a class="btn btn-danger"
                                         href="{{route('services')}}">Back</a>
                                     <a class="btn btn-primary"
-                                        href="{{route('services.edit',$service->service_id)}}">Edit</a>
+                                        href="{{route('services.edit', $service_id)}}">Edit</a>
                                 </div>
                             </div>
                             <div class="card-body">
@@ -55,9 +55,9 @@
                                                                             class="fa fa-book margin-r-5"></i>&nbsp;&nbsp;Date
                                                                     </strong>
                                                                     <p class="text-muted">
-                                                                        {{$service->service_date !='' ?
-                                                                        date('d-M-Y',strtotime($service->service_date))
-                                                                        : 'NA'}}
+                                                                        {{$service->service_date != '' ?
+    date('d-M-Y', strtotime($service->service_date))
+    : 'NA'}}
                                                                     </p>
                                                                     <hr>
                                                                     <strong>
@@ -103,7 +103,7 @@
                                                 <div class="card card-success">
                                                     <div class="card-body">
 
-                                                        @if($service->contract_id !=0 )
+                                                        @if($service->contract_id != 0)
                                                         <div>
                                                             <div>
                                                                 <h5 class="">Contract Information
@@ -141,9 +141,9 @@
                                                                     </span>
                                                                 </div>
                                                                 <div class="col-md-3">
-                                                                    {{date("d-M-Y",strtotime($contract->CNRT_StartDate))
-                                                                    ??
-                                                                    "NA"}}
+                                                                    {{date("d-M-Y", strtotime($contract->CNRT_StartDate))
+        ??
+        "NA"}}
                                                                 </div>
                                                                 <div class="col-md-2">
                                                                     <span style="float:right ;font-weight:bold">
@@ -151,9 +151,9 @@
                                                                     </span>
                                                                 </div>
                                                                 <div class="col-md-3">
-                                                                    {{date("d-M-Y",strtotime($contract->CNRT_EndDate))
-                                                                    ??
-                                                                    "NA"}}
+                                                                    {{date("d-M-Y", strtotime($contract->CNRT_EndDate))
+        ??
+        "NA"}}
                                                                 </div>
                                                             </div>
                                                             <div class="row">
@@ -217,7 +217,7 @@
                                                             </h5>
                                                         </div>
                                                         <hr />
-                                                        @if($service->product_id ==0)
+                                                        @if($service->product_id == 0)
                                                         <div class="row">
                                                             <div class="col-md-3">
                                                                 <span style="float:right ;font-weight:bold">
@@ -242,7 +242,7 @@
                                                         </div>
                                                         <hr />
                                                         @endif
-                                                        @if($service->product_id !=0)
+                                                        @if($service->product_id != 0)
                                                         <div class="row">
                                                             <div class="col-md-3">
                                                                 <span style="float:right ;font-weight:bold">
@@ -278,7 +278,7 @@
                                                                 </span>
                                                             </div>
                                                             <div class="col-md-1">
-                                                                @if($service->site_google_link !="")
+                                                                @if($service->site_google_link != "")
                                                                 <a href="{{$service->site_google_link ?? '#'}}"
                                                                     target="_blank"><i class="fa fa-map-marker"
                                                                         aria-hidden="true"></i>
@@ -291,7 +291,7 @@
                                                                     Area</span>
                                                             </div>
                                                             <div class="col-md-4">{{$service->SiteAreaName ??
-                                                                "NA"}}</div>
+    "NA"}}</div>
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-3">
@@ -299,19 +299,19 @@
                                                                 </span>
                                                             </div>
                                                             <div class="col-md-3">{{$service->CST_OfficeAddress ??
-                                                                "NA"}}
+    "NA"}}
                                                             </div>
 
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-3">
-                                                                <span style="float:right ;font-weight:bold">Note</span>
+                                                                <span style="float:right ;font-weight:bold">Issue Description</span>
                                                             </div>
                                                             <div class="col-md-6">
                                                                 {{ $service->service_note != null ?
-                                                                $service->service_note
-                                                                :
-                                                                'NA'}}
+    $service->service_note
+    :
+    'NA'}}
                                                             </div>
                                                         </div>
                                                         <hr />
@@ -342,8 +342,8 @@
                                                                         {{$time_line['Status_Name']}}</span></a>
                                                                 <span class="text-job float-right"
                                                                     style="font-size: 14px;">{{date("d-m-Y
-                                                                    h:i:s",strtotime($time_line['created_at']."
-                                                                    ".config('app.timezone')))
+                                                                    h:i:s", strtotime($time_line['created_at'] . "
+                                                                    " . config('app.timezone')))
                                                                     }}</span>
 
                                                             </div>

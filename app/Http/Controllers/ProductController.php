@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Client;
+use App\Models\ContractStatus;
+use App\Models\ContractType;
 use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -25,7 +28,33 @@ class ProductController extends Controller
         "1" => '<div class="badge badge-success badge-shadow">Available</div>',
         "2" => '<div class="badge badge-info badge-shadow">Not Available</div>',
     ];
+    public function product_by_id(Request $request)
+    {
+        $id = $request->product_id;
+        $product = array();
+        $product = ContractUnderProduct::where("contract_under_product.id", $id)
+            ->orWhere("contract_under_product.nrnumber", $id)
+            ->leftJoin("contracts", "contracts.CNRT_ID", "contract_under_product.contractId")
+            ->leftJoin("master_service_schedule", "master_service_schedule.id", "contract_under_product.no_of_service")
+            ->first(["contract_under_product.id as mainPId", 'contracts.*', "contract_under_product.*", "master_service_schedule.*"]);
 
+        if (!empty($product)) {
+            $startDate = Carbon::createFromFormat("Y-m-d", $product->CNRT_StartDate);
+            $EndDate = Carbon::createFromFormat("Y-m-d", $product->CNRT_EndDate);
+            $diff_in_months = $startDate->diffInMonths($EndDate);
+            $schedules = $product->scheduleMonth;
+            $toatlScheduleService = $schedules != 0 ? round($diff_in_months / $schedules) : 0;
+            $product->startDate = Carbon::parse($product->CNRT_StartDate)->format("Y-m-d");
+            $product->toatlScheduleService = $toatlScheduleService;
+            $product->contractEndDate = Carbon::parse($product->CNRT_EndDate)->format("d-m-Y");
+            $product->serviceQty = $this->getServiceCount($product->mainPId, $id);
+            $product->client_name = Client::where("CST_ID", $product->CNRT_CustomerID)->first()['CST_Name'] ?? "";
+            $product->contract_type_name = ContractType::where('id', $product->CNRT_Type)->first()['contract_type_name'] ?? "";
+            $product->contract_status_name = ContractStatus::where('id', $product->CNRT_Status)->first()['contract_status_name'] ?? "";
+        }
+
+        return response()->json(["success" => true, "message" => "", "product" => $product]);
+    }
     public function GetContractProductById(Request $request)
     {
         $id = $request->CNRT_ID;

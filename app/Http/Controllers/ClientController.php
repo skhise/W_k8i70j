@@ -76,14 +76,17 @@ class ClientController extends Controller
 
         ]);
     }
+    public function DeleteContact(Request $request, ContactPerson $contactPerson)
+    {
+        $contactPerson = ContactPerson::where('CNT_ID', $contactPerson->CNT_ID)->delete();
+        return redirect()->back()->with('success', 'Deleted.');
+
+    }
     public function update(Request $request, Client $client)
     {
         $request->validate([
             "Customer_Name" => ["required|unique:clients,CST_Name"],
-            "CCP_Name" => ["required"],
             "CCP_Mobile" => ["required"],
-            "Ref_Employee" => ["nullable"],
-            "CCP_Email" => ["nullable", "email"],
             'updated_by' => ['required'],
         ], [
             'CCP_Name.required' => 'Contcat person name required!',
@@ -129,8 +132,12 @@ class ClientController extends Controller
             $request->all(),
             [
                 "CST_Name" => "required|unique:clients,CST_Name",
-                "CCP_Name" => "required",
                 "CCP_Mobile" => "required",
+            ],
+            [
+                'CST_Name.required' => 'Contcat person name required!',
+                'CCP_Mobile.required' => 'Contcat person mobile required!',
+
             ]
         );
         if ($validator->fails()) {

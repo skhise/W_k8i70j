@@ -15,6 +15,7 @@
     <!-- <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" /> -->
     <!-- @vite([ 'resources/js/app.js','resources/css/app.css']); -->
     <!-- Scripts -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <link rel="stylesheet" href="{{asset('css/app.min.css')}}">
 

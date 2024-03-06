@@ -996,7 +996,7 @@ class ServiceController extends Controller
             ->join("master_service_priority", "master_service_priority.id", "services.service_priority")
             ->join("master_issue_type", "master_issue_type.id", "services.issue_type")
             ->join("master_service_type", "master_service_type.id", "services.service_type")
-            ->join("master_site_area", "master_site_area.id", "services.areaId")
+            ->leftJoin("master_site_area", "master_site_area.id", "services.areaId")
             ->join("clients", "clients.CST_ID", "services.customer_id")
             ->leftJoin("users", "users.id", "services.assigned_to")
             ->where('services.id', $service->id)->first();
@@ -1011,6 +1011,7 @@ class ServiceController extends Controller
         return view("services.view", [
             "product" => $product,
             "service" => $services,
+            "service_id" => $service->id,
             "contract" => $contract,
             'timeline' => $timeline,
         ]);

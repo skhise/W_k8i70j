@@ -35,11 +35,11 @@ fas fa-plus-square"></i>
                                                     <select class="mt-2 select2" name="filter_status"
                                                         id="filter_status">
                                                         <option value="" selected>Status</option>
-                                                        <option value="1" {{$filter_status==1 ? 'selected' : '' }}>
+                                                        <option value="1" {{$filter_status == 1 ? 'selected' : '' }}>
                                                             Active</option>
-                                                        <option value="2" {{$filter_status==2 ? 'selected' : '' }}>
+                                                        <option value="2" {{$filter_status == 2 ? 'selected' : '' }}>
                                                             Deactive</option>
-                                                        <option value="3" {{$filter_status==3 ? 'selected' : '' }}>
+                                                        <option value="3" {{$filter_status == 3 ? 'selected' : '' }}>
                                                             Suspended</option>
                                                     </select>
                                                     <br />
@@ -85,7 +85,7 @@ fas fa-plus-square"></i>
                                                 <td colspan="6" class="text-center">No contracts to show</td>
                                             </tr>
                                             @endif
-                                            @foreach($contracts as $key=>$contract)
+                                            @foreach($contracts as $key => $contract)
                                             <tr>
                                                 <td>
                                                     {{$contract['CNRT_Number']}}
@@ -98,16 +98,16 @@ fas fa-plus-square"></i>
                                                     {{$contract['site_type_name']}}
                                                 </td>
                                                 <td>
-                                                    {{$contract['CNRT_EndDate']!="" ?
-                                                    date('d-M-Y',strtotime($contract['CNRT_EndDate'])) : 'NA'}}
+                                                    {{$contract['CNRT_EndDate'] != "" ?
+        date('d-M-Y', strtotime($contract['CNRT_EndDate'])) : 'NA'}}
                                                 </td>
                                                 <td>{!!$status[$contract['CNRT_Status']]!!}</td>
                                                 <td>
-                                                    <a href="{{route('contracts.view',$contract['CNRT_ID'])}}"
+                                                    <a href="{{route('contracts.view', $contract['CNRT_ID'])}}"
                                                         class="btn btn-primary"><i class="far fa-eye"></i></a>
-                                                    <a href="{{route('contracts.edit',$contract['CNRT_ID'])}}"
+                                                    <a href="{{route('contracts.edit', $contract['CNRT_ID'])}}"
                                                         class="btn btn-primary"><i class="far fa-edit"></i></a>
-
+                                                    
                                             </tr>
                                             @endforeach
 

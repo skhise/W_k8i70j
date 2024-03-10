@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Client;
+use App\Models\ContractScheduleService;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use App\Models\Employee;
@@ -777,6 +778,31 @@ class ServiceController extends Controller
 
 
     }
+    public function schedulecreate(Request $request, ContractScheduleService $contractScheduleService)
+    {
+        $service = Service::all()->last();
+        $code = "SRVS_" . date('Y') . "_1";
+        if (!empty($service)) {
+            $code = "SRVS_" . date('Y') . "_" . $service->id + 1;
+        }
+
+        return view(
+            'services.create',
+            [
+                'issue_type' => IssueType::all(),
+                'service_type' => ServiceType::all(),
+                'priorities' => Priority::all(),
+                'clients' => Client::all(),
+                'serviceType' => ServiceType::all(),
+                'contractScheduleService' => $contractScheduleService,
+                'update' => false,
+                'service_no' => $code,
+                'service' => new Service(),
+                'sitelocation' => AreaName::all(),
+            ]
+        );
+
+    }
     public function create(Request $request)
     {
         $service = Service::all()->last();
@@ -793,6 +819,7 @@ class ServiceController extends Controller
                 'priorities' => Priority::all(),
                 'clients' => Client::all(),
                 'serviceType' => ServiceType::all(),
+                'contractScheduleService' => new ContractScheduleService(),
                 'update' => false,
                 'service_no' => $code,
                 'service' => new Service(),

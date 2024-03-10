@@ -127,10 +127,14 @@
                 <a href="{{route('dashboard')}}" class="nav-link"><i
                         data-feather="monitor"></i><span>Dashboard</span></a>
             </li>
-            <li class="dropdown {{Request::is('employees') ? 'active' : '' }}">
+            <li class="dropdown {{Request::is('employees') || Request::is('employees/*') ? 'active' : '' }}">
                 <a href="{{route('employees')}}" class="nav-link"><i data-feather="users"></i><span>Employees</span></a>
             </li>
-            <li
+            <li class="{{Request::is('clients') || Request::is('clients/*') ? 'active' : '' }}">
+            <a class="nav-link" href="{{route('clients')}}"><i
+                        data-feather="briefcase"></i> Clients</a>
+            </li>
+            <!-- <li
                 class="dropdown {{(Request::is('clients/*') || Request::is('clients') || Request::is('persons') || Request::is('sites')) ? 'active' : '' }}">
                 <a href="#"
                     class="menu-toggle nav-link has-dropdown {{(Request::is('clients') || Request::is('persons') || Request::is('sites')) ? 'toggled' : '' }}"><i
@@ -139,14 +143,14 @@
                 <ul class="dropdown-menu">
                     <li class="{{Request::is('clients') ? 'active' : '' }}"><a class="nav-link"
                             href="{{route('clients')}}">Clients</a></li>
-                    <!-- <li class="{{Request::is('clients/persons') ? 'active' : '' }}"><a class="nav-link"
+                    <li class="{{Request::is('clients/persons') ? 'active' : '' }}"><a class="nav-link"
                             href="{{route('persons')}}">Persons</a></li> -->
                     <!-- <li class="{{Request::is('clients/sites') ? 'active' : '' }}"><a class="nav-link"
-                            href="{{route('sites')}}">Sites</a></li> -->
+                            href="{{route('sites')}}">Sites</a></li>
                 </ul>
-            </li>
+            </li> -->
 
-            <li class="dropdown {{Request::is('contracts/*') || Request::is('contracts')  ? 'active' : '' }}">
+            <li class="dropdown {{Request::is('contracts/*') || Request::is('contracts') ? 'active' : '' }}">
                 <a href="{{route('contracts')}}" class="nav-link"><i data-feather="file"></i><span>Contract</span></a>
             </li>
             <li class="dropdown {{Request::is('services') || Request::is('services/*') ? 'active' : '' }}">

@@ -16,27 +16,27 @@
                             <div class="card-body">
                                 <ul class="nav nav-tabs" id="myTab2" role="tablist">
                                     <li class="nav-item">
-                                        <a class="nav-link active" id="home-tab2" data-toggle="tab"
-                                            href="#ClientDetails" role="tab" aria-controls="home"
+                                        <a class="nav-link {{ session('contract_activeTab') === 'details' || session('contract_activeTab') == "" ? ' active' : '' }}" id="details" data-toggle="tab"
+                                            href="#ClientDetails" role="tab" aria-controls="details"
                                             aria-selected="true">Details</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" id="profile-tab2" data-toggle="tab" href="#ContractProduct"
-                                            role="tab" aria-selected="false">Contract
+                                        <a class="nav-link  {{ session('contract_activeTab') === 'contract_product' ? ' active' : '' }}" id="contract_product" data-toggle="tab" href="#ContractProduct"
+                                            role="tab" aria-selected="false" aria-controls="contract_product">Contract
                                             Product</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" id="profile-tab3" data-toggle="tab" href="#ContractServices"
-                                            role="tab" aria-selected="false">Services</a>
+                                        <a class="nav-link {{ session('contract_activeTab') === 'services' ? ' active' : '' }}" id="services" data-toggle="tab" href="#ContractServices"
+                                            role="tab" aria-selected="false" aria-controls="services">Services</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" id="profile-tab4" data-toggle="tab" href="#ContractCheckList"
-                                            role="tab" aria-selected="false">CheckList</a>
+                                        <a class="nav-link {{ session('contract_activeTab') === 'checklist' ? ' active' : '' }}" id="checklist" data-toggle="tab" href="#ContractCheckList"
+                                            role="tab" aria-selected="false" aria-controls="checklist">CheckList</a>
                                     </li>
 
                                 </ul>
                                 <div class="tab-content tab-bordered">
-                                    <div class="tab-pane fade show active" id="ClientDetails" role="tabpanel"
+                                    <div class="tab-pane fade {{ session('contract_activeTab') === 'details' || session('contract_activeTab') == "" ? ' show active' : '' }} " id="ClientDetails" role="tabpanel"
                                         aria-labelledby="home-tab2">
 
                                         <div class="row">
@@ -262,94 +262,17 @@
 
 
                                     </div>
-                                    <div class="tab-pane fade" id="ContractProduct" role="tabpanel"
+                                    <div class="tab-pane fade {{ session('contract_activeTab') === 'contract_product' ? ' show active' : '' }}" id="ContractProduct" role="tabpanel"
                                         aria-labelledby="profile-tab2">
-
-                                        <div class="row">
-                                            <div class="col-12">
-                                                <div class="card card-primary">
-                                                    <div class="card-header">
-                                                        <h4>Contract Product</h4>
-                                                        <div class="card-header-action">
-                                                            <input type="button" id="btn_cp_add" value="Add Product"
-                                                                class="btn btn-primary" data-toggle="modal"
-                                                                data-target=".bd-RefClient-modal-lg" />
-                                                        </div>
-                                                    </div>
-                                                    <div class="card-body">
-                                                        <div class="table-responsive">
-                                                            <table class="table table-striped" id="tbRefClient">
-                                                                <thead>
-                                                                    <tr>
-                                                                        <th>Sr. No.</th>
-                                                                        <th>Name</th>
-                                                                        <th>Type</th>
-                                                                        <th>Sr. Number</th>
-                                                                        <th>Description</th>
-                                                                        <th>Price</th>
-                                                                        <th>Location</th>
-                                                                        <th>Remark</th>
-                                                                        <th>Service Period</th>
-                                                                        <th>Actions</th>
-                                                                    </tr>
-                                                                </thead>
-                                                                <tbody>
-                                                                    @if($products->count() == 0)
-                                                                    <tr>
-                                                                        <td colspan="10" class="text-center">No
-                                                                            products
-                                                                            added yet.</td>
-                                                                    </tr>
-                                                                    @endif
-                                                                    @foreach($products as $index => $product)
-                                                                    <tr>
-                                                                        <td>
-                                                                            {{$index + 1}}
-                                                                        </td>
-                                                                        <td>
-                                                                            {{$product->product_name}}
-                                                                        </td>
-                                                                        <td>{{$product['product_type']}}</td>
-                                                                        <td>{{$product['nrnumber']}}</td>
-                                                                        <td>{{$product['product_description']}}</td>
-                                                                        <th>{{$product['product_price']}}</th>
-                                                                        <th>{{$product['branch']}}</th>
-                                                                        <th>{{$product['remark']}}</th>
-                                                                        <th>{{$product['service_period']}}</th>
-                                                                        <td><a href="#" data-toggle="modal"
-                                                                                id="showEditModal"
-                                                                                data-product_type="{{$product['product_type']}}"
-                                                                                data-nrnumber="{{$product['nrnumber']}}"
-                                                                                data-product_description="{{$product['product_description']}}"
-                                                                                data-product_price="{{$product['product_price']}}"
-                                                                                data-branch="{{$product['branch']}}"
-                                                                                data-remark="{{$product['remark']}}"
-                                                                                data-service_period="{{$product['service_period']}}"
-                                                                                data-cpid="{{$product['CNT_ID']}}"
-                                                                                class="btn btn-icon btn-sm btn-primary"><i
-                                                                                    class="far fa-edit"></i></a></td>
-                                                                    </tr>
-                                                                    @endforeach
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
+                                        @include('contracts.products_tab')                                
                                     </div>
-                                    <div class="tab-pane fade" role="tabpanel"
+                                    <div class="tab-pane fade {{ session('contract_activeTab') === 'contract_services' ? ' show active' : '' }}" role="tabpanel"
                                         aria-labelledby="profile-tab3" id="ContractServices">
-                                        <div class="row">
-                                                                        
-                                        </div>
+                                        @include('contracts.services_tab')
                                     </div>
-                                    <div class="tab-pane fade" role="tabpanel"
+                                    <div class="tab-pane fade {{ session('contract_activeTab') === '' ? ' show active' : '' }}" role="tabpanel"
                                         aria-labelledby="profile-tab4" id="ContractCheckList">
-                                        <div class="row">
-                                                                        
-                                        </div>
+                                        @include('contracts.checklist_tab')
                                     </div>
                                 </div>
                             </div>
@@ -359,121 +282,26 @@
             </div>
         </section>
     </div>
-    <div class="modal fade bd-RefClient-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="myLargeModalLabel">Add Contract Products</h5>
-                    <button type="button" id="btn_close" data-toggle="modal" data-target=".bd-RefClient-modal-lg"
-                        class="close" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="errorMsgntainer"></div>
-                    <form id="form_cp" onsubmit="return false;">
-                        @csrf
-                        <input type="hidden" id="contractId" name="contractId" value="{{$contract['CNRT_ID']}}"
-                            style="display:none;" />
-                        <div class="form-group">
-                            <div class="row">
-                                <div class="col-md-6 floating-label">
-                                    <select class="form-control text-box single-line" id="product_type"
-                                        name="product_type" placeholder="">
-                                        <option value="">Select Type</option>
-                                        @foreach($productType as $product_type)
-                                        <option value="{{$product_type->id}}">{{$product_type->type_name}}</option>
-                                        @endforeach
-                                    </select>
-                                    <label for="first">Product Type</label>
-                                    <span class="text-danger-error text-danger product_type-field-validation-valid"
-                                        data-valmsg-replace="true"></span>
-                                </div>
-                                <div class="col-md-6 floating-label">
-                                    <input class="form-control text-box single-line" id="product_name"
-                                        name="product_name" placeholder="" type="text" value="" />
-                                    <label for="first">Name</label>
-                                    <span class="text-danger-error text-danger product_name-field-validation-valid"
-                                        data-valmsg-replace="true"></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="row">
-                                <div class="col-md-6 floating-label">
-                                    <input class="form-control text-box single-line" id="product_description"
-                                        name="product_description" placeholder="" type="text" value="" />
-                                    <label for="first">Description</label>
-                                </div>
-                                <div class="col-md-6 floating-label">
-                                    <input class="form-control text-box single-line" id="product_price"
-                                        name="product_price" placeholder="" type="number" value="" />
-                                    <label for="first">Product Value</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="control-label">Sr. Number (Total: <span id="add_sr_no">1</span>) <span
-                                    class="text-danger-error text-danger srnumber-field-validation-valid"
-                                    data-valmsg-replace="true"></span></label>
-                            <div class="row">
+     @include('contracts.product_add');
+    @include('contracts.checklist_add');
+    @include('contracts.service_add');
+    @include('contracts.service_edit');
 
-                                <div class="col-md-12">
-                                    <div class="input-group">
-                                        <input class="form-control text-box single-line" id="nrnumber_0"
-                                            name="nrnumber[]" placeholder="" type="text" value="" />
-                                        <span class="btn btn-primary input-group-addon add_form_field"><i
-                                                class="fa fa-plus" aria-hidden="true"></i></span>
-
-                                    </div>
-
-
-                                </div>
-                                <div class="col-md-12 mb-2" id="multipeInput">
-
-                                </div>
-
-                            </div>
-
-                        </div>
-                        <div class="form-group">
-                            <div class="row">
-                                <div class="col-md-6 floating-label">
-                                    <input class="form-control text-box single-line" id="branch" name="branch"
-                                        placeholder="" type="text" value="" />
-                                    <label for="first">Location</label>
-                                </div>
-                                <div class="col-md-6 floating-label">
-                                    <input class="form-control text-box single-line" id="service_period"
-                                        name="service_period" placeholder="" type="text" value="" />
-                                    <label for="first">Support Period</label>
-
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="row">
-                                <div class="col-md-6 floating-label">
-                                    <input class="form-control text-box single-line" id="remark" name="remark"
-                                        placeholder="" type="text" value="" />
-                                    <label for="first">Remark (Note)</label>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <div class="pull-right">
-                        <button type="button" class="btn btn-primary" onclick="SaveContractProduct()">Save</button>
-                        <button class="btn btn-danger mr-2" onclick="CancelModelBox()">Cancel</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
     @section('script')
     <script>
+        $(document).ready(function() {
+            
+          // Remember selected tab and set active class
+            $('.nav-tabs a').on('click', function (e) {
+                localStorage.setItem('contract_activeTab', $(e.target).attr('aria-controls'));
+            });
+
+            // Restore selected tab on page load
+            var activeTab = localStorage.getItem('contract_activeTab');
+            if (activeTab) {
+                $('#' + activeTab).tab('show');
+            }
+        });
         $(document).ready(function () {
             var max_fields = 100;
             var wrapper = $("#multipeInput");
@@ -499,19 +327,28 @@
         });
         $(document).on("click", "#showEditModal", function () {
             $("#btn_cp_add").trigger('click');
-            $("#CNT_Name").val($(this).data('name'));
-            $("#CNT_Department").val($(this).data('department'));
-            $("#CNT_Email").val($(this).data('email'));
-            $("#CNT_Mobile").val($(this).data('mobile'));
-            $("#CNT_Phone1").val($(this).data('phone'));
-            var cpid = $(this).data('cpid');
-            $("#CNT_ID").val(cpid);
+            $("#product_name").val($(this).data('product_name'));
+            $("#product_type").val($(this).data('product_type'));
+            $("#product_description").val($(this).data('product_description'));
+            $("#product_price").val($(this).data('product_price'));
+            $("#nrnumber_0").val($(this).data('nrnumber'));
+            $("#branch").val($(this).data('branch'));
+            $("#service_period").val($(this).data('service_period'));
+            $("#remark").val($(this).data('remark'));
+            $("#product_id").val($(this).data('product_id'));
+            $(".add_form_field").hide();
+
         });
         function SaveContractProduct() {
             $('.text-danger-error').html('');
             $(".nrnumber").removeClass("error_border");
+            var product_id = $("#product_id").val();
+            var url = 'add_product';
+            if(product_id != "") {
+                url = 'update_product';
+            }
             $.ajax({
-                url: 'add_product',
+                url: url,
                 type: "POST",
                 data: $("#form_cp").serialize(),
                 success: function (response) {
@@ -547,13 +384,258 @@
                 }
             })
         }
-        function CancelModelBox() {
-
+        function CancelModelBox() { 
+            $("#product_id").val("");
+            $(".add_form_field").hide();
             $('.text-danger-error').html('');
             $(".nrnumber").removeClass("error_border");
             $("#form_cp")[0].reset();
             $("#btn_close").trigger('click');
         }
+      
     </script>
+    <script>
+      $(document).on("click", "#showChkEditModal", function () {
+            $("#btn_checklist_add").trigger('click');
+            $("#description").val($(this).data('description'));
+            $("#checklist_id").val($(this).data('id'));
+
+        });
+        $(document).on("click","#btn_checklist_save",function() {
+            $('.text-danger-error').html('');
+            $(this).attr("disabled",true);
+            $(this).html("Saving...");
+            $(".nrnumber").removeClass("error_border");
+            var product_id = $("#product_id").val();
+            var url = '{{route('checklist.store', $contract['CNRT_ID'])}}';
+            
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: $("#form_checklist").serialize(),
+                success: function (response) {
+                    //  var obj = JSON.parse(response);
+                    if (response.success) {
+                        CancelModelBoxChecklist();
+                        window.location.reload();
+                    } else {
+                        $("#btn_checklist_save").attr("disabled",false);
+                        $("#btn_checklist_save").html("Save");
+                        $('.errorMsgntainer').html("");
+                        if (typeof response.validation_error != 'undefined') {
+                            $.each(response.validation_error, function (index, value) {
+                                $('.' + index + "-field-validation-valid").html(value);
+                            });
+                        } else {
+                            $('.errorMsgntainer').html(response.message);
+                        }
+                    }
+
+                },
+                error: function (error) {
+                    $("#btn_checklist_save").attr("disabled",false);
+                    $("#btn_checklist_save").html("Save");
+                        
+                    alert("something went wrong, try again.");
+                }
+            })
+        });
+        function CancelModelBoxChecklist() { 
+            $("#btn_checklist_save").attr("disabled",false);
+            $("#btn_checklist_save").html("Save");
+            $("#checklist_id").val("0");
+            $('.text-danger-error').html('');
+            $("#form_checklist")[0].reset();
+            $("#btn_close_checklist").trigger('click');
+        }
+</script>
+<script>
+      $(document).on("click", "#showServiceEditModal", function () {
+            $("#serviceType_edit").val($(this).data('servicetype')).trigger("change");
+            $("#issueType_edit").val($(this).data('issuetype')).trigger("change");
+            $("#product_Id_edit").val($(this).data('product_id')).trigger("change");
+            $("#description_edit").val($(this).data('description'));
+            $("#service_id").val($(this).data('service_id'));
+            $("#Schedule_Date_edit").val($(this).data('schedule_date')).trigger("change");
+            
+        });
+        $(document).on("click","#btn_service_save",function() {
+            $('.text-danger-error').html('');
+            $(this).attr("disabled",true);
+            $(this).html("Saving...");
+            $(".nrnumber").removeClass("error_border");
+            var product_id = $("#product_id").val();
+            var url = '{{route('contract_service.store', $contract['CNRT_ID'])}}';
+            var isValid = true;
+
+                // Loop through each input field and validate
+                $('.service_row_add .required').each(function() {
+                    if (!validateInput($(this))) {
+                        isValid = false;
+                        $("#btn_service_save").attr("disabled",false);
+                        $("#btn_service_save").html("Save");
+                    }
+                });
+            if(isValid){
+                $.ajax({
+                    url: url,
+                    type: "POST",
+                    data: $("#form_service").serialize(),
+                    success: function (response) {
+                        //  var obj = JSON.parse(response);
+                        if (response.success) {
+                            CancelModelBoxService();
+                            window.location.reload();
+                        } else {
+                            $("#btn_service_save").attr("disabled",false);
+                            $("#btn_service_save").html("Save");
+                            $('.errorMsgntainer').html("");
+                            if (typeof response.validation_error != 'undefined') {
+                                $.each(response.validation_error, function (index, value) {
+                                    $('.' + index + "-field-validation-valid").html(value);
+                                });
+                            } else {
+                                $('.errorMsgntainer').html(response.message);
+                            }
+                        }
+
+                    },
+                    error: function (error) {
+                        $("#btn_service_save").attr("disabled",false);
+                        $("#btn_service_save").html("Save");
+                            
+                        alert("something went wrong, try again.");
+                    }
+                })
+            }    
+            
+        });
+        $(document).on("click","#btn_service_update",function() {
+            $('.text-danger-error').html('');
+            $(this).attr("disabled",true);
+            $(this).html("Saving...");
+            var url = '{{route('contract_service.update', $contract['CNRT_ID'])}}';
+            var isValid = true;
+                // Loop through each input field and validate
+                $('.service_row .required').each(function() {
+                    if (!validateInput($(this))) {
+                        isValid = false;
+                        $("#btn_service_update").attr("disabled",false);
+                        $("#btn_service_update").html("Save");
+                    }
+                });
+            if(isValid){
+                $.ajax({
+                    url: url,
+                    type: "POST",
+                    data: $("#form_service_edit").serialize(),
+                    success: function (response) {
+                        //  var obj = JSON.parse(response);
+                        $("#btn_service_update").attr("disabled",false);
+                        $("#btn_service_update").html("Save");
+                            
+                        if (response.success) {
+                            CancelModelBoxServiceEdit();
+                            window.location.reload();
+                        } else {
+                            $('.errorMsgntainer').html("");
+                            if (typeof response.validation_error != 'undefined') {
+                                $.each(response.validation_error, function (index, value) {
+                                    $('.' + index + "-field-validation-valid").html(value);
+                                });
+                            } else {
+                                $('.errorMsgntainer').html(response.message);
+                            }
+                        }
+
+                    },
+                    error: function (error) {
+                        $("#btn_service_update").attr("disabled",false);
+                        $("#btn_service_update").html("Save");
+                            
+                        alert("something went wrong, try again.");
+                    }
+                })
+            }    
+            
+        });
+        function validateInput(input) {
+            var value = input.val().trim();
+            var isValid = true;
+            if (value === '') {
+                input.addClass('error_border');
+                isValid = false;
+            } else {
+                input.removeClass('error_border');
+            }
+            return isValid;
+        }
+        function CancelModelBoxService() { 
+            $("#btn_service_save").attr("disabled",false);
+            $("#btn_service_save").html("Save");
+            $("#service_id").val("0");
+            $('.text-danger-error').html('');
+            $("#form_service")[0].reset();
+            $("#service_div").html("");
+            $("#btn_close_service").trigger('click');
+        }
+        function CancelModelBoxServiceEdit() { 
+            $("#btn_service_edit").attr("disabled",false);
+            $("#btn_service_edit").html("Save");
+            $("#service_id").val("0");
+            $('.text-danger-error').html('');
+            $("#form_service_edit")[0].reset();
+            $("#btn_close_service_edit").trigger('click');
+        }
+        $(document).on('click',"#add_servies_rows",function(){
+            var n = $("#number_of_services").val();
+            var rowCount = 0; // Initialize row count
+            
+
+             for(var i=0;i<n;i++){
+                var myDate = new Date("{{$contract['CNRT_StartDate']}}");
+                var result1 = myDate.setMonth(myDate.getMonth()+i);
+                var result2 =  formatDate(new Date(result1));
+                rowCount++; // Increment row count
+                    var newRow = '<div class="form-group row service_row_add">' +
+                        '<span class="service_rowserial">' + rowCount + '. </span>' +
+                        '<input class="required input-item form-control" value="'+result2+'"  type="date" name="schedule[' + i + '][Schedule_Date]">' +
+                        '<select class="input-item form-control select2" name="schedule[' + i + '][service_product]">{!! $productOption !!}</select>' +
+                        '<select class="required input-item form-control" name="schedule[' + i + '][issue_type]">{!! $issueType !!}</select>' +
+                        '<select  class="required input-item form-control" name="schedule[' + i + '][service_type]">{!! $serviceType !!}</select>' +
+                        '<textarea  class="input-item form-control" name="schedule[' + i + '][descriptions]"></textarea>' +
+                        '<button class="btn btn-sm btn-icon btn-danger removeRow">x</button>' +
+                        '</div>';
+                    $('#service_div').append(newRow);
+                    updateSerialNumbers(); // Update serial numbers
+             }   
+        });
+        $(document).on('click', '.removeRow', function(){
+            $(this).closest('.service_row').remove();
+            updateSerialNumbers(); // Update serial numbers
+        });
+
+    // Function to update serial numbers
+    function updateSerialNumbers() {
+        $('.service_row').each(function(index) {
+            $(this).find('.service_rowserial').text(index + 1+". ");
+        });
+    }
+    function formatDate(date) {
+        var day = date.getDate();
+        var month = date.getMonth() + 1; // Month starts from 0
+        var year = date.getFullYear();
+
+        // Add leading zeros if necessary
+        if (day < 10) {
+            day = '0' + day;
+        }
+        if (month < 10) {
+            month = '0' + month;
+        }
+
+        return year + '-' + month + '-' + day;
+    }
+</script>
     @stop
 </x-app-layout>

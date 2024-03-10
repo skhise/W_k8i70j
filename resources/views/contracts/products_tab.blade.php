@@ -1,0 +1,76 @@
+<div class="row">
+                                            <div class="col-12">
+                                                <div class="card card-primary">
+                                                    <div class="card-header">
+                                                        <h4>Contract Product</h4>
+                                                        <div class="card-header-action">
+                                                            <input type="button" id="btn_cp_add" value="Add Product"
+                                                                class="btn btn-primary" data-toggle="modal"
+                                                                data-target=".bd-RefClient-modal-lg" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div class="table-responsive">
+                                                            <table class="table table-striped" id="tbRefClient">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Sr. No.</th>
+                                                                        <th>Name</th>
+                                                                        <th>Type</th>
+                                                                        <th>Sr. Number</th>
+                                                                        <th>Description</th>
+                                                                        <th>Price</th>
+                                                                        <th>Location</th>
+                                                                        <th>Remark</th>
+                                                                        <th>Service Period</th>
+                                                                        <th>Actions</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @if($products->count() == 0)
+                                                                    <tr>
+                                                                        <td colspan="10" class="text-center">No
+                                                                            products
+                                                                            added yet.</td>
+                                                                    </tr>
+                                                                    @endif
+                                                                    @foreach($products as $index => $product)
+                                                                    <tr>
+                                                                        <td>
+                                                                            {{$index + 1}}
+                                                                        </td>
+                                                                        <td>
+                                                                            {{$product->product_name}}
+                                                                        </td>
+                                                                        <td>{{$product['product_type']}}</td>
+                                                                        <td>{{$product['nrnumber']}}</td>
+                                                                        <td>{{$product['product_description']}}</td>
+                                                                        <th>{{$product['product_price']}}</th>
+                                                                        <th>{{$product['branch']}}</th>
+                                                                        <th>{{$product['remark']}}</th>
+                                                                        <th>{{$product['service_period']}}</th>
+                                                                        <td><a href="#" data-toggle="modal"
+                                                                                id="showEditModal"
+                                                                                data-product_name="{{$product['product_name']}}"
+                                                                                data-product_type="{{$product['product_type']}}"
+                                                                                data-nrnumber="{{$product['nrnumber']}}"
+                                                                                data-product_description="{{$product['product_description']}}"
+                                                                                data-product_price="{{$product['product_price']}}"
+                                                                                data-branch="{{$product['branch']}}"
+                                                                                data-remark="{{$product['remark']}}"
+                                                                                data-service_period="{{$product['service_period']}}"
+                                                                                data-cid="{{$product['contactId']}}"
+                                                                                data-product_id="{{$product['id']}}"
+                                                                                class="btn btn-icon btn-sm btn-primary"><i
+                                                                                    class="far fa-edit"></i></a>
+                                                                                <a type="submit" href="{{route('contract_product.delete', $product['id'])}}" class="delete-btn btn btn-sm btn-danger"><i
+                                                                                    class="fa fa-trash"></i></a</td>
+                                                                    </tr>
+                                                                    @endforeach
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>

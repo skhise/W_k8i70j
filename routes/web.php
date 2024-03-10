@@ -59,11 +59,12 @@ Route::middleware(['prevent-back-history'])->group(function () {
         Route::get('/clients/{client}/edit', [ClientController::class, 'edit'])->name('client.edit');
     });
     Route::middleware('auth')->group(function () {
-        Route::post('/clients/{client}', [ClientController::class, 'update'])->name('clients.update');
+        Route::get('/clients/{client}/delete', [ClientController::class, 'delete'])->name('client.delete');
     });
     Route::middleware('auth')->group(function () {
-        Route::get('/contacts/{contactPerson}/delete', [ClientController::class, 'DeleteContact'])->name('contacts.delete');
+        Route::post('/clients/{client}', [ClientController::class, 'update'])->name('clients.update');
     });
+
     Route::middleware('auth')->group(function () {
         Route::post('/clients/all', [ContractController::class, 'GetCustomerList'])->name('clients.all');
     });
@@ -71,7 +72,9 @@ Route::middleware(['prevent-back-history'])->group(function () {
     Route::post('clients/{id}/add_cp', [ClientController::class, 'add_cp'])
         ->name('clients.add_cp')
         ->middleware('auth');
-
+    Route::middleware('auth')->group(function () {
+        Route::get('/contacts/{contactPerson}/delete', [ClientController::class, 'DeleteContact'])->name('contacts.delete');
+    });
 
     Route::post('clients', [ClientController::class, 'store'])
         ->name('clients.store')
@@ -91,8 +94,15 @@ Route::middleware(['prevent-back-history'])->group(function () {
         Route::get('/contracts/{contract}/edit', [ContractController::class, 'edit'])->name('contracts.edit');
         Route::post('/contracts/{contract}/update', [ContractController::class, 'update'])->name('contracts.update');
         Route::post('/contracts/{contract}/add_product', [ContractController::class, 'AddContractProduct'])->name('contracts.add_product');
+        Route::post('/contracts/{contract}/update_product', [ContractController::class, 'UpdateContractProduct'])->name('contracts.update_product');
         Route::get('/contracts/customer_contract', [ContractController::class, 'GetContractByCustId'])->name('contracts.customer_contract');
         Route::get('/contracts/contract_by_id', [ContractController::class, 'GetContractById'])->name('contracts.contract_by_id');
+        Route::get('/contracts/{contractUnderProduct}/delete', [ContractController::class, 'DeleteContractProduct'])->name('contract_product.delete');
+        Route::post('/contracts/checklist/{contract}/store', [ContractController::class, 'checklistStore'])->name('checklist.store');
+        Route::get('/contracts/checklist/{checklist}/delete', [ContractController::class, 'checklistdelete'])->name('checklist.delete');
+        Route::post('/contracts/service/{contract}/store', [ContractController::class, 'serviceStore'])->name('contract_service.store');
+        Route::post('/contracts/service/{contract}/update', [ContractController::class, 'serviceUpdate'])->name('contract_service.update');
+        Route::get('/contracts/service/{contractScheduleService}/delete', [ContractController::class, 'servicedelete'])->name('contract_service.delete');
     });
 
     /*end contractt*/
@@ -100,6 +110,7 @@ Route::middleware(['prevent-back-history'])->group(function () {
     Route::middleware('auth')->group(function () {
         Route::get('/services', [ServiceController::class, 'index'])->name('services');
         Route::get('/services/create', [ServiceController::class, 'create'])->name('services.create');
+        Route::get('/services/{contractScheduleService}/create', [ServiceController::class, 'schedulecreate'])->name('services.schedulecreate');
         Route::post('/services', [ServiceController::class, 'store'])->name('services.store');
         Route::get('/services/{service}/view', [ServiceController::class, 'view'])->name('services.view');
         Route::get('/services/{service}/edit', [ServiceController::class, 'edit'])->name('services.edit');

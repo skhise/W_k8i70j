@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\AreaName;
+use App\Models\Checklist;
 use App\Models\Client;
+use App\Models\IssueType;
 use App\Models\ProductType;
+use App\Models\ServiceType;
 use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -23,7 +26,7 @@ use App\Models\Schedule;
 use App\Models\Product_Accessory;
 use App\Models\ContractBaseProduct;
 use App\Models\ContractBaseAccessory;
-use App\Models\ContractScheduleModel;
+use App\Models\ContractScheduleService;
 use App\Models\CustomerSites;
 use App\Models\Service;
 use App\Models\ContractStatus;
@@ -34,6 +37,8 @@ use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
 use App\Models\Account_Setting;
+use Redirect;
+use Session;
 
 
 class ContractController extends Controller
@@ -44,29 +49,22 @@ class ContractController extends Controller
         "2" => '<div class="badge badge-info badge-shadow">Renewal</div>',
         "3" => '<div class="badge badge-danger badge-shadow">Expired</div>',
     ];
-    public function DeleteContractProduct(Request $request)
+    public function DeleteContractProduct(Request $request, ContractUnderProduct $contractUnderProduct)
     {
 
-        $validator = Validator::make(
-            $request->all(),
-            [
-                "mainPId" => "required",
-                "CNRT_ID" => "required",
-            ]
-        );
-        if ($validator->fails()) {
-            return response()->json(["success" => false, "message" => "required details missing.", "validation_error" => $validator->errors()]);
-        }
-        $check = ContractUnderProduct::find($request->mainPId);
+        $check = ContractUnderProduct::find($contractUnderProduct->id);
         if ($check) {
-            $isDeleted = ContractUnderProduct::where("id", $request->mainPId)
-                ->where("contractId", $request->CNRT_ID)->delete();
+            $isDeleted = ContractUnderProduct::where("id", $contractUnderProduct->id)
+                ->where("contractId", $contractUnderProduct->contractId)->delete();
             if ($isDeleted) {
-                return response()->json(["success" => true, "message" => "product deleted"]);
+                return Redirect()->back()->with("success", "Product deleted!");
+                // return response()->json(["success" => true, "message" => "product deleted"]);
             }
-            return response()->json(["success" => false, "message" => "product not deleted, try again."]);
+            return Redirect()->back()->with("error", "Product not deleted, try again!");
+            // return response()->json(["success" => false, "message" => "product not deleted, try again."]);
         }
-        return response()->json(["success" => false, "message" => "product not found, try again."]);
+        return Redirect()->back()->with("error", "Product not deleted, try again!");
+        // return response()->json(["success" => false, "message" => "product not found, try again."]);
 
     }
 
@@ -130,9 +128,9 @@ class ContractController extends Controller
         if ($validator->fails()) {
             return response()->json(["success" => false, "message" => "contract details missing.", "validation_error" => $validator->errors()]);
         }
-        $check = ContractScheduleModel::find($request->scheduleId);
+        $check = ContractScheduleService::find($request->scheduleId);
         if ($check) {
-            $isDeleted = ContractScheduleModel::where("id", $request->scheduleId)
+            $isDeleted = ContractScheduleService::where("id", $request->scheduleId)
                 ->where("Contract_Id", $request->CNRT_ID)->delete();
             if ($isDeleted) {
                 return response()->json(["success" => true, "message" => "schedule deleted"]);
@@ -278,7 +276,7 @@ class ContractController extends Controller
             $contractId = $request->CNRT_ID;
             $productId = $request->productId; //master product id
             $accessoryId = $request->accessoryId;
-            $contractsSchedule = ContractScheduleModel::
+            $contractsSchedule = ContractScheduleService::
                 join(
                     "contract_under_product",
                     "contract_under_product.id",
@@ -479,7 +477,7 @@ class ContractController extends Controller
             return response()->json(["success" => false, "message" => "all * marked fields required.", "validation_error" => $validator->errors()]);
         }
 
-        $iscp = ContractScheduleModel::create([
+        $iscp = ContractScheduleService::create([
             'Contract_Id' => $request->contractId,
             'Accessory_Id' => $request->productId,
             'Schedule_Date' => Carbon::parse($request->Schedule_Date)->format("Y-m-d"),
@@ -499,15 +497,15 @@ class ContractController extends Controller
         }
 
     }
-    public function UpdateContractScheduleServiceOne(Request $request)
+    public function serviceUpdate(Request $request)
     {
         $validator = Validator::make(
             $request->all(),
             [
-                "rowId" => "required",
+                "service_id" => "required",
                 'Schedule_Date' => "required",
-                'Schedule_Qty' => "required",
-                'Price' => "required",
+                'serviceType' => "required",
+                'issueType' => "required",
             ]
         );
 
@@ -523,19 +521,18 @@ class ContractController extends Controller
         if ($schd < $td) {
             $days_difference = $days_difference * -1;
         }
-        $iscp = ContractScheduleModel::where("id", $request->rowId)->update([
+        $iscp = ContractScheduleService::where("id", $request->service_id)->update([
             'Schedule_Date' => Carbon::parse($request->Schedule_Date)->format("Y-m-d"),
-            'Schedule_Qty' => $request->Schedule_Qty,
-            'price' => $request->Price,
             'serviceType' => $request->serviceType,
+            'product_id' => empty($request->product_Id) ? 0 : $request->product_Id,
             'issueType' => $request->issueType,
             'description' => $request->description,
-            'payment' => $request->payment,
-            'DueIn' => $days_difference,
         ]);
         if ($iscp) {
-            return response()->json(['success' => true, 'message' => 'Contract Schedule Service Updated.']);
+            Session::flash("success", "Contract Service Updated.");
+            return response()->json(['success' => true, 'message' => 'Contract Service Updated.']);
         } else {
+            Session::flash("error", "Action failed, try again.");
             return response()->json(['success' => true, 'message' => 'action failed, try again.']);
         }
 
@@ -629,64 +626,69 @@ class ContractController extends Controller
             return response()->json(["success" => false, "message" => "action failed, try again."]);
         }
     }
-    public function AddContractScheduleService(Request $request)
+    public function servicedelete(ContractScheduleService $contractScheduleService)
     {
+        try {
+            $contractScheduleService->delete();
+            return Redirect()->back()->with("success", "Deleted!");
+        } catch (Exception $exp) {
+            return Redirect()->back()->with("error", "Something went wrong, try again.");
+        }
+
+    }
+    public function serviceStore(Request $request, Contract $contract)
+    {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                "schedule" => "required",
+            ]
+        );
+
+        if ($validator->fails()) {
+            return response()->json(["success" => false, "message" => "All * marked fields required.", "validation_error" => $validator->errors()]);
+        }
         $contract_service = $request->schedule;
-        $contractID = $request->contractID;
+        $contractID = $contract->CNRT_ID;
         $accessoryId = $request->accessoryId;
         $isOk = 0;
-        if ($accessoryId != 0 && $contractID != 0) {
-            if (!is_null($contract_service)) {
-                if (sizeof($contract_service) > 0) {
-                    foreach ($contract_service as $cs) {
-                        if ($cs['Schedule_Date'] == "" || $cs['Schedule_Qty'] == "") {
-                            $isOk = 0;
-                            return response()->json(['success' => false, 'message' => 'All Fields Required']);
-                            exit;
-                        } else {
-                            $isOk = 1;
-                        }
-                    }
-                } else {
-                    return response()->json(['success' => false, 'message' => 'All Fields Required']);
+        if (sizeof($contract_service) > 0) {
+            foreach ($contract_service as $cs) {
+                if ($cs['Schedule_Date'] == "" || $cs['issue_type'] == "" || $cs['service_type'] == "") {
+                    return response()->json(['success' => false, 'message' => 'All * marked fields required']);
                 }
-                if ($isOk == 1) {
-                    $size = 0;
-                    foreach ($contract_service as $cs) {
-                        $size++;
-                        $iscp = ContractScheduleModel::create([
-                            'Contract_Id' => $contractID,
-                            'Accessory_Id' => $accessoryId,
-                            'Schedule_Date' => $cs['Schedule_Date'],
-                            'Schedule_Qty' => $cs['Schedule_Qty'],
-                            'Service_Call_Id' => 0,
-                            'Schedule_Status' => 8,
-                            'price' => $cs['Price'],
-                            'issueType' => $cs['issueType']['id'],
-                            'serviceType' => $cs['serviceType']['id'],
-                            'payment' => $cs['payment'],
-                            'description' => $cs['description']
-                        ]);
-                    }
-                    if ($size == sizeof($contract_service)) {
-                        ContractBaseAccessory::where("id", $request->id)->where("contractId", $contractID)
-                            ->update(['isSchedule' => 1]);
-                        ContractUnderProduct::where("id", $request->accessoryId)->where("contractId", $contractID)
-                            ->update(['isScheduleAdded' => 1]);
-                        return response()->json(['success' => true, 'message' => 'Contract Schedule Service Added.']);
-                    } else {
-                        $failed = sizeof($contract_service) - $size;
-                        return response()->json(['success' => false, 'message' => $failed . ' Contract Schedule Service to add.']);
-                    }
-
-                } else {
-                    return response()->json(['success' => false, 'message' => 'Something went wrong, Try again.']);
-                }
-            } else {
-                return response()->json(['success' => false, 'message' => 'Empty Input Values.']);
             }
         } else {
-            return response()->json(['success' => false, 'message' => 'Empty Input Values.']);
+            return response()->json(['success' => false, 'message' => 'All * marked fields required']);
+        }
+        $size = 0;
+        foreach ($contract_service as $cs) {
+            $size++;
+            $iscp = ContractScheduleService::create([
+                'contractId' => $contractID,
+                'product_Id' => $cs['service_product'] == NULL ? 0 : $cs['service_product'],
+                'Schedule_Date' => $cs['Schedule_Date'],
+                'Schedule_Qty' => 1,
+                'Service_Call_Id' => 0,
+                'Schedule_Status' => 8,
+                'price' => 0,
+                'issueType' => $cs['issue_type'],
+                'serviceType' => $cs['service_type'],
+                'payment' => 0,
+                'description' => $cs['descriptions']
+            ]);
+            if (!empty($cs['service_product'])) {
+                $product = ContractUnderProduct::where("id", $cs['service_product'])->where("contractId", $contractID)->first();
+                $service = $product->no_of_service + 1;
+                $product->update(['no_of_service' => $service]);
+            }
+
+        }
+        if ($size == sizeof($contract_service)) {
+            return response()->json(['success' => true, 'message' => 'Contract Schedule Service Added.']);
+        } else {
+            $failed = sizeof($contract_service) - $size;
+            return response()->json(['success' => true, 'message' => $failed . ' Contract Schedule Service to add.']);
         }
     }
     public function GetContracts(Request $request)
@@ -862,6 +864,40 @@ class ContractController extends Controller
 
 
     }
+    public function UpdateContractProduct(Request $request, Contract $contract)
+    {
+        if ($request->has('product_id') && !empty($request->product_id)) {
+
+            $product = ContractUnderProduct::where(['id' => $request->product_id, 'contractId' => $request->contractId])->first();
+            if (!empty($product)) {
+                $update = $product->update([
+                    'contractId' => $request->contractId,
+                    'product_name' => $request->product_name,
+                    'product_type' => $request->product_type,
+                    'product_price' => $request->product_price,
+                    'product_description' => $request->product_description,
+                    'nrnumber' => $request->nrnumber[0],
+                    'branch' => $request->branch,
+                    'remark' => $request->remark,
+                    'service_period' => $request->service_period,
+                    'no_of_service' => 0,
+                    'serviceDay' => 0,
+                    'updated_by' => Auth::user()->id,
+                ]);
+                if ($update) {
+                    return response()->json(['success' => true, 'message' => 'Product Updated']);
+
+                } else {
+                    return response()->json(['success' => false, 'message' => 'Something went wrong, try again.']);
+                }
+            } else {
+                return response()->json(['success' => false, 'message' => 'Product not found!']);
+
+            }
+        } else {
+            return response()->json(['success' => false, 'message' => 'Product not found!']);
+        }
+    }
     public function AddContractProduct(Request $request, Contract $contract)
     {
 
@@ -888,6 +924,7 @@ class ContractController extends Controller
         }
         $nrnumber = $request->nrnumber;
         $isOk = 0;
+
         foreach ($nrnumber as $index => $sr) {
             if ($sr == "") {
                 return response()->json(["success" => false, "index" => $index, "message" => "Serial number must be unique."]);
@@ -934,6 +971,7 @@ class ContractController extends Controller
             return response()->json(['success' => false, 'message' => 'Serial number should not be blank.']);
 
         }
+
     }
     public function CheckContractProduct($ContractId, $productId)
     {
@@ -1011,13 +1049,37 @@ class ContractController extends Controller
             ->join("master_contract_status", "master_contract_status.id", "contracts.CNRT_Status")
             ->leftJoin("clients", "clients.CST_ID", "contracts.CNRT_CustomerID")
             ->where("CNRT_ID", $contract->CNRT_ID)->first();
+        $issueOptions = '<option value="">Select Type</option>';
+        $issue_types = IssueType::all();
+        foreach ($issue_types as $issue_type) {
+            $issueOptions .= '<option value="' . $issue_type->id . '">' . $issue_type->issue_name . '</option>';
+        }
+        $serviceTypeOptions = '<option value="">Select Type</option>';
+        $service_types = ServiceType::all();
+        foreach ($service_types as $service_type) {
+            $serviceTypeOptions .= '<option value="' . $service_type->id . '">' . $service_type->type_name . '</option>';
+        }
+        $productOptions = '<option value="">Select Product</option>';
+        $products = ContractUnderProduct::where("contractId", $contract->CNRT_ID)->get();
+        foreach ($products as $product) {
+            $productOptions .= '<option value="' . $product->id . '">' . $product->nrnumber . '/' . $product->product_name . '</option>';
+        }
+        $services = ContractScheduleService::select("contract_under_product.*", "contract_schedule_service.id as cupId", "contract_schedule_service.*", "master_issue_type.*", "master_service_type.*")->where("contract_schedule_service.contractId", $contract->CNRT_ID)
+            ->leftJoin("master_issue_type", "master_issue_type.id", "contract_schedule_service.issueType")
+            ->leftJoin("contract_under_product", "contract_under_product.id", "contract_schedule_service.product_Id")
+            ->leftJoin("master_service_type", "master_service_type.id", "contract_schedule_service.serviceType")->get();
+
         return view('contracts.view', [
             'contract' => $contract_obj,
             'project_count' => 0,
             'status' => $this->status,
             'productType' => ProductType::all(),
+            'issueType' => $issueOptions,
+            'serviceType' => $serviceTypeOptions,
+            'checklists' => $contract->checklist,
+            'productOption' => $productOptions,
             'products' => ContractUnderProduct::where("contractId", $contract->CNRT_ID)->get(),
-            'contract_services' => ContractScheduleModel::where("Contract_Id", $contract->CNRT_ID)->get(),
+            'services' => $services
 
         ]);
     }
@@ -1056,6 +1118,54 @@ class ContractController extends Controller
             'contract' => new Contract(),
             'sitelocation' => AreaName::all(),
         ]);
+    }
+    public function checklistStore(Request $request, Contract $contract)
+    {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'description' => "required",
+                'checklist_id' => "required",
+            ]
+        );
+
+        if ($validator->fails()) {
+            return response()->json(["success" => false, "message" => "all * marked fields required.", "validation_error" => $validator->errors()]);
+        }
+        if ($request->checklist_id == 0) {
+            $checklist = Checklist::create(['description' => $request->description, 'contractId' => $contract->CNRT_ID]);
+            if ($checklist) {
+                // Redirect()->back()->with("success", "Checklist added!");
+                Session::flash('success', 'Checklist added!');
+
+                return response()->json(['success' => true, 'message' => 'Checklist added!']);
+            } else {
+                return response()->json(['success' => true, 'message' => 'Something went wrong, try again.']);
+            }
+        }
+        if ($request->checklist_id > 0) {
+            $checklist = Checklist::where(['id' => $request->checklist_id, 'contractId' => $contract->CNRT_ID])
+                ->update(['description' => $request->description]);
+            if ($checklist) {
+                // Redirect()->back()->with("success", "Checklist updated!");
+                Session::flash('success', 'Checklist updated!');
+                return response()->json(['success' => true, 'message' => 'Checklist updated!']);
+            } else {
+                return response()->json(['success' => true, 'message' => 'Something went wrong, try again.']);
+            }
+        }
+
+
+    }
+    public function checklistdelete(Checklist $checklist)
+    {
+        try {
+            $checklist->delete();
+            return Redirect()->back()->with("success", "Deleted!");
+        } catch (Exception $exp) {
+            return Redirect()->back()->withErrors("Something went wrong,try again!");
+        }
+
     }
     public function update(Request $request, Contract $contract)
     {
@@ -1388,7 +1498,7 @@ class ContractController extends Controller
     {
 
         $count = 0;
-        $count = ContractScheduleModel::where("Accessory_Id", $accessoryId)
+        $count = ContractScheduleService::where("Accessory_Id", $accessoryId)
             ->where("Contract_Id", $contractID)
             ->count();
         return $count;

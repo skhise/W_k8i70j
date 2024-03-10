@@ -82,6 +82,17 @@ class ClientController extends Controller
         return redirect()->back()->with('success', 'Deleted.');
 
     }
+
+    public function delete(Client $client)
+    {
+        $contracts = $client->contracts;
+        if (count($contracts) == 0) {
+            $client->delete();
+            return redirect()->back()->with('success', 'Deleted.');
+        } else {
+            return redirect()->back()->with('error', 'Can\'t delete, Client have active contracts.');
+        }
+    }
     public function update(Request $request, Client $client)
     {
         $request->validate([

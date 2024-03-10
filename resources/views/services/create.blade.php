@@ -101,14 +101,15 @@
         $errors->first('customer_id') }}</span>
                                                 @endif
                                             </div>
-                                            <div class="col-md-3 floating-label contracted  {{$service->contract_id == 0 && $update ? 'hide' : ''}} {{old('selectedtab') == 'tab1' || old('selectedtab') == '' ? '' : 'hide' }}">
+                                            <div class="col-md-3 contracted  {{$service->contract_id == 0 && $update ? 'hide' : ''}} {{old('selectedtab') == 'tab1' || old('selectedtab') == '' ? '' : 'hide' }}">
                                                 
-                                                <div class="input-group">
+                                                <div class="input-group floating-label">
                                                 <input type="text"class="form-control" id="product_sr_no" name="product_sr_no"/>
+                                                
+                                                <label for="product_sr_no">Product S/N Number</label>
                                                 <button type="button" class="btn btn-icon btn-danger" onclick="javascript:window.location.reload()"><i class="material-icons">refresh</i></button>
                                                 </div>
                                                 
-                                                <label for="product_sr_no">Product S/N Number</label>
                                             </div>
                                         </div>
                                     </div>
@@ -685,7 +686,7 @@
                                     options += '<option value="' + product.id + '" selected>' + product.product_name + '</option>'
 
                                 } else {
-                                    options += '<option value="' + product.id + '" selected>' + product.product_name + '</option>'
+                                    options += '<option value="' + product.id + '">' + product.product_name + '</option>'
 
                                 }
                             });

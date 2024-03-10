@@ -5,6 +5,21 @@
     height: 450px;
     overflow-y: scroll;
 }
+.service_row, .flex-d{
+  display: flex;
+  justify-content: space-between;
+}
+.input-item{
+  flex: 1;
+  margin: 0 5px; 
+  height: 40px !important;
+}
+
+.action-btn{
+  flex: 1;
+  margin: 0 3px; 
+  
+}
 
 .modal-fullscreen {
     width: 100vw;

@@ -73,13 +73,17 @@ class Client extends Model
             // do the rest of the cleanup...
         });
     }
+    public function contracts()
+    {
+        return $this->hasMany(Contract::class, 'CNRT_CustomerID', 'CST_ID');
+    }
     public function scopeFilter($query, array $filters)
     {
 
         $query->when($filters['search'] ?? null, function ($query, $search) use ($filters) {
 
             $search_field = $filters['search_field'] ?? '';
-            if (empty($search_field)) {
+            if (empty ($search_field)) {
                 $query->where('CST_Name', 'like', '%' . $search . '%')
                     ->orWhere('CST_Code', 'like', '%' . $search . '%');
             }

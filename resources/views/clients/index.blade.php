@@ -30,11 +30,11 @@ fas fa-plus-square"></i>
                                                     <select class="mt-2 select2" name="filter_status"
                                                         id="filter_status">
                                                         <option value="" selected>Status</option>
-                                                        <option value="1" {{$filter_status==1 ? 'selected' : '' }}>
+                                                        <option value="1" {{$filter_status == 1 ? 'selected' : '' }}>
                                                             Active</option>
-                                                        <option value="2" {{$filter_status==2 ? 'selected' : '' }}>
+                                                        <option value="2" {{$filter_status == 2 ? 'selected' : '' }}>
                                                             Deactive</option>
-                                                        <option value="3" {{$filter_status==3 ? 'selected' : '' }}>
+                                                        <option value="3" {{$filter_status == 3 ? 'selected' : '' }}>
                                                             Suspended</option>
                                                     </select>
                                                     <button type="submit"
@@ -68,7 +68,7 @@ fas fa-plus-square"></i>
                                                 <td colspan="6" class="text-center">No clients to show</td>
                                             </tr>
                                             @endif
-                                            @foreach($clients as $key=>$client)
+                                            @foreach($clients as $key => $client)
                                             <tr>
                                                 <td>
                                                     {{$client['client_code']}}
@@ -82,12 +82,17 @@ fas fa-plus-square"></i>
                                                 </td>
                                                 <td>{{$client['department']}}</td>
                                                 <td>
-                                                    <a href="{{route('clients.view',$client['id'])}}"
-                                                        class="btn btn-icon btn-sm btn-primary"><i
+                                                    <div class="flex-d">
+                                                    <a href="{{route('clients.view', $client['id'])}}"
+                                                        class="action-btn btn btn-sm btn-primary"><i
                                                             class="far fa-eye"></i></a>
-                                                    <a href="{{route('client.edit',$client['id'])}}"
-                                                        class="btn btn-icon btn-sm btn-primary"><i
+                                                    <a href="{{route('client.edit', $client['id'])}}"
+                                                        class="action-btn btn btn-sm btn-primary"><i
                                                             class="far fa-edit"></i></a>
+                                                    <a href="{{route('client.delete', $client['id'])}}" class="delete-btn action-btn btn btn-sm btn-danger"><i
+                                                                                    class="fa fa-trash"></i></a>    
+                                                    </div>
+                                                   
 
                                             </tr>
                                             @endforeach

@@ -50,6 +50,18 @@ class Contract extends Model
     ];
     protected $primaryKey = 'CNRT_ID';
 
+    public function scheduleservices()
+    {
+        return $this->hasMany(ContractScheduleService::class, 'contractId', 'CNRT_ID');
+    }
+    public function products()
+    {
+        return $this->hasMany(ContractUnderProduct::class, 'contractId', 'CNRT_ID');
+    }
+    public function checklist()
+    {
+        return $this->hasMany(Checklist::class, 'contractId', 'CNRT_ID');
+    }
     public function baseaccessory()
     {
         return $this->hasMany(ContractBaseAccessory::class, 'contractId', 'CNRT_ID');
@@ -102,7 +114,7 @@ class Contract extends Model
         $query->when($filters['search'] ?? null, function ($query, $search) use ($filters) {
 
             $search_field = $filters['search_field'] ?? '';
-            if (empty($search_field)) {
+            if (empty ($search_field)) {
                 $query->where('CNRT_Number', 'like', '%' . $search . '%')
                     ->orWhere('CNRT_Number', 'like', '%' . $search . '%');
             }

@@ -222,6 +222,8 @@
     <script src="{{asset('bundles/sweetalert/sweetalert.min.js')}}"></script>
     <!-- Page Specific JS File -->
     <script src="{{asset('js/page/sweetalert.js')}}"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> -->
+
     <!-- <script src="{{asset('js/bootstrap.min.js')}}"></script> -->
     <script>
         function isNumberKey(evt) {
@@ -230,6 +232,24 @@
                 return false;
             return true;
         }
+        $(document).on("click",".delete-btn",function(event) {
+        // Add event listener to delete buttons
+        event.preventDefault(); // Prevent default action
+            var url = $(this).attr('href'); // Get the delete URL from the button
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You will not be able to recover this data!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = url;
+                }
+            });
+        });
     </script>
     @yield('script')
 </body>

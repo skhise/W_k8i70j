@@ -35,11 +35,11 @@ fas fa-plus-square"></i>
                                                     <select class="mt-2 select2" name="filter_status"
                                                         id="filter_status">
                                                         <option value="" selected>Status</option>
-                                                        <option value="1" {{$filter_status==1 ? 'selected' : '' }}>
+                                                        <option value="1" {{$filter_status == 1 ? 'selected' : '' }}>
                                                             Active</option>
-                                                        <option value="2" {{$filter_status==2 ? 'selected' : '' }}>
+                                                        <option value="2" {{$filter_status == 2 ? 'selected' : '' }}>
                                                             Deactive</option>
-                                                        <option value="3" {{$filter_status==3 ? 'selected' : '' }}>
+                                                        <option value="3" {{$filter_status == 3 ? 'selected' : '' }}>
                                                             Suspended</option>
                                                     </select>
                                                     <br />
@@ -85,18 +85,18 @@ fas fa-plus-square"></i>
                                                 <td colspan="6" class="text-center">No services to show</td>
                                             </tr>
                                             @endif
-                                            @foreach($services as $key=>$service)
+                                            @foreach($services as $key => $service)
                                             <tr>
                                                 <td>
                                                     {{$service['service_no']}}
                                                 </td>
                                                 <td>
                                                     {{$service['contract_id'] == 0 || empty($service['contract_id']) ?
-                                                    'Non-Contracted' : 'Contracted'}}
+        'Non-Contracted' : 'Contracted'}}
                                                 </td>
                                                 <td>
-                                                    {{$service['service_date']!="" ?
-                                                    date('d-M-Y',strtotime($service['service_date'])) : 'NA'}}
+                                                    {{$service['service_date'] != "" ?
+        date('d-M-Y', strtotime($service['service_date'])) : 'NA'}}
                                                 </td>
 
                                                 <td>
@@ -109,10 +109,13 @@ fas fa-plus-square"></i>
                                                         {{$service['Status_Name']}}</span>
                                                 </td>
                                                 <td>
-                                                    <a href="{{route('services.view',$service['service_id'])}}"
-                                                        class="btn btn-icon btn-primary"><i class="far fa-eye"></i></a>
-                                                    <a href="{{route('services.edit',$service['service_id'])}}"
-                                                        class="btn btn-icon btn-primary"><i class="far fa-edit"></i></a>
+                                                    <div class="flex-d">
+                                                    <a href="{{route('services.view', $service['service_id'])}}"
+                                                        class="action-btn btn btn-info"><i class="far fa-eye"></i></a>
+                                                    <a href="{{route('services.edit', $service['service_id'])}}"
+                                                        class="action-btn btn btn-primary"><i class="far fa-edit"></i></a>
+                                                    </div>
+                                                    
 
                                             </tr>
                                             @endforeach

@@ -35,7 +35,8 @@ class Service extends Model
       'product_name',
       'product_description',
       'product_type',
-      'deleted_at'
+      'deleted_at',
+      'service_sub_status'
    ];
 
    public function history()
@@ -66,7 +67,7 @@ class Service extends Model
       $query->when($filters['search'] ?? null, function ($query, $search) use ($filters) {
 
          $search_field = $filters['search_field'] ?? '';
-         if (empty($search_field)) {
+         if (empty ($search_field)) {
             $query->where('service_no', 'like', '%' . $search . '%')
                ->orWhere('service_no', 'like', '%' . $search . '%');
          }

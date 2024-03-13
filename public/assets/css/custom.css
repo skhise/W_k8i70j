@@ -184,6 +184,16 @@ body.disable-scroll {
     border-radius: 4px;
     /* left: 8px; */
   }
+  .floating-label textarea:focus  + label,
+  .floating-label textarea:not(:placeholder-shown) + label {
+    top: -9px;
+    font-size: 12px;
+    color: #007bff;
+    background-color: #ffffff;
+    padding: 0 4px;
+    border-radius: 4px;
+    /* left: 8px; */
+  }
   .floating-label select:focus  + label,
   .floating-label select:not(:placeholder-shown) + label {
     top: -9px;
@@ -204,4 +214,8 @@ body.disable-scroll {
     border-bottom-right-radius: 0;
     border-color: red;
   }
-  
+  .errorMsgntainer{
+    margin-bottom: 15px;
+    color: red;
+    font-weight: 700;
+  }

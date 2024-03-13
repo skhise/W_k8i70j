@@ -116,6 +116,7 @@ Route::middleware(['prevent-back-history'])->group(function () {
         Route::get('/services/{service}/edit', [ServiceController::class, 'edit'])->name('services.edit');
         Route::post('/services/{service}/update', [ServiceController::class, 'update'])->name('services.update');
         Route::post('/services/{service}/add_product', [ServiceController::class, 'AddServiceProduct'])->name('services.add_product');
+        Route::post('/services/{service}/status', [ServiceController::class, 'ApplyServiceAction'])->name('service_status.store');
 
     });
     //services end

@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Client;
 use App\Models\ContractScheduleService;
+use App\Models\ServiceSubStatus;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use App\Models\Employee;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -426,8 +428,8 @@ class ServiceController extends Controller
         $create = ServiceHistory::create([
             'service_id' => $serviceId,
             'status_id' => $actionId,
+            'sttus_status_id' => $actionId,
             'user_id' => $engineerId,
-            'reason_id' => $reasonId,
             'action_description' => $note,
 
         ]);
@@ -558,27 +560,24 @@ class ServiceController extends Controller
         return response()->json(["success" => true, "history" => $history]);
     }
 
-    public function ApplyServiceAction(Request $request)
+    public function ApplyServiceAction(Request $request, Service $service)
     {
 
         try {
             $validator = Validator::make(
                 $request->all(),
                 [
-                    "service_id" => "required",
                     "status_id" => "required",
-                    'user_id' => "required",
-                    'reason_id' => "required",
+                    "sub_status_id" => "required",
                     'action_description' => "required",
                 ]
             );
 
             if ($validator->fails()) {
                 return response()->json(["success" => false, "message" => "all * marked fields required.", "validation_error" => $validator->errors()]);
-                exit;
             }
-            $engineerId = $request->user_id;
-            $reasonId = $request->reason_id;
+            $engineerId = $request->user_id ?? Auth::user()->id;
+            $sub_status_id = $request->sub_status_id;
             $actionId = $request->status_id;
             $note = $request->action_description;
             $serviceId = $request->service_id;
@@ -587,41 +586,47 @@ class ServiceController extends Controller
                 'service_id' => $serviceId,
                 'status_id' => $actionId,
                 'user_id' => $engineerId,
-                'reason_id' => $reasonId,
+                'sub_status_id' => $sub_status_id,
                 'action_description' => $note,
             ]);
             if ($create) {
                 $condition = [
-                    'service_status' => $actionId
+                    'service_status' => $actionId,
+                    'service_sub_status' => $sub_status_id
                 ];
-                if ($actionId == 6) {
+                if ($actionId == 7) {
                     $closeByName = $this->GetClosedByName($engineerId);
                     $condition = [
                         'service_status' => $actionId,
                         'ClosedBy' => $closeByName
                     ];
                 } else
-                    if ($actionId == 5) {
+                    if ($actionId == 6) {
                         $resolvedDate = date("Y-m-d h:i:s");
                         $condition = [
                             'service_status' => $actionId,
+                            'service_sub_status' => $sub_status_id,
                             'resolved_datetime' => $resolvedDate
                         ];
                     }
 
                 $update = $this->UpdateServiceCall($serviceId, $condition);
                 if ($update) {
+                    Session::flash("success", "action applied and status updated.");
                     return response()->json(['success' => true, 'message' => 'action applied and status updated.']);
                 } else {
+                    // Session::flash("success", "action failed, try again!");
                     ServiceHistory::where('id', $create->id)->delete();
                     return response()->json(['success' => false, 'message' => 'action failed, try again!']);
                 }
             } else {
+                // Session::flash("success", "action failed, try again!");
                 return response()->json(['success' => false, 'message' => 'action failed, try again!']);
             }
 
-        } catch (Illuminate\Database\QueryException $ex) {
-            return response()->json(["success" => false, "message" => "action failed, try again!"]);
+        } catch (Exception $ex) {
+            // Session::flash("success", "action failed, try again!");
+            return response()->json(["success" => false, "message" => "action failed, try again!" . $ex->getMessage()]);
         }
 
     }
@@ -810,6 +815,7 @@ class ServiceController extends Controller
         if (!empty($service)) {
             $code = "SRVS_" . date('Y') . "_" . $service->id + 1;
         }
+
 
         return view(
             'services.create',
@@ -1034,6 +1040,25 @@ class ServiceController extends Controller
         $timeline = ServiceHistory::leftJoin("master_service_status", "master_service_status.Status_Id", "service_action_history.status_id")
             ->where("service_id", $service->id)
             ->get();
+        $status_options = "<option value=''>Select Status</option>";
+        $status = ServiceStatus::all();
+        foreach ($status as $st) {
+            $selected = "";
+            if ($services->service_status == $st->Status_Id) {
+                $selected = "selected";
+            }
+            $status_options .= "<option value=" . $st->Status_Id . " " . $selected . ">" . $st->Status_Name . "</option>";
+        }
+
+        $sub_status_options = "<option value=''>Select Sub Status</option>";
+        $sub_status = ServiceSubStatus::all();
+        foreach ($sub_status as $sst) {
+            $selected1 = "";
+            if ($services->service_sub_status == $sst->Sub_Status_Id) {
+                $selected1 = "selected";
+            }
+            $sub_status_options .= "<option value=" . $sst->Sub_Status_Id . " " . $selected1 . ">" . $sst->Sub_Status_Name . "</option>";
+        }
 
         return view("services.view", [
             "product" => $product,
@@ -1041,6 +1066,8 @@ class ServiceController extends Controller
             "service_id" => $service->id,
             "contract" => $contract,
             'timeline' => $timeline,
+            'status_options' => $status_options,
+            'sub_status_options' => $sub_status_options,
         ]);
     }
     public function edit(Request $request, Service $service)

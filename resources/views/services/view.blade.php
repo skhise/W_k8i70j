@@ -11,6 +11,9 @@
                                         href="{{route('services')}}">Back</a>
                                     <a class="btn btn-primary"
                                         href="{{route('services.edit', $service_id)}}">Edit</a>
+                                    <input type="button" id="btn_service_add" value="Action"
+                                                                class="btn btn-info" data-toggle="modal"
+                                                                data-target=".bd-RefServiceStatus-modal-lg" />
                                 </div>
                             </div>
                             <div class="card-body">
@@ -366,7 +369,7 @@
             </div>
         </section>
     </div>
-
+@include('services.service_action')
     @section('script')
     <script>
         $(document).ready(function () {
@@ -436,6 +439,77 @@
 
             $("#form_cp")[0].reset();
             $("#btn_close").trigger('click');
+        }
+        $(document).on("click","#btn_service_status_save",function() {
+            $('.text-danger-error').html('');
+            $(this).attr("disabled",true);
+            $(this).html("Saving...");
+            $(".nrnumber").removeClass("error_border");
+            var service_id = $("#service_id").val();
+            var url = '{{route('service_status.store', $service_id)}}';
+            var isValid = true;
+
+                // Loop through each input field and validate
+                $('#form_service_status .required').each(function() {
+                    if (!validateInput($(this))) {
+                        isValid = false;
+                        $("#btn_service_status_save").attr("disabled",false);
+                        $("#btn_service_status_save").html("Save");
+                    }
+                });
+            if(isValid){
+                $.ajax({
+                    url: url,
+                    type: "POST",
+                    data: $("#form_service_status").serialize(),
+                    success: function (response) {
+                        //  var obj = JSON.parse(response);
+                        if (response.success) {
+                            CancelModelBoxServiceAction();
+                            window.location.reload();
+                        } else {
+                            $("#btn_service_status_save").attr("disabled",false);
+                            $("#btn_service_status_save").html("Save");
+                            $('.errorMsgntainer').html("");
+                            if (typeof response.validation_error != 'undefined') {
+                                $.each(response.validation_error, function (index, value) {
+                                    $('.' + index + "-field-validation-valid").html(value);
+                                });
+                            } else {
+                                $('.errorMsgntainer').html(response.message);
+                            }
+                        }
+
+                    },
+                    error: function (error) {
+                        $("#btn_service_save").attr("disabled",false);
+                        $("#btn_service_save").html("Save");
+                            
+                        alert("something went wrong, try again.");
+                    }
+                })
+            }    
+            
+        });
+        function CancelModelBoxServiceAction() { 
+            $("#btn_service_status_save").attr("disabled",false);
+            $("#btn_service_status_save").html("Save");
+            $("#service_id").val("0");
+            $('.text-danger-error').html('');
+            $("#form_service_status")[0].reset();
+            $(".required").removeClass('error_border')
+            $("#btn_close_service_status").trigger('click');
+        }
+        function validateInput(input) {
+            var value = input.val().trim();
+            var isValid = true;
+            if (value === '') {
+                input.addClass('error_border');
+                isValid = false;
+            } else {
+                input.removeClass('error_border');
+            }
+            return isValid;
         }
     </script>
     @stop

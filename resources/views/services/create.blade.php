@@ -713,7 +713,7 @@
                         customer_id: $('#customer_id option:selected').val(),
                     },
                     success: function (contracts) {
-                        var options = '<option>Select Contract</option>';
+                        var options = '<option value="0">Select Contract</option>';
 
                         console.log(contracts);
                         if (contracts.length > 0) {
@@ -733,12 +733,11 @@
                         $('#contract_id').trigger('change');
                     },
                     error: function () {
-                        $('#contract_id').html('<option>Select Contract</option>');
+                        $('#contract_id').html('<option value="0">Select Contract</option>');
                         alert('Something went wrong, try again');
                     }
                 });
             } else {
-                alert('in else');
                 var client = $('#customer_id option:selected').data('client');
                 console.log(client);
                 if (typeof client != 'undefined') {

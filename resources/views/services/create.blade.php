@@ -220,7 +220,7 @@
                                                     class="form-control select2 text-box single-line @error('product_id') is-invalid @enderror"
                                                     data-val="true" id="product_id" name="product_id" placeholder=""
                                                     type="text" value="{{$service->product_id ?? old('product_id')}}">
-                                                    <option value="">Select Product</option>
+                                                    <option value="0">Select Product</option>
                                                 </select>
                                                 @if($errors->has('product_id'))
                                                 <span class="text-danger field-validation-valid"
@@ -679,7 +679,7 @@
                         $('#contact_email').val(contract.CNRT_CustomerEmail);
                         $('#product_id').html('');
                         var products = obj.products ?? [];
-                        var options = '<option>Select product</option>';
+                        var options = '<option value="0">Select product</option>';
                         if (products.length > 0) {
                             products.forEach(function (product) {
                                 if (product_id == product.id) {

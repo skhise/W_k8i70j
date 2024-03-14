@@ -1103,6 +1103,7 @@ class ServiceController extends Controller
     }
     public function store(Request $request)
     {
+        dd($request->all());
         $validator = Validator::make(
             $request->all(),
             [

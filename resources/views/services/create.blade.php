@@ -16,12 +16,14 @@
                                             href="#contracted" role="tab" aria-controls="tab1"
                                             aria-selected="true">Contracted</a>
                                     </li>
+                                    @if($contractScheduleService == null)
                                     <li class="nav-item {{$service->contract_id != 0 && $update ? 'hide' : ''}}">
                                         <a class="nav-link {{old('selectedtab') == 'tab2' || ($update && $service->contract_id == 0) ? 'active' : '' }}"
                                             name="tab2" id="tab2" data-toggle="tab" onclick="toggleForm('tab2')"
                                             href="#noncontracted" role="tab" aria-controls="tab2"
                                             aria-selected="false">Non Contracted</a>
                                     </li>
+                                    @endif
                                 </ul>
                                 <form id="frmcreateService" method="post" enctype="multipart/form-data"
                                     action="{{$update ? route('services.update', $service->service_id) : route('services.store')}}">
@@ -120,7 +122,7 @@
                                                 <span style="float:right ;font-weight:bold">Select
                                                     Contract <span class="text-danger">*</span></span>
                                             </div>
-                                            <diphpphpv class="col-md-4 floating-label">
+                                            <div class="col-md-4 floating-label">
                                                 <select
                                                     class="form-control select2 text-box single-line @error('contract_id') is-invalid @enderror"
                                                     data-val="true" id="contract_id" name="contract_id" placeholder=""

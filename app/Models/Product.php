@@ -16,18 +16,22 @@ class Product extends Model
         'Product_Price',
         'Image_Path',
         'Status',
-        'type'
+        'Product_Type'
     ];
 
     protected $primaryKey = 'Product_ID';
 
+    public function serialnumbers()
+    {
+        return $this->hasMany(ProductSerialNumber::class);
+    }
     public function scopeFilter($query, array $filters)
     {
 
         $query->when($filters['search'] ?? null, function ($query, $search) use ($filters) {
 
             $search_field = $filters['search_field'] ?? '';
-            if (empty($search_field)) {
+            if (empty ($search_field)) {
                 $query->where('Product_Name', 'like', '%' . $search . '%');
 
             }

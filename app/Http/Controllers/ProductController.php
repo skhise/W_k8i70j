@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Client;
 use App\Models\ContractStatus;
 use App\Models\ContractType;
+use App\Models\ProductSerialNumber;
 use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use App\Models\Employee;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -249,17 +251,25 @@ class ProductController extends Controller
     public function store(Request $request)
     {
 
+        $messages = array(
+            'nrnumber' => 'Serial number required',
+            'nrnumber.*' => 'Serial number must be unique',
+            'Product_Type' => 'Product type required',
+            'Product_Name' => 'Product name required',
+        );
         $validator = Validator::make(
             $request->all(),
             [
-                "Product_Name" => "required",
-            ]
+                "nrnumber" => "nullable",
+                'nrnumber.*' => 'nullable|distinct',
+                'Product_Type' => "required",
+                'Product_Name' => "required",
+            ],
+            $messages
         );
 
         if ($validator->fails()) {
-            return back()
-                ->withInput()
-                ->withErrors($validator->messages());
+            return response()->json(["success" => false, "message" => "all * marked fields required.", "validation_error" => $validator->errors()]);
             // return response()->json(["success" => false, "message" => "all * marked fields required.", "validation_error" => $validator->errors()]);
         }
         try {
@@ -278,62 +288,46 @@ class ProductController extends Controller
                         $product->Image_Path = $isUpload;
                         $product->save();
                     }
-                    DB::commit();
-                    return Redirect("products")->with("success", "Product added!");
-                    // $product_accessory = $request->product_accessorys;
-                    // if (!is_null($product_accessory)) {
-                    //     if (sizeof($product_accessory) > 0) {
-                    //         $tpa = sizeof($product_accessory);
-                    //         $atpa = 0;
-                    //         $fatpa = 0;
-                    //         foreach ($product_accessory as $pa) {
-                    //             $product_acc = Product_Accessory::Create([
-                    //                 'Product_ID' => $product->Product_ID,
-                    //                 'PA_Name' => $pa['PA_Name'],
-                    //                 'PA_Qty' => $pa['PA_Qty'],
-                    //                 'PA_Price' => $pa['PA_Price']
-                    //             ]);
-                    //             if ($product_acc) {
-                    //                 $atpa++;
-                    //             } else {
-                    //                 $fatpa++;
-                    //             }
-                    //         }
+                    $nrnumber = $request->nrnumber;
+                    $isOk = 0;
+                    $size = 0;
+                    foreach ($nrnumber as $index => $sr) {
+                        if ($sr != "") {
 
-                    //         if ($atpa == $tpa - 1) {
-                    //             return response()->json(['success' => true, 'message' => 'Product Created.']);
-                    //         } else {
-
-                    //             return response()->json(['success' => true, 'message' => 'Product Created, Falied to add ' . $fatpa . " accessory."]);
-                    //         }
-                    //     } else {
-                    //         return response()->json(['success' => true, 'message' => 'Product Created.']);
-                    //     }
-                    // } else {
-
-
-                    //     //return response()->json(['success' => true, 'message' => 'Product created.']);
-                    // }
-                } else {
-                    return back()
-                        ->withInput()
-                        ->withErrors("Action failed, Try again.");
-                    //  return response()->json(['success' => false, 'message' => 'Action failed, Try again.']);
+                            $is_unique = ProductSerialNumber::where(['sr_number' => $sr])->get();
+                            if (count($is_unique) > 0) {
+                                return response()->json(["success" => false, "index" => $index, "message" => "Serial number must be unique."]);
+                            }
+                            $iscp = ProductSerialNumber::create([
+                                'sr_number' => $sr,
+                                'product_id' => $product->Product_ID,
+                            ]);
+                            if ($iscp) {
+                                $size++;
+                            }
+                        } else {
+                            $size++;
+                        }
+                    }
+                    if ($size == sizeof($nrnumber)) {
+                        DB::commit();
+                        Session::flash("success", "Product Added");
+                        return response()->json(['success' => true, 'message' => 'Product Added']);
+                    } else {
+                        DB::rollBack();
+                        return response()->json(['success' => false, 'message' => 'Something went wrong,try again']);
+                    }
                 }
-            } else {
-                return back()
-                    ->withInput()
-                    ->withErrors("Duplicate product details");
-                // return response()->json(['success' => false, 'message' => '']);
+                return response()->json(['success' => false, 'message' => 'Something went wrong,try again']);
+
+
             }
+            return response()->json(['success' => false, 'message' => 'Dublicate product name']);
+
         } catch (Exception $ex) {
-            return back()
-                ->withInput()
-                ->withErrors($ex->getMessage());
-            //return response()->json(['success' => false, 'message' => $ex->errorInfo]);
+
+            return response()->json(['success' => false, 'message' => $ex->errorInfo]);
         }
-
-
     }
     public function update(Request $request, Product $product)
     {

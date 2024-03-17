@@ -12,8 +12,8 @@
                                 <h4>{{ $update ? 'Update Product' : 'Add Product'}}</h4>
                             </div>
                             <div class="card-body">
-                                <form id="frmcreateemployee" method="post" enctype="multipart/form-data"
-                                    action="{{$update ? route('products.update',$product->Product_ID) : route('products.store')}}">
+                                <form id="form_cp" method="post" enctype="multipart/form-data"
+                                    action="{{$update ? route('products.update', $product->Product_ID) : route('products.store')}}">
                                     @csrf
                                     @if(!$update)
                                     <input type="hidden" id="created_by" name="created_by"
@@ -52,7 +52,7 @@
                                                     @if($errors->has('Product_Name'))
                                                     <span class="text-danger field-validation-valid"
                                                         data-valmsg-for="Product_Name" data-valmsg-replace="true">{{
-                                                        $errors->first('Product_Name') }}</span>
+        $errors->first('Product_Name') }}</span>
 
                                                     @endif
                                                 </div>
@@ -63,10 +63,10 @@
                                                         <option "">Select Type</option>
                                                         @foreach($product_types as $product_type)
                                                         <option value="{{$product_type->id}}" {{$product_type->id ==
-                                                            old('Product_Type') ? 'selected' :
-                                                            ''}} {{$product_type->id ==
-                                                            $product->Product_Type ? 'selected' :
-                                                            ''}}>
+        old('Product_Type') ? 'selected' :
+        ''}} {{$product_type->id ==
+        $product->Product_Type ? 'selected' :
+        ''}}>
                                                             {{$product_type->type_name}}
                                                         </option>
                                                         @endforeach
@@ -75,7 +75,7 @@
                                                     @if($errors->has('Product_Type'))
                                                     <span class="text-danger field-validation-valid"
                                                         data-valmsg-for="Product_Type" data-valmsg-replace="true">{{
-                                                        $errors->first('Product_Type ') }}</span>
+        $errors->first('Product_Type ') }}</span>
 
                                                     @endif
                                                 </div>
@@ -89,7 +89,7 @@
                                                     @if($errors->has('Product_Price'))
                                                     <span class="text-danger field-validation-valid"
                                                         data-valmsg-for="Product_Price" data-valmsg-replace="true">{{
-                                                        $errors->first('Product_Price') }}</span>
+        $errors->first('Product_Price') }}</span>
 
                                                     @endif
                                                 </div>
@@ -113,7 +113,7 @@
                                                     @if($errors->has('Image_Path'))
                                                     <span class="text-danger field-validation-valid"
                                                         data-valmsg-for="Image_Path" data-valmsg-replace="true">{{
-                                                        $errors->first('Image_Path') }}</span>
+            $errors->first('Image_Path') }}</span>
 
                                                     @endif
                                                 </div>
@@ -134,23 +134,49 @@
                                                     @if($errors->has('Product_Description'))
                                                     <span class="text-danger field-validation-valid"
                                                         data-valmsg-for="Product_Description"
-                                                        data-valmsg-replace="true">{{
-                                                        $errors->first('Product_Description') }}</span>
+                                                        data-valmsg-replace="true">{{$errors->first('Product_Description') }}</span>
 
                                                     @endif
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="form-group">
+                                       
+                                    </div>
+                       
+                        <div class="form-group">
+                           
+                            <div class="row">
+                            <div class="col-md-2">
+                            <span style="float:right ;font-weight:bold">Sr. Number</span>
+                                    
+                                </div>
+                                <div class="col-md-10">
+                                <p><span class="text-danger-error text-danger srnumber-field-validation-valid"
+                                    data-valmsg-replace="true"></span></p>
+                                    <div class="input-group">
+                                        <input class="form-control text-box single-line" id="nrnumber_0"
+                                            name="nrnumber[]" placeholder="" type="text" value="" />
+                                        <span class="btn btn-primary input-group-addon add_form_field"><i
+                                                class="fa fa-plus" aria-hidden="true"></i></span>
+
+                                    </div>
+                                </div>
+                                <div class="col-md-12 mb-2" id="multipeInput">
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                        <div class="form-group">
                                             <div class="card-footer text-right">
-                                                <input type="button" id="btnAddEmployee"
-                                                    value="{{$update ? 'Update' :'Save'}}" class="btn btn-primary">
+                                                <input type="button" id="btnAddProduct"
+                                                    value="{{$update ? 'Update' : 'Save'}}" class="btn btn-primary">
                                                 <a type="button" class="btn btn-danger"
                                                     href="{{route('clients')}}">Back</a>
                                             </div>
                                         </div>
-                                    </div>
-                                </form>
+                    </form> 
                             </div>
                         </div>
                     </div>
@@ -166,10 +192,74 @@
                 $(this).siblings('span').text('');
             });
         });
-        $('#btnAddEmployee').on('click', function () {
-            $("#frmcreateemployee")[0].submit();
+       
+        $(document).ready(function () {
+            var max_fields = 100;
+            var wrapper = $("#multipeInput");
+            var add_button = $(".add_form_field");
+            var x = 1;
+            $(add_button).click(function (e) {
+                e.preventDefault();
+                if (x < max_fields) {
+                    x++;
+                    $("#add_sr_no").text(x);
+                    $(wrapper).prepend('<div class="row"><div class="col-md-2"></div><div class="col-md-10 input-group mt-2"><input type="text" class="form-control nrnumber" id="nrnumber_' + x + '" name="nrnumber[]"/><span class="btn btn-danger input-group-addon add_form_field delete"><i class="fa fa-trash" aria-hidden="true"></i></span></div></div>'); //add input box
+                } else {
+                    alert('You Reached the limits')
+                }
+            });
+            $(wrapper).on("click", ".delete", function (e) {
+                e.preventDefault();
+                $(this).parent('div').remove();
+                x--;
+                $("#add_sr_no").text(x);
+
+            })
+        }); 
+        $(document).on("click","#btnAddProduct",function() {
+            $('.text-danger-error').html('');
+            $(".nrnumber").removeClass("error_border");
+            var product_id = $("#product_id").val();
+         
+           var url =  $('#form_cp').prop('action');
+           
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: $("#form_cp").serialize(),
+                success: function (response) {
+                    //  var obj = JSON.parse(response);
+                    if (response.success) {
+                        window.location.href="/products";
+                    } else {
+                        $('.errorMsgntainer').html("");
+                        if (typeof response.validation_error != 'undefined') {
+                            $.each(response.validation_error, function (index, value) {
+                                console.log(index);
+                                if (index == "product_type" || index == "product_name") {
+                                    $('.' + index + "-field-validation-valid").html(value);
+
+                                } else {
+                                    var id = index.replace(".", "_");
+                                    $("#" + id).addClass('error_border');
+                                    $('.srnumber-field-validation-valid').html("markd sr. number dublicate");
+                                    // $("#" + index).('<div id="cmprivacy">' + value + '</div>');
+                                }
+                            });
+                        } else {
+                            $('.srnumber-field-validation-valid').html(response.message);
+                        }
+
+
+                    }
+
+                },
+                error: function (error) {
+                    alert("something went wrong, try again.");
+                }
+            })
         });
     </script>
-
+    
     @stop
 </x-app-layout>

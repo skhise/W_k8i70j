@@ -7,6 +7,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\DocumentController;
@@ -115,11 +116,15 @@ Route::middleware(['prevent-back-history'])->group(function () {
         Route::get('/services/{service}/view', [ServiceController::class, 'view'])->name('services.view');
         Route::get('/services/{service}/edit', [ServiceController::class, 'edit'])->name('services.edit');
         Route::post('/services/{service}/update', [ServiceController::class, 'update'])->name('services.update');
-        Route::post('/services/{service}/add_product', [ServiceController::class, 'AddServiceProduct'])->name('services.add_product');
+        Route::post('/services/{service}/add_product', [ServiceController::class, 'AddServiceProduct'])->name('services.store_product');
+        Route::get('/services/{service}/product_create', [ServiceController::class, 'ProductCreate'])->name('services.product_create');
         Route::post('/services/{service}/status', [ServiceController::class, 'ApplyServiceAction'])->name('service_status.store');
 
     });
     //services end
+    Route::middleware('auth')->group(function () {
+        Route::get('/schedules', [ScheduleController::class, "index"])->name("schedules");
+    });
     /* master routes*/
     Route::middleware('auth')->group(function () {
         Route::get('/masters', [MasterController::class, 'index'])->name('masters');

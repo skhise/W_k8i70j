@@ -24,10 +24,16 @@
                                             aria-selected="true">Details</a>
                                     </li>
                                     <li class="nav-item">
+                                        <a class="nav-link" id="ServiceProductDC-tab5" data-toggle="tab"
+                                            href="#serviceproductdc" role="tab" aria-controls="ServiceProductDC"
+                                            aria-selected="true">Product DC</a>
+                                    </li>
+                                    <li class="nav-item">
                                         <a class="nav-link" id="Servicetimeline-tab5" data-toggle="tab"
                                             href="#servicetimeline" role="tab" aria-controls="Servicetimeline"
                                             aria-selected="true">Timeline</a>
                                     </li>
+                                    
                                 </ul>
                                 <div class="tab-content tab-bordered">
                                     <div class="tab-pane fade show active" id="ClientDetails" role="tabpanel"
@@ -360,6 +366,9 @@
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
+                                    <div class="tab-pane fade" role="tabpanel" id="serviceproductdc">
+                                        @include('services.service_dcproduct_tab');
                                     </div>
                                 </div>
                             </div>

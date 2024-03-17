@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Client;
 use App\Models\ContractScheduleService;
+use App\Models\DcType;
+use App\Models\ProductSerialNumber;
+use App\Models\ProductType;
+use App\Models\ServiceDcProduct;
 use App\Models\ServiceSubStatus;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -56,6 +60,68 @@ class ServiceController extends Controller
         } catch (Exception $e) {
         }
         return $product;
+    }
+    public function ProductCreate(Request $request, Service $service)
+    {
+        $product_types = ProductType::all();
+        foreach ($product_types as $i => $type) {
+
+            $products = Product::where("Product_Type", $type->id)->get();
+            $product_types[$i]['products'] = $products;
+            foreach ($products as $index => $product) {
+                $srnumbers = ProductSerialNumber::where(["product_id" => $product->Product_ID])->get();
+                $products[$index]['serial_numbers'] = $srnumbers;
+            }
+
+        }
+        return view("services.product_add", [
+            'service' => $service,
+            'dctype' => DcType::all(),
+            'productType' => $product_types,
+        ]);
+    }
+    public function AddServiceProduct(Request $request, Service $service)
+    {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'issue_date.*' => 'required',
+                'type.*' => 'required',
+                'product_id.*' => 'required',
+                'serial_no.*' => 'required',
+                'amount.*' => 'required',
+                'description.*' => 'required',
+            ]
+        );
+        if ($validator->fails()) {
+            return response()->json(["success" => false, "message" => "Product information missing.", "validation_error" => $validator->errors()]);
+        }
+        $data = $request->validate([
+
+        ]);
+        $size = 0;
+        $data = $request->data;
+
+        foreach ($data as $key => $name) {
+
+            $create = ServiceDcProduct::create([
+                'service_id' => $service->id,
+                'issue_date' => $data[$key]['issue_date'],
+                'type' => $data[$key]['type'],
+                'product_id' => $data[$key]['product_id'],
+                'serial_no' => $data[$key]['serial_no'] != "" ? $data[$key]['serial_no'] : 0,
+                'amount' => $data[$key]['amount'],
+                'description' => $data[$key]['description'] ?? "",
+            ]);
+            if ($create) {
+                $size++;
+            }
+        }
+        if ($size == count($data)) {
+            return response()->json(["status" => true, 'message' => 'Saved successfully']);
+        } else {
+            return response()->json(["status" => false, 'message' => 'Something went wrong, try again.']);
+        }
     }
     public function AddUpdateUnderServiceProduct(Request $request)
     {
@@ -465,7 +531,7 @@ class ServiceController extends Controller
         $serviceId = "";
         $accountsetting = $this->GetAccountSettings($request);
         $call_ins = $accountsetting->serviceno_ins;
-        if (!isset($call_ins)) {
+        if (!isset ($call_ins)) {
             $call_ins = "Call";
         }
         $last = Service::latest()->first();
@@ -787,7 +853,7 @@ class ServiceController extends Controller
     {
         $service = Service::all()->last();
         $code = "SRVS_" . date('Y') . "_1";
-        if (!empty($service)) {
+        if (!empty ($service)) {
             $code = "SRVS_" . date('Y') . "_" . $service->id + 1;
         }
 
@@ -812,7 +878,7 @@ class ServiceController extends Controller
     {
         $service = Service::all()->last();
         $code = "SRVS_" . date('Y') . "_1";
-        if (!empty($service)) {
+        if (!empty ($service)) {
             $code = "SRVS_" . date('Y') . "_" . $service->id + 1;
         }
 
@@ -825,7 +891,7 @@ class ServiceController extends Controller
                 'priorities' => Priority::all(),
                 'clients' => Client::all(),
                 'serviceType' => ServiceType::all(),
-                'contractScheduleService' => new ContractScheduleService(),
+                'contractScheduleService' => null,
                 'update' => false,
                 'service_no' => $code,
                 'service' => new Service(),
@@ -907,11 +973,11 @@ class ServiceController extends Controller
         try {
             $isInsert = 0;
             // DB::beginTransaction();
-            if (isset($request->sparepart)) {
+            if (isset ($request->sparepart)) {
                 $products = $request->sparepart;
                 if (sizeof($products) > 0) {
                     foreach ($products as $product) {
-                        if (isset($product['service_id'])) {
+                        if (isset ($product['service_id'])) {
                             $serviceAcc = ServiceAccessory::create([
                                 'service_id' => $product['service_id'],
                                 'accessory_id' => $product['productId'],
@@ -1059,11 +1125,16 @@ class ServiceController extends Controller
             }
             $sub_status_options .= "<option value=" . $sst->Sub_Status_Id . " " . $selected1 . ">" . $sst->Sub_Status_Name . "</option>";
         }
-
+        $dc_products = ServiceDcProduct::leftJoin("products", "products.Product_ID", "service_dc_product.product_id")
+            ->leftJoin("master_product_type", "master_product_type.id", "products.Product_Type")
+            ->leftJoin("product_serial_numbers", "product_serial_numbers.id", "service_dc_product.serial_no")
+            ->leftJoin("dc_type", "dc_type.id", "service_dc_product.type")
+            ->where("service_id", $service->id)->get();
         return view("services.view", [
             "product" => $product,
             "service" => $services,
             "service_id" => $service->id,
+            "dc_products" => $dc_products,
             "contract" => $contract,
             'timeline' => $timeline,
             'status_options' => $status_options,
@@ -1222,7 +1293,7 @@ class ServiceController extends Controller
         $accountsetting = $this->GetAccountSettings($request);
         $call_ins = $accountsetting->serviceno_ins;
 
-        if (!isset($call_ins)) {
+        if (!isset ($call_ins)) {
             $call_ins = "Call";
         }
 

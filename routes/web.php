@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ContractController;
+use App\Http\Controllers\DcController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
@@ -118,6 +119,7 @@ Route::middleware(['prevent-back-history'])->group(function () {
         Route::post('/services/{service}/update', [ServiceController::class, 'update'])->name('services.update');
         Route::post('/services/{service}/add_product', [ServiceController::class, 'AddServiceProduct'])->name('services.store_product');
         Route::get('/services/{service}/product_create', [ServiceController::class, 'ProductCreate'])->name('services.product_create');
+        Route::get('/services/{serviceDcProduct}/product_delete', [ServiceController::class, 'DeleteServiceProduct'])->name('services.dc_delete');
         Route::post('/services/{service}/status', [ServiceController::class, 'ApplyServiceAction'])->name('service_status.store');
 
     });
@@ -146,6 +148,9 @@ Route::middleware(['prevent-back-history'])->group(function () {
     });
     /*end master routes*/
 
+    Route::middleware('auth')->group(function () {
+        Route::get('/dcmanagements', [DcController::class, 'index'])->name('dcmanagements');
+    });
     Route::middleware('auth')->group(function () {
         Route::get('/employees', [EmployeeController::class, 'index'])->name('employees');
     });

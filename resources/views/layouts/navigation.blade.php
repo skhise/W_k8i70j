@@ -159,6 +159,9 @@
             <li class="dropdown {{Request::is('schedules') || Request::is('schedules/*') ? 'active' : '' }}">
                 <a href="{{route('schedules')}}" class="nav-link"><i data-feather="figma"></i><span>Schedules Services</span></a>
             </li>
+            <li class="dropdown {{Request::is('dcmanagements') || Request::is('dcmanagements/*') ? 'active' : '' }}">
+                <a href="{{route('dcmanagements')}}" class="nav-link"><i data-feather="figma"></i><span>DC Management</span></a>
+            </li>
             
             <li class="dropdown {{Request::is('products/*') || Request::is('products') ? 'active' : '' }}">
                 <a href="{{route('products')}}" class="nav-link"><i data-feather="figma"></i><span>Products</span></a>

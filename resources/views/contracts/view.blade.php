@@ -289,19 +289,7 @@
 
     @section('script')
     <script>
-        $(document).ready(function() {
-            
-          // Remember selected tab and set active class
-            $('.nav-tabs a').on('click', function (e) {
-                localStorage.setItem('contract_activeTab', $(e.target).attr('aria-controls'));
-            });
-
-            // Restore selected tab on page load
-            var activeTab = localStorage.getItem('contract_activeTab');
-            if (activeTab) {
-                $('#' + activeTab).tab('show');
-            }
-        });
+        
         $(document).ready(function () {
             var max_fields = 100;
             var wrapper = $("#multipeInput");

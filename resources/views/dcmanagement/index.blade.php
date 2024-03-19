@@ -1,14 +1,15 @@
-<div class="row">
-                                            <div class="col-12">
-                                                <div class="card card-primary">
-                                                    <div class="card-header">
-                                                        <h4>Product DC</h4>
-                                                        <div class="card-header-action">
-                                                            <a href="{{route('services.product_create', $service_id)}}" type="button" class="btn btn-primary">Add New</a>
-                                                        </div>
-                                                    </div>
-                                                    <div class="card-body">
-                                                        <div class="table-responsive">
+<x-app-layout>
+    <div class="main-content">
+        <section class="section">
+            <div class="section-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>DC Management</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
                                                             <table class="table table-striped" id="tbRefClient">
                                                                 <thead>
                                                                     <tr>
@@ -55,7 +56,13 @@
                                                                 </tbody>
                                                             </table>
                                                         </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </div>
+ 
+</x-app-layout>

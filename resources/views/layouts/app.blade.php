@@ -77,7 +77,7 @@
             @include('layouts.navigation')
 
             <!-- Page Heading -->
-            @if (isset($header))
+            @if (isset ($header))
             <header class="bg-white dark:bg-gray-800 shadow">
                 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                     {{ $header }}
@@ -250,6 +250,19 @@
                 }
             });
         });
+        $(document).ready(function() {
+            
+            // Remember selected tab and set active class
+              $('.nav-tabs a').on('click', function (e) {
+                  localStorage.setItem('contract_activeTab', $(e.target).attr('aria-controls'));
+              });
+  
+              // Restore selected tab on page load
+              var activeTab = localStorage.getItem('contract_activeTab');
+              if (activeTab) {
+                  $('#' + activeTab).tab('show');
+              }
+          });
     </script>
     @yield('script')
 </body>

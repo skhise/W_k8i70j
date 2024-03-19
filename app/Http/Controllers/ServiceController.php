@@ -52,6 +52,19 @@ use App\Notifications\SendPushNotification;
 
 class ServiceController extends Controller
 {
+    public function DeleteServiceProduct(Request $request, ServiceDcProduct $serviceDcProduct)
+    {
+
+        try {
+            $serviceDcProduct->delete();
+            return back()->with("success", "Deleted!");
+        } catch (Exception $exp) {
+            return back()
+                ->withInput()
+                ->withErrors("Action failed, try again.");
+        }
+
+    }
     public function GetServiceUnderProduct(Request $request)
     {
         $product = null;
@@ -1125,11 +1138,14 @@ class ServiceController extends Controller
             }
             $sub_status_options .= "<option value=" . $sst->Sub_Status_Id . " " . $selected1 . ">" . $sst->Sub_Status_Name . "</option>";
         }
-        $dc_products = ServiceDcProduct::leftJoin("products", "products.Product_ID", "service_dc_product.product_id")
+        $dc_products = ServiceDcProduct::select(["product_serial_numbers.*", "clients.*", "services.*", "master_product_type.*", "service_dc_product.id as dcp_id", "service_dc_product.*"])->leftJoin("products", "products.Product_ID", "service_dc_product.product_id")
             ->leftJoin("master_product_type", "master_product_type.id", "products.Product_Type")
             ->leftJoin("product_serial_numbers", "product_serial_numbers.id", "service_dc_product.serial_no")
             ->leftJoin("dc_type", "dc_type.id", "service_dc_product.type")
+            ->leftJoin("services", "services.id", "service_dc_product.type")
+            ->leftJoin("clients", "clients.CST_ID", "services.customer_id")
             ->where("service_id", $service->id)->get();
+
         return view("services.view", [
             "product" => $product,
             "service" => $services,

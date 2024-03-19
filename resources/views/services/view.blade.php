@@ -20,17 +20,17 @@
                                 <ul class="nav nav-tabs" id="myTab2" role="tablist">
                                     <li class="nav-item">
                                         <a class="nav-link active" id="home-tab2" data-toggle="tab"
-                                            href="#ClientDetails" role="tab" aria-controls="home"
+                                            href="#ClientDetails" role="tab" aria-controls="home-tab2"
                                             aria-selected="true">Details</a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link" id="ServiceProductDC-tab5" data-toggle="tab"
-                                            href="#serviceproductdc" role="tab" aria-controls="ServiceProductDC"
+                                            href="#serviceproductdc" role="tab" aria-controls="ServiceProductDC-tab5"
                                             aria-selected="true">Product DC</a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link" id="Servicetimeline-tab5" data-toggle="tab"
-                                            href="#servicetimeline" role="tab" aria-controls="Servicetimeline"
+                                            href="#servicetimeline" role="tab" aria-controls="Servicetimeline-tab5"
                                             aria-selected="true">Timeline</a>
                                     </li>
                                     

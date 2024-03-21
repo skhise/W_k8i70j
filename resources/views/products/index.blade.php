@@ -30,9 +30,9 @@
                                                     <select class="mt-2 select2" name="filter_status"
                                                         id="filter_status">
                                                         <option value="" selected>Status</option>
-                                                        <option value="1" {{$filter_status==1 ? 'selected' : '' }}>
+                                                        <option value="1" {{$filter_status == 1 ? 'selected' : '' }}>
                                                             Active</option>
-                                                        <option value="2" {{$filter_status==2 ? 'selected' : '' }}>
+                                                        <option value="2" {{$filter_status == 2 ? 'selected' : '' }}>
                                                             Deactive</option>
                                                     </select>
                                                     <br />
@@ -71,21 +71,24 @@
                                                 <td colspan="6">No products added yet.</td>
                                             </tr>
                                             @else
-                                            @foreach($products as $index=>$product)
+                                            @foreach($products as $index => $product)
                                             <tr key="{{$product['Product_ID']}}">
-                                                <td>{{$index+1}}</td>
+                                                <td>{{$index + 1}}</td>
                                                 <td>{{$product['Product_Name']}}</td>
                                                 <td>{{$product['type_name']}}</td>
                                                 <td title="{{$product['Product_Description']}}">{!!
-                                                    Str::limit($product['Product_Description'], 50, ' ...') !!}
+            Str::limit($product['Product_Description'], 50, ' ...') !!}
                                                 </td>
                                                 <td>
-                                                    <a href="{{route('products.view',$product['Product_ID'])}}"
-                                                        class="btn btn-icon btn-sm btn-primary"><i
+                                                    <div class="d-flex">
+                                                    <a href="{{route('products.view', $product['Product_ID'])}}"
+                                                        class="action-btn btn btn-icon btn-sm btn-primary"><i
                                                             class="far fa-eye"></i></a>
-                                                    <a href="{{route('products.edit',$product['Product_ID'])}}"
-                                                        class="btn btn-icon btn-sm btn-primary"><i
+                                                    <a href="{{route('products.edit', $product['Product_ID'])}}"
+                                                        class="action-btn btn btn-icon btn-sm btn-info"><i
                                                             class="far fa-edit"></i></a>
+                                                    </div>
+                                                    
                                                 </td>
                                             </tr>
                                             @endforeach

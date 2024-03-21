@@ -67,7 +67,7 @@
                                                 </div>
                                                 <div class="col-lg-2">
                                                     <label>Amount</label>
-                                                    <input id="product_amount" name="product_amount" value="0" class="required form-control numberInput" autocomplete="off">
+                                                    <input type="number" id="product_amount" name="product_amount" value="0" class="required form-control numberInput" autocomplete="off">
                                                 </div>
                                                 <div class="col-lg-3">
                                                     <label>Other Details</label>
@@ -258,7 +258,10 @@ $(document).on("change","#standby_product",function(){
 
             $("#standby_product").empty();
             $("#productSerialNo").empty();
-            $('#myForm')[0].reset();
+            $("#product_type").val("");
+            $("#product_amount").val(0);
+            $("#other_details").val("");
+            // $('#myForm')[0].reset();
         }
     });
     function validateInput(input) {

@@ -40,7 +40,7 @@ class ProductController extends Controller
             ->leftJoin("master_service_schedule", "master_service_schedule.id", "contract_under_product.no_of_service")
             ->first(["contract_under_product.id as mainPId", 'contracts.*', "contract_under_product.*", "master_service_schedule.*"]);
 
-        if (!empty($product)) {
+        if (!empty ($product)) {
             $startDate = Carbon::createFromFormat("Y-m-d", $product->CNRT_StartDate);
             $EndDate = Carbon::createFromFormat("Y-m-d", $product->CNRT_EndDate);
             $diff_in_months = $startDate->diffInMonths($EndDate);
@@ -83,6 +83,15 @@ class ProductController extends Controller
             ->where("Status", 1)->get();
 
         return $product;
+    }
+    public function DeleteProductSrNo(Request $request, ProductSerialNumber $productSerialNumber)
+    {
+        try {
+            $productSerialNumber->delete();
+            return back()->with("success", "Deleted!");
+        } catch (Exception $exp) {
+            return back()->withErrors("Action failed, try again.");
+        }
     }
     public function GetContractProductList(Request $request)
     {
@@ -233,11 +242,13 @@ class ProductController extends Controller
     {
         $product1 = Product::join("master_product_type", "master_product_type.id", "products.Product_Type")
             ->where("Product_ID", $product->Product_ID)->first();
+        $serial_numbers = ProductSerialNumber::where("product_id", $product->Product_ID)->get();
         // dd(url('images/') . "/" . $product->Image_Path);
         return view("products.view", [
             "status" => $this->status,
             "img_url" => url('images/') . "/" . $product->Image_Path,
             "product" => $product1,
+            "serialnumbers" => $serial_numbers,
         ]);
     }
     public function edit(Request $request, Product $product)

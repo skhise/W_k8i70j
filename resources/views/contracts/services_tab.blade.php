@@ -44,10 +44,13 @@
                                                                         <td>{{$service['type_name']}}</td>
                                                                         <td>{{$service['product_Id'] != 0 ? $service['nrnumber'] . "/" . $service['product_name'] : "NA"}}</td>
                                                                         <td>{{$service['description']}}</td>
-                                                                        <td></td>
+                                                                        <td><span
+                                                        class="text-white badge badge-shadow {{$service['status_color'] ?? 'bg-primary'}}">
+                                                        {{$service['Status_Name']}}</span></td>
                                                                         <td>
-                                                                            <div class="flex-d">
+                                                                            
                                                                                 @if($service['Service_Call_Id'] == 0)
+                                                                                <div class="flex-d">
                                                                                     <a href="#" data-toggle="modal"
                                                                                 id="showServiceEditModal"
                                                                                 data-Schedule_Date="{{$service['Schedule_Date']}}"
@@ -63,14 +66,15 @@
                                                                                     <a href="{{route('contract_service.delete', $service['cupId'])}}" class="action-btn delete-btn btn btn-sm btn-danger"><i
                                                                                     class="fa fa-trash"></i></a>
                                                                                     
-                                                                                    <a title="lock ticket" href="{{route('services.schedulecreate', $service['cupId'])}}" class="action-btn btn btn-sm btn-primary"><i
+                                                                                    <a title="lock ticket" href="{{route('services.schedulecreate', $service['cupId'])}}?flag=1" class="action-btn btn btn-sm btn-primary"><i
                                                                                     class="fa fa-lock"></i></a>
+                                                                                    </div>
                                                                                  @else 
-                                                                                    <a title="view ticket" href="{{route('services.view', $service['Service_Call_Id'])}}" class="action-btn btn btn-sm btn-primary"><i
+                                                                                    <a title="view ticket" href="{{route('services.view', $service['Service_Call_Id'])}}?flag=1" class="d-flex action-btn btn btn-sm btn-primary"><i
                                                                                     class="fa fa-eye"></i></a>
                                                                                 
                                                                                 @endif   
-                                                                            </div>
+                                                                            
                                                                         </td>
                                                                     </tr>
                                                                     @endforeach

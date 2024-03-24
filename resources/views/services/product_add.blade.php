@@ -137,7 +137,8 @@
 <script>
     $('#btn_save_data').click(function() {
         var rowData = [];
-
+         var issue_date = $("#standby_date").val();    
+         var dc_type =$("#standbyType option:selected").val();    
         // Iterate over each row in the table body
         $('#myTable tbody tr').each(function() {
             var rowObj = {};
@@ -147,14 +148,19 @@
                 var columnValue = $(this).data('value');
                 rowObj[columnName] = columnValue;
             });
+
             rowData.push(rowObj);
         });
+        
 
         // Send data to PHP script using AJAX
         $.ajax({
             url: "{{route('services.store_product', $service->id)}}",
             method: 'POST',
-            data: { data: rowData,
+            data: {
+                issue_date:issue_date,
+                dc_type:dc_type,
+                data: rowData,
                 "_token": "{{ csrf_token() }}",
                 },
             success: function(response) {

@@ -48,6 +48,11 @@ class Service extends Model
       return $this->hasMany(ServiceAccessory::class);
 
    }
+   public function contractscheduleservice()
+   {
+      return $this->belongsTo(ContractScheduleService::class, "Service_Call_Id", "id");
+
+   }
    public static function boot()
    {
       parent::boot();

@@ -18,18 +18,13 @@
                                                                         <th>Client Name</th>
                                                                         <th>Issue Date</th>
                                                                         <th>Type</th>
-                                                                        <th>Amount</th>
-                                                                        <th>Product Type</th>
-                                                                        <th>Product Name</th>
-                                                                        <th>Product Sr. No.</th>
-                                                                        <th>Issue Description</th>
                                                                         <th>Actions</th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
                                                                 @if($dc_products->count() == 0)
                                                                     <tr>
-                                                                        <td colspan="11" class="text-center">No
+                                                                        <td colspan="6" class="text-center">No
                                                                             products
                                                                             added yet.</td>
                                                                     </tr>
@@ -41,14 +36,10 @@
                                                                         <td>{{$dcp['CST_Name']}}</td>
                                                                         <td>{{date("d-M-Y", strtotime($dcp['issue_date']))}}</td>
                                                                         <td>{{$dcp['dc_type_name']}}</td>
-                                                                        <td>{{$dcp['amount']}}</td>
-                                                                        <td>{{$dcp['type_name']}}</td>
-                                                                        <td>{{$dcp['Product_Name']}}</td>
-                                                                        <td>{{$dcp['sr_number']}}</td>
-                                                                        <td>{{$dcp['description']}}</td>
                                                                         <td>
                                                                             <div class="d-flex">
                                                                                 <a class="delete-btn action-btn btn btn-sm btn-danger" href="{{route('services.dc_delete', $dcp['dcp_id'])}}"><i class="fa fa-trash"></i></a>
+                                                                                <a class="action-btn btn btn-sm btn-primary" href="{{route('services.dc_view', $dcp['dcp_id'])}}"><i class="fa fa-eye"></i></a>
                                                                             </div>
                                                                         </td>
                                                                     </tr>

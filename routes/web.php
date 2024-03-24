@@ -119,7 +119,9 @@ Route::middleware(['prevent-back-history'])->group(function () {
         Route::post('/services/{service}/update', [ServiceController::class, 'update'])->name('services.update');
         Route::post('/services/{service}/add_product', [ServiceController::class, 'AddServiceProduct'])->name('services.store_product');
         Route::get('/services/{service}/product_create', [ServiceController::class, 'ProductCreate'])->name('services.product_create');
-        Route::get('/services/{serviceDcProduct}/product_delete', [ServiceController::class, 'DeleteServiceProduct'])->name('services.dc_delete');
+        Route::get('/services/{serviceDc}/product_delete', [ServiceController::class, 'DeleteServiceDc'])->name('services.dc_delete');
+        Route::get('/services/{serviceDc}/dc-view', [ServiceController::class, 'DcView'])->name('services.dc_view');
+        Route::get('/services/{serviceDcProduct}/dcp-delete', [ServiceController::class, 'DcpDelete'])->name('service_dcp.delete');
         Route::post('/services/{service}/status', [ServiceController::class, 'ApplyServiceAction'])->name('service_status.store');
 
     });

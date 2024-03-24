@@ -7,6 +7,7 @@ use App\Models\ContractScheduleService;
 use App\Models\DcType;
 use App\Models\ProductSerialNumber;
 use App\Models\ProductType;
+use App\Models\ServiceDc;
 use App\Models\ServiceDcProduct;
 use App\Models\ServiceSubStatus;
 use Illuminate\Database\QueryException;
@@ -52,11 +53,13 @@ use App\Notifications\SendPushNotification;
 
 class ServiceController extends Controller
 {
-    public function DeleteServiceProduct(Request $request, ServiceDcProduct $serviceDcProduct)
+    public function DeleteServiceDc(Request $request, ServiceDc $serviceDc)
     {
 
         try {
-            $serviceDcProduct->delete();
+            ServiceDcProduct::where(["dc_id", $serviceDc->id])->delete();
+            $serviceDc->delete();
+
             return back()->with("success", "Deleted!");
         } catch (Exception $exp) {
             return back()
@@ -98,8 +101,8 @@ class ServiceController extends Controller
         $validator = Validator::make(
             $request->all(),
             [
-                'issue_date.*' => 'required',
-                'type.*' => 'required',
+                'issue_date' => 'required',
+                'dc_type' => 'required',
                 'product_id.*' => 'required',
                 'serial_no.*' => 'required',
                 'amount.*' => 'required',
@@ -109,30 +112,36 @@ class ServiceController extends Controller
         if ($validator->fails()) {
             return response()->json(["success" => false, "message" => "Product information missing.", "validation_error" => $validator->errors()]);
         }
-        $data = $request->validate([
-
-        ]);
         $size = 0;
         $data = $request->data;
+        DB::beginTransaction();
+        $dc = ServiceDc::create([
+            'service_id' => $service->id,
+            'dc_type' => $request->dc_type,
+            'issue_date' => date('Y-m-d', strtotime($request->issue_date)),
+            'dc_status' => 1,
+        ]);
+        if ($dc->id > 0) {
+            foreach ($data as $key => $name) {
 
-        foreach ($data as $key => $name) {
-
-            $create = ServiceDcProduct::create([
-                'service_id' => $service->id,
-                'issue_date' => $data[$key]['issue_date'],
-                'type' => $data[$key]['type'],
-                'product_id' => $data[$key]['product_id'],
-                'serial_no' => $data[$key]['serial_no'] != "" ? $data[$key]['serial_no'] : 0,
-                'amount' => $data[$key]['amount'],
-                'description' => $data[$key]['description'] ?? "",
-            ]);
-            if ($create) {
-                $size++;
+                $create = ServiceDcProduct::create([
+                    'dc_id' => $dc->id,
+                    'product_id' => $data[$key]['product_id'],
+                    'serial_no' => $data[$key]['serial_no'] != "" ? $data[$key]['serial_no'] : 0,
+                    'amount' => $data[$key]['amount'],
+                    'description' => $data[$key]['description'] ?? "",
+                ]);
+                if ($create) {
+                    $size++;
+                }
             }
         }
+
         if ($size == count($data)) {
+            DB::commit();
             return response()->json(["status" => true, 'message' => 'Saved successfully']);
         } else {
+            DB::rollBack();
             return response()->json(["status" => false, 'message' => 'Something went wrong, try again.']);
         }
     }
@@ -197,7 +206,32 @@ class ServiceController extends Controller
         }
 
     }
+    public function DcView(ServiceDc $serviceDc)
+    {
+        $dc_products = ServiceDcProduct::select("product_serial_numbers.*", "master_product_type.*", "service_dc_product.id as sdp", "service_dc_product.*", "products.*")->where(['dc_id' => $serviceDc->id])
+            ->join("products", "products.Product_ID", "service_dc_product.product_id")
+            ->leftJoin("master_product_type", "master_product_type.id", "products.Product_Type")
+            ->leftJoin("product_serial_numbers", "product_serial_numbers.id", "service_dc_product.serial_no")
+            ->get();
 
+        $serviceDc = ServiceDc::join("master_dc_status", "master_dc_status.id", "service_dc.dc_status")
+            ->join("services", "services.id", "service_dc.service_id")
+            ->join("clients", "clients.CST_ID", "services.customer_id")
+            ->first();
+        return view("services.dc_view", [
+            "service_dc" => $serviceDc,
+            "dc_products" => $dc_products
+        ]);
+    }
+    public function DcpDelete(ServiceDcProduct $serviceDcProduct)
+    {
+        try {
+            $serviceDcProduct->delete();
+            return back()->with("success", "Deleted");
+        } catch (Exception $exp) {
+            return back()->withErrors("Action failed, try again");
+        }
+    }
     public function DeleteServiceAccesorry(Request $request)
     {
 
@@ -869,7 +903,6 @@ class ServiceController extends Controller
         if (!empty ($service)) {
             $code = "SRVS_" . date('Y') . "_" . $service->id + 1;
         }
-
         return view(
             'services.create',
             [
@@ -1138,14 +1171,11 @@ class ServiceController extends Controller
             }
             $sub_status_options .= "<option value=" . $sst->Sub_Status_Id . " " . $selected1 . ">" . $sst->Sub_Status_Name . "</option>";
         }
-        $dc_products = ServiceDcProduct::select(["products.*", "dc_type.*", "product_serial_numbers.*", "clients.*", "services.*", "master_product_type.*", "service_dc_product.id as dcp_id", "service_dc_product.*"])
-            ->join("products", "products.Product_ID", "service_dc_product.product_id")
-            ->join("services", "services.id", "service_dc_product.service_id")
-            ->leftJoin("master_product_type", "master_product_type.id", "products.Product_Type")
-            ->leftJoin("product_serial_numbers", "product_serial_numbers.id", "service_dc_product.serial_no")
-            ->leftJoin("dc_type", "dc_type.id", "service_dc_product.type")
+        $dc_products = ServiceDc::select(["dc_type.*", "clients.*", "services.*", "service_dc.id as dcp_id", "service_dc.*"])
+            ->join("services", "services.id", "service_dc.service_id")
+            ->leftJoin("dc_type", "dc_type.id", "service_dc.dc_type")
             ->leftJoin("clients", "clients.CST_ID", "services.customer_id")
-            ->where("service_id", $service->id)->get();
+            ->where("service_dc.service_id", $service->id)->get();
 
         return view("services.view", [
             "product" => $product,
@@ -1202,7 +1232,8 @@ class ServiceController extends Controller
                 'contact_number1' => "required",
                 'service_type' => "required",
                 'issue_type' => "required",
-                'service_priority' => "required"
+                'service_priority' => "required",
+                'contractserviceid' => "required",
             ]
         );
         if ($validator->fails()) {
@@ -1238,7 +1269,6 @@ class ServiceController extends Controller
                     'service_note' => $request->service_note,
                 ]);
                 if ($service) {
-                    $this->SendNewCallMail($service);
                     $history = ServiceHistory::create([
                         'service_id' => $service->id,
                         'status_id' => 1,
@@ -1247,7 +1277,23 @@ class ServiceController extends Controller
                         'action_description' => "New Ticket Created.",
                     ]);
                     if ($history) {
+                        if ($request->contractserviceid > 0) {
+
+                            $contractservice = ContractScheduleService::where(['id' => $request->contractserviceid])->first();
+                            if (!empty ($contractservice)) {
+                                $contractservice->Service_Call_Id = $service->id;
+                                $contractservice->Schedule_Status = 9;
+                                $contractservice->save();
+                            } else {
+                                DB::rollBack();
+                                return back()
+                                    ->withInput()
+                                    ->withErrors("Action failed, try again.");
+                            }
+
+                        }
                         DB::commit();
+                        $this->SendNewCallMail($service);
                         return Redirect("services")->with("success", "Service added!");
                         // return response()->json(['success' => true, 'message' => 'Service Created.']);
                     } else {

@@ -51,19 +51,21 @@
                                                                         <td>{{$service['description']}}</td>
                                                                         <td></td>
                                                                         <td>
-                                                                            <div class="flex-d">
+                                                                            
                                                                                 @if($service['Service_Call_Id'] == 0)
+                                                                                <div class="flex-d">
                                                                                     <a href="{{route('contract_service.delete', $service['cupId'])}}" class="action-btn delete-btn btn btn-danger"><i
                                                                                     class="fa fa-trash"></i></a>
                                                                                     
                                                                                     <a title="lock ticket" href="{{route('services.schedulecreate', $service['cupId'])}}?flag=1" class="action-btn btn btn-primary"><i
                                                                                     class="fa fa-lock"></i></a>
+                                                                                    </div>
                                                                                  @else 
-                                                                                    <a title="view ticket" href="{{route('services.view', $service['Service_Call_Id'])}}?flag=1" class="action-btn btn btn-primary"><i
+                                                                                    <a title="view ticket" href="{{route('services.view', $service['Service_Call_Id'])}}?flag=1" class="btn btn-primary"><i
                                                                                     class="fa fa-eye"></i></a>
                                                                                 
                                                                                 @endif   
-                                                                            </div>
+                                                                            
                                                                         </td>
                                                                     </tr>
                                                                     @endforeach

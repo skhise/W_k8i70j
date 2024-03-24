@@ -9,9 +9,7 @@ class ServiceDcProduct extends Model
 
     protected $table = "service_dc_product";
     protected $fillable = [
-        "service_id",
-        "issue_date",
-        "type",
+        "dc_id",
         "product_id",
         "serial_no",
         "amount",

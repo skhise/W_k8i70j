@@ -30,6 +30,9 @@
                                     @csrf
                                     <input style="display:none;" type="text" value="tab1" name="selectedtab"
                                         id="selectedtab" />
+                                    <input style="display:none;" type="text" value="{{$contractScheduleService->id ?? 0}}" name="contractserviceid"
+                                        id="contractserviceid" />
+
                                     <div class="row">
                                         @if($errors->any())
                                         {!! implode('', $errors->all('<div class="alert alert-danger">
@@ -79,7 +82,7 @@
                                             </div>
                                             <div class="col-md-4 floating-label">
                                                 <select
-                                                    class="{{$update ? 'disabled' : 'select2'}} form-control text-box single-line @error('customer_id') is-invalid @enderror"
+                                                    class="{{$update || $contractScheduleService->contract->CNRT_CustomerID > 0 ? 'disabled' : 'select2'}} form-control text-box single-line @error('customer_id') is-invalid @enderror"
                                                     data-val="true"
                                                     data-val-required="The Customer Name field is required."
                                                     id="customer_id" name="customer_id" placeholder=""
@@ -93,6 +96,7 @@
         (old('customer_id')
             ==
             $client->CST_ID ? 'selected' : '') }}
+            {{$contractScheduleService->contract->CNRT_CustomerID == $client->CST_ID ? 'selected' : ''}}
                                                         >
                                                         {{$client->CST_Name}}</option>
                                                     @endforeach
@@ -124,7 +128,7 @@
                                             </div>
                                             <div class="col-md-4 floating-label">
                                                 <select
-                                                    class="form-control select2 text-box single-line @error('contract_id') is-invalid @enderror"
+                                                    class="{{$contractScheduleService->contractId > 0 ? 'disabled' : 'select2' }} form-control text-box single-line @error('contract_id') is-invalid @enderror"
                                                     data-val="true" id="contract_id" name="contract_id" placeholder=""
                                                     type="text" value="{{$service->contract_id ?? old('contract_id')}}">
                                                     <option value="0">Select Contract</option>
@@ -147,7 +151,7 @@
                                             </div>
                                             <div class="col-md-3 floating-label">
 
-                                                <input class="disabled form-control text-box single-line"
+                                                <input style="pointer-event:none;"   class="disabled form-control text-box single-line"
                                                     id="contract_no" name="contract_no" placeholder=""
                                                     value="{{old('contract_no')}}" />
                                                 <label>Contract Number</label>
@@ -156,7 +160,7 @@
                                             </div>
                                             <div class="col-md-3 floating-label">
 
-                                                <input class="disabled form-control text-box single-line"
+                                                <input style="pointer-event:none;" class="disabled form-control text-box single-line"
                                                     id="contract_type" name="contract_type" placeholder=""
                                                     value="{{old('contract_type')}}" />
                                                 <label>Contract Type</label>
@@ -165,7 +169,7 @@
                                             </div>
                                             <div class="col-md-3 floating-label">
 
-                                                <input class="disabled form-control text-box single-line"
+                                                <input style="pointer-event:none;" class="disabled form-control text-box single-line"
                                                     id="contract_status" name="contract_status" placeholder=""
                                                     value="{{old('contract_status')}}" />
                                                 <label>Contract Status</label>
@@ -184,7 +188,7 @@
                                             </div>
                                             <div class="col-md-3 floating-label">
 
-                                                <input class="disabled form-control text-box single-line"
+                                                <input style="pointer-event:none;" class="disabled form-control text-box single-line"
                                                     id="CNRT_EndDate" name="CNRT_EndDate" placeholder="" value="" />
                                                 <label>Contract Expriy Date</label>
                                                 <span class="text-danger field-validation-valid"
@@ -192,15 +196,15 @@
                                             </div>
                                             <div class="col-md-3 floating-label">
 
-                                                <input class="disabled form-control text-box single-line"
+                                                <input style="pointer-event:none;" class="disabled form-control text-box single-line"
                                                     id="CNRT_Charges" name="CNRT_Charges" placeholder="" type="number"
-                                                    value="{{$service->CNRT_Charges ?? old('CNRT_Charges')}}" />
+                                                    value="{{$service->CNRT_Charges ?? old('CNRT_Charges') ?? 0}}" />
                                                 <label>Total Amount</label>
                                                 <span class="text-danger field-validation-valid"
                                                     data-valmsg-for="CNRT_Charges" data-valmsg-replace="true"></span>
                                             </div>
                                             <div class="col-md-3 floating-label">
-                                                <input class="disabled form-control text-box single-line"
+                                                <input style="pointer-event:none;" class="disabled form-control text-box single-line"
                                                     id="CNRT_Charges_Pending" name="CNRT_Charges_Pending" placeholder=""
                                                     type="number" value="0" />
                                                 <label>Balance Amount</label>
@@ -658,7 +662,8 @@
             $('#CNRT_EndDate').val('');
             $('#CNRT_Charges').val('');
             $('#CNRT_Charges_Pending').val('');
-            var product_id = '{{$service->product_id}}';
+            var product_id = '{{$service->product_id ?? $contractScheduleService->product_Id}}';
+            alert(product_id);
             $.ajax({
                 method: 'GET',
                 url: '/contracts/contract_by_id',
@@ -706,7 +711,7 @@
         $(document).on('change', '#customer_id', function () {
             $('#contract_id').empty();
             var tab = $('#selectedtab').val();
-            var constract_id = '{{$service->contract_id}}';
+            var constract_id = '{{$service->contract_id ?? $contractScheduleService->contractId}}';
             if (tab == 'tab1') {
                 $.ajax({
                     method: 'GET',

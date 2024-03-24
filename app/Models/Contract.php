@@ -81,6 +81,10 @@ class Contract extends Model
         return $this->hasMany(Attachment::class, 'Contract_Id', 'CNRT_ID');
 
     }
+    public function customer()
+    {
+        return $this->belongsTo(Client::class, "CST_ID", "CNRT_CustomerID");
+    }
     public static function boot()
     {
         parent::boot();

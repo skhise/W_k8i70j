@@ -13,24 +13,7 @@
                                 </div>
                             </div>
                             <div class="card-body">
-                                <ul class="nav nav-tabs" id="myTab2" role="tablist">
-                                        <li class="nav-item">
-                                            <a class="nav-link {{ session('dc_product_activeTab') === 'dc_details' || session('dc_product_activeTab') == "" ? ' active' : '' }}"
-                                            id="dc_details" data-toggle="tab"
-                                                href="#dc_details_div" role="tab" aria-controls="dc_details"
-                                                aria-selected="true">DC Details</a>
-                                        </li>
-                                        <li class="nav-item">   
-                                            <a class="nav-link  {{ session('dc_product_activeTab') === 'dc_product' ? ' active' : '' }}"
-                                            id="dc_product" data-toggle="tab" href="#dc_product_div"
-                                                role="tab" aria-selected="false" aria-controls="dc_product">Dc Products</a>
-                                        </li>
-                                    </ul>
-                                    <div class="tab-content tab-bordered">
-                                        <div class="tab-pane fade {{ session('dc_product_activeTab') === 'dc_details' || session('dc_product_activeTab') == "" ? ' show active' : '' }} "
-                                         id="dc_details_div" role="tabpanel"
-                                            aria-labelledby="dc_details">
-                                            <div class="row">
+                            <div class="row">
                                                 <div class="col-md-3">
                                                     <div class="card card-primary">
                                                         <div class="card-header">
@@ -40,17 +23,20 @@
                                                             <ul class="list-group ">
                                                                 <li class="list-group-item">
                                                                     <div class="box-body">
-                                                                        <strong>
-                                                                            <i class="fa fa-book margin-r-5"></i>&nbsp;&nbsp;Issue
+                                                                    <strong>
+                                                                            <i class="fa fa-book margin-r-5"></i>&nbsp;&nbsp;DC
+                                                                            No.
+                                                                        </strong>
+                                                                        <p class="text-muted">
+                                                                            {{$service_dc->id}}
+                                                                        </p>  
+                                                                    <strong>
+                                                                            <i class="fa fa-book margin-r-5"></i>&nbsp;&nbsp;DC
                                                                             Type
                                                                         </strong>
                                                                         <p class="text-muted">
                                                                             {{$service_dc->dc_type_name}}
                                                                         </p>
-                                                                        <strong>
-                                                                            <i class="fa fa-book margin-r-5"></i>&nbsp;&nbsp;Status
-                                                                        </strong>
-                                                                        <p>{{$service_dc['dc_status_name']}}</p>
                                                                     </div>
                                                                 </li>
                                                             </ul>
@@ -69,13 +55,13 @@
                                                                 <div class="col-md-3">
                                                                     <span style="float:right ;font-weight:bold">Client Name</span>
                                                                 </div>
-                                                                <div class="col-md-9">{{$service_dc->service_dc}}</div>
+                                                                <div class="col-md-9">{{$service_dc->CST_Name}}</div>
                                                             </div>
                                                             <div class="row">
                                                                 <div class="col-md-3">
-                                                                    <span style="float:right ;font-weight:bold">Issue Type</span>
+                                                                    <span style="float:right ;font-weight:bold">Service No.</span>
                                                                 </div>
-                                                                <div class="col-md-9">{{$service_dc->dc_type_name}}</div>
+                                                                <div class="col-md-9">{{$service_dc->service_no}}</div>
                                                             </div>
                                                             <div class="row">
                                                                 <div class="col-md-3">
@@ -90,14 +76,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="tab-pane fade {{ session('dc_product_activeTab') === 'dc_product' || session('dc_product_activeTab') == "" ? ' show active' : '' }} "
-                                         id="dc_product_div" role="tabpanel"
-                                            aria-labelledby="dc_product">
                                             @include('services.dc_product')
-                                        </div>
-                                    </div>
-                                    
                             </div>
 
                         </div>

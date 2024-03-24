@@ -215,6 +215,7 @@ class ServiceController extends Controller
             ->get();
 
         $serviceDc = ServiceDc::join("master_dc_status", "master_dc_status.id", "service_dc.dc_status")
+            ->join("dc_type", "dc_type.id", "service_dc.dc_type")
             ->join("services", "services.id", "service_dc.service_id")
             ->join("clients", "clients.CST_ID", "services.customer_id")
             ->first();

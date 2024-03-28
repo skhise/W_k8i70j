@@ -82,7 +82,7 @@
                                             </div>
                                             <div class="col-md-4 floating-label">
                                                 <select
-                                                    class="{{$update || $contractScheduleService->contract->CNRT_CustomerID > 0 ? 'disabled' : 'select2'}} form-control text-box single-line @error('customer_id') is-invalid @enderror"
+                                                    class="{{$update || $customer_id > 0 ? 'disabled' : 'select2'}} form-control text-box single-line @error('customer_id') is-invalid @enderror"
                                                     data-val="true"
                                                     data-val-required="The Customer Name field is required."
                                                     id="customer_id" name="customer_id" placeholder=""
@@ -96,7 +96,7 @@
         (old('customer_id')
             ==
             $client->CST_ID ? 'selected' : '') }}
-            {{$contractScheduleService->contract->CNRT_CustomerID == $client->CST_ID ? 'selected' : ''}}
+            {{$customer_id == $client->CST_ID ? 'selected' : ''}}
                                                         >
                                                         {{$client->CST_Name}}</option>
                                                     @endforeach
@@ -128,7 +128,7 @@
                                             </div>
                                             <div class="col-md-4 floating-label">
                                                 <select
-                                                    class="{{$contractScheduleService->contractId > 0 ? 'disabled' : 'select2' }} form-control text-box single-line @error('contract_id') is-invalid @enderror"
+                                                    class="{{$contractScheduleService->contractId ?? 0 > 0 ? 'disabled' : 'select2' }} form-control text-box single-line @error('contract_id') is-invalid @enderror"
                                                     data-val="true" id="contract_id" name="contract_id" placeholder=""
                                                     type="text" value="{{$service->contract_id ?? old('contract_id')}}">
                                                     <option value="0">Select Contract</option>
@@ -255,7 +255,7 @@
                                             </div>
                                             <div class="col-md-3 floating-label">
 
-                                                <input class="disabled form-control text-box single-line" id="product_name"
+                                                <input class="disabled form-control text-box single-line product_name" id="product_name"
                                                     name="product_name" placeholder=""
                                                     value="{{old('product_name')}}" />
                                                 <label>Product Name</label>
@@ -264,7 +264,7 @@
                                             </div>
                                             <div class="col-md-3 floating-label">
 
-                                                <input class="disabled form-control text-box single-line" id="product_type"
+                                                <input class="disabled form-control text-box single-line product_type" id="product_type"
                                                     name="product_type" placeholder=""
                                                     value="{{old('product_type')}}" />
                                                 <label>Product Type</label>
@@ -273,7 +273,7 @@
                                             </div>
                                             <div class="col-md-3 floating-label">
 
-                                                <input class="disabled form-control text-box single-line" id="product_sn"
+                                                <input class="disabled form-control text-box single-line product_sn" id="product_sn"
                                                     name="product_sn" placeholder=""
                                                     value="{{old('product_sn')}}" />
                                                 <label>Product S/N</label>
@@ -293,7 +293,7 @@
                                             </div>
                                             <div class="col-md-4 floating-label">
 
-                                                <input class="form-control text-box single-line" id="product_name"
+                                                <input class="form-control text-box single-line product_name" id="product_name"
                                                     name="product_name" placeholder=""
                                                     value="{{old('product_name')}}" />
                                                 <label>Product Name</label>
@@ -302,7 +302,7 @@
                                             </div>
                                             <div class="col-md-3 floating-label">
 
-                                                <input class="form-control text-box single-line" id="product_type"
+                                                <input class="form-control text-box single-line product_type" id="product_type"
                                                     name="product_type" placeholder=""
                                                     value="{{old('product_type')}}" />
                                                 <label>Product Type</label>
@@ -311,7 +311,7 @@
                                             </div>
                                             <div class="col-md-3 floating-label">
 
-                                            <input class="form-control text-box single-line" id="product_sn"
+                                            <input class="form-control text-box single-line product_sn" id="product_sn"
                                                 name="product_sn" placeholder=""
                                                 value="{{old('product_sn')}}" />
                                             <label>Product S/N</label>
@@ -567,7 +567,7 @@
                 },
                 success: function (resp) {
                     var obj = resp;
-                    if (obj.success) {
+                    if (obj.success && obj.product!= null) {
                         var product = obj.product;
                         $('#contract_no').val(product.CNRT_Number);
                         $('#contract_type').val(product.contract_type_name);
@@ -583,6 +583,9 @@
                         $('#product_id').html('');
                         $('#contract_id').html('');
                         $('#customer_id').html('');
+                        $('.product_name').val(product.product_name);
+                        $('.product_type').val(product.type_name);
+                        $('.product_sn').val(product.product_sn);
                         $("#without_product_div").hide();
                         var options = '';
                         options +='<option value="' + product.mainPId + '" selected>' + product.product_name + '</option>';
@@ -592,10 +595,16 @@
                         var optionsCustomer ='<option value="' + product.CNRT_CustomerID + '" selected>' + product.client_name + '</option>';
                         $('#customer_id').html(optionsCustomer);
 
+                    } else {
+                        $('.product_name').val("");
+                        $('.product_type').val("");
+                        $('.product_sn').val("");
+                        $("#without_product_div").show();
                     }
 
                 },
                 error: function () {
+                    $("#without_product_div").show();
                     alert('Something went wrong, try again');
                 }
             });
@@ -612,14 +621,16 @@
                 success: function (resp) {
                     var obj = resp;
                     if (obj.success) {
+                        $("#without_product_div").hide();
                         var product = obj.product;
                         $('.product_name').val(product.product_name);
                         $('.product_type').val(product.type_name);
-                        $('.prodcut_sn').val(product.prodcut_sn );
+                        $('.product_sn').val(product.product_sn);
                    } else {
+                    $("#without_product_div").show();
                     $('.product_name').val("");
                         $('.product_type').val("");
-                        $('.prodcut_sn').val("");
+                        $('.product_sn').val("");
                    }
 
                 },
@@ -628,9 +639,10 @@
                 }
             });
             } else {
+                $("#without_product_div").show();
                 $('.product_name').val("");
                         $('.product_type').val("");
-                        $('.prodcut_sn').val("");
+                        $('.product_sn').val("");
             }
             
         });
@@ -662,8 +674,7 @@
             $('#CNRT_EndDate').val('');
             $('#CNRT_Charges').val('');
             $('#CNRT_Charges_Pending').val('');
-            var product_id = '{{$service->product_id ?? $contractScheduleService->product_Id}}';
-            alert(product_id);
+            var product_id = '{{$service->product_id ?? $contractScheduleService->product_Id ?? 0}}';
             $.ajax({
                 method: 'GET',
                 url: '/contracts/contract_by_id',
@@ -711,7 +722,7 @@
         $(document).on('change', '#customer_id', function () {
             $('#contract_id').empty();
             var tab = $('#selectedtab').val();
-            var constract_id = '{{$service->contract_id ?? $contractScheduleService->contractId}}';
+            var constract_id = '{{$service->contract_id ?? $contractScheduleService->contractId ?? 0}}';
             if (tab == 'tab1') {
                 $.ajax({
                     method: 'GET',

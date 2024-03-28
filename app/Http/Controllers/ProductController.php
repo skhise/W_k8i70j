@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Client;
+use App\Models\ContractScheduleService;
 use App\Models\ContractStatus;
 use App\Models\ContractType;
 use App\Models\ProductSerialNumber;
@@ -21,7 +22,6 @@ use App\Models\Product_Accessory;
 use App\Models\ContractUnderProduct;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
-use App\Models\ContractScheduleModel;
 
 class ProductController extends Controller
 {
@@ -33,12 +33,13 @@ class ProductController extends Controller
     public function product_by_id(Request $request)
     {
         $id = $request->product_id;
-        $product = array();
+        $product = null;
         $product = ContractUnderProduct::where("contract_under_product.id", $id)
             ->orWhere("contract_under_product.nrnumber", $id)
             ->leftJoin("contracts", "contracts.CNRT_ID", "contract_under_product.contractId")
+            ->leftJoin("master_product_type", "master_product_type.id", "contract_under_product.product_type")
             ->leftJoin("master_service_schedule", "master_service_schedule.id", "contract_under_product.no_of_service")
-            ->first(["contract_under_product.id as mainPId", 'contracts.*', "contract_under_product.*", "master_service_schedule.*"]);
+            ->first(["contract_under_product.nrnumber as product_sn", "master_product_type.*", "contract_under_product.id as mainPId", 'contracts.*', "contract_under_product.*", "master_service_schedule.*"]);
 
         if (!empty ($product)) {
             $startDate = Carbon::createFromFormat("Y-m-d", $product->CNRT_StartDate);
@@ -103,8 +104,8 @@ class ProductController extends Controller
     {
 
         $count = 0;
-        $count = ContractScheduleModel::where("Accessory_Id", $productId)
-            ->where("Contract_Id", $contractID)
+        $count = ContractScheduleService::where("product_Id", $productId)
+            ->where("contractId", $contractID)
             ->count();
         return $count;
 

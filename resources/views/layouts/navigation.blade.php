@@ -134,21 +134,7 @@
             <a class="nav-link" href="{{route('clients')}}"><i
                         data-feather="briefcase"></i> Clients</a>
             </li>
-            <!-- <li
-                class="dropdown {{(Request::is('clients/*') || Request::is('clients') || Request::is('persons') || Request::is('sites')) ? 'active' : '' }}">
-                <a href="#"
-                    class="menu-toggle nav-link has-dropdown {{(Request::is('clients') || Request::is('persons') || Request::is('sites')) ? 'toggled' : '' }}"><i
-                        data-feather="briefcase"></i><span>Clients
-                        Management</span></a>
-                <ul class="dropdown-menu">
-                    <li class="{{Request::is('clients') ? 'active' : '' }}"><a class="nav-link"
-                            href="{{route('clients')}}">Clients</a></li>
-                    <li class="{{Request::is('clients/persons') ? 'active' : '' }}"><a class="nav-link"
-                            href="{{route('persons')}}">Persons</a></li> -->
-                    <!-- <li class="{{Request::is('clients/sites') ? 'active' : '' }}"><a class="nav-link"
-                            href="{{route('sites')}}">Sites</a></li>
-                </ul>
-            </li> -->
+            
 
             <li class="dropdown {{Request::is('contracts/*') || Request::is('contracts') ? 'active' : '' }}">
                 <a href="{{route('contracts')}}" class="nav-link"><i data-feather="file"></i><span>Contract</span></a>
@@ -165,6 +151,18 @@
             
             <li class="dropdown {{Request::is('products/*') || Request::is('products') ? 'active' : '' }}">
                 <a href="{{route('products')}}" class="nav-link"><i data-feather="figma"></i><span>Products</span></a>
+            </li>
+            <li
+                class="dropdown {{(Request::is('reports/*') || Request::is('reports')) ? 'active' : '' }}">
+                <a href="#"
+                    class="menu-toggle nav-link has-dropdown {{(Request::is('reports/*') || Request::is('reports')) ? 'toggled' : '' }}"><i
+                        data-feather="briefcase"></i><span>System Reports</span></a>
+                <ul class="dropdown-menu">
+                    <li class="{{Request::is('contract-report') ? 'active' : '' }}"><a class="nav-link"
+                            href="{{route('contract-report')}}">Contrcat Reports</a></li>
+                    <li class="{{Request::is('contract-service-report') ? 'active' : '' }}"><a class="nav-link"
+                            href="{{route('contract-service-report')}}">Service Analysis Report</a></li>
+                </ul>
             </li>
             <li class="dropdown {{Request::is('masters/*') || Request::is('masters') ? 'active' : '' }}">
                 <a href="{{route('masters')}}" class="nav-link"><i data-feather="figma"></i><span>Master

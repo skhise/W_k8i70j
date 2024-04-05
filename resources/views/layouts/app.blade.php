@@ -7,32 +7,33 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
-    <link rel='shortcut icon' type='image/x-icon' href="{{asset('img/favicon.ico')}}" />
+    <link rel='shortcut icon' type='image/x-icon' href="{{ asset('img/favicon.ico') }}" />
     <title>{{ config('app.name', 'PMS') }}</title>
 
     <!-- Fonts -->
     <!-- <link rel=" preconnect" href="https://fonts.bunny.net"> -->
     <!-- <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" /> -->
-    <!-- @vite([ 'resources/js/app.js','resources/css/app.css']); -->
+    <!-- @vite(['resources/js/app.js', 'resources/css/app.css']); -->
     <!-- Scripts -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-    <link rel="stylesheet" href="{{asset('css/app.min.css')}}">
+    <link rel="stylesheet" href="{{ asset('css/app.min.css') }}">
 
-    <link rel="stylesheet" href="{{asset('bundles/summernote/summernote-bs4.css')}}">
+    <link rel="stylesheet" href="{{ asset('bundles/summernote/summernote-bs4.css') }}">
     <!-- Template CSS -->
 
-    <link rel="stylesheet" href="{{asset('bundles/bootstrap-tagsinput/dist/bootstrap-tagsinput.css')}}">
-    <link rel="stylesheet" href="{{asset('css/style.css')}}">
-    <link rel="stylesheet" href="{{asset('css/components.css')}}">
+    <link rel="stylesheet" href="{{ asset('bundles/bootstrap-tagsinput/dist/bootstrap-tagsinput.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/components.css') }}">
     <!-- Custom style CSS -->
-    <link rel="stylesheet" href="{{asset('css/custom.css')}}">
-    <link rel="stylesheet" href="{{asset('bundles/datatables/datatables.min.css')}}">
-    <link rel="stylesheet" href="{{asset('bundles/datatables/DataTables-1.10.16/css/dataTables.bootstrap4.min.css')}}">
-    <link rel="stylesheet" href="{{asset('bundles/select2/dist/css/select2.min.css')}}">
-    <link rel="stylesheet" href="{{asset('bundles/jquery-selectric/selectric.css')}}">
-    <link rel="stylesheet" href="{{asset('css/jquery-editable-select.min.css')}}">
-    <!-- <link rel="stylesheet" href="{{asset('css/bootstrap.min.css')}}"> -->
+    <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
+    <link rel="stylesheet" href="{{ asset('bundles/datatables/datatables.min.css') }}">
+    <link rel="stylesheet"
+        href="{{ asset('bundles/datatables/DataTables-1.10.16/css/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('bundles/select2/dist/css/select2.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('bundles/jquery-selectric/selectric.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/jquery-editable-select.min.css') }}">
+    <!-- <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}"> -->
     <style>
         .action-2 {
             width: 10% !important;
@@ -77,12 +78,12 @@
             @include('layouts.navigation')
 
             <!-- Page Heading -->
-            @if (isset ($header))
-            <header class="bg-white dark:bg-gray-800 shadow">
-                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                    {{ $header }}
-                </div>
-            </header>
+            @if (isset($header))
+                <header class="bg-white dark:bg-gray-800 shadow">
+                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                        {{ $header }}
+                    </div>
+                </header>
             @endif
 
             <!-- Page Content -->
@@ -195,36 +196,54 @@
         </footer>
     </div>
 
-    <script src="{{asset('js/app.min.js')}}"></script>
-    <script src="{{asset('bundles/jquery-ui/jquery-ui.min.js')}}"></script>
-    <script src="{{asset('bundles/jquery-ui/bootstrap.bundle.min.js')}}"></script>
+    <script src="{{ asset('js/app.min.js') }}"></script>
+    <script src="{{ asset('bundles/jquery-ui/jquery-ui.min.js') }}"></script>
+    <script src="{{ asset('bundles/jquery-ui/bootstrap.bundle.min.js') }}"></script>
     <!-- JS Libraies -->
-    <script src="{{asset('bundles/apexcharts/apexcharts.min.js')}}"></script>
+    <script src="{{ asset('bundles/apexcharts/apexcharts.min.js') }}"></script>
     <!-- Page Specific JS File -->
-    <script src="{{asset('js/page/index.js')}}"></script>
+    <script src="{{ asset('js/page/index.js') }}"></script>
+    <script src="{{ asset('bundles/chartjs/chart.min.js') }}"></script>
+    <script src="{{ asset('bundles/apexcharts/apexcharts.min.js') }}"></script>
     <!-- Template JS File -->
 
+    <!-- General JS Scripts -->
+    <script src="{{ asset('js/app.min.js') }}"></script>
+    <!-- JS Libraies -->
+    <script src="{{ asset('bundles/chartjs/chart.min.js') }}"></script>
+    <script src="{{ asset('bundles/jquery.sparkline.min.js') }}"></script>
+    <script src="{{ asset('bundles/apexcharts/apexcharts.min.js') }}"></script>
+    <script src="{{ asset('bundles/jqvmap/dist/jquery.vmap.min.js') }}"></script>
+    <script src="{{ asset('bundles/jqvmap/dist/maps/jquery.vmap.world.js') }}"></script>
+    <script src="{{ asset('bundles/jqvmap/dist/maps/jquery.vmap.indonesia.js') }}"></script>
+    <!-- Page Specific JS File -->
+    <script src="{{ asset('js/page/widget-chart.js') }}"></script>
+    <!-- Template JS File -->
+    <script src="{{ asset('js/scripts.js') }}"></script>
     <!-- Custom JS File -->
-    <script src="{{asset('js/custom.js')}}"></script>
-    <script src="{{asset('bundles/datatables/datatables.min.js')}}"></script>
-    <script src="{{asset('bundles/datatables/DataTables-1.10.16/js/dataTables.bootstrap4.min.js')}}"></script>
+    <script src="{{ asset('js/custom.js') }}"></script>
+    <!-- Custom JS File -->
+    <script src="{{ asset('js/custom.js') }}"></script>
+    <script src="{{ asset('js/jquery.canvasjs.min.js') }}"></script>
+    <script src="{{ asset('bundles/datatables/datatables.min.js') }}"></script>
+    <script src="{{ asset('bundles/datatables/DataTables-1.10.16/js/dataTables.bootstrap4.min.js') }}"></script>
 
 
     <!-- Page Specific JS File -->
-    <script src="{{asset('bundles/select2/dist/js/select2.full.min.js')}}"></script>
-    <script src="{{asset('bundles/jquery-selectric/jquery.selectric.min.js')}}"></script>
+    <script src="{{ asset('bundles/select2/dist/js/select2.full.min.js') }}"></script>
+    <script src="{{ asset('bundles/jquery-selectric/jquery.selectric.min.js') }}"></script>
 
-    <script src="{{asset('js/page/datatables.js')}}"></script>
-    <script src="{{asset('bundles/summernote/summernote-bs4.js')}}"></script>
-    <script src="{{asset('js/mark.js_8.11.1_mark.min.js')}}"></script>
-    <script src="{{asset('js/scripts.js')}}"></script>
-    <script src="{{asset('js/jquery-editable-select.min.js')}}"></script>
-    <script src="{{asset('bundles/sweetalert/sweetalert.min.js')}}"></script>
+    <script src="{{ asset('js/page/datatables.js') }}"></script>
+    <script src="{{ asset('bundles/summernote/summernote-bs4.js') }}"></script>
+    <script src="{{ asset('js/mark.js_8.11.1_mark.min.js') }}"></script>
+    <script src="{{ asset('js/scripts.js') }}"></script>
+    <script src="{{ asset('js/jquery-editable-select.min.js') }}"></script>
+    <script src="{{ asset('bundles/sweetalert/sweetalert.min.js') }}"></script>
     <!-- Page Specific JS File -->
-    <script src="{{asset('js/page/sweetalert.js')}}"></script>
+    <script src="{{ asset('js/page/sweetalert.js') }}"></script>
     <!-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> -->
 
-    <!-- <script src="{{asset('js/bootstrap.min.js')}}"></script> -->
+    <!-- <script src="{{ asset('js/bootstrap.min.js') }}"></script> -->
     <script>
         function isNumberKey(evt) {
             var charCode = (evt.which) ? evt.which : event.keyCode
@@ -232,9 +251,9 @@
                 return false;
             return true;
         }
-        $(document).on("click",".delete-btn",function(event) {
-        // Add event listener to delete buttons
-        event.preventDefault(); // Prevent default action
+        $(document).on("click", ".delete-btn", function(event) {
+            // Add event listener to delete buttons
+            event.preventDefault(); // Prevent default action
             var url = $(this).attr('href'); // Get the delete URL from the button
             Swal.fire({
                 title: 'Are you sure?',
@@ -251,18 +270,18 @@
             });
         });
         $(document).ready(function() {
-            
+
             // Remember selected tab and set active class
-              $('.nav-tabs a').on('click', function (e) {
-                  localStorage.setItem('contract_activeTab', $(e.target).attr('aria-controls'));
-              });
-  
-              // Restore selected tab on page load
-              var activeTab = localStorage.getItem('contract_activeTab');
-              if (activeTab) {
-                  $('#' + activeTab).tab('show');
-              }
-          });
+            $('.nav-tabs a').on('click', function(e) {
+                localStorage.setItem('contract_activeTab', $(e.target).attr('aria-controls'));
+            });
+
+            // Restore selected tab on page load
+            var activeTab = localStorage.getItem('contract_activeTab');
+            if (activeTab) {
+                $('#' + activeTab).tab('show');
+            }
+        });
     </script>
     @yield('script')
 </body>

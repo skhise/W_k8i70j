@@ -175,6 +175,7 @@ Route::middleware(['prevent-back-history'])->group(function () {
         Route::post('/products/{product}/upload', [ProductController::class, 'upload'])->name("products.upload");
         Route::get('/products/product_by_id', [ProductController::class, 'product_by_id'])->name("products.product_by_id");
         Route::get('/products/{productSerialNumber}/delete', [ProductController::class, 'DeleteProductSrNo'])->name("product_srno.delete");
+        Route::post('/products/{product}/add-sn', [ProductController::class, 'AddProductSrNo'])->name("products.add-sn");
     });
     Route::get('employees/{employee}/edit', [EmployeeController::class, 'edit'])
         ->name('employees.edit')

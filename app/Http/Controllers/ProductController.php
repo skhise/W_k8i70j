@@ -41,7 +41,7 @@ class ProductController extends Controller
             ->leftJoin("master_service_schedule", "master_service_schedule.id", "contract_under_product.no_of_service")
             ->first(["contract_under_product.nrnumber as product_sn", "master_product_type.*", "contract_under_product.id as mainPId", 'contracts.*', "contract_under_product.*", "master_service_schedule.*"]);
 
-        if (!empty ($product)) {
+        if (!empty($product)) {
             $startDate = Carbon::createFromFormat("Y-m-d", $product->CNRT_StartDate);
             $EndDate = Carbon::createFromFormat("Y-m-d", $product->CNRT_EndDate);
             $diff_in_months = $startDate->diffInMonths($EndDate);
@@ -339,6 +339,65 @@ class ProductController extends Controller
         } catch (Exception $ex) {
 
             return response()->json(['success' => false, 'message' => $ex->errorInfo]);
+        }
+    }
+    public function AddProductSrNo(Request $request, Product $product)
+    {
+
+        $messages = array(
+            'nrnumber' => 'Serial number required',
+            'nrnumber.*' => 'Serial number must be unique',
+        );
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'nrnumber.*' => 'required|distinct',
+            ],
+            $messages
+        );
+
+        if ($validator->fails()) {
+            return response()->json(["success" => false, "message" => "all * marked fields required.", "validation_error" => $validator->errors()]);
+            // return response()->json(["success" => false, "message" => "all * marked fields required.", "validation_error" => $validator->errors()]);
+        }
+        try {
+            DB::beginTransaction();
+            if (!empty($product)) {
+                $nrnumber = $request->nrnumber;
+                $isOk = 0;
+                $size = 0;
+                foreach ($nrnumber as $index => $sr) {
+                    if ($sr != "") {
+
+                        $is_unique = ProductSerialNumber::where(['sr_number' => $sr])->get();
+                        if (count($is_unique) > 0) {
+                            return response()->json(["success" => false, "index" => $index, "message" => "Serial number must be unique."]);
+                        }
+                        $iscp = ProductSerialNumber::create([
+                            'sr_number' => $sr,
+                            'product_id' => $product->Product_ID,
+                        ]);
+                        if ($iscp) {
+                            $size++;
+                        }
+                    } else {
+                        $size++;
+                    }
+                }
+                if ($size == sizeof($nrnumber)) {
+                    DB::commit();
+                    Session::flash("success", "Serial numbers added.");
+                    return response()->json(['success' => true, 'message' => 'Serial numbers added.']);
+                } else {
+                    DB::rollBack();
+                    return response()->json(['success' => false, 'message' => 'Something went wrong,try again']);
+                }
+            }
+            return response()->json(['success' => false, 'message' => 'Something went wrong,try again']);
+
+        } catch (Exception $ex) {
+
+            return response()->json(['success' => false, 'message' => $ex->getMessage()]);
         }
     }
     public function update(Request $request, Product $product)

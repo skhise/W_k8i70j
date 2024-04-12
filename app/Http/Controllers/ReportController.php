@@ -134,6 +134,7 @@ class ReportController extends Controller
 
         $todate = $request->todate;
         $fromdate = $request->fromdate;
+        $customer_id = $request->fromdate;
         $employees = Employee::orderby("EMP_ID", 'ASC')->get();
 
         $employee = array();

@@ -118,6 +118,8 @@ class ServiceController extends Controller
         $dc = ServiceDc::create([
             'service_id' => $service->id,
             'dc_type' => $request->dc_type,
+            'dc_remark' => $request->dc_remark,
+            'dc_amount' => array_sum(array_column($data, "amount")),
             'issue_date' => date('Y-m-d', strtotime($request->issue_date)),
             'dc_status' => 1,
         ]);
@@ -579,7 +581,7 @@ class ServiceController extends Controller
         $serviceId = "";
         $accountsetting = $this->GetAccountSettings($request);
         $call_ins = $accountsetting->serviceno_ins;
-        if (!isset ($call_ins)) {
+        if (!isset($call_ins)) {
             $call_ins = "Call";
         }
         $last = Service::latest()->first();
@@ -864,10 +866,23 @@ class ServiceController extends Controller
         $employee = array();
         try {
             $employee = Employee::join("master_designation", "master_designation.id", "employees.EMP_Designation")->get();
-        } catch (Illuminate\Database\QueryException $ex) {
+        } catch (Exception $ex) {
             return response()->json(["success" => true, "employee" => null]);
         }
         return response()->json(["success" => true, "employee" => $employee]);
+    }
+    public function service_status_count($staus)
+    {
+        $count = Service::select("*", "services.id as service_id")
+            ->join("master_service_status", "master_service_status.Status_Id", "services.service_status")
+            ->join("master_service_priority", "master_service_priority.id", "services.service_priority")
+            ->join("master_issue_type", "master_issue_type.id", "services.issue_type")
+            ->join("master_service_type", "master_service_type.id", "services.service_type")
+            ->join("clients", "clients.CST_ID", "services.customer_id")
+            ->leftJoin("users", "users.id", "services.assigned_to")
+            // ->whereBetween(DB::raw('DATE_FORMAT(services.service_date, "%Y-%m-%d")'), [$todate, $fromdate])
+            ->where('services.service_status', $staus)->count();
+        return $count;
     }
     public function index(Request $request)
     {
@@ -884,6 +899,11 @@ class ServiceController extends Controller
             ->filter($request->only('search', 'trashed', 'search_field', 'filter_status'))
             ->paginate(10)
             ->withQueryString();
+        $new = $this->service_status_count(1);
+        $open = $this->service_status_count(2);
+        $pending = $this->service_status_count(3);
+        $resolved = $this->service_status_count(4);
+        $closed = $this->service_status_count(5);
         return view(
             'services.index',
             [
@@ -892,6 +912,11 @@ class ServiceController extends Controller
                 'filter_status' => $request->filter_status ?? '',
                 'search' => $request->search ?? '',
                 'services' => $services,
+                'new' => $new,
+                'open' => $open,
+                'pending' => $pending,
+                'resolved' => $resolved,
+                'closed' => $closed
             ]
         );
 
@@ -901,7 +926,7 @@ class ServiceController extends Controller
     {
         $service = Service::all()->last();
         $code = "SRVS_" . date('Y') . "_1";
-        if (!empty ($service)) {
+        if (!empty($service)) {
             $code = "SRVS_" . date('Y') . "_" . $service->id + 1;
         }
         return view(
@@ -926,7 +951,7 @@ class ServiceController extends Controller
     {
         $service = Service::all()->last();
         $code = "SRVS_" . date('Y') . "_1";
-        if (!empty ($service)) {
+        if (!empty($service)) {
             $code = "SRVS_" . date('Y') . "_" . $service->id + 1;
         }
 
@@ -1022,11 +1047,11 @@ class ServiceController extends Controller
         try {
             $isInsert = 0;
             // DB::beginTransaction();
-            if (isset ($request->sparepart)) {
+            if (isset($request->sparepart)) {
                 $products = $request->sparepart;
                 if (sizeof($products) > 0) {
                     foreach ($products as $product) {
-                        if (isset ($product['service_id'])) {
+                        if (isset($product['service_id'])) {
                             $serviceAcc = ServiceAccessory::create([
                                 'service_id' => $product['service_id'],
                                 'accessory_id' => $product['productId'],
@@ -1088,6 +1113,7 @@ class ServiceController extends Controller
                     'contact_email' => $request->contact_email,
                     'areaId' => $request->areaId,
                     'site_google_link' => $request->site_google_link,
+                    'site_address' => $request->site_address,
                     'issue_type' => $request->issue_type,
                     'service_type' => $request->service_type,
                     'service_priority' => $request->service_priority,
@@ -1153,27 +1179,21 @@ class ServiceController extends Controller
         $contract = Contract::leftJoin("master_contract_type", "master_contract_type.id", "contracts.CNRT_Type")
             ->leftJoin("master_site_type", "master_site_type.id", "contracts.CNRT_SiteType")->where("CNRT_ID", $service->contract_id)->first();
         $timeline = ServiceHistory::leftJoin("master_service_status", "master_service_status.Status_Id", "service_action_history.status_id")
+            ->leftJoin("master_service_sub_status", "master_service_sub_status.Sub_Status_Id", "service_action_history.sub_status_id")
             ->where("service_id", $service->id)
             ->get();
         $status_options = "<option value=''>Select Status</option>";
-        $status = ServiceStatus::all();
+        $status = ServiceStatus::where("flag", 1)->get();
         foreach ($status as $st) {
             $selected = "";
+            $sub_status = ServiceSubStatus::where("status_id", $st->Status_Id)->get();
             if ($services->service_status == $st->Status_Id) {
                 $selected = "selected";
             }
-            $status_options .= "<option value=" . $st->Status_Id . " " . $selected . ">" . $st->Status_Name . "</option>";
+            $status_options .= "<option data-sub_status='" . $sub_status . "' value=" . $st->Status_Id . " " . $selected . ">" . $st->Status_Name . "</option>";
         }
+        // dd($status_options);
 
-        $sub_status_options = "<option value=''>Select Sub Status</option>";
-        $sub_status = ServiceSubStatus::all();
-        foreach ($sub_status as $sst) {
-            $selected1 = "";
-            if ($services->service_sub_status == $sst->Sub_Status_Id) {
-                $selected1 = "selected";
-            }
-            $sub_status_options .= "<option value=" . $sst->Sub_Status_Id . " " . $selected1 . ">" . $sst->Sub_Status_Name . "</option>";
-        }
         $dc_products = ServiceDc::select(["dc_type.*", "clients.*", "services.*", "service_dc.id as dcp_id", "service_dc.*"])
             ->join("services", "services.id", "service_dc.service_id")
             ->leftJoin("dc_type", "dc_type.id", "service_dc.dc_type")
@@ -1188,7 +1208,6 @@ class ServiceController extends Controller
             "contract" => $contract,
             'timeline' => $timeline,
             'status_options' => $status_options,
-            'sub_status_options' => $sub_status_options,
         ]);
     }
     public function edit(Request $request, Service $service)
@@ -1217,6 +1236,8 @@ class ServiceController extends Controller
                 'serviceType' => ServiceType::all(),
                 'update' => true,
                 'service_no' => $service->service_no,
+                'contractScheduleService' => new ContractScheduleService(),
+                'customer_id' => 0,
                 'service' => $services,
                 'sitelocation' => AreaName::all(),
             ]
@@ -1283,7 +1304,7 @@ class ServiceController extends Controller
                         if ($request->contractserviceid > 0) {
 
                             $contractservice = ContractScheduleService::where(['id' => $request->contractserviceid])->first();
-                            if (!empty ($contractservice)) {
+                            if (!empty($contractservice)) {
                                 $contractservice->Service_Call_Id = $service->id;
                                 $contractservice->Schedule_Status = 9;
                                 $contractservice->save();
@@ -1359,7 +1380,7 @@ class ServiceController extends Controller
         $accountsetting = $this->GetAccountSettings($request);
         $call_ins = $accountsetting->serviceno_ins;
 
-        if (!isset ($call_ins)) {
+        if (!isset($call_ins)) {
             $call_ins = "Call";
         }
 

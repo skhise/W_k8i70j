@@ -1,35 +1,43 @@
 ﻿/* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+    -webkit-appearance: none;
+    margin: 0;
 }
-.clickMenu{
+
+.clickMenu {
     cursor: pointer !important;
 }
+
 .btn {
     cursor: pointer !important;
 }
-.hide{
+
+.hide {
     display: none;
 }
+
 /* Firefox */
 input[type=number] {
-  -moz-appearance: textfield;
+    -moz-appearance: textfield;
 }
-.modal-footer{
-   border-top: 1px solid lightgray !important;
+
+.modal-footer {
+    border-top: 1px solid lightgray !important;
 }
 
 .m-l--125 {
     margin-left: -125px
 }
+
 .table-width-30 {
     width: 30%;
 }
+
 .table-width-20 {
     width: 20%;
 }
+
 .m-t--125 {
     margin-top: -125px
 }
@@ -3926,7 +3934,7 @@ select.form-control:not([size]):not([multiple]) {
 .table:not(.table-sm):not(.table-md):not(.dataTable) td,
 .table:not(.table-sm):not(.table-md):not(.dataTable) th {
     padding: 0 10px;
-    height:40px;
+    height: 40px;
     vertical-align: middle
 }
 
@@ -6493,7 +6501,7 @@ body.sidebar-gone .main-sidebar {
     height: 100%;
     z-index: 9999;
     background: url("../img/loading.gif") 50% 50% no-repeat #f9f9f9;
-    opacity: 1;
+    opacity: 0.5;
 }
 
 .user-img-radious-style {
@@ -6962,6 +6970,7 @@ body.layout-3 .main-footer {
     width: 100%;
     position: relative;
 }
+
 .main-footer {
     padding: 20px 30px 20px 280px;
     margin-top: 40px;
@@ -6972,7 +6981,8 @@ body.layout-3 .main-footer {
     font-weight: 600;
     text-transform: uppercase;
     font-size: 11px;
-    width: 100%
+    width: 100%;
+    bottom: 0px !important;
 }
 
 .main-footer .footer-left {

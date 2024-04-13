@@ -20,7 +20,7 @@ class Service extends Model
       'contact_number1',
       'contact_number2',
       'contact_email',
-      'site_location',
+      'site_address',
       'site_google_link',
       'issue_type',
       'service_type',
@@ -36,7 +36,7 @@ class Service extends Model
       'product_description',
       'product_type',
       'deleted_at',
-      'service_sub_status'
+      'service_sub_status',
    ];
 
    public function history()

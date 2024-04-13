@@ -89,7 +89,7 @@
                                                                 {{ $product->Product_Description }}
                                                             </div>
                                                         </div>
-                                                        <div class="row">
+                                                        <div class="row hide">
                                                             <div class="col-md-3">
                                                                 <span style="float:right ;font-weight:bold;">
                                                                     Product Image
@@ -122,7 +122,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="tab-pane fade {{ session('product_activeTab') === 'details' || session('product_activeTab') == '' ? ' show active' : '' }} "
+                                    <div class="tab-pane fade {{ session('product_activeTab') === 'product_srno' ? ' show active' : '' }} "
                                         id="product_srno_div" role="tabpanel" aria-labelledby="product_srno">
                                         @include('products.serial_number')
                                     </div>
@@ -213,10 +213,11 @@
 
             function CancelModelBox() {
                 $("#product_id").val("");
-                $(".add_form_field").hide();
                 $('.text-danger-error').html('');
+                $("#add_sr_no").html(1);
                 $(".nrnumber").removeClass("error_border");
                 $("#form_cp")[0].reset();
+                $("#multipeInput").html("");
                 $("#btn_close").trigger('click');
             }
         </script>

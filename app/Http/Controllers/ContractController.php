@@ -258,7 +258,7 @@ class ContractController extends Controller
         $last = Contract::latest()->first();
         $accountsetting = $this->GetAccountSettings();
         $cust_code = $accountsetting->contractno_ins;
-        $cust_code = isset ($cust_code) ? $cust_code : "";
+        $cust_code = isset($cust_code) ? $cust_code : "";
         if (is_null($last)) {
             $cust_code = $cust_code . "001";
         } else {
@@ -524,7 +524,7 @@ class ContractController extends Controller
         $iscp = ContractScheduleService::where("id", $request->service_id)->update([
             'Schedule_Date' => Carbon::parse($request->Schedule_Date)->format("Y-m-d"),
             'serviceType' => $request->serviceType,
-            'product_id' => empty ($request->product_Id) ? 0 : $request->product_Id,
+            'product_id' => empty($request->product_Id) ? 0 : $request->product_Id,
             'issueType' => $request->issueType,
             'description' => $request->description,
         ]);
@@ -677,7 +677,7 @@ class ContractController extends Controller
                 'payment' => 0,
                 'description' => $cs['descriptions']
             ]);
-            if (!empty ($cs['service_product'])) {
+            if (!empty($cs['service_product'])) {
                 $product = ContractUnderProduct::where("id", $cs['service_product'])->where("contractId", $contractID)->first();
                 $service = $product->no_of_service + 1;
                 $product->update(['no_of_service' => $service]);
@@ -866,10 +866,10 @@ class ContractController extends Controller
     }
     public function UpdateContractProduct(Request $request, Contract $contract)
     {
-        if ($request->has('product_id') && !empty ($request->product_id)) {
+        if ($request->has('product_id') && !empty($request->product_id)) {
 
             $product = ContractUnderProduct::where(['id' => $request->product_id, 'contractId' => $request->contractId])->first();
-            if (!empty ($product)) {
+            if (!empty($product)) {
                 $update = $product->update([
                     'contractId' => $request->contractId,
                     'product_name' => $request->product_name,
@@ -1018,8 +1018,34 @@ class ContractController extends Controller
         }
         return $contrcat;
     }
+    public function contract_status_count($status)
+    {
+        $contrcats = Contract::join("master_contract_type", "master_contract_type.id", "contracts.CNRT_Type")
+            ->join("master_site_type", "master_site_type.id", "contracts.CNRT_SiteType")
+            ->join("master_contract_status", "master_contract_status.id", "contracts.CNRT_Status")
+            ->leftJoin("clients", "clients.CST_ID", "contracts.CNRT_CustomerID")
+            ->leftJoin("master_site_area", "master_site_area.id", "contracts.CNRT_Site")
+            ->orderBy('contracts.updated_at', "DESC")
+            // ->filter($request->only('search', 'trashed', 'search_field', 'filter_status'))
+            ->where("CNRT_Status", "!=", 0)
+            ->where("CNRT_Status", $status)->count();
+        return $contrcats;
+    }
     public function index(Request $request)
     {
+        $contrcats = Contract::join("master_contract_type", "master_contract_type.id", "contracts.CNRT_Type")
+            ->join("master_site_type", "master_site_type.id", "contracts.CNRT_SiteType")
+            ->join("master_contract_status", "master_contract_status.id", "contracts.CNRT_Status")
+            ->leftJoin("clients", "clients.CST_ID", "contracts.CNRT_CustomerID")
+            ->leftJoin("master_site_area", "master_site_area.id", "contracts.CNRT_Site")
+            ->orderBy('contracts.updated_at', "DESC")
+            ->filter($request->only('search', 'trashed', 'search_field', 'filter_status'))
+            ->where("CNRT_Status", "!=", 0)
+            ->paginate(10)
+            ->withQueryString();
+        $expired = $this->contract_status_count(3);
+        $renewal = $this->contract_status_count(2);
+        $active = $this->contract_status_count(1);
 
         return view("contracts.index", [
             'filters' => $request->all('search', 'trashed', 'search_field', 'filter_status'),
@@ -1027,18 +1053,10 @@ class ContractController extends Controller
             'filter_status' => $request->filter_status ?? '',
             'search' => $request->search ?? '',
             'status' => $this->status,
-            'contracts' => Contract::join("master_contract_type", "master_contract_type.id", "contracts.CNRT_Type")
-                ->join("master_site_type", "master_site_type.id", "contracts.CNRT_SiteType")
-                ->join("master_contract_status", "master_contract_status.id", "contracts.CNRT_Status")
-                ->leftJoin("clients", "clients.CST_ID", "contracts.CNRT_CustomerID")
-                ->leftJoin("master_site_area", "master_site_area.id", "contracts.CNRT_Site")
-                ->orderBy('contracts.updated_at', "DESC")
-                ->filter($request->only('search', 'trashed', 'search_field', 'filter_status'))
-                ->where("CNRT_Status", "!=", 0)
-                ->paginate(10)
-                ->withQueryString()
-
-
+            'contracts' => $contrcats,
+            'expired' => $expired,
+            'renewal' => $renewal,
+            'active' => $active,
         ]);
 
     }
@@ -1106,7 +1124,7 @@ class ContractController extends Controller
     {
         $contract = Contract::all()->last();
         $code = "CNT_" . date('Y') . "_1";
-        if (!empty ($contract)) {
+        if (!empty($contract)) {
             $code = "CNT_" . date('Y') . "_" . $contract->CNRT_ID + 1;
         }
 
@@ -1385,7 +1403,10 @@ class ContractController extends Controller
                 $contract->contractEndDate = Carbon::parse($contract->CNRT_EndDate)->format("d-m-Y");
                 $contract->sites = $this->GetCustomerSiteList($contract->CNRT_CustomerID);
                 $contract->CNRT_Status = intval($contract->CNRT_Status);
-                $products = ContractUnderProduct::where(['contractId' => $contractID])->get();
+                $products = ContractUnderProduct::leftJoin("master_product_type", "master_product_type.id", "contract_under_product.product_type")
+                    ->where(['contractId' => $contractID])
+                    ->get(["contract_under_product.id as prodcutId", "master_product_type.*", "contract_under_product.*"]);
+                // dd($products);
                 return response()->json(['products' => $products, 'success' => true, 'message' => '', 'contract' => $contract]);
             } else {
                 return response()->json(['products' => null, 'success' => false, 'message' => 'Something went wrong.', 'contract' => null]);

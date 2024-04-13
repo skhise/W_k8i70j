@@ -12,6 +12,7 @@ class ServiceSubStatus extends Model
     protected $fillable = [
         'Sub_Status_Name',
         'Sub_Status_Id',
+        'status_id'
     ];
     protected $primaryKey = 'Status_Id';
 }

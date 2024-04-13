@@ -12,6 +12,8 @@ class ServiceDc extends Model
         "service_id",
         "dc_type",
         "dc_status",
+        'dc_remark',
+        'dc_amount',
         "issue_date"
     ];
 }

@@ -871,7 +871,7 @@ class ServiceController extends Controller
         }
         return response()->json(["success" => true, "employee" => $employee]);
     }
-    public function service_status_count($staus)
+    public function service_status_count($staus, $fromdate, $todate)
     {
         $count = Service::select("*", "services.id as service_id")
             ->join("master_service_status", "master_service_status.Status_Id", "services.service_status")
@@ -880,13 +880,27 @@ class ServiceController extends Controller
             ->join("master_service_type", "master_service_type.id", "services.service_type")
             ->join("clients", "clients.CST_ID", "services.customer_id")
             ->leftJoin("users", "users.id", "services.assigned_to")
-            // ->whereBetween(DB::raw('DATE_FORMAT(services.service_date, "%Y-%m-%d")'), [$todate, $fromdate])
+            ->when(Auth::user()->role == 3, function ($query) {
+                $query->where('assigned_to', Auth::user()->id);
+            })
+            ->whereBetween(DB::raw('DATE_FORMAT(services.service_date, "%Y-%m-%d")'), [$fromdate, $todate])
             ->where('services.service_status', $staus)->count();
         return $count;
     }
     public function index(Request $request)
     {
-        $services = Service::select("*", "services.id as service_id")
+        $dayFilter = $request->dayFilter ?? 180;
+        $todate = date("Y-m-d");
+        $fromdate = date('Y-m-d', strtotime($todate . '-' . $dayFilter . ' days'));
+        if ($dayFilter == 0) {
+            $fromdate = $todate;
+        }
+        if ($dayFilter == 1) {
+            $todate = date('Y-m-d', strtotime($todate . '-1 days'));
+            $fromdate = date('Y-m-d', strtotime($todate . '-1 days'));
+        }
+
+        $services = Service::select("*", "services.id as service_id", "services.updated_at as last_updated")
             ->join("master_service_status", "master_service_status.Status_Id", "services.service_status")
             ->join("master_service_priority", "master_service_priority.id", "services.service_priority")
             ->join("master_issue_type", "master_issue_type.id", "services.issue_type")
@@ -894,16 +908,19 @@ class ServiceController extends Controller
             ->join("clients", "clients.CST_ID", "services.customer_id")
             ->leftJoin("users", "users.id", "services.assigned_to")
             ->orderby("services.updated_at", "DESC")
-            // ->whereBetween(DB::raw('DATE_FORMAT(services.service_date, "%Y-%m-%d")'), [$todate, $fromdate])
+            ->whereBetween(DB::raw('DATE_FORMAT(services.created_at, "%Y-%m-%d")'), [$fromdate, $todate])
             ->orderBy('services.updated_at', "DESC")
             ->filter($request->only('search', 'trashed', 'search_field', 'filter_status'))
+            ->when(Auth::user()->role == 3, function ($query) {
+                $query->where('assigned_to', Auth::user()->id);
+            })
             ->paginate(10)
             ->withQueryString();
-        $new = $this->service_status_count(1);
-        $open = $this->service_status_count(2);
-        $pending = $this->service_status_count(3);
-        $resolved = $this->service_status_count(4);
-        $closed = $this->service_status_count(5);
+        $new = $this->service_status_count(1, $fromdate, $todate);
+        $open = $this->service_status_count(2, $fromdate, $todate);
+        $pending = $this->service_status_count(3, $fromdate, $todate);
+        $resolved = $this->service_status_count(4, $fromdate, $todate);
+        $closed = $this->service_status_count(5, $fromdate, $todate);
         return view(
             'services.index',
             [
@@ -912,6 +929,7 @@ class ServiceController extends Controller
                 'filter_status' => $request->filter_status ?? '',
                 'search' => $request->search ?? '',
                 'services' => $services,
+                'dayFilter' => $dayFilter,
                 'new' => $new,
                 'open' => $open,
                 'pending' => $pending,

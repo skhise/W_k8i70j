@@ -283,12 +283,13 @@ class EmployeeController extends Controller
                             "EMP_CompanyMobile" => $request->EMP_CompanyMobile,
                             "EMP_Address" => $request->EMP_Address,
                             "EMP_TechnicalAbilities" => $request->EMP_TechnicalAbilities,
-                            "EMP_CPRNumber" => $request->EMP_CPRNumber,
+                            "EMP_Code" => $request->EMP_Code,
                             "EMP_CPRUpload" => $upload,
                             "Profile_Image" => $uploadProfile,
                             "EMP_Status" => 1,
                             "EMP_Created_By" => $request->created_by,
-                            "Access_Role" => $request->Access_Role
+                            "Access_Role" => $request->Access_Role,
+                            "password" => $request->password
                         ]);
                         if ($employee) {
                             try {

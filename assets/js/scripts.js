@@ -574,6 +574,7 @@ $(function () {
     // full screen call
 
     $(document).on("click", ".fullscreen-btn", function (e) {
+        alert("hello 1");
         if (
             !document.fullscreenElement && // alternative standard method
             !document.mozFullScreenElement &&

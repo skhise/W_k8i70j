@@ -13,6 +13,21 @@ input::-webkit-inner-spin-button {
     cursor: pointer !important;
 }
 
+.password-container {
+    position: relative;
+    /* width: 250px; */
+    /* Adjust width as needed */
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #888;
+}
+
 .hide {
     display: none;
 }
@@ -4800,6 +4815,11 @@ h6 .badge {
 
 .media .media-items {
     display: flex
+}
+
+.item-v-center {
+    align-items: center;
+    display: flex;
 }
 
 .media .media-items .media-item {

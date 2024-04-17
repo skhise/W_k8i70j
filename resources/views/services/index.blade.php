@@ -8,10 +8,13 @@
                             <div class="card-header">
                                 <h4>Services</h4>
                                 <div class="card-header-action">
-                                    <a href="{{ route('services.create') }}" class="btn btn-icon icon-left btn-primary"><i
-                                            class="
+                                    @if (auth()->user()->role == 1)
+                                        <a href="{{ route('services.create') }}"
+                                            class="btn btn-icon icon-left btn-primary"><i
+                                                class="
 fas fa-plus-square"></i>
-                                        Add Service</a>
+                                            Add Service</a>
+                                    @endif
                                 </div>
                             </div>
                             <div class="card-body">
@@ -48,13 +51,20 @@ fas fa-plus-square"></i>
                                             <div class="d-flex float-right justify-space-between" style="width:50%;">
                                                 <select class="form-control select2 mr-2" id="dayFilter"
                                                     name="dayFilter">
-                                                    <option value="">Any</option>
-                                                    <option value="0">Today</option>
-                                                    <option value="1">Yesterday</option>
-                                                    <option value="7">Last 7 Days</option>
-                                                    <option value="30">Last 30 Days</option>
-                                                    <option value="60">Last 60 Days</option>
-                                                    <option value="180" selected>Last 180 Days</option>
+                                                    <option value="" {{ $dayFilter == '' ? 'selected' : '' }}>Any
+                                                    </option>
+                                                    <option value="0" {{ $dayFilter == 0 ? 'selected' : '' }}>
+                                                        Today</option>
+                                                    <option value="1" {{ $dayFilter == 1 ? 'selected' : '' }}>
+                                                        Yesterday</option>
+                                                    <option value="7" {{ $dayFilter == 7 ? 'selected' : '' }}>Last
+                                                        7 Days</option>
+                                                    <option value="30" {{ $dayFilter == 30 ? 'selected' : '' }}>
+                                                        Last 30 Days</option>
+                                                    <option value="60" {{ $dayFilter == 60 ? 'selected' : '' }}>
+                                                        Last 60 Days</option>
+                                                    <option value="180" {{ $dayFilter == 180 ? 'selected' : '' }}>
+                                                        Last 180 Days</option>
                                                 </select>
                                                 <div class="input-group ml-2">
 
@@ -104,13 +114,14 @@ fas fa-plus-square"></i>
                                             <th class="table-width-20">Customer Name</th>
                                             <th>Issue Type</th>
                                             <th>Status</th>
+                                            <th>Last Updated</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @if (count($services) == 0)
                                             <tr>
-                                                <td colspan="6" class="text-center">No services to show</td>
+                                                <td colspan="8" class="text-center">No services to show</td>
                                             </tr>
                                         @endif
                                         @foreach ($services as $key => $service)
@@ -135,6 +146,9 @@ fas fa-plus-square"></i>
                                                         {{ $service['Status_Name'] }}</span>
                                                 </td>
                                                 <td>
+                                                    {{ $service['last_updated'] != null ? date('d-M-Y h:i:s', strtotime($service['last_updated'])) : 'NA' }}
+                                                </td>
+                                                <td>
                                                     <div class="flex-d">
                                                         <a href="{{ route('services.view', $service['service_id']) }}"
                                                             class="action-btn btn btn-sm btn-info"><i
@@ -151,13 +165,20 @@ fas fa-plus-square"></i>
 
                                     </tbody>
                                 </table>
-                                <div class="float-left">
-                                    @if ($services->total())
-                                        <p>Found {{ $services->total() }} records</p>
-                                    @endif
-                                </div>
-                                <div class="float-right">
-                                    {{ $services->links() }}
+
+
+                            </div>
+                            <div class="row ml-1 mr-1">
+                                <div class="col-lg-12">
+                                    <div class="float-left">
+                                        @if ($services->total())
+                                            <p>Found {{ $services->total() }} records</p>
+                                        @endif
+                                    </div>
+                                    <div class="float-right">
+                                        {{ $services->links() }}
+                                    </div>
+
                                 </div>
                             </div>
                         </div>
@@ -174,7 +195,7 @@ fas fa-plus-square"></i>
                 $("#filter_status").val($(this).data("key"));
                 $("#search_form_all")[0].submit();
             });
-            $(document).on('click', '#dayFilter', function() {
+            $(document).on('change', '#dayFilter', function() {
                 $("#search_form_all")[0].submit();
             });
             $(document).on('change', '#search', function() {

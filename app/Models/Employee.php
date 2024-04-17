@@ -16,7 +16,7 @@ class Employee extends Model
         'Profile_Image',
         "EMP_Designation",
         "EMP_Status",
-        "EMP_CPRNumber",
+        "EMP_Code",
         "EMP_Email",
         "EMP_Qualification",
         "EMP_MobileNumber",
@@ -24,7 +24,8 @@ class Employee extends Model
         "EMP_Address",
         "EMP_TechnicalAbilities",
         "EMP_Created_By",
-        'Access_Role'
+        'Access_Role',
+        'password'
 
 
     ];
@@ -36,7 +37,7 @@ class Employee extends Model
         $query->when($filters['search'] ?? null, function ($query, $search) use ($filters) {
 
             $search_field = $filters['search_field'] ?? '';
-            if (empty($search_field)) {
+            if (empty ($search_field)) {
                 $query->where('EMP_Name', 'like', '%' . $search . '%')
                     ->orWhere('EMP_MobileNumber', 'like', '%' . $search . '%');
             }

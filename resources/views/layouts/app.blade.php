@@ -75,7 +75,13 @@
     <div class="loader"></div>
     <div id="app">
         <div class="main-wrapper main-wrapper-1">
-            @include('layouts.navigation')
+            @if (auth()->user()->role == 3)
+                @include('layouts.navigation_emp')
+            @endif
+            @if (auth()->user()->role == 1)
+                @include('layouts.navigation')
+            @endif
+
 
             <!-- Page Heading -->
             @if (isset($header))
@@ -199,27 +205,18 @@
     <script src="{{ asset('js/app.min.js') }}"></script>
     <script src="{{ asset('bundles/jquery-ui/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('bundles/jquery-ui/bootstrap.bundle.min.js') }}"></script>
-    <!-- JS Libraies -->
-    <script src="{{ asset('bundles/apexcharts/apexcharts.min.js') }}"></script>
-    <!-- Page Specific JS File -->
-    <script src="{{ asset('js/page/index.js') }}"></script>
-    <script src="{{ asset('bundles/chartjs/chart.min.js') }}"></script>
-    <script src="{{ asset('bundles/apexcharts/apexcharts.min.js') }}"></script>
-    <!-- Template JS File -->
 
-    <!-- General JS Scripts -->
-    <script src="{{ asset('js/app.min.js') }}"></script>
     <!-- JS Libraies -->
     <script src="{{ asset('bundles/chartjs/chart.min.js') }}"></script>
     <script src="{{ asset('bundles/jquery.sparkline.min.js') }}"></script>
-    <script src="{{ asset('bundles/apexcharts/apexcharts.min.js') }}"></script>
     <script src="{{ asset('bundles/jqvmap/dist/jquery.vmap.min.js') }}"></script>
     <script src="{{ asset('bundles/jqvmap/dist/maps/jquery.vmap.world.js') }}"></script>
     <script src="{{ asset('bundles/jqvmap/dist/maps/jquery.vmap.indonesia.js') }}"></script>
-    <!-- Page Specific JS File -->
-    <script src="{{ asset('js/page/widget-chart.js') }}"></script>
-    <!-- Template JS File -->
+
     <script src="{{ asset('js/scripts.js') }}"></script>
+    <!-- Page Specific JS File -->
+    <!-- <script src="{{ asset('js/page/widget-chart.js') }}"></script>-->
+    <!-- Template JS File -->
     <!-- Custom JS File -->
     <script src="{{ asset('js/custom.js') }}"></script>
     <!-- Custom JS File -->
@@ -244,6 +241,8 @@
     <!-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> -->
 
     <!-- <script src="{{ asset('js/bootstrap.min.js') }}"></script> -->
+    <!-- <script src="{{ asset('bundles/apexcharts/apexcharts.min.js') }}"></script> -->
+
     <script>
         function isNumberKey(evt) {
             var charCode = (evt.which) ? evt.which : event.keyCode
@@ -282,7 +281,12 @@
                 $('#' + activeTab).tab('show');
             }
         });
+        $(".dropdown-custom").on('click', function() {
+            $(this).addClass("show");
+            $(this).closest("a").addt("aria-expanded", "true");
+        });
     </script>
+
     @yield('script')
 </body>
 

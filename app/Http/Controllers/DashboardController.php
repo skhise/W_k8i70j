@@ -6,6 +6,7 @@ use App\Models\Client;
 use App\Models\ContractScheduleService;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\DateTime;
@@ -94,12 +95,23 @@ class DashboardController extends Controller
         $schedulecount = $this->GetScheduleCount();
         $services = $this->GetLatestServices($request);
         // dd(json_decode($dashboard));
-        return view("dashboard", [
-            "dashboard" => json_decode($dashboard),
-            "contractdonut" => $contractdonut,
-            "schedulecount" => $schedulecount,
-            "services" => $services
-        ]);
+        if (Auth::user()->role == 1) {
+            return view("dashboard", [
+                "dashboard" => json_decode($dashboard),
+                "contractdonut" => $contractdonut,
+                "schedulecount" => $schedulecount,
+                "services" => $services
+            ]);
+        }
+        if (Auth::user()->role == 3) {
+            return view("dashboard_emp", [
+                "dashboard" => json_decode($dashboard),
+                "contractdonut" => $contractdonut,
+                "schedulecount" => $schedulecount,
+                "services" => $services
+            ]);
+        }
+
     }
 
     public function GetDashboardAttendance(Request $request)

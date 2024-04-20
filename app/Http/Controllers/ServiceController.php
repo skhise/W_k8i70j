@@ -750,6 +750,9 @@ class ServiceController extends Controller
     {
         $update = Service::where("id", $id)
             ->update($condition);
+        if (Auth::user()->role == 3) {
+            Service::where('services.id', $id)->update(["notification_flag" => 1]);
+        }
         if ($update) {
             return true;
         } else {
@@ -787,18 +790,18 @@ class ServiceController extends Controller
     public function AssignEngineer(Request $request)
     {
 
-        $engineerId = $request->EngineerId;
-        $serviceId = $request->ServiceId;
-        $userId = $request->userId;
+        $engineerId = $request->employee_id;
+        $serviceId = $request->service_id_assign;
+        $userId = Auth::user()->id;
         $isAssigned = Service::where("id", $serviceId)
             ->update(['assigned_to' => $engineerId, 'service_status' => 2]);
 
         if ($isAssigned) {
             $create = ServiceHistory::create([
                 'service_id' => $serviceId,
-                'status_id' => 2,
+                'status_id' => 6,
                 'user_id' => $userId,
-                'reason_id' => 1,
+                'sub_status_id' => 0,
                 'action_description' => "Ticket Assigned to Engineer",
             ]);
             try {
@@ -899,7 +902,7 @@ class ServiceController extends Controller
             $todate = date('Y-m-d', strtotime($todate . '-1 days'));
             $fromdate = date('Y-m-d', strtotime($todate . '-1 days'));
         }
-
+        // dd(Auth::user()->id);
         $services = Service::select("*", "services.id as service_id", "services.updated_at as last_updated")
             ->join("master_service_status", "master_service_status.Status_Id", "services.service_status")
             ->join("master_service_priority", "master_service_priority.id", "services.service_priority")
@@ -1138,6 +1141,9 @@ class ServiceController extends Controller
                     'service_note' => $request->service_note,
                 ]);
                 if ($update) {
+                    if (Auth::user()->role == 3) {
+                        Service::where('services.id', $service->id)->update(["notification_flag" => 1]);
+                    }
                     $this->SendNewCallMail($service);
                     $userId = Auth::user()->id;
                     $history = ServiceHistory::create([
@@ -1183,6 +1189,9 @@ class ServiceController extends Controller
     public function view(Request $request, Service $service)
     {
         // dd(config('app.timezone'));
+        if (Auth::user()->role == 1) {
+            Service::where('services.id', $service->id)->update(["notification_flag" => 0]);
+        }
         $services = Service::select("*", "services.id as service_id")
             ->join("master_service_status", "master_service_status.Status_Id", "services.service_status")
             ->join("master_service_priority", "master_service_priority.id", "services.service_priority")
@@ -1208,7 +1217,21 @@ class ServiceController extends Controller
             if ($services->service_status == $st->Status_Id) {
                 $selected = "selected";
             }
-            $status_options .= "<option data-sub_status='" . $sub_status . "' value=" . $st->Status_Id . " " . $selected . ">" . $st->Status_Name . "</option>";
+            if (Auth::user()->role == 3 && $st->Status_Id == 5) {
+                //     $status_options .= "<option data-sub_status='" . $sub_status . "' value=" . $st->Status_Id . " " . $selected . ">" . $st->Status_Name . "</option>";
+
+            } else {
+                $status_options .= "<option data-sub_status='" . $sub_status . "' value=" . $st->Status_Id . " " . $selected . ">" . $st->Status_Name . "</option>";
+            }
+        }
+        $employees = Employee::where("EMP_Status", 1)->get();
+        $employee_options = "<option value=''>Select Employee</option>";
+        foreach ($employees as $employee) {
+            $selected = "";
+            if ($services->assigned_to == $employee->EMP_ID) {
+                $selected = "selected";
+            }
+            $employee_options .= "<option value=" . $employee->EMP_ID . " " . $selected . ">" . $employee->EMP_Name . "</option>";
         }
         // dd($status_options);
 
@@ -1225,6 +1248,7 @@ class ServiceController extends Controller
             "dc_products" => $dc_products,
             "contract" => $contract,
             'timeline' => $timeline,
+            "employee_options" => $employee_options,
             'status_options' => $status_options,
         ]);
     }

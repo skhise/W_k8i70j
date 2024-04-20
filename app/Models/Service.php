@@ -1,6 +1,7 @@
 <?php
 namespace App\Models;
 
+use DateTime;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\ServiceHistory;
@@ -37,8 +38,28 @@ class Service extends Model
       'product_type',
       'deleted_at',
       'service_sub_status',
+      'notification_flag',
    ];
 
+   public function wasRecentlyUpdated($minutes = 1)
+   {
+
+      return $this->notification_flag == 1;
+      // Assuming you have two timestamps
+      $startTime = $this->last_updated;
+      $endTime = now();
+
+      // Create DateTime objects from the timestamps
+      $startDateTime = new DateTime($startTime);
+      $endDateTime = new DateTime($endTime);
+
+      // Calculate the time difference
+      $timeDifference = $endDateTime->diff($startDateTime);
+
+      // Convert the time difference to minutes
+      $timeDifferenceInMinutes = ($timeDifference->h * 60) + $timeDifference->i;
+      return $timeDifferenceInMinutes <= $minutes;
+   }
    public function history()
    {
       return $this->hasMany(ServiceHistory::class);
@@ -56,6 +77,7 @@ class Service extends Model
    public static function boot()
    {
       parent::boot();
+
       self::deleting(function ($service) { // before delete() method call this
          $service->history()->each(function ($history) {
             $history->delete(); // <-- direct deletion

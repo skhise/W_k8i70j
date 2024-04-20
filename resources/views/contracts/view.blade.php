@@ -86,7 +86,7 @@
                                                                     <hr>
                                                                     <strong><i
                                                                             class="fa fa-map-marker margin-r-5"></i>&nbsp;&nbsp;Status</strong>
-                                                                    <p class="text-muted">{!! $contract->CST_Status != 0 ? $status[$contract->CST_Status] : 'NA' !!}</p>
+                                                                    <p class="text-muted">{!! $contract->CST_Status != 0 ? $status[$contract->CNRT_Status] : 'NA' !!}</p>
 
                                                                     <hr>
                                                                 </div>

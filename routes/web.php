@@ -123,6 +123,7 @@ Route::middleware(['prevent-back-history'])->group(function () {
         Route::get('/services/{serviceDc}/dc-view', [ServiceController::class, 'DcView'])->name('services.dc_view');
         Route::get('/services/{serviceDcProduct}/dcp-delete', [ServiceController::class, 'DcpDelete'])->name('service_dcp.delete');
         Route::post('/services/{service}/status', [ServiceController::class, 'ApplyServiceAction'])->name('service_status.store');
+        Route::post('/services/{service}/assign', [ServiceController::class, 'AssignEngineer'])->name('service_status.assign');
 
     });
     //services end
@@ -163,6 +164,9 @@ Route::middleware(['prevent-back-history'])->group(function () {
 
         Route::post('employees.store', [EmployeeController::class, 'store'])
             ->name('employees.store')
+            ->middleware('auth');
+        Route::post('employees.status_change', [EmployeeController::class, 'StatusChange'])
+            ->name('employees.status_change')
             ->middleware('auth');
     });
     Route::middleware('auth')->group(function () {

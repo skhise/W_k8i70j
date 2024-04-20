@@ -86,9 +86,7 @@
                                                 <div class="flex-d">
                                                     <a href="{{ route('services.view', $service['service_id']) }}"
                                                         class="action-btn btn btn-info"><i class="far fa-eye"></i></a>
-                                                    <a href="{{ route('services.edit', $service['service_id']) }}"
-                                                        class="action-btn btn btn-primary"><i
-                                                            class="far fa-edit"></i></a>
+
                                                 </div>
 
 

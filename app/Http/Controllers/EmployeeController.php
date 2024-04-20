@@ -82,6 +82,18 @@ class EmployeeController extends Controller
             return false;
         }
     }
+    public function StatusChange(Request $request)
+    {
+        // dd($request->status);
+        $user = User::where("id", $request->userId);
+        if ($user) {
+            $employee = Employee::where("EMP_ID", $request->userId)->update(['EMP_Status' => $request->status]);
+            $user->update(['status' => $request->status]);
+            return true;
+        } else {
+            return false;
+        }
+    }
     public function CheckIfServiceCall($Emp_Id)
     {
         $count = Service::where("assigned_to", $Emp_Id)->count();

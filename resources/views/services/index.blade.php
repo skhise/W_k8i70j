@@ -48,7 +48,7 @@ fas fa-plus-square"></i>
                                                     Closed <span class="badge badge-success">{{ $closed }}</span>
                                                 </button>
                                             </div>
-                                            <div class="d-flex float-right justify-space-between" style="width:50%;">
+                                            <div class="d-flex float-right justify-space-between" style="width:40%;">
                                                 <select class="form-control select2 mr-2" id="dayFilter"
                                                     name="dayFilter">
                                                     <option value="" {{ $dayFilter == '' ? 'selected' : '' }}>Any
@@ -113,8 +113,8 @@ fas fa-plus-square"></i>
                                             <th>Date</th>
                                             <th class="table-width-20">Customer Name</th>
                                             <th>Issue Type</th>
-                                            <th>Status</th>
                                             <th>Last Updated</th>
+                                            <th>Status</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
@@ -127,6 +127,10 @@ fas fa-plus-square"></i>
                                         @foreach ($services as $key => $service)
                                             <tr>
                                                 <td>
+                                                    @if ($service->wasRecentlyUpdated())
+                                                        <i class="fa-spin fa fa-circle" style=""
+                                                            aria-hidden="true"></i>
+                                                    @endif
                                                     {{ $service['service_no'] }}
                                                 </td>
                                                 <td>
@@ -141,21 +145,24 @@ fas fa-plus-square"></i>
                                                 </td>
                                                 <td>{{ $service['issue_name'] }}</td>
                                                 <td>
+                                                    {{ $service['last_updated'] != null ? date('d-M-Y h:i', strtotime($service['last_updated'])) : 'NA' }}
+                                                </td>
+                                                <td>
                                                     <span
                                                         class="text-white badge badge-shadow {{ $service['status_color'] ?? 'bg-primary' }}">
                                                         {{ $service['Status_Name'] }}</span>
                                                 </td>
-                                                <td>
-                                                    {{ $service['last_updated'] != null ? date('d-M-Y h:i:s', strtotime($service['last_updated'])) : 'NA' }}
-                                                </td>
+
                                                 <td>
                                                     <div class="flex-d">
                                                         <a href="{{ route('services.view', $service['service_id']) }}"
                                                             class="action-btn btn btn-sm btn-info"><i
                                                                 class="far fa-eye"></i></a>
-                                                        <a href="{{ route('services.edit', $service['service_id']) }}"
-                                                            class="action-btn btn btn-sm btn-primary"><i
-                                                                class="far fa-edit"></i></a>
+                                                        @if (auth()->user()->role == 1)
+                                                            <a href="{{ route('services.edit', $service['service_id']) }}"
+                                                                class="action-btn btn btn-sm btn-primary"><i
+                                                                    class="far fa-edit"></i></a>
+                                                        @endif
                                                     </div>
 
 

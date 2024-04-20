@@ -33,6 +33,7 @@
     <link rel="stylesheet" href="{{ asset('bundles/select2/dist/css/select2.min.css') }}">
     <link rel="stylesheet" href="{{ asset('bundles/jquery-selectric/selectric.css') }}">
     <link rel="stylesheet" href="{{ asset('css/jquery-editable-select.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('bundles/pretty-checkbox/pretty-checkbox.min.css') }}">
     <!-- <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}"> -->
     <style>
         .action-2 {
@@ -65,6 +66,26 @@
         .disable {
             pointer-events: none;
             background: #c9c9c9;
+        }
+
+        .fa-spin {
+            color: red;
+            text-decoration: blink;
+            -webkit-animation-name: blinker;
+            -webkit-animation-duration: 1s;
+            -webkit-animation-iteration-count: infinite;
+            -webkit-animation-timing-function: ease-in-out;
+            -webkit-animation-direction: alternate;
+        }
+
+        @-webkit-keyframes blinker {
+            from {
+                opacity: 1.0;
+            }
+
+            to {
+                opacity: 0.0;
+            }
         }
     </style>
 
@@ -244,6 +265,14 @@
     <!-- <script src="{{ asset('bundles/apexcharts/apexcharts.min.js') }}"></script> -->
 
     <script>
+        var csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': csrfToken
+            }
+        });
+
         function isNumberKey(evt) {
             var charCode = (evt.which) ? evt.which : event.keyCode
             if (charCode > 31 && (charCode < 48 || charCode > 57))
@@ -285,6 +314,26 @@
             $(this).addClass("show");
             $(this).closest("a").addt("aria-expanded", "true");
         });
+
+        function showSuccessSwal(message) {
+            Swal.fire({
+                title: 'Sucess!',
+                text: message,
+                icon: 'success',
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+            });
+        }
+
+        function showErrorSwal(message) {
+            Swal.fire({
+                title: 'Error!',
+                text: message,
+                icon: 'warning',
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+            });
+        }
     </script>
 
     @yield('script')

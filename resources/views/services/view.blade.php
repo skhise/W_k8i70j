@@ -9,9 +9,14 @@
                                 <h4 class="card-title">Service Details</h4>
                                 <div class="card-header-action"><a class="btn btn-danger"
                                         href="{{ route('services') }}">Back</a>
-                                    <a class="btn btn-primary" href="{{ route('services.edit', $service_id) }}">Edit</a>
                                     <input type="button" id="btn_service_add" value="Action" class="btn btn-info"
                                         data-toggle="modal" data-target=".bd-RefServiceStatus-modal-lg" />
+                                    @if (auth()->user()->role == 1)
+                                        <a class="btn btn-primary"
+                                            href="{{ route('services.edit', $service_id) }}">Edit</a>
+                                        <input type="button" value="Assign" class="btn btn-info" data-toggle="modal"
+                                            data-target=".bd-RefServiceAssign-modal-lg" />
+                                    @endif
                                 </div>
                             </div>
                             <div class="card-body">
@@ -21,11 +26,14 @@
                                             href="#ClientDetails" role="tab" aria-controls="home-tab2"
                                             aria-selected="true">Details</a>
                                     </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" id="ServiceProductDC-tab5" data-toggle="tab"
-                                            href="#serviceproductdc" role="tab"
-                                            aria-controls="ServiceProductDC-tab5" aria-selected="true">Product DC</a>
-                                    </li>
+                                    @if (auth()->user()->role == 1)
+                                        <li class="nav-item">
+                                            <a class="nav-link" id="ServiceProductDC-tab5" data-toggle="tab"
+                                                href="#serviceproductdc" role="tab"
+                                                aria-controls="ServiceProductDC-tab5" aria-selected="true">Product
+                                                DC</a>
+                                        </li>
+                                    @endif
                                     <li class="nav-item">
                                         <a class="nav-link" id="Servicetimeline-tab5" data-toggle="tab"
                                             href="#servicetimeline" role="tab" aria-controls="Servicetimeline-tab5"
@@ -360,11 +368,11 @@
                                                                     <span class="float-right"
                                                                         style="font-size: 14px;">{{ date(
                                                                             "d-m-Y
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            h:i:s",
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            h:i:s",
                                                                             strtotime(
                                                                                 $time_line['created_at'] .
                                                                                     "
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            " .
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            " .
                                                                                     config('app.timezone'),
                                                                             ),
                                                                         ) }}</span>
@@ -394,6 +402,7 @@
         </section>
     </div>
     @include('services.service_action')
+    @include('services.service_action_assign')
     @section('script')
         <script>
             $(document).on("change", "#status_id", function() {
@@ -533,15 +542,74 @@
                 }
 
             });
+            $(document).on("click", "#btn_service_assign_save", function() {
+                $('.text-danger-error').html('');
+                $(this).attr("disabled", true);
+                $(this).html("Saving...");
+                $(".nrnumber").removeClass("error_border");
+                var service_id = $("#service_id_assign").val();
+                var url = '{{ route('service_status.assign', $service_id) }}';
+                var isValid = true;
+
+                // Loop through each input field and validate
+                $('#form_service_assign .required').each(function() {
+                    if (!validateInput($(this))) {
+                        isValid = false;
+                        $("#btn_service_assign_save").attr("disabled", false);
+                        $("#btn_service_assign_save").html("Save");
+                    }
+                });
+                if (isValid) {
+                    $.ajax({
+                        url: url,
+                        type: "POST",
+                        data: $("#form_service_assign").serialize(),
+                        success: function(response) {
+                            //  var obj = JSON.parse(response);
+                            if (response.success) {
+                                CancelModelBoxServiceAssign();
+                                window.location.reload();
+                            } else {
+                                $("#btn_service_status_save").attr("disabled", false);
+                                $("#btn_service_status_save").html("Save");
+                                $('.errorMsgntainer').html("");
+                                if (typeof response.validation_error != 'undefined') {
+                                    $.each(response.validation_error, function(index, value) {
+                                        $('.' + index + "-field-validation-valid").html(value);
+                                    });
+                                } else {
+                                    $('.errorMsgntainer').html(response.message);
+                                }
+                            }
+
+                        },
+                        error: function(error) {
+                            $("#btn_service_assign_save").attr("disabled", false);
+                            $("#btn_service_assign_save").html("Save");
+                            alert("something went wrong, try again.");
+                        }
+                    })
+                }
+
+            });
+
 
             function CancelModelBoxServiceAction() {
                 $("#btn_service_status_save").attr("disabled", false);
                 $("#btn_service_status_save").html("Save");
-                $("#service_id").val("0");
                 $('.text-danger-error').html('');
                 $("#form_service_status")[0].reset();
                 $(".required").removeClass('error_border')
                 $("#btn_close_service_status").trigger('click');
+            }
+
+            function CancelModelBoxServiceAssign() {
+                $("#btn_service_assign_save").attr("disabled", false);
+                $("#btn_service_assign_save").html("Save");
+                $('.text-danger-error').html('');
+                $("#form_service_assign")[0].reset();
+                $(".required").removeClass('error_border')
+                $("#btn_close_service_assign").trigger('click');
             }
 
             function validateInput(input) {

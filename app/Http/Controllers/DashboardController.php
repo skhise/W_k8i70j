@@ -44,6 +44,9 @@ class DashboardController extends Controller
             $customers = Client::all()->where("CST_Status", "1")->count();
             $contracts = Contract::all()->where("CNRT_Status", "!=", 0)->count();
             $services = Service::all()->count();
+            if (Auth::user()->role == 3) {
+                $services = Service::where('assigned_to', Auth::user()->id)->count();
+            }
             $employes = Employee::join("master_designation", "master_designation.id", "employees.EMP_Designation")
                 ->join("users", "users.id", "employees.EMP_ID")
                 ->leftJoin("master_role_access", "master_role_access.id", "employees.Access_Role")
@@ -71,7 +74,6 @@ class DashboardController extends Controller
     }
     public function GetLatestServices(Request $request)
     {
-
         $services = Service::
             join("master_service_status", "master_service_status.Status_Id", "services.service_status")
             ->join("master_service_priority", "master_service_priority.id", "services.service_priority")
@@ -80,6 +82,9 @@ class DashboardController extends Controller
             ->join("clients", "clients.CST_ID", "services.customer_id")
             ->leftJoin("users", "users.id", "services.assigned_to")
             ->orderby("services.updated_at", "DESC")
+            ->when(Auth::user()->role == 3, function ($query) {
+                $query->where('assigned_to', Auth::user()->id);
+            })
             ->limit(5)
             ->get(["clients.*", "services.id as service_id", "users.name as assignedName", "users.name", "master_service_type.*", "master_issue_type.*", "services.*", "master_service_status.*", "master_service_priority.*"]);
         foreach ($services as $service) {

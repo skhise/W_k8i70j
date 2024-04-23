@@ -240,7 +240,16 @@ class EmployeeController extends Controller
     }
     public function store(Request $request)
     {
+        $message = [
+            "EMP_Name.required" => "The name required.",
+            "EMP_Email.required" => "The email required.",
+            "EMP_MobileNumber.required" => "The mobile required.",
+            "password.required" => "The password required.",
+            "EMP_Designation.required" => "The designation required.",
+            "email.required" => "The password required.",
+            "email.unique" => "The email address has already been used.",
 
+        ];
         $validator = Validator::make(
             $request->all(),
             [
@@ -250,7 +259,8 @@ class EmployeeController extends Controller
                 "EMP_MobileNumber" => "required",
                 "password" => "required|min:6",
                 "email" => "required|email|unique:users",
-            ]
+            ],
+            // $message
         );
 
         if ($validator->fails()) {
@@ -274,17 +284,18 @@ class EmployeeController extends Controller
                 if (isset($request->EMP_Profile_Path) && $request->EMP_Profile_Path != "") {
                     $uploadProfile = $this->uploadProfile($request);
                 }
-                DB::beginTransaction();
-                $user = User::create([
-                    "name" => $request->EMP_Name,
-                    "email" => $request->email,
-                    "password" => $password,
-                    "role" => 3,
-                    "Status" => 1
-                ]);
-                if (!is_null($user)) {
-                    $id = $user->id;
-                    try {
+                try {
+                    DB::beginTransaction();
+                    $user = User::create([
+                        "name" => $request->EMP_Name,
+                        "email" => $request->email,
+                        "password" => $password,
+                        "role" => 3,
+                        "Status" => 1
+                    ]);
+                    if (!is_null($user)) {
+                        $id = $user->id;
+
                         $employee = Employee::create([
                             'EMP_ID' => $user->id,
                             'EMP_Name' => $request->EMP_Name,
@@ -337,21 +348,21 @@ class EmployeeController extends Controller
                                 ->withErrors("Action failed, try again");
                             // return response()->json(['success' => false, 'message' => 'Action failed, Try again.']);
                         }
-                    } catch (Exception $ex) {
-                        DB::rollBack();
+
+
+                    } else {
                         return back()
                             ->withInput()
-                            ->withErrors($ex->getMessage());
-                        // return response()->json(['success' => false, 'message' => $ex->errorInfo]);
+                            ->withErrors("Action failed, Try again");
+                        // return response()->json(['success' => false, 'message' => 'Action failed, Try again.']);
                     }
-
-                } else {
+                } catch (Exception $ex) {
+                    DB::rollBack();
                     return back()
                         ->withInput()
-                        ->withErrors("Action failed, Try again");
-                    // return response()->json(['success' => false, 'message' => 'Action failed, Try again.']);
+                        ->withErrors($ex->errorInfo);
+                    // return response()->json(['success' => false, 'message' => $ex->errorInfo]);
                 }
-
 
             } else {
                 return response()->json(['success' => false, 'message' => 'User already added with the email!']);

@@ -794,7 +794,7 @@ class ServiceController extends Controller
         $serviceId = $request->service_id_assign;
         $userId = Auth::user()->id;
         $isAssigned = Service::where("id", $serviceId)
-            ->update(['assigned_to' => $engineerId, 'service_status' => 2]);
+            ->update(['assigned_to' => $engineerId, 'service_status' => 6]);
 
         if ($isAssigned) {
             $create = ServiceHistory::create([

@@ -186,6 +186,7 @@ Route::middleware(['prevent-back-history'])->group(function () {
         ->middleware('auth');
     Route::middleware('auth')->group(function () {
         Route::post('/employees/{employee}', [EmployeeController::class, 'update'])->name('employees.update');
+        Route::post('/employees/{employee}/password', [EmployeeController::class, 'ChangePassword'])->name('employees.setpassword');
     });
 
     Route::middleware('auth')->group(function () {

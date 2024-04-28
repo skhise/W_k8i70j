@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Client;
+use App\Models\Employee;
+use App\Models\LocationHistory;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -50,6 +53,23 @@ class AppUserController extends Controller
         } catch (\Exception $e) {
             report($e);
             return "not updated";
+        }
+    }
+    public function markOnlineOffline(Request $request)
+    {
+        try {
+            User::where("id", $request->User_ID)->update(['isOnline' => 1]);
+            LocationHistory::create([
+                'User_ID' => $request->User_ID,
+                'last_long' => $request->last_long,
+                'last_lang' => $request->last_lang,
+                'full_address' => "",
+                'area_code' => "",
+            ]);
+            return "updated";
+        } catch (Exception $e) {
+            report($e);
+            return "not updated" . $e->getMessage();
         }
     }
 
@@ -185,7 +205,7 @@ class AppUserController extends Controller
 
             // if password is correct
             if ($isok->role == 2) {
-                $update = Customer::where("CST_ID", $request->id)->update([
+                $update = Client::where("CST_ID", $request->id)->update([
                     'CST_OfficeAddress' => $request->address
                 ]);
                 if ($update) {
@@ -803,7 +823,9 @@ class AppUserController extends Controller
             if ($create) {
                 $update = Service::where("id", $serviceId)
                     ->update([
-                        'service_status' => $actionId
+                        'service_status' => $actionId,
+                        'assigned_to' => $actionId == 8 ? 0 : $engineerId,
+                        'notification_flag' => 1
                     ]);
                 if ($update) {
                     return response()->json(['success' => true, 'message' => 'action applied and status updated.']);
@@ -852,7 +874,8 @@ class AppUserController extends Controller
                 $update = Service::where("id", $serviceId)
                     ->update([
                         'service_status' => 6,
-                        'ClosedBy' => $closedBy
+                        'ClosedBy' => $closedBy,
+                        'notification_flag' => 1
                     ]);
                 if ($update) {
                     return response()->json(['success' => true, 'message' => 'Ticket closed successfully.']);

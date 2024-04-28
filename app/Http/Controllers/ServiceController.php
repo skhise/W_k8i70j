@@ -911,7 +911,7 @@ class ServiceController extends Controller
             ->join("clients", "clients.CST_ID", "services.customer_id")
             ->leftJoin("users", "users.id", "services.assigned_to")
             ->orderby("services.updated_at", "DESC")
-            ->whereBetween(DB::raw('DATE_FORMAT(services.created_at, "%Y-%m-%d")'), [$fromdate, $todate])
+            ->whereBetween(DB::raw('DATE_FORMAT(services.updated_at, "%Y-%m-%d")'), [$fromdate, $todate])
             ->orderBy('services.updated_at', "DESC")
             ->filter($request->only('search', 'trashed', 'search_field', 'filter_status'))
             ->when(Auth::user()->role == 3, function ($query) {
@@ -1199,7 +1199,7 @@ class ServiceController extends Controller
             ->join("master_service_type", "master_service_type.id", "services.service_type")
             ->leftJoin("master_site_area", "master_site_area.id", "services.areaId")
             ->join("clients", "clients.CST_ID", "services.customer_id")
-            ->leftJoin("users", "users.id", "services.assigned_to")
+            ->leftJoin("employees", "employees.Emp_ID", "services.assigned_to")
             ->where('services.id', $service->id)->first();
 
         $product = ContractUnderProduct::where('contract_under_product.id', $service->product_id)->leftJoin("master_product_type", "master_product_type.id", "contract_under_product.product_type")->first();
@@ -1208,6 +1208,7 @@ class ServiceController extends Controller
         $timeline = ServiceHistory::leftJoin("master_service_status", "master_service_status.Status_Id", "service_action_history.status_id")
             ->leftJoin("master_service_sub_status", "master_service_sub_status.Sub_Status_Id", "service_action_history.sub_status_id")
             ->where("service_id", $service->id)
+            ->orderBy("service_action_history.id", "DESC")
             ->get();
         $status_options = "<option value=''>Select Status</option>";
         $status = ServiceStatus::where("flag", 1)->get();

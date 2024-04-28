@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\VisitController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AppUserController;
@@ -49,7 +51,29 @@ Route::group(['namespace' => 'API', 'prefix' => 'v1', 'middleware' => ['cors', '
     Route::get("AccountSetting", [AppUserController::class, "GetAccountSettings"]);
     Route::get("CloseCall", [AppUserController::class, "FinalTicketClose"]);
     Route::post('fcmtokenApp', [AppUserController::class, 'updateToken']);
+    Route::get('markOnlineOffline', [AppUserController::class, 'markOnlineOffline']);
     /*end app controller*/
+
+    Route::get('GetEngineerAttendance', [AttendanceController::class, 'GetEngineerAttendance']);
+    Route::post('MarkPunch', [AttendanceController::class, 'AddPunch']);
+    Route::post("AddPunchAdmin", [AttendanceController::class, 'AddPunchAdmin']);
+    Route::post("update/{id}", [AttendanceController::class, 'AddPunchAdmin']);
+    Route::get("GetAttendanceById", [AttendanceController::class, 'GetAttendanceById']);
+    Route::get('GetAttendanceByDate', [AttendanceController::class, 'GetAttendanceByDate']);
+    Route::get("GetAttendanceList", [AttendanceController::class, "GetAttendanceList"]);
+    Route::get("UpdateLeaveRequest", [AttendanceController::class, "UpdateLeaveRequest"]);
+
+    /*visit controller*/
+    Route::get('GetVisitData', [VisitController::class, 'GetVisitData']);
+    Route::get("GetUserVisits", [VisitController::class, "GetUserVisits"]);
+    Route::get('GetVisitType', [VisitController::class, 'GetVisitType']);
+    Route::get('GetVisitStatus', [VisitController::class, 'GetVisitStatus']);
+    Route::post('NewVisit', [VisitController::class, 'NewVisit']);
+    Route::get('GetUserVisitsById', [VisitController::class, 'GetUserVisitsById']);
+    Route::get('GetVisitById', [VisitController::class, "GetVisitById"]);
+
+
+    /*end visit controller*/
 
 });
 Route::get('send-mail', function () {

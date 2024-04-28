@@ -126,7 +126,9 @@
                                                         {{ $employee->email }}
                                                     </div>
                                                     <div class="col-md-3">
-                                                        <button type="button" class="float-left btn btn-primary">Reset
+                                                        <button data-target=".bd-RefPasswordReset-modal-lg"
+                                                            data-toggle="modal" type="button"
+                                                            class="float-left btn btn-primary">Reset
                                                             Password</button>
                                                     </div>
                                                 </div>
@@ -171,7 +173,7 @@
                 </div>
             </div>
         </section>
-
+        @include('employees.employee_reset');
     </div>
     @section('script')
         <script>
@@ -225,6 +227,63 @@
                         showErrorSwal("Something went wrong, try again");
                     }
                 })
+            }
+            $(document).on("click", "#btn_password_save", function() {
+                $('.text-danger-error').html('');
+                $(this).attr("disabled", true);
+                $(this).html("Saving...");
+                var url = '{{ route('employees.setpassword', $employee->EMP_ID) }}';
+                var isValid = true;
+
+                // Loop through each input field and validate
+                $('#form_password_reset .required').each(function() {
+                    if (!validateInput($(this))) {
+                        isValid = false;
+                        $("#btn_password_save").attr("disabled", false);
+                        $("#btn_password_save").html("Save");
+                    }
+                });
+                if (isValid) {
+                    $.ajax({
+                        url: url,
+                        type: "POST",
+                        data: $("#form_password_reset").serialize(),
+                        success: function(response) {
+                            //  var obj = JSON.parse(response);
+                            if (response.success) {
+                                CancelModelBoxPassword();
+                                window.location.reload();
+                            } else {
+                                $("#btn_password_save").attr("disabled", false);
+                                $("#btn_password_save").html("Save");
+                                $('.errorMsgntainer').html("");
+                                if (typeof response.validation_error != 'undefined') {
+                                    $.each(response.validation_error, function(index, value) {
+                                        $('.' + index + "-field-validation-valid").html(value);
+                                    });
+                                } else {
+                                    $('.errorMsgntainer').html(response.message);
+                                }
+                            }
+
+                        },
+                        error: function(error) {
+                            $("#btn_password_save").attr("disabled", false);
+                            $("#btn_password_save").html("Save");
+                            alert("something went wrong, try again.");
+                        }
+                    })
+                }
+
+            });
+
+            function CancelModelBoxPassword() {
+                $("#btn_password_save").attr("disabled", false);
+                $("#btn_password_save").html("Save");
+                $('.text-danger-error').html('');
+                $("#form_password_reset")[0].reset();
+                $(".required").removeClass('error_border')
+                $("#btn_close_password").trigger('click');
             }
         </script>
     @stop

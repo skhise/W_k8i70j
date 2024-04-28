@@ -489,20 +489,9 @@ class EmployeeController extends Controller
         }
         return $imagesName;
     }
-    public function ResetPassword(Request $request)
+    public function ResetPassword(Request $request, Employee $employee)
     {
-        $validator = Validator::make(
-            $request->all(),
-            [
-                "NewPassword" => "required",
-                "EMP_ID" => "required",
-
-            ]
-        );
-        if ($validator->fails()) {
-            return response()->json(["success" => false, "message" => "* marked fields required.", "validation_error" => $validator->errors()]);
-        }
-        $password = Hash::make($request->NewPassword);
+        $password = Hash::make($request->password);
         $update = User::where("id", $request->EMP_ID)
             ->update([
                 "password" => $password

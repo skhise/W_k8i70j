@@ -492,12 +492,12 @@ class EmployeeController extends Controller
     public function ResetPassword(Request $request, Employee $employee)
     {
         $password = Hash::make($request->password);
-        $update = User::where("id", $request->EMP_ID)
+        $update = User::where("id", $request->employee_id)
             ->update([
                 "password" => $password
             ]);
         if ($update) {
-            $user = User::where("id", $request->EMP_ID)->first();
+            $user = User::where("id", $request->employee_id)->first();
             $action = "Password Reset, User Email:" . $user->email;
             $log = App(\App\Http\Controllers\LogController::class);
             $log->SystemLog($request->loginId, $action);

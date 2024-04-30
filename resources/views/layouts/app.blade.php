@@ -334,6 +334,18 @@
                 cancelButtonColor: '#d33',
             });
         }
+
+        function validateInput(input) {
+            var value = input.val().trim();
+            var isValid = true;
+            if (value === '') {
+                input.addClass('error_border');
+                isValid = false;
+            } else {
+                input.removeClass('error_border');
+            }
+            return isValid;
+        }
     </script>
 
     @yield('script')

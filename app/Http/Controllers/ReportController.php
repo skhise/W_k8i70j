@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Client;
+use App\Models\ContractStatus;
 use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -38,18 +39,65 @@ use Carbon\Carbon;
 class ReportController extends Controller
 {
 
-
+    public $status = [
+        "1" => '<div class="badge badge-success badge-shadow">Active</div>',
+        "2" => '<div class="badge badge-info badge-shadow">Renewal</div>',
+        "3" => '<div class="badge badge-danger badge-shadow">Expired</div>',
+        "4" => '<div class="badge badge-danger badge-shadow">Deactivated</div>',
+    ];
     public function cr_index(Request $request)
     {
         $clients = Client::all();
-        $status = $this->GetStatusListAll($request);
+        $status = ContractStatus::all();
         return view(
             'reports.contract',
             [
                 "clients" => $clients,
-                "status" => $status
+                "status" => $status,
+                "customer" => "",
+                "contracts" => array(),
+                "sstatus" => ""
             ]
         );
+    }
+    public function cr_data(Request $request)
+    {
+        $contracts = null;
+        try {
+            $customer = $request->customer;
+            // dd($customer);
+            $status = $request->status;
+            $sstatus = $status;
+            $contracts = Contract::join("master_contract_type", "master_contract_type.id", "contracts.CNRT_Type")
+                ->join("master_site_type", "master_site_type.id", "contracts.CNRT_SiteType")
+                ->join("master_contract_status", "master_contract_status.id", "contracts.CNRT_Status")
+                ->leftJoin("clients", "clients.CST_ID", "contracts.CNRT_CustomerID")
+                ->leftJoin("master_site_area", "master_site_area.id", "contracts.CNRT_Site")
+                ->when($customer != 0, function ($query) use ($customer) {
+                    $query->where("CNRT_CustomerID", $customer);
+                })
+                ->when($status != 0 && $status != "", function ($query) use ($status) {
+                    $query->where("CNRT_Status", $status);
+                })
+                ->orderBy('contracts.updated_at', "DESC")
+                ->paginate(5);
+            // ->toSql();
+            // echo $contracts;
+            // die;
+        } catch (Exception $exp) {
+
+        }
+        $status = $this->status;
+        if ($request->ajax()) {
+            return view('reports.cr_pagination', compact('contracts', 'status'));
+        }
+        $clients = Client::all();
+        $status = ContractStatus::all();
+        return view('reports.contract', compact('contracts', 'status', "clients", "customer", "sstatus"));
+    }
+    public function csr_data(Request $request)
+    {
+
     }
     public function csr_index(Request $request)
     {
@@ -58,9 +106,8 @@ class ReportController extends Controller
             "clients" => $clients,
         ]);
     }
-    function GetServiceCount($todate, $fromdate, $empId, $contract, $serviceType, $issueType, $status)
+    function GetServiceCount($customer_id, $todate, $fromdate, $empId, $contract, $serviceType, $issueType, $status)
     {
-
 
         $services = Service::
             join("master_service_status", "master_service_status.Status_Id", "services.service_status")
@@ -69,12 +116,16 @@ class ReportController extends Controller
             ->join("master_service_type", "master_service_type.id", "services.service_type")
             ->join("clients", "clients.CST_ID", "services.customer_id")
             ->leftJoin("users", "users.id", "services.assigned_to")
-            ->whereBetween(DB::raw('DATE_FORMAT(services.service_date, "%Y-%m-%d")'), [$todate, $fromdate])
-
-            ->when($issueType != 0, function ($query) use ($issueType) {
+            ->when($customer_id != "", function ($query) use ($customer_id) {
+                $query->where("services.customer_id", $customer_id);
+            })
+            ->when($todate != "" && $fromdate != "", function ($query) use ($todate, $fromdate) {
+                $query->whereBetween(DB::raw('DATE_FORMAT(services.service_date, "%Y-%m-%d")'), [$todate, $fromdate]);
+            })
+            ->when($issueType != "", function ($query) use ($issueType) {
                 return $query->where('services.issue_type', $issueType);
             })
-            ->when($serviceType != 0, function ($query) use ($serviceType) {
+            ->when($serviceType != "", function ($query) use ($serviceType) {
                 return $query->where('services.service_type', $serviceType);
             })
             ->when($contract == 0, function ($query) use ($contract) {
@@ -89,17 +140,7 @@ class ReportController extends Controller
             ->when($status != "", function ($query) use ($status) {
                 return $query->where('services.service_status', $status);
             })
-            ->get([
-                "clients.*",
-                "services.id as service_id",
-                "users.name as assignedName",
-                "users.name",
-                "master_service_type.*",
-                "master_issue_type.*",
-                "services.*",
-                "master_service_status.*",
-                "master_service_priority.*"
-            ]);
+            ->get();
         if (is_null($services)) {
             return 0;
         }
@@ -134,22 +175,23 @@ class ReportController extends Controller
 
         $todate = $request->todate;
         $fromdate = $request->fromdate;
-        $customer_id = $request->fromdate;
+        $customer_id = $request->cust_id;
         $employees = Employee::orderby("EMP_ID", 'ASC')->get();
 
         $employee = array();
         $employeeData = array();
         foreach ($employees as $emp) {
             array_push($employee, $emp->EMP_Name);
-            $count = $this->GetServiceCount($todate, $fromdate, $emp->EMP_ID, "", "", "", "");
+            $count = $this->GetServiceCount($customer_id, $todate, $fromdate, $emp->EMP_ID, "", "", "", "");
             array_push($employeeData, $count);
         }
 
 
         $contractType = array("Contracted", "Non Contracted");
         $contractTypeData = array(15, 10);
-        $countContracted = $this->GetServiceCount($todate, $fromdate, "", 1, "", "", "");
-        $countNonContracted = $this->GetServiceCount($todate, $fromdate, "", 0, "", "", "");
+        $countContracted = $this->GetServiceCount($customer_id, $todate, $fromdate, "", 1, "", "", "");
+        $countNonContracted = $this->GetServiceCount($customer_id, $todate, $fromdate, "", 0, "", "", "");
+
         $contractTypeArr = array(array("label" => "Contracted", "y" => $countContracted), array("label" => "Non Contracted", "y" => $countNonContracted));
         $serviceType = array();
         $serviceTypeData = array();
@@ -157,7 +199,7 @@ class ReportController extends Controller
         $serviceTypes = ServiceType::orderby("id", 'ASC')->get();
         foreach ($serviceTypes as $st) {
             array_push($serviceType, $st->type_name);
-            $count = $this->GetServiceCount($todate, $fromdate, "", "", $st->id, "", "");
+            $count = $this->GetServiceCount($customer_id, $todate, $fromdate, "", "", $st->id, "", "");
             array_push($serviceTypeData, $count);
         }
 
@@ -167,13 +209,13 @@ class ReportController extends Controller
         $issueTypes = IssueType::orderby("id", 'ASC')->get();
         foreach ($issueTypes as $it) {
             array_push($issueType, $it->issue_name);
-            $count = $this->GetServiceCount($todate, $fromdate, "", "", "", $it->id, "");
+            $count = $this->GetServiceCount($customer_id, $todate, $fromdate, "", "", "", $it->id, "");
             array_push($issueTypeData, $count);
         }
         $countArray = array();
         $serviceStatus = ServiceStatus::orderby("Status_Id", 'ASC')->get();
         foreach ($serviceStatus as $ss) {
-            $count = $this->GetServiceCount($todate, $fromdate, "", "", "", "", $ss->Status_Id);
+            $count = $this->GetServiceCount($customer_id, $todate, $fromdate, "", "", "", "", $ss->Status_Id);
             //$obj = ."=>".$count;
             $countArray[$ss->Status_Name] = $count;
         }

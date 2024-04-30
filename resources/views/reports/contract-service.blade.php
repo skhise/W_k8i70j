@@ -1,4 +1,9 @@
 <x-app-layout>
+    <style>
+        .canvasjs-chart-credit {
+            dispaly: none !important;
+        }
+    </style>
     <div class="main-content">
         <section class="section">
             <div class="section-body">
@@ -138,7 +143,7 @@
 
                     });
 
-                    $.get("/api/GetAnalysisReport?dayFilter=" + dayFilter + "&cust_id=" +
+                    $.get("GetAnalysisReport?dayFilter=" + dayFilter + "&cust_id=" +
                         cust_id + "&type=json",
                         function(data) {
                             console.log(data.contractTypeArr);
@@ -193,7 +198,7 @@
 
                     });
 
-                    $.get("/api/GetAnalysisReport?dayFilter=" + dayFilter + "&cust_id=" + cust_id +
+                    $.get("GetAnalysisReport?dayFilter=" + dayFilter + "&cust_id=" + cust_id +
                         "&type=json",
                         function(data) {
 
@@ -253,7 +258,7 @@
 
                     });
 
-                    $.get("/api/GetAnalysisReport?dayFilter=" + dayFilter + "&cust_id=" + cust_id +
+                    $.get("GetAnalysisReport?dayFilter=" + dayFilter + "&cust_id=" + cust_id +
                         "&type=json",
                         function(data) {
 
@@ -311,7 +316,7 @@
 
                     });
 
-                    $.get("/api/GetAnalysisReport?dayFilter=" + dayFilter + "&cust_id=" +
+                    $.get("GetAnalysisReport?dayFilter=" + dayFilter + "&cust_id=" +
                         cust_id + "&type=json",
                         function(data) {
 
@@ -334,7 +339,7 @@
 
                     $(".canvasjs-chart-credit").addClass("hide");
                 }
-
+                $(".canvasjs-chart-credit").css("dispaly", "none");
             }
             $(document).on("click", "#btn-generate", function(e) {
                 var client = $("#client option:selected").val();

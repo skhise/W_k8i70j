@@ -48,6 +48,7 @@ class ContractController extends Controller
         "1" => '<div class="badge badge-success badge-shadow">Active</div>',
         "2" => '<div class="badge badge-info badge-shadow">Renewal</div>',
         "3" => '<div class="badge badge-danger badge-shadow">Expired</div>',
+        "4" => '<div class="badge badge-danger badge-shadow">Deactivated</div>',
     ];
     public function DeleteContractProduct(Request $request, ContractUnderProduct $contractUnderProduct)
     {

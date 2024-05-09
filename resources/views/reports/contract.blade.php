@@ -10,35 +10,46 @@
                         <div class="form-horizontal">
                             <div class="form-group">
                                 <div class="row">
-                                    <div class="col-lg-4">
-                                        <select id="client" class="form-control select2">
-                                            <option value="">Select Customer</option>
-                                            <option value="0" {{ $customer == 0 ? 'selected' : '' }}>All</option>
-                                            @foreach ($clients as $client)
-                                                <option value="{{ $client->CST_ID }}"
-                                                    {{ $client->CST_ID == $customer ? 'selected' : '' }}>
-                                                    {{ $client->CST_Name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="col-lg-2">
-                                        <select id="report_contract_status" class="form-control select2">
-                                            <option value="">Select Status</option>
-                                            <option value="0" {{ $sstatus == 0 ? 'selected' : '' }}>All</option>
-                                            @foreach ($status as $status)
-                                                <option value="{{ $status->id }}"
-                                                    {{ $status->id == $sstatus ? 'selected' : '' }}>
-                                                    {{ $status->contract_status_name }}
+                                    <form style="width:100%;display:flex;" action"{{ route('contract-report-export') }}"
+                                        method="get">
+
+                                        <div class="col-lg-4">
+                                            <select name="client" id="client" class="form-control select2">
+                                                <option value="">Select Customer</option>
+                                                <option value="0" {{ $customer == 0 ? 'selected' : '' }}>All
                                                 </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="col-lg-4 d-flex">
-                                        <button class="btn btn-primary ml-2 btn-fetch-report">Fetch</button>
-                                        <button onclick="exportExcel()"
-                                            class="btn btn-info ml-2 btn-export-report">Export to Excel</button>
-                                        <button class="btn btn-danger ml-2 btn-reset">Reset</button>
-                                    </div>
+                                                @foreach ($clients as $client)
+                                                    <option value="{{ $client->CST_ID }}"
+                                                        {{ $client->CST_ID == $customer ? 'selected' : '' }}>
+                                                        {{ $client->CST_Name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-2">
+
+
+                                            <select name="report_contract_status" id="report_contract_status"
+                                                class="form-control select2">
+                                                <option value="">Select Status</option>
+                                                <option value="0" {{ $sstatus == 0 ? 'selected' : '' }}>All
+                                                </option>
+                                                @foreach ($status as $status)
+                                                    <option value="{{ $status->id }}"
+                                                        {{ $status->id == $sstatus ? 'selected' : '' }}>
+                                                        {{ $status->contract_status_name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-4 d-flex">
+                                            <button class="btn btn-primary ml-2 btn-fetch-report">Fetch</button>
+                                            <button type="submit" class="btn btn-info ml-2">Export to
+                                                Excel</button>
+
+
+                                            <button class="btn btn-danger ml-2 btn-reset">Reset</button>
+                                        </div>
+                                        <form>
 
                                 </div>
                                 <hr />
@@ -95,6 +106,52 @@
                             $("#contractReportList").empty();
                             $("#contractReportList").append(html);
                             $(".loader").hide();
+                        },
+                        error: function(error) {
+                            $(".loader").hide();
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'Something went wrong, try again',
+                                dangerMode: true,
+                                icon: 'warning',
+                                confirmButtonColor: '#d33',
+                                cancelButtonColor: '#3085d6',
+                            });
+                        }
+                    });
+
+                } else {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Select filter values',
+                        dangerMode: true,
+                        icon: 'warning',
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                    });
+                }
+            });
+            $(document).on("click", ".btn-export-report", function() {
+                var cust_id = $("#client option:selected").val();
+                var cust_Name = $("#client option:selected").text();
+                var status = $("#report_contract_status option:selected").val();
+                if (cust_id != "" && status != "") {
+                    $.ajax({
+                        type: "GET",
+                        url: "contract-report-export",
+                        data: {
+                            status: status,
+                            customer: cust_id
+                        },
+                        beforeSend: function() {
+                            $(".loader").show();
+                        },
+                        success: function(response) {
+                            var iframe = $('<iframe>', {
+                                src: response.url,
+                                style: 'display:none'
+                            }).appendTo('body');
+
                         },
                         error: function(error) {
                             $(".loader").hide();

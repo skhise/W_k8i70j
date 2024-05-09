@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ContractExport;
+use App\Exports\UsersExport;
 use App\Models\Client;
 use App\Models\ContractStatus;
 use Exception;
@@ -34,6 +36,9 @@ use App\Models\ServiceStatus;
 use App\Models\ServiceFieldReport;
 use App\Models\SystemLog;
 use Carbon\Carbon;
+use Maatwebsite\Excel\Facades\Excel;
+use Storage;
+
 
 
 class ReportController extends Controller
@@ -45,6 +50,30 @@ class ReportController extends Controller
         "3" => '<div class="badge badge-danger badge-shadow">Expired</div>',
         "4" => '<div class="badge badge-danger badge-shadow">Deactivated</div>',
     ];
+    public function cr_export(Request $request)
+    {
+        $customer = $request->customer;
+        $status = $request->status;
+
+        $contracts = Contract::select("master_site_area.id")->join("master_contract_type", "master_contract_type.id", "contracts.CNRT_Type")
+            ->join("master_site_type", "master_site_type.id", "contracts.CNRT_SiteType")
+            ->join("master_contract_status", "master_contract_status.id", "contracts.CNRT_Status")
+            ->leftJoin("clients", "clients.CST_ID", "contracts.CNRT_CustomerID")
+            ->leftJoin("master_site_area", "master_site_area.id", "contracts.CNRT_Site")
+            ->when($customer != 0, function ($query) use ($customer) {
+                $query->where("CNRT_CustomerID", $customer);
+            })
+            ->when($status != 0 && $status != "", function ($query) use ($status) {
+                $query->where("CNRT_Status", $status);
+            })
+            ->orderBy('contracts.updated_at', "DESC")->get(['master_site_area.id']);
+        $items[] = $contracts;
+
+        $fileName = 'report_file' . time() . '.xlsx';
+
+        $file = Excel::download(new ContractExport($items), $fileName);//->deleteFileAfterSend(true);
+        return response()->json(["file" => $file, "filename" => $fileName]);
+    }
     public function cr_index(Request $request)
     {
         $clients = Client::all();
@@ -80,13 +109,14 @@ class ReportController extends Controller
                     $query->where("CNRT_Status", $status);
                 })
                 ->orderBy('contracts.updated_at', "DESC")
-                ->paginate(5);
+                ->paginate(10);
             // ->toSql();
             // echo $contracts;
             // die;
         } catch (Exception $exp) {
 
         }
+
         $status = $this->status;
         if ($request->ajax()) {
             return view('reports.cr_pagination', compact('contracts', 'status'));
@@ -95,7 +125,25 @@ class ReportController extends Controller
         $status = ContractStatus::all();
         return view('reports.contract', compact('contracts', 'status', "clients", "customer", "sstatus"));
     }
-    public function csr_data(Request $request)
+    public function str_index(Request $request)
+    {
+        $clients = Client::all();
+        $status = ServiceStatus::all();
+        $service_types = ServiceType::all();
+        return view(
+            'reports.service_report',
+            [
+                "clients" => $clients,
+                "status" => $status,
+                "customer" => "",
+                "service_types" => $service_types,
+                "service_type" => "",
+                "services" => array(),
+                "sstatus" => ""
+            ]
+        );
+    }
+    public function scr_data(Request $request)
     {
 
     }
@@ -354,7 +402,7 @@ class ReportController extends Controller
                 $contract->View = "/contract/view-contract?CNRT_ID=" . $contract->CNRT_ID;
             }
 
-        } catch (Illuminate\Database\QueryException $ex) {
+        } catch (QueryException $ex) {
             return $ex->errorInfo;
         }
         return $contracts;
@@ -364,61 +412,66 @@ class ReportController extends Controller
     public function GetServiceCallReport(Request $request)
     {
 
-
-        $customerId = $request->customerId;
-        $contractId = $request->contractId;
-        $employeeId = $request->employeeId;
-        $todate = $request->todate;
-        $fromdate = $request->fromdate;
-        $services = array();
-        if ($todate == "" || $fromdate == "") {
-            $services = Service::
-                join("master_service_status", "master_service_status.Status_Id", "services.service_status")
-                ->join("master_service_priority", "master_service_priority.id", "services.service_priority")
-                ->join("master_issue_type", "master_issue_type.id", "services.issue_type")
-                ->join("master_service_type", "master_service_type.id", "services.service_type")
-                ->join("clients", "clients.CST_ID", "services.customer_id")
-                ->leftJoin("users", "users.id", "services.assigned_to")
-                ->when($customerId != 0, function ($query) use ($customerId) {
-                    return $query->where('clients.CST_ID', $customerId);
-                })
-                ->when($contractId != 0, function ($query) use ($contractId) {
-                    return $query->where('services.contract_id', $contractId);
-                })
-                ->when($employeeId != 0, function ($query) use ($employeeId) {
-                    return $query->where('services.assigned_to', $employeeId);
-                })
-                ->orderby("services.updated_at", "DESC")
-                ->get(["clients.*", "services.id as service_id", "users.name as assignedName", "users.name", "master_service_type.*", "master_issue_type.*", "services.*", "master_service_status.*", "master_service_priority.*"]);
-            foreach ($services as $service) {
-                $service->View = "/service/view-service?id=" . $service->service_id;
-            }
-        } else {
-            $services = Service::
-                join("master_service_status", "master_service_status.Status_Id", "services.service_status")
-                ->join("master_service_priority", "master_service_priority.id", "services.service_priority")
-                ->join("master_issue_type", "master_issue_type.id", "services.issue_type")
-                ->join("master_service_type", "master_service_type.id", "services.service_type")
-                ->join("clients", "clients.CST_ID", "services.customer_id")
-                ->leftJoin("users", "users.id", "services.assigned_to")
-                ->whereBetween(DB::raw('DATE_FORMAT(services.service_date, "%Y-%m-%d")'), [$todate, $fromdate])
-                ->when($customerId != 0, function ($query) use ($customerId) {
-                    return $query->where('clients.CST_ID', $customerId);
-                })
-                ->when($contractId != 0, function ($query) use ($contractId) {
-                    return $query->where('services.contract_id', $contractId);
-                })
-                ->when($employeeId != 0, function ($query) use ($employeeId) {
-                    return $query->where('services.assigned_to', $employeeId);
-                })
-                ->orderby("services.updated_at", "DESC")
-                ->get(["clients.*", "services.id as service_id", "users.name as assignedName", "users.name", "master_service_type.*", "master_issue_type.*", "services.*", "master_service_status.*", "master_service_priority.*"]);
-            foreach ($services as $service) {
-                $service->View = "/service/view-service?id=" . $service->service_id;
-            }
+        $customerId = $request->customer;
+        $service_type = $request->service_type;
+        $status = $request->status;
+        $date_range = $request->date_range;
+        $today = date("Y-m-d");
+        $todate = date("Y-m-d");
+        $fromdate = date('Y-m-d', strtotime($todate . '-' . $date_range . ' days'));
+        if ($date_range == 0) {
+            $fromdate = $todate;
+        }
+        if ($date_range == 1) {
+            $todate = date('Y-m-d', strtotime($today . '-1 days'));
+            $fromdate = date('Y-m-d', strtotime($today . '-1 days'));
         }
 
-        return $services;
+        $services = array();
+        $services = Service::select("*", "services.id as service_id")
+            ->join("master_service_status", "master_service_status.Status_Id", "services.service_status")
+            ->join("master_service_priority", "master_service_priority.id", "services.service_priority")
+            ->join("master_issue_type", "master_issue_type.id", "services.issue_type")
+            ->join("master_service_type", "master_service_type.id", "services.service_type")
+            ->join("clients", "clients.CST_ID", "services.customer_id")
+            ->leftJoin("users", "users.id", "services.assigned_to")
+            ->when($customerId != 0, function ($query) use ($customerId) {
+                return $query->where('clients.CST_ID', $customerId);
+            })
+            ->when($service_type != 0, function ($query) use ($service_type) {
+                return $query->where('services.service_type', $service_type);
+            })
+            ->when($status != 0, function ($query) use ($status) {
+                return $query->where('services.service_status', $status);
+            })
+            ->when($date_range != "" && $date_range != -1, function ($query) use ($todate, $fromdate) {
+                return $query->whereBetween(DB::raw('DATE_FORMAT(services.service_date, "%Y-%m-%d")'), [$fromdate, $todate]);
+
+            })
+
+            ->orderby("services.updated_at", "DESC")
+            ->paginate(10);
+
+        $clients = Client::all();
+        $status = ServiceStatus::all();
+        $service_types = ServiceType::all();
+        if ($request->ajax()) {
+            return view('reports.str_pagination', compact('services', 'status'));
+        }
+        return view(
+            'reports.service_report',
+            [
+                "clients" => $clients,
+                "status" => $status,
+                "customer" => $customerId,
+                "date_range" => $date_range,
+                "service_types" => $service_types,
+                "service_type" => $service_type,
+                "contracts" => array(),
+                "services" => $services,
+                "sstatus" => $request->status,
+            ]
+        );
     }
     public function GetServiceCallReportByService(Request $request)
     {

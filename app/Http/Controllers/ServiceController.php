@@ -1036,7 +1036,7 @@ class ServiceController extends Controller
                 ->where("services.id", $id)->first();
             if ($service) {
                 $service->serviceDate = date('d-M-Y h:i a', strtotime($service->service_date));
-                $service->StartDate = $service->accespted_datetime != null ? date('d-M-Y', strtotime($service->accespted_datetime)) : '';
+                $service->StartDate = $service->accepted_datetime != null ? date('d-M-Y', strtotime($service->accepted_datetime)) : '';
                 $service->CompletionDate = $service->resolved_datetime = null ? date('d-M-Y', strtotime($service->resolved_datetime)) : '';
                 $service->area_name = $this->GetServiceAreaName($service->areaId);
                 // $service->productName = $this->getProductName($id,$service);

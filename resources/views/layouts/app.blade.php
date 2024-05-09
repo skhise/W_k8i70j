@@ -87,6 +87,17 @@
                 opacity: 0.0;
             }
         }
+
+        .swal2-modal {
+            width: 350px !important;
+            padding: 0px !important;
+            margin: 0px !important;
+        }
+
+        .swal2-icon {
+            width: 4em !important;
+            height: 4em !important;
+        }
     </style>
 
 

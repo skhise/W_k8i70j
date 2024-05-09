@@ -1,14 +1,11 @@
 <?php
 
-
 namespace App\Http\Middleware;
-
 
 use Closure;
 
-
 class PreventBackHistory
-{ 
+{
     /**
      * Handle an incoming request.
      *
@@ -19,8 +16,13 @@ class PreventBackHistory
     public function handle($request, Closure $next)
     {
         $response = $next($request);
-        return $response->header('Cache-Control','nocache, no-store, max-age=0, must-revalidate')
-            ->header('Pragma','no-cache')
-            ->header('Expires','Sun, 02 Jan 1990 00:00:00 GMT');
+
+        if ($response instanceof \Illuminate\Http\Response) {
+            $response->header('Cache-Control', 'nocache, no-store, max-age=0, must-revalidate');
+            $response->header('Pragma', 'no-cache');
+            $response->header('Expires', 'Sun, 02 Jan 1990 00:00:00 GMT');
+        }
+
+        return $response;
     }
 }

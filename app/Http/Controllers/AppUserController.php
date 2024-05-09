@@ -431,7 +431,7 @@ class AppUserController extends Controller
                 ->leftJoin("master_site_area", "master_site_area.id", "customer_sites.AreaName")
                 ->where("services.id", $id)->first();
             $report->serviceDate = date('d-m-Y', strtotime($report->service_date));
-            $report->acceptedDate = $report->accespted_datetime == null ? null : date('d-m-Y', strtotime($report->accespted_datetime));
+            $report->acceptedDate = $report->accepted_datetime == null ? null : date('d-m-Y', strtotime($report->accepted_datetime));
             $report->QuotDate = $report->QuotationDate == null ? null : date('d-m-Y', strtotime($report->QuotationDate));
             $report->dateAtt = $report->DOA == null ? null : date('d-m-Y', strtotime($report->DOA));
             $report->startTime = $report->TOA == null ? null : date('H:i', strtotime($report->TOA));
@@ -943,7 +943,7 @@ class AppUserController extends Controller
                 $service->serviceDate = Carbon::parse($service->service_date)->format("d-M-Y");
                 $service->serviceTime = Carbon::parse($service->service_date)->format("d-M-Y H:s a");
                 $service->accessory = $this->GetServiceAccessory($service->service_id);
-                $service->StartDate = date('d-M-Y', strtotime($service->accespted_datetime));
+                $service->StartDate = date('d-M-Y', strtotime($service->accepted_datetime));
                 $service->CompletionDate = date('d-M-Y', strtotime($service->resolved_datetime));
                 $service->createdAt = date('d-M-Y', strtotime($service->created_at));
                 $service->ClosedBy = '';

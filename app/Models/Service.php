@@ -64,6 +64,20 @@ class Service extends Model
    {
       return $this->hasMany(ServiceHistory::class);
    }
+   public function timeline()
+   {
+      $history = ServiceHistory::where("service_id", $this->service_id)->get();
+      $timeline = "";
+      if (!empty($history)) {
+         foreach ($history as $action) {
+
+            $action_name = ServiceStatus::where("Status_Id", $action->status_id)->first()['Status_Name'] ?? "";
+            $timeline .= "<p>DateTime:" . date('d-M-Y h:i:s', strtotime($action->created_at)) . "</p><p>Action:" . $action_name . "</p><p>Note:" . $action->action_description . "</p>";
+         }
+      }
+      $timeline = $timeline == "" ? "NA" : $timeline;
+      return $timeline;
+   }
    public function accessory()
    {
       return $this->hasMany(ServiceAccessory::class);

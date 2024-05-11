@@ -44,8 +44,9 @@ fas fa-plus-square"></i>
                                                         class="badge badge-success">{{ $resolved }}</span>
                                                 </button>
                                                 <button data-key ="5" type="button"
-                                                    class="btn-status-filter btn btn-outline-success {{ $filter_status == 5 ? ' active' : '' }}">
-                                                    Closed <span class="badge badge-success">{{ $closed }}</span>
+                                                    class="btn-status-filter btn btn-outline-secondary {{ $filter_status == 5 ? ' active' : '' }}">
+                                                    Closed <span
+                                                        class="badge badge-secondary">{{ $closed }}</span>
                                                 </button>
                                             </div>
                                             <div class="d-flex float-right justify-space-between" style="width:40%;">

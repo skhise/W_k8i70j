@@ -34,7 +34,8 @@ fas fa-plus-square"></i>
                                                 </button>
                                                 <button data-key ="2" type="button"
                                                     class="btn-status-filter btn btn-outline-warning {{ $filter_status == 2 ? ' active' : '' }}">
-                                                    Renewal <span class="badge badge-warning">{{ $renewal }}</span>
+                                                    Upcoming Renewal <span
+                                                        class="badge badge-warning">{{ $renewal }}</span>
                                                 </button>
                                                 <button data-key ="3" type="button"
                                                     class="btn-status-filter btn btn-outline-danger {{ $filter_status == 3 ? ' active' : '' }}">
@@ -112,7 +113,9 @@ fas fa-plus-square"></i>
                                                     <td>
                                                         {{ $contract['CNRT_EndDate'] != '' ? date('d-M-Y', strtotime($contract['CNRT_EndDate'])) : 'NA' }}
                                                     </td>
-                                                    <td>{!! $status[$contract['CNRT_Status']] !!}</td>
+                                                    <td><span
+                                                            class="text-white badge badge-shadow {{ $contract['status_color'] ?? 'bg-light' }}">
+                                                            {{ $contract['contract_status_name'] }}</span></td>
                                                     <td>
                                                         <a href="{{ route('contracts.view', $contract['CNRT_ID']) }}"
                                                             class="btn btn-primary"><i class="far fa-eye"></i></a>

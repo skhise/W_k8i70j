@@ -703,21 +703,27 @@ class ServiceController extends Controller
                 'status_id' => $actionId,
                 'user_id' => $engineerId,
                 'sub_status_id' => $sub_status_id,
-                'action_description' => $note,
+                'action_description' => $actionId == 5 ? 'NA' : $note,
             ]);
             if ($create) {
                 $condition = [
                     'service_status' => $actionId,
                     'service_sub_status' => $sub_status_id
                 ];
-                if ($actionId == 7) {
+                if ($actionId == 5) {
+                    $closed_at = date("Y-m-d h:i:s");
                     $closeByName = $this->GetClosedByName($engineerId);
                     $condition = [
                         'service_status' => $actionId,
-                        'ClosedBy' => $closeByName
+                        'ClosedBy' => $closeByName,
+                        'closed_at' => $closed_at,
+                        'service_category' => $request->service_category,
+                        'close_note' => $request->action_description,
+                        'expenses' => $request->expenses,
+                        'charges' => $request->charges,
                     ];
                 } else
-                    if ($actionId == 6) {
+                    if ($actionId == 4) {
                         $resolvedDate = date("Y-m-d h:i:s");
                         $condition = [
                             'service_status' => $actionId,
@@ -1333,6 +1339,7 @@ class ServiceController extends Controller
                     'product_type' => $request->product_type,
                     'product_description' => $request->product_description,
                     'service_status' => 1,
+                    'service_category' => isset($request->contract_id) && $request->contract_id == 0 ? 2 : 1,
                     'service_note' => $request->service_note,
                 ]);
                 if ($service) {

@@ -47,6 +47,10 @@ Route::middleware(['prevent-back-history'])->group(function () {
 
         Route::get('/reports/service-ticket-report', [ReportController::class, 'str_index'])->name('service-ticket-report');
         Route::get('/reports/service-ticket-report-data', [ReportController::class, 'GetServiceCallReport'])->name('service-ticket-report-data');
+
+        Route::get('/reports/engineer-report', [ReportController::class, 'etr_index'])->name('engineer-report');
+        Route::get('/reports/engineer-ticket-report-data', [ReportController::class, 'GetEngineerCallReport'])->name('engineer-ticket-report-data');
+
         Route::get('/reports/contract-service-report-data', [ReportController::class, 'csr_data'])->name('contract-service-report-data');
         Route::get('/reports/GetAnalysisReport', [ReportController::class, 'GetAnalysisReport'])->name('GetAnalysisReport');
     });

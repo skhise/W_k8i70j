@@ -45,10 +45,42 @@
                             <div class="col-md-12 floating-label">
                                 <textarea class="required form-control text-box single-line" id="action_description" name="action_description"
                                     placeholder=""></textarea>
-                                <label for="first">Description *</label>
+                                <label for="first" id="action_description_lbl">Description *</label>
                             </div>
                         </div>
                     </div>
+                    <div class="{{ $service->service_status == 5 ? '' : 'hide' }}" id="close_call_div">
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-12 floating-label">
+                                    <select class="required form-control text-box single-line" id="service_category"
+                                        name="service_category">
+                                        @if ($service->contract_id != 0)
+                                            <option value="1">Under AMC</option>
+                                        @endif
+                                        <option value="2">Chargeable</option>
+                                    </select>
+                                    <label for="first">Service Category *</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-6 floating-label">
+                                    <input type="text" class="required form-control text-box single-line"
+                                        id="expenses" name="expenses" placeholder=""></textarea>
+                                    <label for="first">Your Expenses *</label>
+                                </div>
+                                <div class="col-md-6 floating-label">
+                                    <input type="text" class="required form-control text-box single-line"
+                                        id="charges" name="charges" placeholder=""></textarea>
+                                    <label for="first">Call Charges *</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
                     <p>Note: All * marked are required.</p>
                 </form>
             </div>

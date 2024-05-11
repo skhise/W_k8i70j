@@ -4,20 +4,19 @@
             <div class="section-body">
                 <div class="card">
                     <div class="card-header">
-                        <h4>Service Ticket Report</h4>
+                        <h4>Engineer Ticket Report</h4>
                     </div>
                     <div class="card-body">
                         <div class="form-horizontal">
                             <div class="form-group">
                                 <div class="row">
                                     <div class="col-lg-3">
-                                        <select id="client" class="form-control select2">
-                                            <option value="">Select Customer</option>
-                                            <option value="0" {{ $customer == 0 ? 'selected' : '' }}>All</option>
-                                            @foreach ($clients as $client)
-                                                <option value="{{ $client->CST_ID }}"
-                                                    {{ $client->CST_ID == $customer ? 'selected' : '' }}>
-                                                    {{ $client->CST_Name }}</option>
+                                        <select id="employee" class="form-control select2">
+                                            <option value="">Select Engineer</option>
+                                            @foreach ($employees as $employee)
+                                                <option value="{{ $employee->EMP_ID }}"
+                                                    {{ $employee->EMP_ID == $selected_employee ? 'selected' : '' }}>
+                                                    {{ $employee->EMP_Name }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -100,7 +99,7 @@
                                             </tr>
                                         </thead>
                                         <tbody id="contractReportList">
-                                            @include('reports.str_pagination')
+                                            @include('reports.etr_pagination')
                                         </tbody>
                                     </table>
                                 </div>
@@ -116,21 +115,20 @@
                 window.location.replace("contract-report");
             });
             $(document).on("click", ".btn-fetch-report", function() {
-                var cust_id = $("#client option:selected").val();
-                var cust_Name = $("#client option:selected").text();
+                var employee = $("#employee option:selected").val();
+                var cust_Name = $("#employee option:selected").text();
                 var status = $("#report_service_status option:selected").val();
                 var service_type = $("#report_service_type option:selected").val();
                 var date_range = $("#date-range option:selected").val();
-                if (cust_id != "" && status != "") {
+                if (employee != "" && status != "") {
                     $.ajax({
                         type: "GET",
-                        url: "service-ticket-report-data",
+                        url: "engineer-ticket-report-data",
                         data: {
                             status: status,
-                            customer: cust_id,
+                            employee: employee,
                             date_range: date_range,
                             service_type: service_type
-
                         },
                         beforeSend: function() {
                             $(".loader").show();

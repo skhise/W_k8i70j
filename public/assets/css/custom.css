@@ -161,6 +161,7 @@ button:hover {
 .hidden {
   transform: scale(0.5);
   opacity: 0;
+  display: none;
 
 }
 

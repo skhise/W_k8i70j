@@ -1,7 +1,7 @@
 @if (count($contracts) == 0)
     <tr>
         <td colspan="11" class="text-center">
-            <h5>Report not generated yte.</h5>
+            Report not generated yet.
         </td>
     </tr>
 @else

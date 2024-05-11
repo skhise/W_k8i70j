@@ -8,52 +8,44 @@
                     </div>
                     <div class="card-body">
                         <div class="form-horizontal">
-                            <div class="form-group">
-                                <div class="row">
-                                    <form style="width:100%;display:flex;" action"{{ route('contract-report-export') }}"
-                                        method="get">
-
-                                        <div class="col-lg-4">
-                                            <select name="client" id="client" class="form-control select2">
-                                                <option value="">Select Customer</option>
-                                                <option value="0" {{ $customer == 0 ? 'selected' : '' }}>All
-                                                </option>
-                                                @foreach ($clients as $client)
-                                                    <option value="{{ $client->CST_ID }}"
-                                                        {{ $client->CST_ID == $customer ? 'selected' : '' }}>
-                                                        {{ $client->CST_Name }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                        <div class="col-lg-2">
-
-
-                                            <select name="report_contract_status" id="report_contract_status"
-                                                class="form-control select2">
-                                                <option value="">Select Status</option>
-                                                <option value="0" {{ $sstatus == 0 ? 'selected' : '' }}>All
-                                                </option>
-                                                @foreach ($status as $status)
-                                                    <option value="{{ $status->id }}"
-                                                        {{ $status->id == $sstatus ? 'selected' : '' }}>
-                                                        {{ $status->contract_status_name }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                        <div class="col-lg-4 d-flex">
-                                            <button class="btn btn-primary ml-2 btn-fetch-report">Fetch</button>
-                                            <button type="submit" class="btn btn-info ml-2">Export to
-                                                Excel</button>
-
-
-                                            <button class="btn btn-danger ml-2 btn-reset">Reset</button>
-                                        </div>
-                                        <form>
-
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <select name="client" id="client" class="form-control select2">
+                                        <option value="">Select Customer</option>
+                                        <option value="0" {{ $customer == 0 ? 'selected' : '' }}>All
+                                        </option>
+                                        @foreach ($clients as $client)
+                                            <option value="{{ $client->CST_ID }}"
+                                                {{ $client->CST_ID == $customer ? 'selected' : '' }}>
+                                                {{ $client->CST_Name }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
+                                <div class="col-lg-2">
+
+
+                                    <select name="report_contract_status" id="report_contract_status"
+                                        class="form-control select2">
+                                        <option value="">Select Status</option>
+                                        <option value="0" {{ $sstatus == 0 ? 'selected' : '' }}>All
+                                        </option>
+                                        @foreach ($status as $status)
+                                            <option value="{{ $status->id }}"
+                                                {{ $status->id == $sstatus ? 'selected' : '' }}>
+                                                {{ $status->contract_status_name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-lg-4 d-flex">
+                                    <button class="btn btn-primary ml-2 btn-fetch-report">Generate</button>
+                                    <button type="submit" class="btn-export-report btn btn-light ml-2">Export</button>
+                                    <button class="btn btn-danger ml-2 btn-reset">Reset</button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+
                                 <hr />
-                                <div class="clearfix mb-3"></div>
                                 <div class="table-responsive">
                                     <table class="table table-striped" id="contract-report">
                                         <thead>
@@ -146,12 +138,25 @@
                         beforeSend: function() {
                             $(".loader").show();
                         },
-                        success: function(response) {
-                            var iframe = $('<iframe>', {
-                                src: response.url,
-                                style: 'display:none'
-                            }).appendTo('body');
+                        success: function(result, status, xhr) {
+                            console.log(result);
+                            $(".loader").hide();
+                            var disposition = xhr.getResponseHeader('content-disposition');
+                            var matches = /"([^"]*)"/.exec(disposition);
+                            var filename = (matches != null && matches[1] ? matches[1] : 'salary.csv');
 
+                            // The actual download
+                            var blob = new Blob([result], {
+                                type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                            });
+                            var link = document.createElement('a');
+                            link.href = window.URL.createObjectURL(blob);
+                            link.download = filename;
+
+                            document.body.appendChild(link);
+
+                            link.click();
+                            document.body.removeChild(link);
                         },
                         error: function(error) {
                             $(".loader").hide();

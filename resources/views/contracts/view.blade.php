@@ -25,19 +25,20 @@
                                             id="contract_product" data-toggle="tab" href="#ContractProduct"
                                             role="tab" aria-selected="false"
                                             aria-controls="contract_product">Products &nbsp;&nbsp;<span
-                                                class="badge bg-danger text-white">{{ $products->count() }}</span></a>
+                                                class="badge badge-light">{{ $products->count() }}</span></a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link {{ session('contract_activeTab') === 'services' ? ' active' : '' }}"
                                             id="services" data-toggle="tab" href="#ContractServices" role="tab"
                                             aria-selected="false" aria-controls="services">Services&nbsp;&nbsp;<span
-                                                class="badge bg-danger text-white">{{ $services->count() }}</span></a>
+                                                class="badge badge-light">{{ $services->count() }}</span></a>
                                     </li>
                                     <li class="nav-item">
                                         <a class="nav-link {{ session('contract_activeTab') === 'checklist' ? ' active' : '' }}"
                                             id="checklist" data-toggle="tab" href="#ContractCheckList" role="tab"
-                                            aria-selected="false" aria-controls="checklist">CheckList &nbsp;&nbsp;<span
-                                                class="badge bg-danger text-white">{{ $checklists->count() }}</span></a>
+                                            aria-selected="false" aria-controls="checklist">Checklist Note
+                                            &nbsp;&nbsp;<span
+                                                class="badge badge-light">{{ $checklists->count() }}</span></a>
                                     </li>
 
                                 </ul>

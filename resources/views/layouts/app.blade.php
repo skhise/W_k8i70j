@@ -98,6 +98,11 @@
             width: 4em !important;
             height: 4em !important;
         }
+
+        td {
+            vertical-align: top !important;
+            padding: 10px !important;
+        }
     </style>
 
 

@@ -69,10 +69,12 @@ class ReportController extends Controller
             ->orderBy('contracts.updated_at', "DESC")->get(['master_site_area.id']);
         $items[] = $contracts;
 
-        $fileName = 'report_file' . time() . '.xlsx';
+        $fileName = 'report_file' . time() . '.csv';
 
-        $file = Excel::download(new ContractExport($items), $fileName);//->deleteFileAfterSend(true);
-        return response()->json(["file" => $file, "filename" => $fileName]);
+        return Excel::download(new ContractExport($items), $fileName)->deleteFileAfterSend(true);
+        // return Excel::download(new ContractExport($items), $fileName, null, [\Maatwebsite\Excel\Excel::XLSX]);
+
+        // return response()->json(["file" => $file, "filename" => $fileName]);
     }
     public function cr_index(Request $request)
     {
@@ -136,6 +138,25 @@ class ReportController extends Controller
                 "clients" => $clients,
                 "status" => $status,
                 "customer" => "",
+                "service_types" => $service_types,
+                "service_type" => "",
+                "services" => array(),
+                "sstatus" => ""
+            ]
+        );
+    }
+
+    public function etr_index(Request $request)
+    {
+        $employee = Employee::all();
+        $status = ServiceStatus::all();
+        $service_types = ServiceType::all();
+        return view(
+            'reports.engineer_report',
+            [
+                "employees" => $employee,
+                "status" => $status,
+                "selected_employee" => "0",
                 "service_types" => $service_types,
                 "service_type" => "",
                 "services" => array(),
@@ -434,9 +455,75 @@ class ReportController extends Controller
             ->join("master_issue_type", "master_issue_type.id", "services.issue_type")
             ->join("master_service_type", "master_service_type.id", "services.service_type")
             ->join("clients", "clients.CST_ID", "services.customer_id")
-            ->leftJoin("users", "users.id", "services.assigned_to")
+            ->leftJoin("contracts", "contracts.CNRT_ID", "services.contract_id")
+            ->leftJoin("employees", "employees.EMP_ID", "services.assigned_to")
             ->when($customerId != 0, function ($query) use ($customerId) {
                 return $query->where('clients.CST_ID', $customerId);
+            })
+            ->when($service_type != 0, function ($query) use ($service_type) {
+                return $query->where('services.service_type', $service_type);
+            })
+            ->when($status != 0, function ($query) use ($status) {
+                return $query->where('services.service_status', $status);
+            })
+            ->when($date_range != "" && $date_range != -1, function ($query) use ($todate, $fromdate) {
+                return $query->whereBetween(DB::raw('DATE_FORMAT(services.service_date, "%Y-%m-%d")'), [$fromdate, $todate]);
+
+            })
+
+            ->orderby("services.updated_at", "DESC")
+            ->paginate(10);
+
+        $clients = Client::all();
+        $status = ServiceStatus::all();
+        $service_types = ServiceType::all();
+        if ($request->ajax()) {
+            return view('reports.str_pagination', compact('services', 'status'));
+        }
+        return view(
+            'reports.service_report',
+            [
+                "clients" => $clients,
+                "status" => $status,
+                "customer" => $customerId,
+                "date_range" => $date_range,
+                "service_types" => $service_types,
+                "service_type" => $service_type,
+                "contracts" => array(),
+                "services" => $services,
+                "sstatus" => $request->status,
+            ]
+        );
+    }
+    public function GetEngineerCallReport(Request $request)
+    {
+
+        $engineerId = $request->employee;
+        $service_type = $request->service_type;
+        $status = $request->status;
+        $date_range = $request->date_range;
+        $today = date("Y-m-d");
+        $todate = date("Y-m-d");
+        $fromdate = date('Y-m-d', strtotime($todate . '-' . $date_range . ' days'));
+        if ($date_range == 0) {
+            $fromdate = $todate;
+        }
+        if ($date_range == 1) {
+            $todate = date('Y-m-d', strtotime($today . '-1 days'));
+            $fromdate = date('Y-m-d', strtotime($today . '-1 days'));
+        }
+
+        $services = array();
+        $services = Service::select("*", "services.id as service_id")
+            ->join("master_service_status", "master_service_status.Status_Id", "services.service_status")
+            ->join("master_service_priority", "master_service_priority.id", "services.service_priority")
+            ->join("master_issue_type", "master_issue_type.id", "services.issue_type")
+            ->join("master_service_type", "master_service_type.id", "services.service_type")
+            ->join("clients", "clients.CST_ID", "services.customer_id")
+            ->leftJoin("contracts", "contracts.CNRT_ID", "services.contract_id")
+            ->leftJoin("employees", "employees.EMP_ID", "services.assigned_to")
+            ->when($engineerId != 0, function ($query) use ($engineerId) {
+                return $query->where('services.assigned_to', $engineerId);
             })
             ->when($service_type != 0, function ($query) use ($service_type) {
                 return $query->where('services.service_type', $service_type);

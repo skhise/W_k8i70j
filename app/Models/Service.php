@@ -39,6 +39,8 @@ class Service extends Model
       'deleted_at',
       'service_sub_status',
       'notification_flag',
+      'service_category',
+      'close_note'
    ];
 
    public function wasRecentlyUpdated($minutes = 1)
@@ -64,6 +66,11 @@ class Service extends Model
    {
       return $this->hasMany(ServiceHistory::class);
    }
+   public function lastaction()
+   {
+      $history = ServiceHistory::where("service_id", $this->service_id)->orderByDesc("id")->first();
+      return date("d-M-Y H:i", strtotime($history->created_at)) ?? date("d-M-Y H:i");
+   }
    public function timeline()
    {
       $history = ServiceHistory::where("service_id", $this->service_id)->get();
@@ -72,7 +79,7 @@ class Service extends Model
          foreach ($history as $action) {
 
             $action_name = ServiceStatus::where("Status_Id", $action->status_id)->first()['Status_Name'] ?? "";
-            $timeline .= "<p>DateTime:" . date('d-M-Y h:i:s', strtotime($action->created_at)) . "</p><p>Action:" . $action_name . "</p><p>Note:" . $action->action_description . "</p>";
+            $timeline .= "<span>DateTime:" . date('d-M-Y h:i:s', strtotime($action->created_at)) . "</span><br/><span>Action:" . $action_name . "</span><br/><span>Note:" . $action->action_description . "</span>";
          }
       }
       $timeline = $timeline == "" ? "NA" : $timeline;

@@ -12,6 +12,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use App\Models\Employee;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -30,6 +31,7 @@ class ProductController extends Controller
         "1" => '<div class="badge badge-success badge-shadow">Available</div>',
         "2" => '<div class="badge badge-info badge-shadow">Not Available</div>',
     ];
+
     public function product_by_id(Request $request)
     {
         $id = $request->product_id;
@@ -445,7 +447,19 @@ class ProductController extends Controller
         if ($validator->fails()) {
             return response()->json(["success" => false, "message" => "data missing, refresh and try again."]);
         }
-        $upload = $this->UploadProductImage($request);
+        // $upload = $this->UploadProductImage($request);
+        $disk = Storage::disk('google');
+        $exist = $disk->exists("abc.jpg");
+        echo $exist;
+        die;
+        $path = $request->file('Image_Path')->store('images', 'gcs');
+
+        // Optionally, retrieve the public URL of the uploaded image
+        $url = Storage::disk('google')->url($path);
+
+        // Return any necessary response, such as the URL of the uploaded image
+        $upload = response()->json(['url' => $url]);
+        // $upload = $this->uploadImage($request);
         if ($upload != "") {
             try {
                 $product = Product::where("Product_ID", $product->Product_ID)->update([
@@ -505,7 +519,6 @@ class ProductController extends Controller
         }
         return $imagesName;
     }
-
 
 
 

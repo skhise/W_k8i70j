@@ -18,6 +18,7 @@
                                     <div class="col-lg-3">
                                         <select class="form-control select2" id="client">
                                             <option value="">Select Client</option>
+                                            <option value="0">All</option>
                                             @foreach ($clients as $client)
                                                 <option value="{{ $client->CST_ID }}">{{ $client->CST_Name }}</option>
                                             @endforeach

@@ -33,6 +33,22 @@
                                                 <ul class="list-group ">
                                                     <li class="list-group-item">
                                                         <div class="box-body">
+
+                                                            <strong>
+                                                                <i class="fa fa-book margin-r-5"></i>&nbsp;&nbsp;Status
+                                                            </strong>
+                                                            <div class="emp_status_div">
+                                                                {!! $status[$employee['status']] !!}
+                                                            </div>
+                                                            <hr>
+                                                            <strong>
+                                                                <i class="fa fa-book margin-r-5"></i>&nbsp;&nbsp;Last
+                                                                Login At
+                                                            </strong>
+                                                            <div class="emp_status_div">
+                                                                {{ date('d-M-Y H:i', strtotime($employee['updated_at'])) }}
+                                                            </div>
+                                                            <hr>
                                                             <strong>
                                                                 <i
                                                                     class="fa fa-book margin-r-5"></i>&nbsp;&nbsp;Employee
@@ -59,13 +75,7 @@
                                                             <p class="text-muted">
                                                                 {{ $employee->EMP_Qualification }}
                                                             </p>
-                                                            <hr>
-                                                            <strong>
-                                                                <i class="fa fa-book margin-r-5"></i>&nbsp;&nbsp;Status
-                                                            </strong>
-                                                            <div class="emp_status_div">
-                                                                {!! $status[$employee['status']] !!}
-                                                            </div>
+
 
                                                         </div>
                                                     </li>

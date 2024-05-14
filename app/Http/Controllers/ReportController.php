@@ -185,7 +185,7 @@ class ReportController extends Controller
             ->join("master_service_type", "master_service_type.id", "services.service_type")
             ->join("clients", "clients.CST_ID", "services.customer_id")
             ->leftJoin("users", "users.id", "services.assigned_to")
-            ->when($customer_id != "", function ($query) use ($customer_id) {
+            ->when($customer_id != "0" && $customer_id != "", function ($query) use ($customer_id) {
                 $query->where("services.customer_id", $customer_id);
             })
             ->when($todate != "" && $fromdate != "", function ($query) use ($todate, $fromdate) {

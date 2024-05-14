@@ -117,7 +117,7 @@ class Service extends Model
          $search_field = $filters['search_field'] ?? '';
          if (empty ($search_field)) {
             $query->where('service_no', 'like', '%' . $search . '%')
-               ->orWhere('service_no', 'like', '%' . $search . '%');
+               ->orWhere('CST_Name', 'like', '%' . $search . '%');
          }
       })->when($filters['trashed'] ?? null, function ($query, $trashed) {
          if ($trashed === 'with') {

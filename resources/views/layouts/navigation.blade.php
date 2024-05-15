@@ -164,14 +164,15 @@
                     class="menu-toggle nav-link has-dropdown {{ Request::is('reports/*') || Request::is('reports') ? 'toggled' : '' }}"><i
                         data-feather="briefcase"></i><span>System Reports</span></a>
                 <ul class="dropdown-menu">
-                    <li class="{{ Request::is('contract-report') ? 'active' : '' }}"><a class="nav-link"
-                            href="{{ route('contract-report') }}">Contrcat Reports</a></li>
-                    <li class="{{ Request::is('service-ticket-report') ? 'active' : '' }}"><a class="nav-link"
-                            href="{{ route('service-ticket-report') }}">Service Reports</a></li>
-                    <li class="{{ Request::is('engineer-report') ? 'active' : '' }}"><a class="nav-link"
+                    <li class="{{ Request::is('reports/contract-report') ? 'active' : '' }}"><a
+                            class="nav-link active" href="{{ route('contract-report') }}">Contractt Reports</a></li>
+                    <li class="{{ Request::is('reports/service-ticket-report') ? 'active' : '' }}"><a
+                            class="nav-link" href="{{ route('service-ticket-report') }}">Service Reports</a></li>
+                    <li class="{{ Request::is('reports/engineer-report') ? 'active' : '' }}"><a class="nav-link"
                             href="{{ route('engineer-report') }}">Engineer Reports</a></li>
-                    <li class="{{ Request::is('contract-service-report') ? 'active' : '' }}"><a class="nav-link"
-                            href="{{ route('contract-service-report') }}">Service Analysis Report</a></li>
+                    <li class="{{ Request::is('reports/contract-service-report') ? 'active' : '' }}"><a
+                            class="nav-link" href="{{ route('contract-service-report') }}">Service Analysis
+                            Report</a></li>
                 </ul>
             </li>
             <li class="dropdown {{ Request::is('masters/*') || Request::is('masters') ? 'active' : '' }}">

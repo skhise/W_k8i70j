@@ -55,7 +55,7 @@ class ReportController extends Controller
         $customer = $request->customer;
         $status = $request->status;
 
-        $contracts = Contract::select("master_site_area.id")->join("master_contract_type", "master_contract_type.id", "contracts.CNRT_Type")
+        $contracts = Contract::join("master_contract_type", "master_contract_type.id", "contracts.CNRT_Type")
             ->join("master_site_type", "master_site_type.id", "contracts.CNRT_SiteType")
             ->join("master_contract_status", "master_contract_status.id", "contracts.CNRT_Status")
             ->leftJoin("clients", "clients.CST_ID", "contracts.CNRT_CustomerID")
@@ -66,7 +66,7 @@ class ReportController extends Controller
             ->when($status != 0 && $status != "", function ($query) use ($status) {
                 $query->where("CNRT_Status", $status);
             })
-            ->orderBy('contracts.updated_at', "DESC")->get(['master_site_area.id']);
+            ->orderBy('contracts.updated_at', "DESC")->get(['CNRT_Number', "contract_type_name", "CST_Name", "SiteAreaName", "CNRT_Charges", "CNRT_Charges_Paid", "CNRT_Charges_Pending", "CNRT_StartDate", "CNRT_EndDate", "contract_status_name"]);
         $items[] = $contracts;
 
         $fileName = 'report_file' . time() . '.csv';

@@ -3,11 +3,9 @@ namespace App\Exports;
 
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromArray;
-use Maatwebsite\Excel\Concerns\FromQuery;
-use App\Models\Contract;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class ContractExport implements FromArray, WithHeadings
+class SweviceExport implements FromArray, WithHeadings
 {
     use Exportable;
 

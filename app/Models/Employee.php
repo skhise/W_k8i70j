@@ -39,15 +39,9 @@ class Employee extends Model
             $search_field = $filters['search_field'] ?? '';
             if (empty ($search_field)) {
                 $query->where('EMP_Name', 'like', '%' . $search . '%')
-                    ->orWhere('EMP_MobileNumber', 'like', '%' . $search . '%');
+                    ->orWhere('EMP_MobileNumber', 'like', '%' . $search . '%')
+                    ->orWhere('EMP_Email', 'like', '%' . $search . '%');
             }
-            if ($search_field == "EMP_Name") {
-                $query->where('EMP_Name', 'like', '%' . $search . '%');
-            }
-            if ($search_field == "EMP_MobileNumber") {
-                $query->where('EMP_MobileNumber', 'like', '%' . $search . '%');
-            }
-
         })->when($filters['trashed'] ?? null, function ($query, $trashed) {
             if ($trashed === 'with') {
                 $query->withTrashed();

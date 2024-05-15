@@ -119,10 +119,13 @@ class Contract extends Model
 
             $search_field = $filters['search_field'] ?? '';
             if (empty ($search_field)) {
-                $query->where('CNRT_Number', 'like', '%' . $search . '%')
-                    ->orWhere('CNRT_Number', 'like', '%' . $search . '%');
+                $query->where(function ($query) use ($search) {
+                    $query->orWhere('CNRT_Number', 'like', '%' . $search . '%')
+                        ->orWhere('CST_Name', 'like', '%' . $search . '%');
+                });
             }
-        })->when($filters['trashed'] ?? null, function ($query, $trashed) {
+        });
+        $query->when($filters['trashed'] ?? null, function ($query, $trashed) {
             if ($trashed === 'with') {
                 $query->withTrashed();
             } elseif ($trashed === 'only') {

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Client;
 use App\Models\ContractScheduleService;
+use App\Models\ServiceStatus;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -97,6 +98,8 @@ class DashboardController extends Controller
     {
         $dashboard = $this->GetDashboard($request);
         $contractdonut = $this->GetContractData($request);
+
+        $servicesdata = $this->GetServiceData($request);
         $schedulecount = $this->GetScheduleCount();
         $services = $this->GetLatestServices($request);
         // dd(json_decode($dashboard));
@@ -105,7 +108,8 @@ class DashboardController extends Controller
                 "dashboard" => json_decode($dashboard),
                 "contractdonut" => $contractdonut,
                 "schedulecount" => $schedulecount,
-                "services" => $services
+                "services" => $services,
+                "servicesdata" => $servicesdata,
             ]);
         }
         if (Auth::user()->role == 3) {
@@ -113,7 +117,8 @@ class DashboardController extends Controller
                 "dashboard" => json_decode($dashboard),
                 "contractdonut" => $contractdonut,
                 "schedulecount" => $schedulecount,
-                "services" => $services
+                "services" => $services,
+                "servicesdata" => $servicesdata,
             ]);
         }
 
@@ -215,6 +220,24 @@ class DashboardController extends Controller
             ];
             array_push($data, $d);
         }
+        return $data;
+
+    }
+    public function GetServiceData(Request $request)
+    {
+
+        $data = array();
+        $status = ServiceStatus::where(['flag' => 1])->orderBy("Status_Name", "ASC")->get();
+        foreach ($status as $s) {
+            $count = Service::where("service_status", $s->Status_Id)->count();
+            $d = [
+                "name" => $s->Status_Name,
+                "value" => $count,
+                "color" => $s->status_color
+            ];
+            array_push($data, $d);
+        }
+
         return $data;
 
     }

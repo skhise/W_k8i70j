@@ -276,7 +276,8 @@
     <!-- Page Specific JS File -->
     <script src="{{ asset('js/page/sweetalert.js') }}"></script>
     <!-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> -->
-
+    <script src="{{ asset('bundles/echart/echarts.js') }}"></script>
+    <!-- Page Specific JS File -->
     <!-- <script src="{{ asset('js/bootstrap.min.js') }}"></script> -->
     <!-- <script src="{{ asset('bundles/apexcharts/apexcharts.min.js') }}"></script> -->
 

@@ -6,7 +6,7 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header">
-                                <h4>DC Management</h4>
+                                <h4>Quotation Management</h4>
                             </div>
                             <div class="card-body">
                                 <div class="table-responsive">
@@ -24,14 +24,14 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @if ($service_dcs->count() == 0)
+                                            @if ($service_quots->count() == 0)
                                                 <tr>
                                                     <td colspan="6" class="text-center">No
                                                         products
                                                         added yet.</td>
                                                 </tr>
                                             @endif
-                                            @foreach ($service_dcs as $index => $dcp)
+                                            @foreach ($service_quots as $index => $dcp)
                                                 <tr>
                                                     <td>{{ $index + 1 }}</td>
                                                     <td>{{ $dcp['CST_Name'] }}</td>

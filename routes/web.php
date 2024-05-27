@@ -7,6 +7,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\QuotationController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\ServiceController;
@@ -164,6 +165,9 @@ Route::middleware(['prevent-back-history'])->group(function () {
 
     Route::middleware('auth')->group(function () {
         Route::get('/dcmanagements', [DcController::class, 'index'])->name('dcmanagements');
+    });
+    Route::middleware('auth')->group(function () {
+        Route::get('/quotmanagements', [QuotationController::class, 'index'])->name('quotmanagements');
     });
     Route::middleware('auth')->group(function () {
         Route::get('/employees', [EmployeeController::class, 'index'])->name('employees');

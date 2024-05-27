@@ -19,6 +19,6 @@ class DcController extends Controller
             ->paginate(10)
             ->withQueryString();
         // dd($dc_products);
-        return view("dcmanagement.index", ["dc_products" => $dc_products]);
+        return view("dcmanagement.index", ["service_dcs" => $dc_products]);
     }
 }

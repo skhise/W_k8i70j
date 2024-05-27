@@ -5,16 +5,16 @@ namespace App\Models;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 
-class ServiceDc extends Model
+class ServiceQuotation extends Model
 {
 
-    protected $table = "service_dc";
+    protected $table = "service_quotation";
     protected $fillable = [
         "service_id",
-        "dc_type",
-        "dc_status",
-        'dc_remark',
-        'dc_amount',
+        "quot_type",
+        "quot_status",
+        'quot_remark',
+        'quot_amount',
         "issue_date"
     ];
 
@@ -22,7 +22,7 @@ class ServiceDc extends Model
     {
         $count = 0;
         try {
-            $count = ServiceDcProduct::where(['dc_id' => $id])->count();
+            $count = ServiceQuotation::where(['dc_id' => $id])->count();
         } catch (Exception $exception) {
 
         }

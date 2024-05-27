@@ -154,6 +154,12 @@
                 <a href="{{ route('dcmanagements') }}" class="nav-link"><i data-feather="figma"></i><span>DC
                         Management</span></a>
             </li>
+            <li
+                class="dropdown {{ Request::is('quotmanagements') || Request::is('quotmanagements/*') ? 'active' : '' }}">
+                <a href="{{ route('quotmanagements') }}" class="nav-link"><i
+                        data-feather="figma"></i><span>Quotation
+                        Management</span></a>
+            </li>
 
             <li class="dropdown {{ Request::is('products/*') || Request::is('products') ? 'active' : '' }}">
                 <a href="{{ route('products') }}" class="nav-link"><i

@@ -4,14 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ServiceDcProduct extends Model
+class QuotationProduct extends Model
 {
 
-    protected $table = "service_dc_product";
+    protected $table = "quotation_product";
     protected $fillable = [
         "quot_id",
         "product_id",
-        "serial_no",
         "amount",
         "description",
     ];

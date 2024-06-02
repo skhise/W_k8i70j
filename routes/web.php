@@ -168,6 +168,12 @@ Route::middleware(['prevent-back-history'])->group(function () {
     });
     Route::middleware('auth')->group(function () {
         Route::get('/quotmanagements', [QuotationController::class, 'index'])->name('quotmanagements');
+        Route::get('/quotmanagements/create', [QuotationController::class, 'create'])->name('quotmanagements.create');
+        Route::post('/quotmanagements/store', [QuotationController::class, 'store'])->name('quotmanagements.store');
+        Route::get('/quotmanagements/{quotation}/view', [QuotationController::class, 'View'])->name('quotmanagements.view');
+        Route::get('/quotmanagements/{quotation}/delete', [QuotationController::class, 'Delete'])->name('quotmanagements.delete');
+        Route::get('/quotmanagements/{quotation_product}/delete_qp', [QuotationController::class, 'DeleteQP'])->name('quotmanagements.delete_qp');
+
     });
     Route::middleware('auth')->group(function () {
         Route::get('/employees', [EmployeeController::class, 'index'])->name('employees');

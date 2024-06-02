@@ -7,6 +7,15 @@
                         <div class="card">
                             <div class="card-header">
                                 <h4>Quotation Management</h4>
+                                <div class="card-header-action">
+                                    @if (auth()->user()->role == 1)
+                                        <a href="{{ route('quotmanagements.create') }}"
+                                            class="btn btn-icon icon-left btn-primary"><i
+                                                class="
+fas fa-plus-square"></i>
+                                            Add New</a>
+                                    @endif
+                                </div>
                             </div>
                             <div class="card-body">
                                 <div class="table-responsive">
@@ -15,7 +24,6 @@
                                             <tr>
                                                 <th>Sr. No.</th>
                                                 <th>Client Name</th>
-                                                <th>Service. No.</th>
                                                 <th>QTY</th>
                                                 <th>Total Amount</th>
                                                 <th>Issue Date</th>
@@ -35,18 +43,17 @@
                                                 <tr>
                                                     <td>{{ $index + 1 }}</td>
                                                     <td>{{ $dcp['CST_Name'] }}</td>
-                                                    <td>{{ $dcp['service_no'] }}</td>
                                                     <td>{{ $dcp->totalProduct($dcp['dcp_id']) }}</td>
-                                                    <td>{{ $dcp['dc_amount'] }}</td>
+                                                    <td>{{ $dcp->totalAmount($dcp['dcp_id']) }}</td>
                                                     <td>{{ date('d-M-Y', strtotime($dcp['issue_date'])) }}</td>
-                                                    <td>{{ $dcp['dc_type_name'] }}</td>
+                                                    <td>{{ $dcp['quot_type_name'] }}</td>
                                                     <td>
                                                         <div class="d-flex">
                                                             <a class="delete-btn action-btn btn btn-sm btn-danger"
-                                                                href="{{ route('services.dc_delete', $dcp['dcp_id']) }}"><i
+                                                                href="{{ route('quotmanagements.delete', $dcp['dcp_id']) }}"><i
                                                                     class="fa fa-trash"></i></a>
                                                             <a class="action-btn btn btn-sm btn-primary"
-                                                                href="{{ route('services.dc_view', $dcp['dcp_id']) }}"><i
+                                                                href="{{ route('quotmanagements.view', $dcp['dcp_id']) }}"><i
                                                                     class="fa fa-eye"></i></a>
                                                         </div>
                                                     </td>

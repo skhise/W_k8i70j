@@ -23,16 +23,16 @@
                                             <div class="card-body">
                                                 <div class="row">
                                                     <div class="col-md-3">
-                                                        <span style="font-weight:bold">DC
+                                                        <span style="font-weight:bold">Quotation
                                                             No.: {{ $quotation->id }}</span>
                                                     </div>
                                                     <div class="col-md-3">
-                                                        <span style="font-weight:bold">DC Type:
-                                                            {{ $quotation->dc_type_name }}</span>
+                                                        <span style="font-weight:bold">Quotation Type:
+                                                            {{ $quotation->quot_type_name }}</span>
                                                     </div>
                                                     <div class="col-md-3">
-                                                        <span style="float:right ;font-weight:bold">Service
-                                                            No.:{{ $quotation->service_no }}</span>
+                                                        <span style="float:right ;font-weight:bold">Status:
+                                                            {{ $quotation->status_name }}</span>
                                                     </div>
                                                 </div>
                                                 <div class="row mt-2">

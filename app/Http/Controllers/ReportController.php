@@ -80,7 +80,7 @@ class ReportController extends Controller
     }
     function quotation_index(Request $request)
     {
-        $service_quots = Quotation::select(["master_quotation_type.*", "clients.*", "quotation.id as dcp_id", "quotation.*"])
+        $service_quots = Quotation::select(["master_quotation_status.*", "master_quotation_type.*", "clients.*", "quotation.id as dcp_id", "quotation.*"])
             ->leftJoin("master_quotation_type", "master_quotation_type.id", "quotation.quot_type")
             ->leftJoin("master_quotation_status", "master_quotation_status.id", "quotation.quot_status")
             ->leftJoin("clients", "clients.CST_ID", "quotation.customer_id")

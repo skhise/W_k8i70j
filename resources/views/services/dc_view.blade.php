@@ -8,7 +8,11 @@
                             <div class="card-header">
                                 <h4 class="card-title">DC Details</h4>
                                 <div class="card-header-action">
-                                    <a class="btn btn-danger" href="{{ route('dcmanagements') }}">Back</a>
+                                    @if ($flag == 1)
+                                        <a class="btn btn-danger" href="{{ route('dc-report') }}">Back</a>
+                                    @else
+                                        <a class="btn btn-danger" href="{{ route('dcmanagements') }}">Back</a>
+                                    @endif
                                 </div>
                             </div>
                             <div class="card-body">

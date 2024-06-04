@@ -21,13 +21,24 @@ class QuotationController extends Controller
 
     public function index(Request $request)
     {
+
         $service_quots = Quotation::select(["quotation_type.*", "clients.*", "quotation.id as dcp_id", "quotation.*"])
             ->leftJoin("quotation_type", "quotation_type.id", "quotation.quot_type")
             ->leftJoin("clients", "clients.CST_ID", "quotation.customer_id")
+            ->when(isset($request->customer_id), function ($query) use ($request) {
+                $query->where("quotation.customer_id", $request->customer_id);
+            })
             ->paginate(10)
             ->withQueryString();
         // dd($dc_products);
-        return view("quotmanagement.index", ["service_quots" => $service_quots]);
+        return view(
+            "quotmanagement.index",
+            [
+                "service_quots" => $service_quots,
+                'clients' => Client::all(),
+                'customer_id' => isset($request->customer_id) ? $request->customer_id : 0
+            ]
+        );
     }
     public function create(Request $request)
     {
@@ -44,7 +55,7 @@ class QuotationController extends Controller
             'clients' => Client::all(),
         ]);
     }
-    public function view(Quotation $quotation)
+    public function view(Quotation $quotation, Request $request)
     {
         $quotation_products = QuotationProduct::select("master_product_type.*", "quotation_product.id as sdp", "quotation_product.*", "products.*")
             ->join("products", "products.Product_ID", "quotation_product.product_id")
@@ -59,7 +70,8 @@ class QuotationController extends Controller
             ->first();
         return view("quotmanagement.view", [
             "quotation" => $quotation_details,
-            "products" => $quotation_products
+            "products" => $quotation_products,
+            'flag' => $request->flag ?? 0
         ]);
     }
     public function delete(Quotation $quotation)

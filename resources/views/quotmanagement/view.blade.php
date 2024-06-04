@@ -8,8 +8,13 @@
                             <div class="card-header">
                                 <h4 class="card-title">Quotation Details</h4>
                                 <div class="card-header-action">
-                                    <a class="btn btn-danger" href="{{ route('quotmanagements') }}">Back</a>
+                                    @if ($flag == 1)
+                                        <a class="btn btn-danger" href="{{ route('quotation-report') }}">Back</a>
+                                    @else
+                                        <a class="btn btn-danger" href="{{ route('quotmanagements') }}">Back</a>
+                                    @endif
                                 </div>
+
                             </div>
                             <div class="card-body">
                                 <div class="row">

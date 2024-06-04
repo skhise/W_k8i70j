@@ -8,6 +8,7 @@
                             <div class="card-header">
                                 <h4>Quotation Management</h4>
                                 <div class="card-header-action">
+
                                     @if (auth()->user()->role == 1)
                                         <a href="{{ route('quotmanagements.create') }}"
                                             class="btn btn-icon icon-left btn-primary"><i
@@ -18,7 +19,28 @@ fas fa-plus-square"></i>
                                 </div>
                             </div>
                             <div class="card-body">
+                                <div class="row mb-2">
+                                    <div class="col-md-3">
+                                        <form action="quotmanagements" id="quotation_filter">
+                                            <label>Select Client<span class="error">*</span></label>
+                                            <select
+                                                class="select2 form-control text-box single-line @error('customer_id') is-invalid @enderror"
+                                                data-val="true" data-val-required="The Customer Name field is required."
+                                                id="customer_id" name="customer_id" placeholder="" required="required"
+                                                type="text"
+                                                value="{{ $service->customer_id ?? old('customer_id') }}">
+                                                <option value="">Select client</option>
+                                                @foreach ($clients as $client)
+                                                    <option value="{{ $client->CST_ID }}"
+                                                        {{ $customer_id == $client->CST_ID ? 'selected' : '' }}>
+                                                        {{ $client->CST_Name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </form>
+                                    </div>
+                                </div>
                                 <div class="table-responsive">
+
                                     <table class="table table-striped" id="tbRefClient">
                                         <thead>
                                             <tr>
@@ -70,5 +92,11 @@ fas fa-plus-square"></i>
             </div>
         </section>
     </div>
-
+    @section('script')
+        <script>
+            $("#customer_id").on("change", function() {
+                $("#quotation_filter")[0].submit();
+            });
+        </script>
+    @stop
 </x-app-layout>

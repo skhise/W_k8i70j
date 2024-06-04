@@ -6,6 +6,11 @@ use App\Exports\ContractExport;
 use App\Exports\UsersExport;
 use App\Models\Client;
 use App\Models\ContractStatus;
+use App\Models\DcType;
+use App\Models\Quotation;
+use App\Models\QuotationStatus;
+use App\Models\QuotationType;
+use App\Models\ServiceDc;
 use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -50,6 +55,60 @@ class ReportController extends Controller
         "3" => '<div class="badge badge-danger badge-shadow">Expired</div>',
         "4" => '<div class="badge badge-danger badge-shadow">Deactivated</div>',
     ];
+    function dc_index(Request $request)
+    {
+        $dc_products = ServiceDc::select(["dc_type.*", "clients.*", "services.*", "service_dc.id as dcp_id", "service_dc.*"])
+            ->join("services", "services.id", "service_dc.service_id")
+            ->leftJoin("dc_type", "dc_type.id", "service_dc.dc_type")
+            ->leftJoin("clients", "clients.CST_ID", "services.customer_id")
+            ->when(isset($request->customer_id), function ($query) use ($request) {
+                $query->where("services.customer_id", $request->customer_id);
+            })
+            ->when(isset($request->type), function ($query) use ($request) {
+                $query->where("service_dc.dc_type", $request->type);
+            })
+            ->paginate(10)
+            ->withQueryString();
+        // dd($dc_products);
+        return view("reports.dc_report", [
+            "service_dcs" => $dc_products,
+            'clients' => Client::all(),
+            'customer_id' => isset($request->customer_id) ? $request->customer_id : 0,
+            'dc_type' => isset($request->type) ? $request->type : 0,
+            'type' => DcType::all()
+        ]);
+    }
+    function quotation_index(Request $request)
+    {
+        $service_quots = Quotation::select(["master_quotation_type.*", "clients.*", "quotation.id as dcp_id", "quotation.*"])
+            ->leftJoin("master_quotation_type", "master_quotation_type.id", "quotation.quot_type")
+            ->leftJoin("master_quotation_status", "master_quotation_status.id", "quotation.quot_status")
+            ->leftJoin("clients", "clients.CST_ID", "quotation.customer_id")
+            ->when(isset($request->customer_id), function ($query) use ($request) {
+                $query->where("quotation.customer_id", $request->customer_id);
+            })
+            ->when(isset($request->status), function ($query) use ($request) {
+                $query->where("quotation.quot_status", $request->status);
+            })
+            ->when(isset($request->type), function ($query) use ($request) {
+                $query->where("quotation.quot_type", $request->custtypeomer_id);
+            })
+            ->paginate(10)
+            ->withQueryString();
+        // dd($dc_products);
+        return view(
+            "reports.quot_report",
+            [
+                "service_quots" => $service_quots,
+                'clients' => Client::all(),
+                'customer_id' => isset($request->customer_id) ? $request->customer_id : 0,
+                'quot_status' => isset($request->status) ? $request->status : 0,
+                'quot_type' => isset($request->type) ? $request->type : 0,
+                'status' => QuotationStatus::all(),
+                'type' => QuotationType::all()
+            ]
+        );
+    }
     public function cr_export(Request $request)
     {
         $customer = $request->customer;

@@ -208,7 +208,7 @@ class ServiceController extends Controller
         }
 
     }
-    public function DcView(ServiceDc $serviceDc)
+    public function DcView(ServiceDc $serviceDc, Request $request)
     {
         $dc_products = ServiceDcProduct::select("product_serial_numbers.*", "master_product_type.*", "service_dc_product.id as sdp", "service_dc_product.*", "products.*")->where(['dc_id' => $serviceDc->id])
             ->join("products", "products.Product_ID", "service_dc_product.product_id")
@@ -223,7 +223,8 @@ class ServiceController extends Controller
             ->first();
         return view("services.dc_view", [
             "service_dc" => $serviceDc,
-            "dc_products" => $dc_products
+            "dc_products" => $dc_products,
+            'flag' => $request->flag ?? 0,
         ]);
     }
     public function DcpDelete(ServiceDcProduct $serviceDcProduct)

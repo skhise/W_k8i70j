@@ -40,6 +40,13 @@
                                             &nbsp;&nbsp;<span
                                                 class="badge badge-light">{{ $checklists->count() }}</span></a>
                                     </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link {{ session('contract_activeTab') === 'renewal' ? ' active' : '' }}"
+                                            id="renewal" data-toggle="tab" href="#ContractRenewList" role="tab"
+                                            aria-selected="false" aria-controls="renewal">Renewal History
+                                            &nbsp;&nbsp;<span
+                                                class="badge badge-light">{{ $renewals->count() }}</span></a>
+                                    </li>
 
                                 </ul>
                                 <div class="tab-content tab-bordered">
@@ -136,7 +143,8 @@
                                                                     Site Type
                                                                 </span>
                                                             </div>
-                                                            <div class="col-md-3">{{ $contract->site_type_name }}</div>
+                                                            <div class="col-md-3">{{ $contract->site_type_name }}
+                                                            </div>
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-3">
@@ -295,6 +303,10 @@
                                     <div class="tab-pane fade {{ session('contract_activeTab') === '' ? ' show active' : '' }}"
                                         role="tabpanel" aria-labelledby="profile-tab4" id="ContractCheckList">
                                         @include('contracts.checklist_tab')
+                                    </div>
+                                    <div class="tab-pane fade {{ session('contract_activeTab') === 'renewal' ? ' show active' : '' }}"
+                                        role="tabpanel" aria-labelledby="profile-tab4" id="ContractRenewList">
+                                        @include('contracts.renew_tab')
                                     </div>
                                 </div>
                             </div>

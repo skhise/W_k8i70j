@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Exports\ContractExport;
+use App\Exports\ServiceExport;
+use App\Exports\SweviceExport;
 use App\Exports\UsersExport;
 use App\Models\Client;
 use App\Models\ContractStatus;
@@ -185,6 +187,61 @@ class ReportController extends Controller
         $clients = Client::all();
         $status = ContractStatus::all();
         return view('reports.contract', compact('contracts', 'status', "clients", "customer", "sstatus"));
+    }
+
+    public function sr_export(Request $request)
+    {
+        $customer = $request->customer;
+        $status = $request->status;
+        $type = $request->type;
+        $daterange = $request->daterange;
+        $customerId = $request->customer;
+        $service_type = $request->service_type;
+        $status = $request->status;
+        $date_range = $request->date_range;
+        $today = date("Y-m-d");
+        $todate = date("Y-m-d");
+        $fromdate = date('Y-m-d', strtotime($todate . '-' . $date_range . ' days'));
+        if ($date_range == 0) {
+            $fromdate = $todate;
+        }
+        if ($date_range == 1) {
+            $todate = date('Y-m-d', strtotime($today . '-1 days'));
+            $fromdate = date('Y-m-d', strtotime($today . '-1 days'));
+        }
+
+        $services = array();
+        $services = Service::select("*", "services.id as service_id")
+            ->join("master_service_status", "master_service_status.Status_Id", "services.service_status")
+            ->join("master_service_priority", "master_service_priority.id", "services.service_priority")
+            ->join("master_issue_type", "master_issue_type.id", "services.issue_type")
+            ->join("master_service_type", "master_service_type.id", "services.service_type")
+            ->join("clients", "clients.CST_ID", "services.customer_id")
+            ->leftJoin("contracts", "contracts.CNRT_ID", "services.contract_id")
+            ->leftJoin("employees", "employees.EMP_ID", "services.assigned_to")
+            ->when($customerId != 0, function ($query) use ($customerId) {
+                return $query->where('clients.CST_ID', $customerId);
+            })
+            ->when($service_type != 0, function ($query) use ($service_type) {
+                return $query->where('services.service_type', $service_type);
+            })
+            ->when($status != 0, function ($query) use ($status) {
+                return $query->where('services.service_status', $status);
+            })
+            ->when($date_range != "" && $date_range != -1, function ($query) use ($todate, $fromdate) {
+                return $query->whereBetween(DB::raw('DATE_FORMAT(services.service_date, "%Y-%m-%d")'), [$fromdate, $todate]);
+
+            })
+            ->orderby("services.updated_at", "DESC")
+            ->get(['service_no', 'contract_id', 'CNRT_Number', 'CST_Name', 'type_name', 'issue_name', 'contact_person', 'created_at', 'now()->diffInHours($service->accepted_datetime)', 'Status_Name', 'EMP_Name', 'resolved_datetime', 'now()->diffInHours($service->created_at)', 'resolved_datetime']);
+        $items[] = $services;
+
+        $fileName = 'report_file' . time() . '.csv';
+
+        return Excel::download(new ServiceExport($items), $fileName)->deleteFileAfterSend(true);
+        // return Excel::download(new ContractExport($items), $fileName, null, [\Maatwebsite\Excel\Excel::XLSX]);
+
+        // return response()->json(["file" => $file, "filename" => $fileName]);
     }
     public function str_index(Request $request)
     {

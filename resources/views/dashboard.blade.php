@@ -1,4 +1,11 @@
 <x-app-layout>
+    <style>
+        .banner-img {
+            top: 20%;
+            position: relative;
+            float: right;
+        }
+    </style>
     <div class="main-content">
         <section class="section">
             <div class="row ">
@@ -16,7 +23,8 @@
                                     </div>
                                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pl-0">
                                         <div class="banner-img">
-                                            <img src="{{ asset('img/banner/1.png') }}" alt="">
+                                            <i class="fa fa-user fa-3x"></i>
+                                            <!--<img src="{{ asset('img/banner/1.png') }}" alt="">-->
                                         </div>
                                     </div>
                                 </div>
@@ -38,7 +46,8 @@
                                     </div>
                                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pl-0">
                                         <div class="banner-img">
-                                            <img src="{{ asset('img/banner/2.png') }}" alt="">
+                                            <i class="fa fa-suitcase fa-3x"></i>
+                                            <!--<img src="{{ asset('img/banner/2.png') }}" alt="">-->
                                         </div>
                                     </div>
                                 </div>
@@ -54,14 +63,15 @@
                                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pr-0 pt-3">
                                         <div class="card-content">
                                             <h5 class="font-15">Service Calls</h5>
-                                            <h2 class="mb-3 font-18">{{ $dashboard->contracts ?? 0 }}</h2>
+                                            <h2 class="mb-3 font-18">{{ $dashboard->services ?? 0 }}</h2>
                                             <!-- <p class="mb-0"><span class="col-green">18%</span>
                                                 Increase</p> -->
                                         </div>
                                     </div>
                                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pl-0">
                                         <div class="banner-img">
-                                            <img src="{{ asset('img/banner/3.png') }}" alt="">
+                                            <i class="fa fa-tasks fa-3x"></i>
+                                            <!--<img src="{{ asset('img/banner/3.png') }}" alt="">-->
                                         </div>
                                     </div>
                                 </div>
@@ -83,7 +93,8 @@
                                     </div>
                                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pl-0">
                                         <div class="banner-img">
-                                            <img src="{{ asset('img/banner/4.png') }}" alt="">
+                                            <i class="fa fa-users fa-3x"></i>
+                                            <!-- <img src="{{ asset('img/banner/4.png') }}" alt=""> -->
                                         </div>
                                     </div>
                                 </div>

@@ -9,6 +9,17 @@
                                 <h4>DC Management</h4>
                             </div>
                             <div class="card-body">
+                                <div class="float-right">
+                                    <form action="{{ route('dcmanagements') }}" id="search_form">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" value="{{ $search }}"
+                                                id="search" name="search" placeholder="Search">
+
+
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="clearfix mb-3"></div>
                                 <div class="table-responsive">
                                     <table class="table table-striped" id="tbRefClient">
                                         <thead>

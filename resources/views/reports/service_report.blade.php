@@ -67,8 +67,7 @@
                                 <div class="row justify-content-center">
                                     <div class="col-lg-4 d-flex">
                                         <button class="btn btn-primary ml-2 btn-fetch-report">Generate</button>
-                                        <button onclick="exportExcel()"
-                                            class="btn btn-light ml-2 btn-export-report">Export</button>
+                                        <button class="btn btn-light ml-2 btn-export-report">Export</button>
                                         <button class="btn btn-danger ml-2 btn-reset">Reset</button>
                                     </div>
                                 </div>
@@ -164,23 +163,73 @@
                     });
                 }
             });
+            $(document).on("click", ".btn-export-report", function() {
+                var cust_id = $("#client option:selected").val();
+                var cust_Name = $("#client option:selected").text();
+                var status = $("#report_service_status option:selected").val();
+                var type = $("#report_service_type option:selected").val();
+                var daterange = $("#date-range option:selected").val();
+                if (cust_id != "" && status != "") {
+                    $.ajax({
+                        type: "GET",
+                        url: "service-report-export",
+                        data: {
+                            status: status,
+                            customer: cust_id,
+                            daterange: daterange,
+                            type: type,
+                        },
+                        beforeSend: function() {
+                            $(".loader").show();
+                        },
+                        success: function(result, status, xhr) {
+                            console.log(result);
+                            const currentDateInSeconds = Math.floor(Date.now() / 1000);
 
-            function exportExcel() {
-                var table = $(".contractReportListTable");
-                if (table && table.length) {
-                    var preserveColors = (table.hasClass('table2excel_with_colors') ? true : false);
-                    $(table).table2excel({
-                        exclude: ".noExl",
-                        name: "Contract Reporte",
-                        filename: "ContractReport" + new Date().toISOString().replace(/[\-\:\.]/g, "") + ".xls",
-                        fileext: ".xls",
-                        exclude_img: true,
-                        exclude_links: true,
-                        exclude_inputs: true,
-                        preserveColors: preserveColors
+                            $(".loader").hide();
+                            var disposition = xhr.getResponseHeader('content-disposition');
+                            var matches = /"([^"]*)"/.exec(disposition);
+                            var filename = (matches != null && matches[1] ? matches[1] : "service_report_" +
+                                cust_Name + "_" +
+                                currentDateInSeconds + '.csv');
+
+                            // The actual download
+                            var blob = new Blob([result], {
+                                type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                            });
+                            var link = document.createElement('a');
+                            link.href = window.URL.createObjectURL(blob);
+                            link.download = filename;
+
+                            document.body.appendChild(link);
+
+                            link.click();
+                            document.body.removeChild(link);
+                        },
+                        error: function(error) {
+                            $(".loader").hide();
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'Something went wrong, try again',
+                                dangerMode: true,
+                                icon: 'warning',
+                                confirmButtonColor: '#d33',
+                                cancelButtonColor: '#3085d6',
+                            });
+                        }
+                    });
+
+                } else {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Select filter values',
+                        dangerMode: true,
+                        icon: 'warning',
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
                     });
                 }
-            }
+            });
         </script>
     @stop
 </x-app-layout>

@@ -62,6 +62,10 @@ class Contract extends Model
     {
         return $this->hasMany(Checklist::class, 'contractId', 'CNRT_ID');
     }
+    public function renewals()
+    {
+        return $this->hasMany(ContractRenewalHistory::class, 'contract_id', 'CNRT_ID');
+    }
     public function baseaccessory()
     {
         return $this->hasMany(ContractBaseAccessory::class, 'contractId', 'CNRT_ID');
@@ -118,7 +122,7 @@ class Contract extends Model
         $query->when($filters['search'] ?? null, function ($query, $search) use ($filters) {
 
             $search_field = $filters['search_field'] ?? '';
-            if (empty ($search_field)) {
+            if (empty($search_field)) {
                 $query->where(function ($query) use ($search) {
                     $query->orWhere('CNRT_Number', 'like', '%' . $search . '%')
                         ->orWhere('CST_Name', 'like', '%' . $search . '%');

@@ -171,7 +171,7 @@
                         data-feather="briefcase"></i><span>System Reports</span></a>
                 <ul class="dropdown-menu">
                     <li class="{{ Request::is('reports/contract-report') ? 'active' : '' }}"><a
-                            class="nav-link active" href="{{ route('contract-report') }}">Contractt Reports</a></li>
+                            class="nav-link active" href="{{ route('contract-report') }}">Contract Reports</a></li>
                     <li class="{{ Request::is('reports/service-ticket-report') ? 'active' : '' }}"><a
                             class="nav-link" href="{{ route('service-ticket-report') }}">Service Reports</a></li>
                     <li class="{{ Request::is('reports/engineer-report') ? 'active' : '' }}"><a class="nav-link"

@@ -5,7 +5,7 @@ use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class SweviceExport implements FromArray, WithHeadings
+class ServiceExport implements FromArray, WithHeadings
 {
     use Exportable;
 
@@ -16,16 +16,24 @@ class SweviceExport implements FromArray, WithHeadings
     public function headings(): array
     {
         return [
+            "Ticket No.",
+            "Type",
             "Contract No.",
-            "Contract Type",
-            "Customer Name",
-            "Site",
-            "AMC Charges",
-            "Payment Received",
-            "Payment Pending",
-            "Start Date",
-            "Expiry Date",
-            "Status"
+            "Client Name",
+            "Service Type",
+            "Issue Type",
+            "Problem Reported By Customer",
+            "Responce Time",
+            "Problem Reported By Engineer",
+            "Action Taken By Engineer",
+            "Status",
+            "Engineer",
+            "Resolved At",
+            "Age(Hours)",
+            "Closed At",
+            "Expansion",
+            "Customer Charges",
+            "Remark"
 
         ];
     }

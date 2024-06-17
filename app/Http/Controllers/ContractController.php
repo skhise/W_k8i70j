@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AreaName;
 use App\Models\Checklist;
 use App\Models\Client;
+use App\Models\ContractRenewalHistory;
 use App\Models\IssueType;
 use App\Models\ProductType;
 use App\Models\ServiceType;
@@ -69,6 +70,58 @@ class ContractController extends Controller
 
     }
 
+    public function ContractRenew(Request $request)
+    {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'contract_id' => "required",
+                'new_start_date' => "required",
+                'new_expiry_date' => "required",
+                'amount' => "required",
+            ]
+        );
+        if ($validator->fails()) {
+            return response()->json(["success" => false, "message" => "Renewal information missing.", "validation_error" => $validator->errors()]);
+        }
+
+        $contract = Contract::find($request->contract_id);
+        if (empty($contract)) {
+            return response()->json(["success" => false, "message" => "Something went wrong, try again."]);
+        }
+        try {
+            DB::beginTransaction();
+            $renewal = ContractRenewalHistory::create([
+                'contract_id' => $request->contract_id,
+                'amount' => $request->amount,
+                'current_expiry_date' => $contract->CNRT_EndDate,
+                'current_start_date' => $contract->CNRT_StartDate,
+                'new_start_date' => $request->new_start_date,
+                'new_expiry_date' => $request->new_expiry_date,
+                'renewal_note' => $request->renewal_note,
+            ]);
+            if (!empty($renewal)) {
+                $contract->CNRT_StartDate = $request->new_start_date;
+                $contract->CNRT_EndDate = $request->new_expiry_date;
+                $contract->CNRT_Status = 1;
+                $save = $contract->save();
+                if ($save) {
+                    DB::commit();
+                    return response()->json(["success" => true, "message" => "Renewal details saved."]);
+                } else {
+                    DB::rollBack();
+                    return response()->json(["success" => false, "message" => "Action failed, try again."]);
+                }
+            } else {
+                DB::rollBack();
+                return response()->json(["success" => false, "message" => "Action failed, try again."]);
+            }
+
+        } catch (Exception $exp) {
+            DB::rollBack();
+            return response()->json(["success" => false, "message" => "Action failed, try again."]);
+        }
+    }
     public function DeleteContract(Request $request)
     {
         $validator = Validator::make(
@@ -1097,6 +1150,7 @@ class ContractController extends Controller
             'issueType' => $issueOptions,
             'serviceType' => $serviceTypeOptions,
             'checklists' => $contract->checklist,
+            'renewals' => $contract->renewals,
             'productOption' => $productOptions,
             'products' => ContractUnderProduct::where("contractId", $contract->CNRT_ID)->get(),
             'services' => $services

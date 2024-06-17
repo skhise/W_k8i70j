@@ -44,6 +44,10 @@ Route::middleware(['prevent-back-history'])->group(function () {
         Route::get('/reports/contract-report', [ReportController::class, 'cr_index'])->name('contract-report');
         Route::get('/reports/contract-report-data', [ReportController::class, 'cr_data'])->name('contract-report-data');
         Route::get('/reports/contract-report-export', [ReportController::class, 'cr_export'])->name('contract-report-export');
+        Route::get('/reports/service-report-export', [ReportController::class, 'sr_export'])->name('service-report-export');
+        Route::get('/reports/engineer-report-export', [ReportController::class, 'engineer_export'])->name('engineer-report-export');
+        Route::get('/reports/quot-report-export', [ReportController::class, 'quot_export'])->name('quot-report-export');
+        Route::get('/reports/dec-report-export', [ReportController::class, 'dc_export'])->name('dc-report-export');
         Route::get('/reports/contract-service-report', [ReportController::class, 'csr_index'])->name('contract-service-report');
         Route::get('/reports/dc-report', [ReportController::class, 'dc_index'])->name('dc-report');
         Route::get('/reports/quotation-report', [ReportController::class, 'quotation_index'])->name('quotation-report');
@@ -106,6 +110,7 @@ Route::middleware(['prevent-back-history'])->group(function () {
         Route::get('/contracts', [ContractController::class, 'index'])->name('contracts');
         Route::get('/contracts/create', [ContractController::class, 'create'])->name('contracts.create');
         Route::post('/contracts', [ContractController::class, 'store'])->name('contracts.store');
+        Route::post('/contracts/renewal', [ContractController::class, 'ContractRenew'])->name('contracts.renewal');
         Route::get('/contracts/{contract}/view', [ContractController::class, 'view'])->name('contracts.view');
         Route::get('/contracts/{contract}/edit', [ContractController::class, 'edit'])->name('contracts.edit');
         Route::post('/contracts/{contract}/update', [ContractController::class, 'update'])->name('contracts.update');

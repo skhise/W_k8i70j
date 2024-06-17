@@ -182,23 +182,6 @@
                     });
                 }
             });
-
-            function exportExcel() {
-                var table = $(".contractReportListTable");
-                if (table && table.length) {
-                    var preserveColors = (table.hasClass('table2excel_with_colors') ? true : false);
-                    $(table).table2excel({
-                        exclude: ".noExl",
-                        name: "Contract Reporte",
-                        filename: "ContractReport" + new Date().toISOString().replace(/[\-\:\.]/g, "") + ".xls",
-                        fileext: ".xls",
-                        exclude_img: true,
-                        exclude_links: true,
-                        exclude_inputs: true,
-                        preserveColors: preserveColors
-                    });
-                }
-            }
         </script>
     @stop
 </x-app-layout>

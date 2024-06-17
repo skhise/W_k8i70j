@@ -135,12 +135,7 @@
                                                     <div class="col-md-3">
                                                         {{ $employee->email }}
                                                     </div>
-                                                    <div class="col-md-3">
-                                                        <button data-target=".bd-RefPasswordReset-modal-lg"
-                                                            data-toggle="modal" type="button"
-                                                            class="float-left btn btn-primary">Reset
-                                                            Password</button>
-                                                    </div>
+
                                                 </div>
                                                 <div class="row mt-2">
                                                     <div class="col-md-3">
@@ -159,6 +154,12 @@
                                                                 <label>Active</label>
                                                             </div>
                                                         </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <button data-target=".bd-RefPasswordReset-modal-lg"
+                                                            data-toggle="modal" type="button"
+                                                            class="float-left btn btn-primary">Reset
+                                                            Password</button>
                                                     </div>
                                                 </div>
                                                 <hr />

@@ -120,7 +120,15 @@ fas fa-plus-square"></i>
                                                         <a href="{{ route('contracts.view', $contract['CNRT_ID']) }}"
                                                             class="btn btn-primary"><i class="far fa-eye"></i></a>
                                                         <a href="{{ route('contracts.edit', $contract['CNRT_ID']) }}"
-                                                            class="btn btn-primary"><i class="far fa-edit"></i></a>
+                                                            class="btn btn-warning"><i class="far fa-edit"></i></a>
+                                                        @if ($contract['CNRT_Status'] == 2 || $contract['CNRT_Status'] == 3)
+                                                            <a title="click to renew contract"
+                                                                data-target=".bd-RefContractRenew-modal-lg"
+                                                                data-toggle="modal"
+                                                                data-contractId="{{ $contract['CNRT_ID'] }}"
+                                                                class="btn-renewal btn btn-info text-white"><i
+                                                                    class="fa fa-sync-alt"></i></a>
+                                                        @endif
 
                                                 </tr>
                                             @endforeach
@@ -144,10 +152,74 @@ fas fa-plus-square"></i>
 
             </div>
         </section>
+        @include('contracts.contract_renew');
     </div>
     @section('script')
 
         <script>
+            $(document).on('click', '.btn-renewal', function() {
+                var contract_id = $(".btn-renewal").data('contractid');
+                $("#contract_id").val(contract_id);
+            });
+
+            $(document).on("click", "#btn_renew_save", function() {
+                $('.text-danger-error').html('');
+                $(this).attr("disabled", true);
+                $(this).html("Saving...");
+                var url = '{{ route('contracts.renewal') }}';
+                var isValid = true;
+
+                // Loop through each input field and validate
+                $('#form_contract_renew .required').each(function() {
+                    if (!validateInput($(this))) {
+                        isValid = false;
+                        $("#btn_renew_save").attr("disabled", false);
+                        $("#btn_renew_save").html("Save");
+                    }
+                });
+                if (isValid) {
+                    $.ajax({
+                        url: url,
+                        type: "POST",
+                        data: $("#form_contract_renew").serialize(),
+                        success: function(response) {
+                            //  var obj = JSON.parse(response);
+                            if (response.success) {
+                                CancelModelBoxRenew();
+                                window.location.reload();
+                            } else {
+                                $("#btn_renew_save").attr("disabled", false);
+                                $("#btn_renew_save").html("Save");
+                                $('.errorMsgntainer').html("");
+                                if (typeof response.validation_error != 'undefined') {
+                                    $.each(response.validation_error, function(index, value) {
+                                        $('.' + index + "-field-validation-valid").html(value);
+                                    });
+                                    $('.errorMsgntainer').html(response.message);
+                                } else {
+                                    $('.errorMsgntainer').html(response.message);
+                                }
+                            }
+
+                        },
+                        error: function(error) {
+                            $("#btn_renew_save").attr("disabled", false);
+                            $("#btn_renew_save").html("Save");
+                            alert("something went wrong, try again.");
+                        }
+                    })
+                }
+
+            });
+
+            function CancelModelBoxRenew() {
+                $("#btn_renew_save").attr("disabled", false);
+                $("#btn_renew_save").html("Save");
+                $('.text-danger-error').html('');
+                $("#form_contract_renew")[0].reset();
+                $(".required").removeClass('error_border')
+                $("#btn_close_renew").trigger('click');
+            }
             $(document).on('click', '.btn-status-filter', function() {
                 $("#filter_status").val($(this).data("key"));
                 $("#search_form")[0].submit();

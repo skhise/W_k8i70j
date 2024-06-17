@@ -47,9 +47,9 @@
                                                 </div>
                                                 <div class="col-md-3">
                                                     <div class="d-flex mt-4">
-                                                        <button class="action-btn onchange btn btn-info"
+                                                        <button class="action-btn onchange btn btn-primary"
                                                             type="button">Generate</button>
-                                                        <button class="action-btn export-to-excel btn btn-primary"
+                                                        <button class="action-btn btn-light export-to-excel btn"
                                                             type="button">Export</button>
                                                     </div>
 

@@ -1,4 +1,11 @@
 <x-app-layout>
+    <style>
+        .banner-img {
+            top: 20%;
+            position: relative;
+            float: right;
+        }
+    </style>
     <div class="main-content">
         <section class="section">
             <div class="row ">
@@ -17,7 +24,8 @@
                                     </div>
                                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pl-0">
                                         <div class="banner-img">
-                                            <img src="{{ asset('img/banner/3.png') }}" alt="">
+                                            <i class="fa fa-tasks fa-3x"></i>
+                                            <!-- <img src="{{ asset('img/banner/3.png') }}" alt="">-->
                                         </div>
                                     </div>
                                 </div>
@@ -27,7 +35,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-9">
+                <div class="col-12">
                     <div class="card">
                         <div class="card-header">
                             <h4>Last Updates</h4>
@@ -97,43 +105,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-3">
-                    <div class="card">
-                        <div class="card-header">
-                            <h4>Service Status</h4>
-                        </div>
-                        <div class="card-body">
-                            <div class="mb-4">
-                                <div class="text-small float-right font-weight-bold text-muted">558</div>
-                                <div class="font-weight-bold mb-1">Google</div>
-                                <div class="progress" data-height="4" data-toggle="tooltip" title="58%">
-                                    <div class="progress-bar bg-success" data-width="58%"></div>
-                                </div>
-                            </div>
-                            <div class="mb-4">
-                                <div class="text-small float-right font-weight-bold text-muted">338</div>
-                                <div class="font-weight-bold mb-1">Facebook</div>
-                                <div class="progress" data-height="4" data-toggle="tooltip" title="44%">
-                                    <div class="progress-bar bg-purple" data-width="44%"></div>
-                                </div>
-                            </div>
-                            <div class="mb-4">
-                                <div class="text-small float-right font-weight-bold text-muted">238</div>
-                                <div class="font-weight-bold mb-1">Bing</div>
-                                <div class="progress" data-height="4" data-toggle="tooltip" title="32%">
-                                    <div class="progress-bar bg-orange" data-width="32%"></div>
-                                </div>
-                            </div>
-                            <div class="mb-4">
-                                <div class="text-small float-right font-weight-bold text-muted">190</div>
-                                <div class="font-weight-bold mb-1">Yahoo</div>
-                                <div class="progress" data-height="4" data-toggle="tooltip" title="22%">
-                                    <div class="progress-bar bg-cyan" data-width="22%"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+
             </div>
             <div>
                 <div class="row">

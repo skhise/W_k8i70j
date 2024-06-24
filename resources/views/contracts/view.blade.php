@@ -499,6 +499,7 @@
                 // Loop through each input field and validate
                 $('.service_row_add .required').each(function() {
                     if (!validateInput($(this))) {
+                        console.log($(this).id);
                         isValid = false;
                         $("#btn_service_save").attr("disabled", false);
                         $("#btn_service_save").html("Save");

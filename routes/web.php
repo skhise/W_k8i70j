@@ -30,7 +30,7 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-Route::middleware(['prevent-back-history'])->group(function () {
+Route::middleware(['prevent-back-history', 'menu.permission'])->group(function () {
     Route::middleware('auth')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/', [DashboardController::class, 'index']);
@@ -220,5 +220,6 @@ Route::middleware(['prevent-back-history'])->group(function () {
     Route::middleware('auth')->group(function () {
         Route::get('/reports/invoice', [ReportController::class, 'invoice'])->name('reports.invoice');
     });
-    require __DIR__ . '/auth.php';
+
 });
+require __DIR__ . '/auth.php';

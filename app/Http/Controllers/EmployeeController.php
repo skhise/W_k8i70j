@@ -188,7 +188,6 @@ class EmployeeController extends Controller
                         'EMP_Name' => $request->EMP_Name,
                         'EMP_Designation' => $request->EMP_Designation,
                         "EMP_Email" => $request->EMP_Email,
-                        "EMP_CPRNumber" => $request->EMP_CPRNumber,
                         "EMP_Qualification" => $request->EMP_Qualification,
                         "EMP_MobileNumber" => $request->EMP_MobileNumber,
                         "EMP_CompanyMobile" => $request->EMP_CompanyMobile,

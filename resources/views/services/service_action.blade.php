@@ -53,7 +53,7 @@
                         <div class="form-group">
                             <div class="row">
                                 <div class="col-md-12 floating-label">
-                                    <select class="required form-control text-box single-line" id="service_category"
+                                    <select class="form-control text-box single-line" id="service_category"
                                         name="service_category">
                                         @if ($service->contract_id != 0)
                                             <option value="1">Under AMC</option>
@@ -67,13 +67,13 @@
                         <div class="form-group">
                             <div class="row">
                                 <div class="col-md-6 floating-label">
-                                    <input type="text" class="required form-control text-box single-line"
-                                        id="expenses" name="expenses" placeholder=""></textarea>
+                                    <input type="text" class="form-control text-box single-line" id="expenses"
+                                        name="expenses" placeholder=""></textarea>
                                     <label for="first">Your Expenses *</label>
                                 </div>
                                 <div class="col-md-6 floating-label">
-                                    <input type="text" class="required form-control text-box single-line"
-                                        id="charges" name="charges" placeholder=""></textarea>
+                                    <input type="text" class="form-control text-box single-line" id="charges"
+                                        name="charges" placeholder=""></textarea>
                                     <label for="first">Call Charges *</label>
                                 </div>
                             </div>

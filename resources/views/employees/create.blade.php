@@ -275,7 +275,7 @@
                                             <input type="button" id="btnAddEmployee"
                                                 value="{{ $update ? 'Update' : 'Save' }}" class="btn btn-primary">
                                             <a type="button" class="btn btn-danger"
-                                                href="{{ route('clients') }}">Back</a>
+                                                href="{{ route('employees') }}">Back</a>
                                         </div>
                                     </div>
                             </div>

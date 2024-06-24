@@ -68,4 +68,7 @@ class Kernel extends HttpKernel
         'cors' => \App\Http\Middleware\CORS::class,
 
     ];
+    protected $routeMiddleware = [
+        'menu.permission' => \App\Http\Middleware\CheckMenuPermission::class,
+    ];
 }

@@ -16,7 +16,7 @@ class DcController extends Controller
             ->join("services", "services.id", "service_dc.service_id")
             ->leftJoin("dc_type", "dc_type.id", "service_dc.dc_type")
             ->leftJoin("clients", "clients.CST_ID", "services.customer_id")
-            ->filter($request->only('search', 'trashed', 'search_field', 'filter_status'))
+            // ->filter($request->only('search'))
             ->paginate(10)
             ->withQueryString();
         // dd($dc_products);

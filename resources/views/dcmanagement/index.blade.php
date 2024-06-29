@@ -37,7 +37,7 @@
                                         <tbody>
                                             @if ($service_dcs->count() == 0)
                                                 <tr>
-                                                    <td colspan="6" class="text-center">No
+                                                    <td colspan="8" class="text-center">No
                                                         products
                                                         added yet.</td>
                                                 </tr>

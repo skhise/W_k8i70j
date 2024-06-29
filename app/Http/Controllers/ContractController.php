@@ -47,7 +47,7 @@ class ContractController extends Controller
 
     public $status = [
         "1" => '<div class="badge badge-success badge-shadow">Active</div>',
-        "2" => '<div class="badge badge-info badge-shadow">Renewal</div>',
+        "2" => '<div class="badge badge-warning badge-shadow">Renewal</div>',
         "3" => '<div class="badge badge-danger badge-shadow">Expired</div>',
         "4" => '<div class="badge badge-danger badge-shadow">Deactivated</div>',
     ];
@@ -1397,6 +1397,8 @@ class ContractController extends Controller
                             $action = "Contract created, Contract Number:" . $request->CNRT_Number . ", Customer Name:" . $request->CNRT_CustomerName;
                             $log = App(\App\Http\Controllers\LogController::class);
                             $log->SystemLog(null, $action);
+
+                            $this->UpdateContractStatus($contract->CNRT_EndDate, $contract->CNRT_ID);
                             DB::commit();
                             return Redirect("contracts")->with("success", "Contract added!");
                         } catch (Exception $exp) {

@@ -7,6 +7,8 @@ return [
         'services',
         'services.view',
         'profile.edit',
+        'services.accept-reject-call',
+        'service_status.store',
         'logout'
     ],
 

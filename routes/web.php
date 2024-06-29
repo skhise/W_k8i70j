@@ -143,6 +143,7 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
         Route::get('/services/{serviceDcProduct}/dcp-delete', [ServiceController::class, 'DcpDelete'])->name('service_dcp.delete');
         Route::post('/services/{service}/status', [ServiceController::class, 'ApplyServiceAction'])->name('service_status.store');
         Route::post('/services/{service}/assign', [ServiceController::class, 'AssignEngineer'])->name('service_status.assign');
+        Route::post('/services/{service}/accept-reject-call', [ServiceController::class, 'AcceptRejectCall'])->name('services.accept-reject-call');
 
     });
     //services end

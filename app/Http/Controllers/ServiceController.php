@@ -53,6 +53,39 @@ use App\Notifications\SendPushNotification;
 
 class ServiceController extends Controller
 {
+
+    public function AcceptRejectCall(Request $request, Service $service)
+    {
+        try {
+            $validator = Validator::make(
+                $request->all(),
+                [
+                    'service_id' => "required",
+                    'flag' => "required",
+                ]
+            );
+            if ($validator->fails()) {
+                return response()->json(["success" => false, "message" => "Required information missing.", "validation_error" => $validator->errors()]);
+            }
+            if (!empty($service)) {
+                $id = Auth::user()->id;
+                if ($request->flag == 2) {
+                    $service->accepted_datetime = now();
+                }
+                $service->service_status = $request->flag;
+                $service->assigned_to = $request->flag != 2 ? 0 : $service->assigned_to;
+                $service->save();
+                $note = $request->flag == 2 ? "ticket accepeted by engineer." : "ticket rejected by engineer, " . $request->note ?? "";
+                $isOk = $this->AddServiceHistoryM($service->id, $request->flag, $id, 1, $note);
+                return response()->json(["success" => true, "message" => "Action applied!"]);
+            }
+            return response()->json(["success" => false, "message" => "Something went wrong, try again."]);
+        } catch (Exception $exp) {
+            return response()->json(["success" => false, "message" => $exp->getMessage()]);
+        }
+
+
+    }
     public function DeleteServiceDc(Request $request, ServiceDc $serviceDc)
     {
 

@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\ProductType;
 use App\Models\Quotation;
 use App\Models\QuotationProduct;
+use App\Models\QuotationStatus;
 use App\Models\QuotationType;
 use App\Models\ServiceQuotation;
 use Exception;
@@ -28,14 +29,30 @@ class QuotationController extends Controller
             ->when(isset($request->customer_id), function ($query) use ($request) {
                 $query->where("quotation.customer_id", $request->customer_id);
             })
+            ->when(isset($request->quot_type), function ($query) use ($request) {
+                $query->where("quotation.quot_type", $request->quot_type);
+            })
+            ->when(isset($request->quot_status), function ($query) use ($request) {
+                $query->where("quotation.quot_status", $request->quot_status);
+            })
             ->paginate(10)
             ->withQueryString();
         // dd($dc_products);
+        $quotationType = QuotationType::all();
+        $quotationStatus = QuotationStatus::all();
         return view(
             "quotmanagement.index",
             [
                 "service_quots" => $service_quots,
+                'filters' => $request->all('search', 'trashed', 'search_field', 'filter_status'),
+                'search_field' => $request->search_field ?? '',
+                'filter_status' => $request->filter_status ?? '',
+                'quot_status' => $request->quot_status ?? "",
+                'quot_type' => $request->quot_type ?? "",
+                'search' => $request->search ?? '',
                 'clients' => Client::all(),
+                'quotationStatus' => $quotationStatus,
+                'quotationType' => $quotationType,
                 'customer_id' => isset($request->customer_id) ? $request->customer_id : 0
             ]
         );

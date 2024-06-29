@@ -26,6 +26,9 @@ $("#swal-6").click(function () {
     text: 'Once deleted, you will not be able to recover this imaginary file!',
     icon: 'warning',
     buttons: true,
+    showCancelButton: true,
+    confirmButtonText: "Yes",
+    cancelButtonText: `No`,
     dangerMode: true,
   })
     .then((willDelete) => {

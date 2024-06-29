@@ -106,7 +106,7 @@ fas fa-plus-square"></i>
                                         <tbody>
                                             @if ($service_quots->count() == 0)
                                                 <tr>
-                                                    <td colspan="6" class="text-center">No
+                                                    <td colspan="7" class="text-center">No
                                                         products
                                                         added yet.</td>
                                                 </tr>

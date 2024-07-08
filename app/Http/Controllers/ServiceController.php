@@ -90,14 +90,19 @@ class ServiceController extends Controller
     {
 
         try {
-            ServiceDcProduct::where(["dc_id", $serviceDc->id])->delete();
+
+
+            $dcproduct_count = ServiceDcProduct::where(["dc_id"=>$serviceDc->id])->count();
+            if($dcproduct_count>0){
+                ServiceDcProduct::where(["dc_id"=>$serviceDc->id])->delete();
+            }
             $serviceDc->delete();
 
             return back()->with("success", "Deleted!");
         } catch (Exception $exp) {
+            dd($exp->getMessage());
             return back()
-                ->withInput()
-                ->withErrors("Action failed, try again.");
+                ->withError("Action failed, try again.");
         }
 
     }
@@ -241,6 +246,23 @@ class ServiceController extends Controller
         }
 
     }
+    public function DcPrint(ServiceDc $serviceDc, Request $request)
+    {
+        $products = ServiceDcProduct::select("product_serial_numbers.*", "master_product_type.*", "service_dc_product.id as sdp", "service_dc_product.*", "products.*")->where(['dc_id' => $serviceDc->id])
+            ->join("products", "products.Product_ID", "service_dc_product.product_id")
+            ->leftJoin("master_product_type", "master_product_type.id", "products.Product_Type")
+            ->leftJoin("product_serial_numbers", "product_serial_numbers.id", "service_dc_product.serial_no")
+            ->get();
+
+        $serviceDc = ServiceDc::select("clients.*", "services.*", "dc_type.*", "service_dc.id as dcp_id", "master_dc_status.*")->join("master_dc_status", "master_dc_status.id", "service_dc.dc_status")
+            ->join("dc_type", "dc_type.id", "service_dc.dc_type")
+            ->join("services", "services.id", "service_dc.service_id")
+            ->join("clients", "clients.CST_ID", "services.customer_id")
+            ->first();
+        $date = date('Y-m-d');
+
+        return view('dcmanagement.print', compact('serviceDc', 'products', 'date'));
+    }
     public function DcView(ServiceDc $serviceDc, Request $request)
     {
         $dc_products = ServiceDcProduct::select("product_serial_numbers.*", "master_product_type.*", "service_dc_product.id as sdp", "service_dc_product.*", "products.*")->where(['dc_id' => $serviceDc->id])
@@ -249,7 +271,7 @@ class ServiceController extends Controller
             ->leftJoin("product_serial_numbers", "product_serial_numbers.id", "service_dc_product.serial_no")
             ->get();
 
-        $serviceDc = ServiceDc::join("master_dc_status", "master_dc_status.id", "service_dc.dc_status")
+        $serviceDc = ServiceDc::select("clients.*", "services.*", "dc_type.*", "service_dc.id as dcp_id", "master_dc_status.*")->join("master_dc_status", "master_dc_status.id", "service_dc.dc_status")
             ->join("dc_type", "dc_type.id", "service_dc.dc_type")
             ->join("services", "services.id", "service_dc.service_id")
             ->join("clients", "clients.CST_ID", "services.customer_id")
@@ -261,8 +283,9 @@ class ServiceController extends Controller
         ]);
     }
     public function DcpDelete(ServiceDcProduct $serviceDcProduct)
-    {
+    { dd("hello");
         try {
+           
             $serviceDcProduct->delete();
             return back()->with("success", "Deleted");
         } catch (Exception $exp) {
@@ -287,6 +310,29 @@ class ServiceController extends Controller
         }
         return response()->json(["success" => false, "message" => "action failed, try again."]);
 
+    }
+    public function delete(Service $service){
+      
+        try{
+            $count = ServiceDc::where(["service_id"=>$service->id])->count();
+            if($count == 0){
+                $isDelete = $service->delete();
+                if ($isDelete) {
+                    return Redirect("services")->with("success", "Deleted");
+                }
+                return back()
+                ->withError("Action failed, try again.");
+            } else {
+                // dd("heello");
+                return back()
+                    ->withError("Dc founds againt the service.");
+            }
+           
+        }catch(Exception $exp){
+            return back()
+            ->withError($exp->getMessage());
+        }
+    
     }
     public function DeleteService(Request $request)
     {
@@ -578,7 +624,7 @@ class ServiceController extends Controller
         $create = ServiceHistory::create([
             'service_id' => $serviceId,
             'status_id' => $actionId,
-            'sttus_status_id' => $actionId,
+            'sttus_status_id' => $reasonId,
             'user_id' => $engineerId,
             'action_description' => $note,
 
@@ -719,7 +765,6 @@ class ServiceController extends Controller
                 [
                     "status_id" => "required",
                     "sub_status_id" => "required",
-                    'action_description' => "required",
                 ]
             );
 
@@ -1225,6 +1270,70 @@ class ServiceController extends Controller
                 ->withErrors("Action failed, try again." . $ex->getMessage());
         }
 
+    }
+    public function Print(Request $request, Service $service)
+    {
+
+        $services = Service::select("*", "services.id as service_id")
+            ->join("master_service_status", "master_service_status.Status_Id", "services.service_status")
+            ->join("master_service_priority", "master_service_priority.id", "services.service_priority")
+            ->join("master_issue_type", "master_issue_type.id", "services.issue_type")
+            ->join("master_service_type", "master_service_type.id", "services.service_type")
+            ->leftJoin("master_site_area", "master_site_area.id", "services.areaId")
+            ->join("clients", "clients.CST_ID", "services.customer_id")
+            ->leftJoin("employees", "employees.Emp_ID", "services.assigned_to")
+            ->where('services.id', $service->id)->first();
+
+        $product = ContractUnderProduct::where('contract_under_product.id', $service->product_id)->leftJoin("master_product_type", "master_product_type.id", "contract_under_product.product_type")->first();
+        $contract = Contract::leftJoin("master_contract_type", "master_contract_type.id", "contracts.CNRT_Type")
+            ->leftJoin("master_site_type", "master_site_type.id", "contracts.CNRT_SiteType")->where("CNRT_ID", $service->contract_id)->first();
+        $timeline = ServiceHistory::leftJoin("master_service_status", "master_service_status.Status_Id", "service_action_history.status_id")
+            ->leftJoin("master_service_sub_status", "master_service_sub_status.Sub_Status_Id", "service_action_history.sub_status_id")
+            ->where("service_id", $service->id)
+            ->orderBy("service_action_history.id", "DESC")
+            ->get();
+        $status_options = "<option value=''>Select Status</option>";
+        $status = ServiceStatus::where("flag", 1)->get();
+        foreach ($status as $st) {
+            $selected = "";
+            $sub_status = ServiceSubStatus::where("status_id", $st->Status_Id)->get();
+            if ($services->service_status == $st->Status_Id) {
+                $selected = "selected";
+            }
+            if (Auth::user()->role == 3 && $st->Status_Id == 5) {
+                //     $status_options .= "<option data-sub_status='" . $sub_status . "' value=" . $st->Status_Id . " " . $selected . ">" . $st->Status_Name . "</option>";
+
+            } else {
+                $status_options .= "<option data-sub_status='" . $sub_status . "' value=" . $st->Status_Id . " " . $selected . ">" . $st->Status_Name . "</option>";
+            }
+        }
+        $employees = Employee::where("EMP_Status", 1)->get();
+        $employee_options = "<option value=''>Select Employee</option>";
+        foreach ($employees as $employee) {
+            $selected = "";
+            if ($services->assigned_to == $employee->EMP_ID) {
+                $selected = "selected";
+            }
+            $employee_options .= "<option value=" . $employee->EMP_ID . " " . $selected . ">" . $employee->EMP_Name . "</option>";
+        }
+        // dd($status_options);
+
+        $dc_products = ServiceDc::select(["dc_type.*", "clients.*", "services.*", "service_dc.id as dcp_id", "service_dc.*"])
+            ->join("services", "services.id", "service_dc.service_id")
+            ->leftJoin("dc_type", "dc_type.id", "service_dc.dc_type")
+            ->leftJoin("clients", "clients.CST_ID", "services.customer_id")
+            ->where("service_dc.service_id", $service->id)->get();
+
+        return view("services.print", [
+            "product" => $product,
+            "service" => $services,
+            "service_id" => $service->id,
+            "dc_products" => $dc_products,
+            "contract" => $contract,
+            'timeline' => $timeline,
+            "employee_options" => $employee_options,
+            'status_options' => $status_options,
+        ]);
     }
     public function view(Request $request, Service $service)
     {

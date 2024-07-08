@@ -179,6 +179,9 @@
                     <li class="{{ Request::is('reports/contract-service-report') ? 'active' : '' }}"><a
                             class="nav-link" href="{{ route('contract-service-report') }}">Service Analysis
                             Report</a></li>
+                    <li class="{{ Request::is('reports/engineer-service-analysis') ? 'active' : '' }}"><a
+                            class="nav-link" href="{{ route('engineer-service-analysis') }}">Engineer Analysis
+                            Report</a></li>
                     <li class="{{ Request::is('reports/dc-report') ? 'active' : '' }}"><a class="nav-link"
                             href="{{ route('dc-report') }}">Dc Report</a></li>
                     <li class="{{ Request::is('reports/quotation-report') ? 'active' : '' }}"><a class="nav-link"

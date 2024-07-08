@@ -22,6 +22,14 @@
                                         </select>
                                     </div>
                                     <div class="col-lg-2">
+                                        <select id="type" class="form-control select2">
+                                            <option value="">Select Type</option>
+                                            <option value="">All</option>
+                                            <option value="1">Contracted</option>
+                                            <option value="0">Non-Contracted</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-2">
                                         <select id="report_service_status" class="form-control select2">
                                             <option value="">Select Status</option>
                                             <option value="0" {{ $sstatus == 0 ? 'selected' : '' }}>All</option>
@@ -33,9 +41,9 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                    <div class="col-lg-3">
+                                    <div class="col-lg-2">
                                         <select id="report_service_type" class="form-control select2">
-                                            <option value="">Select Service Type</option>
+                                            <option value="">Service Type</option>
                                             <option value="0" {{ $service_type == 0 ? 'selected' : '' }}>All
                                             </option>
                                             @foreach ($service_types as $servicetype)
@@ -112,11 +120,12 @@
     @section('script')
         <script>
             $(document).on("click", ".btn-reset", function() {
-                window.location.replace("contract-report");
+                window.location.reload();
             });
             $(document).on("click", ".btn-fetch-report", function() {
                 var cust_id = $("#client option:selected").val();
                 var cust_Name = $("#client option:selected").text();
+                var type = $("#type option:selected").val();
                 var status = $("#report_service_status option:selected").val();
                 var service_type = $("#report_service_type option:selected").val();
                 var date_range = $("#date-range option:selected").val();
@@ -127,6 +136,7 @@
                         data: {
                             status: status,
                             customer: cust_id,
+                            type:type,
                             date_range: date_range,
                             service_type: service_type
 
@@ -167,7 +177,8 @@
                 var cust_id = $("#client option:selected").val();
                 var cust_Name = $("#client option:selected").text();
                 var status = $("#report_service_status option:selected").val();
-                var type = $("#report_service_type option:selected").val();
+                //var type = $("#report_service_type option:selected").val();
+                 var type = $("#type option:selected").val();
                 var daterange = $("#date-range option:selected").val();
                 if (cust_id != "" && status != "") {
                     $.ajax({
@@ -177,7 +188,7 @@
                             status: status,
                             customer: cust_id,
                             daterange: daterange,
-                            type: type,
+                            type:type
                         },
                         beforeSend: function() {
                             $(".loader").show();

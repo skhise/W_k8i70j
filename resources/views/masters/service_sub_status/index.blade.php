@@ -6,7 +6,7 @@
                     <div class="col-lg-7">
                         <div class="card">
                             <div class="card-header">
-                                <h4>Contract Type</h4>
+                                <h4>Service Sub Status</h4>
                             </div>
                             <div class="card-body">
 
@@ -17,24 +17,27 @@
                                                 <th>
                                                     #
                                                 </th>
-                                                <th>Name</th>
+                                                <th>Status</th>
+                                                <th>Sub Status</th>
+                                                
                                                 <th style="text-align:end;">Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @if(count($contractTypes) == 0)
+                                            @if(count($serviceSubStatus) == 0)
                                             <tr class="text-center">
-                                                <td colspan="6">No type added yet.</td>
+                                                <td colspan="4">No added yet.</td>
                                             </tr>
                                             @else
-                                            @foreach($contractTypes as $index=>$contractType)
-                                            <tr key="{{$contractType['id']}}">
+                                            @foreach($serviceSubStatus as $index=>$subStatus)
+                                            <tr key="{{$subStatus['Sub_Status_Id']}}">
                                                 <td>{{$index+1}}</td>
-                                                <td>{{$contractType['contract_type_name']}}</td>
+                                                <td>{{$subStatus['Status_Name']}}</td>
+                                                <td>{{$subStatus['Sub_Status_Name']}}</td>
                                                 <td>
                                                     
-                                                    <button data-name="{{$contractType['contract_type_name']}}"
-                                                        data-id="{{$contractType['id']}}"
+                                                    <button data-statusid="{{$subStatus['status_id']}}" data-name="{{$subStatus['Sub_Status_Name']}}"
+                                                        data-id="{{$subStatus['Sub_Status_Id']}}"
                                                         class="btn-edit btn btn-primary btn-sm btn-icon mr-2"><i
                                                             class="far fa-edit"></i></button>
 
@@ -47,12 +50,12 @@
                                         </tbody>
                                     </table>
                                     <div class="float-left">
-                                        @if($contractTypes->count())
-                                        <p>Found {{ $contractTypes->count()}} records</p>
+                                        @if($serviceSubStatus->count())
+                                        <p>Found {{ $serviceSubStatus->count()}} records</p>
                                         @endif
                                     </div>
                                     <div class="float-right">
-                                        {{ $contractTypes->links() }}
+                                        {{ $serviceSubStatus->links() }}
                                     </div>
                                 </div>
                             </div>
@@ -61,18 +64,32 @@
                     <div class="col-lg-5">
                         <div class="card">
                             <div class="card-header">
-                                <h4>Add Contract Type</h4>
+                                <h4>Add Sub Status</h4>
                             </div>
                             <div class="card-body">
                                 <div class="form-group">
                                     <div class="row">
                                         <div class="col-md-12 floating-label">
-                                            <input type="text" id="type_id" value="0" name="type_id"
+                                        
+                                            <select class="form-control" id="status_id" name="status_id">
+                                                <option value="">Select Status</option>
+                                                @foreach($status as $st)
+                                                        <option value="{{$st->Status_Id}}">{{$st->Status_Name}}</option>
+                                                @endforeach
+                                                <label>Status</label>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-12 floating-label">
+                                            <input type="text" id="sub_status_id" value="0" name="sub_status_id"
                                                 style="display:none;" />
                                             <input type="text" id="flag" value="0" name="flag" style="display:none;" />
-                                            <input class="form-control" type="text" name="contract_type_name"
-                                                id="contract_type_name" />
-                                            <label>Type Name</label>
+                                            <input class="form-control" type="text" name="sub_status_name"
+                                                id="sub_status_name" />
+                                            <label>Sub Status Name</label>
                                         </div>
                                     </div>
                                 </diV>
@@ -95,22 +112,25 @@
 
     <script>
         $(document).on('click', "#btnResetCt", function () {
-            $("#type_id").val('');
-            $("#contract_type_name").val('');
+            $("#sub_status_id").val('');
+            $("#sub_status_name").val('');
+            $("#status_id").val('');
             $("#flag").val('0');
         });
         $(document).on('click', "#btnAddCt", function () {
-            var id = $("#type_id").val();
-            var name = $("#contract_type_name").val();
+            var id = $("#sub_status_id").val();
+            var name = $("#sub_status_name").val();
+            var status_id = $("#status_id").val();
             var flag = $("#flag").val();
             if (name != "" && typeof name != 'undefined') {
                 $.ajax({
-                    url: '/masters/contract-type',
+                    url: '/masters/service-sub-status',
                     method: 'post',
                     data: {
                         id: id,
                         flag: flag,
                         name: name,
+                        status_id:status_id,
                         "_token": "{{ csrf_token() }}",
                     },
                     success: function (response) {
@@ -127,15 +147,17 @@
                     }
                 })
             } else {
-                alert("Type name required");
+                alert("Status name required");
             }
         });
         $(document).on('click', ".btn-edit", function () {
             var id = $(this).data('id');
             var name = $(this).data('name');
+            var statusid = $(this).data('statusid');
             $("#flag").val(1);
-            $("#contract_type_name").val(name);
-            $("#type_id").val(id);
+            $("#sub_status_name").val(name);
+            $("#sub_status_id").val(id);
+            $("#status_id").val(statusid);
 
         });
         $(document).on('click', ".btn-delete", function () {
@@ -146,7 +168,7 @@
 
                 if (id != "" && typeof id != 'undefined') {
                     $.ajax({
-                        url: '/masters/contract-type',
+                        url: '/masters/service-sub-status',
                         method: 'delete',
                         data: {
                             id: id,

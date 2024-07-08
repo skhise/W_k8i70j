@@ -33,9 +33,9 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <div class="pull-right">
-                    <button type="button" class="btn btn-primary" id="btn_password_save">Save</button>
-                    <button class="btn btn-danger mr-2" onclick="CancelModelBoxPassword()">Cancel</button>
+                <div class="pull-right d-flex">
+                    <button type="button" class="btn btn-primary  mr-2" id="btn_password_save">Save</button>
+                    <button class="btn btn-danger" onclick="CancelModelBoxPassword()">Cancel</button>
                 </div>
             </div>
         </div>

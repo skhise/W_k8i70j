@@ -54,12 +54,17 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
 
         Route::get('/reports/service-ticket-report', [ReportController::class, 'str_index'])->name('service-ticket-report');
         Route::get('/reports/service-ticket-report-data', [ReportController::class, 'GetServiceCallReport'])->name('service-ticket-report-data');
-
+        
         Route::get('/reports/engineer-report', [ReportController::class, 'etr_index'])->name('engineer-report');
+        
         Route::get('/reports/engineer-ticket-report-data', [ReportController::class, 'GetEngineerCallReport'])->name('engineer-ticket-report-data');
 
         Route::get('/reports/contract-service-report-data', [ReportController::class, 'csr_data'])->name('contract-service-report-data');
+
         Route::get('/reports/GetAnalysisReport', [ReportController::class, 'GetAnalysisReport'])->name('GetAnalysisReport');
+
+        Route::get('/reports/engineer-service-analysis', [ReportController::class, 'easr_index'])->name('engineer-service-analysis');
+        Route::get('/reports/GetEngineerAnalysisReport', [ReportController::class, 'GetEngineerAnalysisReport'])->name('GetEngineerAnalysisReport');
     });
 
     /*Clients Route*/
@@ -134,12 +139,15 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
         Route::get('/services/{contractScheduleService}/create', [ServiceController::class, 'schedulecreate'])->name('services.schedulecreate');
         Route::post('/services', [ServiceController::class, 'store'])->name('services.store');
         Route::get('/services/{service}/view', [ServiceController::class, 'view'])->name('services.view');
-        Route::get('/services/{service}/edit', [ServiceController::class, 'edit'])->name('services.edit');
+        Route::get('/services/{service}/delete', [ServiceController::class, 'delete'])->name('services.delete');
+        Route::post('/services/{service}/edit', [ServiceController::class, 'edit'])->name('services.edit');
+        Route::get('/services/{service}/print', [ServiceController::class, 'Print'])->name('services.print');
         Route::post('/services/{service}/update', [ServiceController::class, 'update'])->name('services.update');
         Route::post('/services/{service}/add_product', [ServiceController::class, 'AddServiceProduct'])->name('services.store_product');
         Route::get('/services/{service}/product_create', [ServiceController::class, 'ProductCreate'])->name('services.product_create');
         Route::get('/services/{serviceDc}/product_delete', [ServiceController::class, 'DeleteServiceDc'])->name('services.dc_delete');
         Route::get('/services/{serviceDc}/dc-view', [ServiceController::class, 'DcView'])->name('services.dc_view');
+        Route::get('/services/{serviceDc}/dc-print', [ServiceController::class, 'DcPrint'])->name('services.dc_print');
         Route::get('/services/{serviceDcProduct}/dcp-delete', [ServiceController::class, 'DcpDelete'])->name('service_dcp.delete');
         Route::post('/services/{service}/status', [ServiceController::class, 'ApplyServiceAction'])->name('service_status.store');
         Route::post('/services/{service}/assign', [ServiceController::class, 'AssignEngineer'])->name('service_status.assign');
@@ -169,6 +177,11 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
         Route::post('/masters/site-area', [MasterController::class, 'sa_saveupdate'])->name('masters.site-area-store');
         Route::delete('/masters/site-area', [MasterController::class, 'sa_delete'])->name('masters.site-area-delete');
     });
+    Route::middleware('auth')->group(function () {
+        Route::get('/masters/service-sub-status', [MasterController::class, 'sbs_index'])->name('masters.service-sub-status');
+        Route::post('/masters/service-sub-status', [MasterController::class, 'sbs_saveupdate'])->name('masters.service-sub-status-store');
+        Route::delete('/masters/service-sub-status', [MasterController::class, 'sbs_delete'])->name('masters.service-sub-status-delete');
+    });
     /*end master routes*/
 
     Route::middleware('auth')->group(function () {
@@ -180,6 +193,7 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
         Route::post('/quotmanagements/store', [QuotationController::class, 'store'])->name('quotmanagements.store');
         Route::get('/quotmanagements/{quotation}/view', [QuotationController::class, 'View'])->name('quotmanagements.view');
         Route::get('/quotmanagements/{quotation}/delete', [QuotationController::class, 'Delete'])->name('quotmanagements.delete');
+        Route::get('/quotmanagements/{quotation}/print', [QuotationController::class, 'Print'])->name('quotmanagements.print');
         Route::get('/quotmanagements/{quotation_product}/delete_qp', [QuotationController::class, 'DeleteQP'])->name('quotmanagements.delete_qp');
 
     });
@@ -215,6 +229,7 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
         ->middleware('auth');
     Route::middleware('auth')->group(function () {
         Route::post('/employees/{employee}', [EmployeeController::class, 'update'])->name('employees.update');
+        Route::get('/employees/{employee}/delete', [EmployeeController::class, 'deleteEmp'])->name('employees.delete');
         Route::post('/employees/{employee}/password', [EmployeeController::class, 'ResetPassword'])->name('employees.setpassword');
     });
 

@@ -12,6 +12,8 @@
                                         <a class="btn btn-danger" href="{{ route('quotation-report') }}">Back</a>
                                     @else
                                         <a class="btn btn-danger" href="{{ route('quotmanagements') }}">Back</a>
+                                        <a class="btn btn-info" target="_blank"
+                                            href="{{ route('quotmanagements.print', $quotation->dcp_id) }}">Print</a>
                                     @endif
                                 </div>
 

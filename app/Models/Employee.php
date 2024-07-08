@@ -3,10 +3,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Employee extends Model
 {
-    use HasFactory;
+    use SoftDeletes, HasFactory;
+
 
     protected $table = 'employees';
     protected $fillable = [
@@ -37,7 +39,7 @@ class Employee extends Model
         $query->when($filters['search'] ?? null, function ($query, $search) use ($filters) {
 
             $search_field = $filters['search_field'] ?? '';
-            if (empty ($search_field)) {
+            if (empty($search_field)) {
                 $query->where('EMP_Name', 'like', '%' . $search . '%')
                     ->orWhere('EMP_MobileNumber', 'like', '%' . $search . '%')
                     ->orWhere('EMP_Email', 'like', '%' . $search . '%');

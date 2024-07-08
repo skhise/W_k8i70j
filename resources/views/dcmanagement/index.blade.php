@@ -9,15 +9,38 @@
                                 <h4>DC Management</h4>
                             </div>
                             <div class="card-body">
-                                <div class="float-right">
-                                    <form action="{{ route('dcmanagements') }}" id="search_form">
-                                        <div class="input-group">
-                                            <input type="text" class="form-control" value="{{ $search }}"
-                                                id="search" name="search" placeholder="Search">
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <form action="{{ route('dcmanagements') }}" id="search_form">
+                                            <input type="hidden" name="search_field" value="{{ $search_field }}"
+                                                id="search_field" />
+                                            <input type="hidden" value="{{ $filter_status }}" name="filter_status"
+                                                id="filter_status" />
+                                            <div class="d-flex float-right justify-space-between" style="width:30%;">
+                                                <div class="input-group">
+                                                    <input type="text" class="filter_values form-control"
+                                                        value="{{ $search }}" id="search" name="search"
+                                                        placeholder="Search">
+                                                    <div class="input-group-append">
+                                                        <button class="btn btn-primary filter-dropdown"
+                                                            data-toggle="dropdown"><i
+                                                                class="fas fa-filter"></i></button>
+                                                        <div class="edit-filter-modal dropdown-menu-right hidden">
+                                                            <li class="dropdown-title">Filter By</li>
 
 
-                                        </div>
-                                    </form>
+                                                            <button type="submit"
+                                                                class="filter_values mt-2 ml-2 apply-button btn btn-primary btn-sm">Apply</button>
+                                                            <button type="button"
+                                                                class="mt-2 filter-remove btn btn-danger btn-sm">Cancel</button>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+                                        </form>
+                                    </div>
                                 </div>
                                 <div class="clearfix mb-3"></div>
                                 <div class="table-responsive">
@@ -38,7 +61,7 @@
                                             @if ($service_dcs->count() == 0)
                                                 <tr>
                                                     <td colspan="8" class="text-center">No
-                                                        products
+                                                        quotation
                                                         added yet.</td>
                                                 </tr>
                                             @endif

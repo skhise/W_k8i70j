@@ -28,6 +28,14 @@ class EmployeeController extends Controller
         "2" => '<div class="badge badge-danger badge-shadow">De-Active</div>',
     ];
     //
+    public function deleteEmp(Request $request, Employee $employee)
+    {
+        $delete = $employee->delete();
+        if ($delete) {
+            return redirect()->route('employees')->with("success", "Deleted!");
+        }
+        return back()->withErrors("Action failed, try again.");
+    }
     public function DeleteEmployee(Request $request)
     {
         $validator = Validator::make(

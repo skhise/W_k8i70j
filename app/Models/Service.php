@@ -66,6 +66,10 @@ class Service extends Model
    {
       return $this->hasMany(ServiceHistory::class);
    }
+   public function lastactiondetails(){
+      $history = ServiceHistory::join("master_service_sub_status","master_service_sub_status.Sub_Status_Id","service_action_history.sub_status_id")->where("service_id", $this->service_id)->orderByDesc("id")->first();
+      return $history->Sub_Status_Name ?? "";
+   }
    public function lastaction()
    {
       $history = ServiceHistory::where("service_id", $this->service_id)->orderByDesc("id")->first();

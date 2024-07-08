@@ -1074,9 +1074,9 @@ class ContractController extends Controller
     }
     public function contract_status_count($status)
     {
-        $contrcats = Contract::join("master_contract_type", "master_contract_type.id", "contracts.CNRT_Type")
-            ->join("master_site_type", "master_site_type.id", "contracts.CNRT_SiteType")
-            ->join("master_contract_status", "master_contract_status.id", "contracts.CNRT_Status")
+        $contrcats = Contract::leftJoin("master_contract_type", "master_contract_type.id", "contracts.CNRT_Type")
+            ->leftJoin("master_site_type", "master_site_type.id", "contracts.CNRT_SiteType")
+            ->leftJoin("master_contract_status", "master_contract_status.id", "contracts.CNRT_Status")
             ->leftJoin("clients", "clients.CST_ID", "contracts.CNRT_CustomerID")
             ->leftJoin("master_site_area", "master_site_area.id", "contracts.CNRT_Site")
             ->orderBy('contracts.updated_at', "DESC")
@@ -1087,9 +1087,9 @@ class ContractController extends Controller
     }
     public function index(Request $request)
     {
-        $contrcats = Contract::join("master_contract_type", "master_contract_type.id", "contracts.CNRT_Type")
-            ->join("master_site_type", "master_site_type.id", "contracts.CNRT_SiteType")
-            ->join("master_contract_status", "master_contract_status.id", "contracts.CNRT_Status")
+        $contrcats = Contract::leftJoin("master_contract_type", "master_contract_type.id", "contracts.CNRT_Type")
+            ->leftJoin("master_site_type", "master_site_type.id", "contracts.CNRT_SiteType")
+            ->leftJoin("master_contract_status", "master_contract_status.id", "contracts.CNRT_Status")
             ->leftJoin("clients", "clients.CST_ID", "contracts.CNRT_CustomerID")
             ->leftJoin("master_site_area", "master_site_area.id", "contracts.CNRT_Site")
             ->orderBy('contracts.updated_at', "DESC")
@@ -1116,9 +1116,9 @@ class ContractController extends Controller
     }
     public function view(Contract $contract)
     {
-        $contract_obj = Contract::join("master_contract_type", "master_contract_type.id", "contracts.CNRT_Type")
-            ->join("master_site_type", "master_site_type.id", "contracts.CNRT_SiteType")
-            ->join("master_contract_status", "master_contract_status.id", "contracts.CNRT_Status")
+        $contract_obj = Contract::leftJoin("master_contract_type", "master_contract_type.id", "contracts.CNRT_Type")
+            ->leftJoin("master_site_type", "master_site_type.id", "contracts.CNRT_SiteType")
+            ->leftJoin("master_contract_status", "master_contract_status.id", "contracts.CNRT_Status")
             ->leftJoin("clients", "clients.CST_ID", "contracts.CNRT_CustomerID")
             ->where("CNRT_ID", $contract->CNRT_ID)->first();
         $issueOptions = '<option value="">Select Type</option>';

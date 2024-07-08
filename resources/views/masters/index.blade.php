@@ -31,6 +31,10 @@
                                                 data-route="{{route('masters.site-area')}}"><i class="fa fa-info"></i><a
                                                     class="btn" href="masters/site-area">Site
                                                     Location</a></li>
+                                            <li class="list-group-item clickMenu"
+                                                data-route="{{route('masters.service-sub-status')}}"><i class="fa fa-info"></i><a
+                                                    class="btn" href="{{route('masters.service-sub-status')}}">Service Sub Status
+                                                    </a></li>
                                         </ul>
                                     </div>
 

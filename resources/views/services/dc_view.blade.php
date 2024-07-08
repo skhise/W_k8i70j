@@ -11,6 +11,8 @@
                                     @if ($flag == 1)
                                         <a class="btn btn-danger" href="{{ route('dc-report') }}">Back</a>
                                     @else
+                                        <a class="btn btn-info" target="_blank"
+                                            href="{{ route('services.dc_print', $service_dc->dcp_id) }}">Print</a>
                                         <a class="btn btn-danger" href="{{ route('dcmanagements') }}">Back</a>
                                     @endif
                                 </div>

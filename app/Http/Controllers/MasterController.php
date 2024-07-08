@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\ProductType;
+use App\Models\ServiceStatus;
+use App\Models\ServiceSubStatus;
 use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -384,6 +386,67 @@ class MasterController extends Controller
                 }
             } else {
                 return response()->json(["success" => false, "message" => "duplicate product type.", "validation_error" => $validator->errors()]);
+            }
+        }
+    }
+    public function sbs_index (Request $request){
+        $subStatus = array();
+        $status  =array();
+        try {
+            $subStatus = ServiceSubStatus::join("master_service_status","master_service_status.Status_Id","master_service_sub_status.status_id")->orderBy("Sub_Status_Id")->paginate(10)
+                ->withQueryString();
+            $status = ServiceStatus::all();
+        } catch (Exception $ex) {
+            // return $ex->getMessage();
+        }
+        return view('masters.service_sub_status.index', ['serviceSubStatus' => $subStatus,"status"=>$status]);
+    }
+    public function sbs_saveupdate(Request $request)
+    {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                "id" => "required",
+                "name" => "required",
+                "flag" => "required",
+                'status_id'=>"required",
+            ]
+        );
+        if ($validator->fails()) {
+            return response()->json(["success" => false, "message" => "data missing, try again.", "validation_error" => $validator->errors()]);
+        }
+        if ($request->flag == 1) {
+            $checkName = ServiceSubStatus::where(['Sub_Status_Name'=>$request->name,
+            'status_id' => $request->status_id])
+                ->where('Sub_Status_Id', "!=", $request->id)->get();
+            if ($checkName->count() > 0) {
+                return response()->json(["success" => false, "message" => "duplicate sub status.", "validation_error" => $validator->errors()]);
+            } else {
+                $update = ServiceSubStatus::where('Sub_Status_Id', $request->id)->update([
+                    'Sub_Status_Name' => $request->name,
+                    'status_id' => $request->status_id
+                ]);
+                if ($update) {
+                    return response()->json(["success" => true, "message" => "Updated.", "validation_error" => $validator->errors()]);
+                } else {
+                    return response()->json(["success" => false, "message" => "action failed, try again.", "validation_error" => $validator->errors()]);
+                }
+            }
+
+        } else {
+            $checkName = ServiceSubStatus::where(['Sub_Status_Name'=>$request->name,'status_id' => $request->status_id])->get();
+            if ($checkName->count() == 0) {
+                $create = ServiceSubStatus::create([
+                    'Sub_Status_Name' => $request->name,
+                    'status_id' => $request->status_id,
+                ]);
+                if ($create) {
+                    return response()->json(["success" => true, "message" => "Saved", "validation_error" => $validator->errors()]);
+                } else {
+                    return response()->json(["success" => false, "message" => "action failed, try again.", "validation_error" => $validator->errors()]);
+                }
+            } else {
+                return response()->json(["success" => false, "message" => "duplicate sub status.", "validation_error" => $validator->errors()]);
             }
         }
     }

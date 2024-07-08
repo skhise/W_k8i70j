@@ -13,7 +13,9 @@
 .m-r--125 {
     margin-right: -125px
 }
-
+.fa {
+    color: #c8cdd1!important;
+}
 .m-b--125 {
     margin-bottom: -125px
 }

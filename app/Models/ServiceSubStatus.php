@@ -14,5 +14,5 @@ class ServiceSubStatus extends Model
         'Sub_Status_Id',
         'status_id'
     ];
-    protected $primaryKey = 'Status_Id';
+    protected $primaryKey = 'Sub_Status_Id';
 }

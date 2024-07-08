@@ -2,7 +2,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="myLargeModalLabel">Status</h5>
+                <h5 class="modal-title" id="myLargeModalLabel">Assign</h5>
                 <button type="button" id="btn_close_service_assign" data-toggle="modal"
                     data-target=".bd-RefServiceAssign-modal-lg" class="close" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -31,9 +31,9 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <div class="pull-right">
-                    <button type="button" class="btn btn-primary" id="btn_service_assign_save">Save</button>
-                    <button class="btn btn-danger mr-2" onclick="CancelModelBoxServiceAssign()">Cancel</button>
+                <div class="pull-right d-flex">
+                    <button type="button" class="btn btn-primary mr-2" id="btn_service_assign_save">Save</button>
+                    <button class="btn btn-danger" onclick="CancelModelBoxServiceAssign()">Cancel</button>
                 </div>
             </div>
         </div>

@@ -225,6 +225,14 @@ class ReportController extends Controller
             ->when($service_type != 0, function ($query) use ($service_type) {
                 return $query->where('services.service_type', $service_type);
             })
+            ->when($type != "", function ($query) use ($type) {
+                if($type == 0){
+                    return $query->where('services.contract_id', 0);
+                } else {
+                    return $query->where('services.contract_id','>=', $type);
+                }
+                
+            })
             ->when($status != 0, function ($query) use ($status) {
                 return $query->where('services.service_status', $status);
             })
@@ -291,6 +299,14 @@ class ReportController extends Controller
             "clients" => $clients,
         ]);
     }
+    public function easr_index(Request $request)
+    {
+        $engineer = Employee::all();
+        return view('reports.engineer-service-analysis', [
+            "engineers" => $engineer,
+        ]);
+    }
+    
     function GetServiceCount($customer_id, $todate, $fromdate, $empId, $contract, $serviceType, $issueType, $status)
     {
 
@@ -355,6 +371,74 @@ class ReportController extends Controller
 
     }
     public function GetAnalysisReport(Request $request)
+    {
+
+
+        $todate = $request->todate;
+        $fromdate = $request->fromdate;
+        $customer_id = $request->cust_id;
+        $employees = Employee::orderby("EMP_ID", 'ASC')->get();
+
+        $employee = array();
+        $employeeData = array();
+        foreach ($employees as $emp) {
+            array_push($employee, $emp->EMP_Name);
+            $count = $this->GetServiceCount($customer_id, $todate, $fromdate, $emp->EMP_ID, "", "", "", "");
+            array_push($employeeData, $count);
+        }
+
+
+        $contractType = array("Contracted", "Non Contracted");
+        $contractTypeData = array(15, 10);
+        $countContracted = $this->GetServiceCount($customer_id, $todate, $fromdate, "", 1, "", "", "");
+        $countNonContracted = $this->GetServiceCount($customer_id, $todate, $fromdate, "", 0, "", "", "");
+
+        $contractTypeArr = array(array("label" => "Contracted", "y" => $countContracted), array("label" => "Non Contracted", "y" => $countNonContracted));
+        $serviceType = array();
+        $serviceTypeData = array();
+
+        $serviceTypes = ServiceType::orderby("id", 'ASC')->get();
+        foreach ($serviceTypes as $st) {
+            array_push($serviceType, $st->type_name);
+            $count = $this->GetServiceCount($customer_id, $todate, $fromdate, "", "", $st->id, "", "");
+            array_push($serviceTypeData, $count);
+        }
+
+        $issueType = array();
+        $issueTypeData = array();
+
+        $issueTypes = IssueType::orderby("id", 'ASC')->get();
+        foreach ($issueTypes as $it) {
+            array_push($issueType, $it->issue_name);
+            $count = $this->GetServiceCount($customer_id, $todate, $fromdate, "", "", "", $it->id, "");
+            array_push($issueTypeData, $count);
+        }
+        $countArray = array();
+        $serviceStatus = ServiceStatus::orderby("Status_Id", 'ASC')->get();
+        foreach ($serviceStatus as $ss) {
+            $count = $this->GetServiceCount($customer_id, $todate, $fromdate, "", "", "", "", $ss->Status_Id);
+            //$obj = ."=>".$count;
+            $countArray[$ss->Status_Name] = $count;
+        }
+
+
+
+        return response()->json([
+            "success" => true,
+            "employee" => $employee,
+            "employeeData" => $employeeData,
+            "contractType" => $contractType,
+            "contractTypeData" => $contractTypeData,
+            "serviceType" => $serviceType,
+            "serviceTypeData" => $serviceTypeData,
+            "issueType" => $issueType,
+            "issueTypeData" => $issueTypeData,
+            "countArray" => $countArray,
+            "contractTypeArr" => $contractTypeArr,
+        ]);
+
+    }
+    public function GetEngineerAnalysisReport(Request $request)
     {
 
 
@@ -551,6 +635,7 @@ class ReportController extends Controller
 
         $customerId = $request->customer;
         $service_type = $request->service_type;
+        $type = $request->type;
         $status = $request->status;
         $date_range = $request->date_range;
         $today = date("Y-m-d");
@@ -578,6 +663,88 @@ class ReportController extends Controller
             })
             ->when($service_type != 0, function ($query) use ($service_type) {
                 return $query->where('services.service_type', $service_type);
+            })
+            ->when($type != "", function ($query) use ($type) {
+                if($type == 0){
+                    return $query->where('services.contract_id', 0);
+                } else {
+                    return $query->where('services.contract_id','>=', $type);
+                }
+                
+            })
+            ->when($status != 0, function ($query) use ($status) {
+                return $query->where('services.service_status', $status);
+            })
+            ->when($date_range != "" && $date_range != -1, function ($query) use ($todate, $fromdate) {
+                return $query->whereBetween(DB::raw('DATE_FORMAT(services.service_date, "%Y-%m-%d")'), [$fromdate, $todate]);
+
+            })
+
+            ->orderby("services.updated_at", "DESC")
+            ->paginate(10);
+
+        $clients = Client::all();
+        $status = ServiceStatus::all();
+        $service_types = ServiceType::all();
+        if ($request->ajax()) {
+            return view('reports.str_pagination', compact('services', 'status'));
+        }
+        return view(
+            'reports.service_report',
+            [
+                "clients" => $clients,
+                "status" => $status,
+                "customer" => $customerId,
+                "date_range" => $date_range,
+                "service_types" => $service_types,
+                "service_type" => $service_type,
+                "contracts" => array(),
+                "services" => $services,
+                "sstatus" => $request->status,
+            ]
+        );
+    }
+    public function EngineerServiceAnalysis(Request $request)
+    {
+
+        $customerId = $request->customer;
+        $service_type = $request->service_type;
+        $type = $request->type;
+        $status = $request->status;
+        $date_range = $request->date_range;
+        $today = date("Y-m-d");
+        $todate = date("Y-m-d");
+        $fromdate = date('Y-m-d', strtotime($todate . '-' . $date_range . ' days'));
+        if ($date_range == 0) {
+            $fromdate = $todate;
+        }
+        if ($date_range == 1) {
+            $todate = date('Y-m-d', strtotime($today . '-1 days'));
+            $fromdate = date('Y-m-d', strtotime($today . '-1 days'));
+        }
+
+        $services = array();
+        $services = Service::select("*", "services.id as service_id")
+            ->join("master_service_status", "master_service_status.Status_Id", "services.service_status")
+            ->join("master_service_priority", "master_service_priority.id", "services.service_priority")
+            ->join("master_issue_type", "master_issue_type.id", "services.issue_type")
+            ->join("master_service_type", "master_service_type.id", "services.service_type")
+            ->join("clients", "clients.CST_ID", "services.customer_id")
+            ->leftJoin("contracts", "contracts.CNRT_ID", "services.contract_id")
+            ->leftJoin("employees", "employees.EMP_ID", "services.assigned_to")
+            ->when($customerId != 0, function ($query) use ($customerId) {
+                return $query->where('clients.CST_ID', $customerId);
+            })
+            ->when($service_type != 0, function ($query) use ($service_type) {
+                return $query->where('services.service_type', $service_type);
+            })
+            ->when($type != "", function ($query) use ($type) {
+                if($type == 0){
+                    return $query->where('services.contract_id', 0);
+                } else {
+                    return $query->where('services.contract_id','>=', $type);
+                }
+                
             })
             ->when($status != 0, function ($query) use ($status) {
                 return $query->where('services.service_status', $status);

@@ -3,7 +3,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="myLargeModalLabel">Status</h5>
+                <h5 class="modal-title" id="myLargeModalLabel">Assign</h5>
                 <button type="button" id="btn_close_service_status" data-toggle="modal"
                     data-target=".bd-RefServiceStatus-modal-lg" class="close" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -43,9 +43,9 @@
                     <div class="form-group">
                         <div class="row">
                             <div class="col-md-12 floating-label">
-                                <textarea class="required form-control text-box single-line" id="action_description" name="action_description"
+                                <textarea class="form-control text-box single-line" id="action_description" name="action_description"
                                     placeholder=""></textarea>
-                                <label for="first" id="action_description_lbl">Description *</label>
+                                <label for="first" id="action_description_lbl">Description</label>
                             </div>
                         </div>
                     </div>
@@ -67,12 +67,12 @@
                         <div class="form-group">
                             <div class="row">
                                 <div class="col-md-6 floating-label">
-                                    <input type="text" class="form-control text-box single-line" id="expenses"
+                                    <textarea type="text" class="form-control text-box single-line" id="expenses"
                                         name="expenses" placeholder=""></textarea>
                                     <label for="first">Your Expenses *</label>
                                 </div>
                                 <div class="col-md-6 floating-label">
-                                    <input type="text" class="form-control text-box single-line" id="charges"
+                                    <textarea type="text" class="form-control text-box single-line" id="charges"
                                         name="charges" placeholder=""></textarea>
                                     <label for="first">Call Charges *</label>
                                 </div>
@@ -80,14 +80,12 @@
                         </div>
                     </div>
 
-
-                    <p>Note: All * marked are required.</p>
                 </form>
             </div>
             <div class="modal-footer">
-                <div class="pull-right">
-                    <button type="button" class="btn btn-primary" id="btn_service_status_save">Save</button>
-                    <button class="btn btn-danger mr-2" onclick="CancelModelBoxServiceAction()">Cancel</button>
+                <div class="pull-right d-flex">
+                    <button type="button" class="btn btn-primary  mr-2" id="btn_service_status_save">Save</button>
+                    <button class="btn btn-danger" onclick="CancelModelBoxServiceAction()">Cancel</button>
                 </div>
             </div>
         </div>

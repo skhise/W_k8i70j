@@ -47,7 +47,9 @@
         .select2-container {
             width: 100% !important;
         }
-
+        .fa {
+            color: #c8cdd1!important;
+        }
         .myselect2.select2-container {
             width: 25% !important;
         }

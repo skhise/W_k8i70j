@@ -72,6 +72,25 @@ class QuotationController extends Controller
             'clients' => Client::all(),
         ]);
     }
+
+    public function Print(Quotation $quotation, Request $request)
+    {
+        $products = QuotationProduct::select("master_product_type.*", "quotation_product.id as sdp", "quotation_product.*", "products.*")
+            ->join("products", "products.Product_ID", "quotation_product.product_id")
+            ->leftJoin("master_product_type", "master_product_type.id", "products.Product_Type")
+            ->where(['quot_id' => $quotation->id])
+            ->get();
+
+        $quotation = Quotation::select("clients.*", "quotation.*", "master_quotation_type.*", "quotation.id as dcp_id", "master_quotation_status.*")->join("master_quotation_status", "master_quotation_status.id", "quotation.quot_status")
+            ->join("master_quotation_type", "master_quotation_type.id", "quotation.quot_type")
+            ->join("clients", "clients.CST_ID", "quotation.customer_id")
+            ->where("quotation.id", $quotation->id)
+            ->first();
+
+        $date = date('Y-m-d');
+
+        return view('quotmanagement.print', compact('quotation', 'products', 'date'));
+    }
     public function view(Quotation $quotation, Request $request)
     {
         $quotation_products = QuotationProduct::select("master_product_type.*", "quotation_product.id as sdp", "quotation_product.*", "products.*")
@@ -80,7 +99,7 @@ class QuotationController extends Controller
             ->where(['quot_id' => $quotation->id])
             ->get();
 
-        $quotation_details = Quotation::join("master_quotation_status", "master_quotation_status.id", "quotation.quot_status")
+        $quotation_details = Quotation::select("clients.*", "quotation.*", "master_quotation_type.*", "quotation.id as dcp_id", "master_quotation_status.*")->join("master_quotation_status", "master_quotation_status.id", "quotation.quot_status")
             ->join("master_quotation_type", "master_quotation_type.id", "quotation.quot_type")
             ->join("clients", "clients.CST_ID", "quotation.customer_id")
             ->where("quotation.id", $quotation->id)

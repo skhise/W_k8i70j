@@ -1009,6 +1009,7 @@ class ServiceController extends Controller
         $pending = $this->service_status_count(3, $fromdate, $todate);
         $resolved = $this->service_status_count(4, $fromdate, $todate);
         $closed = $this->service_status_count(5, $fromdate, $todate);
+        $assigned = $this->service_status_count(6, $fromdate, $todate);
         return view(
             'services.index',
             [
@@ -1022,7 +1023,8 @@ class ServiceController extends Controller
                 'open' => $open,
                 'pending' => $pending,
                 'resolved' => $resolved,
-                'closed' => $closed
+                'closed' => $closed,
+                'assigned' => $assigned
             ]
         );
 
@@ -1367,7 +1369,7 @@ class ServiceController extends Controller
             if ($services->service_status == $st->Status_Id) {
                 $selected = "selected";
             }
-            if (Auth::user()->role == 3 && $st->Status_Id == 5) {
+            if (Auth::user()->role == 3 && $st->Status_Id == 6) {
                 //     $status_options .= "<option data-sub_status='" . $sub_status . "' value=" . $st->Status_Id . " " . $selected . ">" . $st->Status_Name . "</option>";
 
             } else {

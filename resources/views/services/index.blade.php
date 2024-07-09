@@ -34,6 +34,10 @@ fas fa-plus-square"></i>
                                                     class="btn-status-filter btn btn-outline-success {{ $filter_status == 2 ? ' active' : '' }}">
                                                     Open <span class="badge badge-success">{{ $open }}</span>
                                                 </button>
+                                                <button data-key ="2" type="button"
+                                                    class="btn-status-filter btn btn-outline-success {{ $filter_status == 6 ? ' active' : '' }}">
+                                                    Assigned <span class="badge badge-success">{{ $assigned }}</span>
+                                                </button>
                                                 <button data-key ="3" type="button"
                                                     class="btn-status-filter btn btn-outline-warning {{ $filter_status == 3 ? ' active' : '' }}">
                                                     Pending <span class="badge badge-warning">{{ $pending }}</span>
@@ -49,7 +53,7 @@ fas fa-plus-square"></i>
                                                         class="badge badge-secondary">{{ $closed }}</span>
                                                 </button>
                                             </div>
-                                            <div class="d-flex float-right justify-space-between" style="width:40%;">
+                                            <div class="d-flex float-right justify-space-between" style="width:35%;">
                                                 <select class="form-control select2 mr-2" id="dayFilter"
                                                     name="dayFilter">
                                                     <option value="" {{ $dayFilter == '' ? 'selected' : '' }}>Any

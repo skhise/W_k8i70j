@@ -140,7 +140,7 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
         Route::post('/services', [ServiceController::class, 'store'])->name('services.store');
         Route::get('/services/{service}/view', [ServiceController::class, 'view'])->name('services.view');
         Route::get('/services/{service}/delete', [ServiceController::class, 'delete'])->name('services.delete');
-        Route::post('/services/{service}/edit', [ServiceController::class, 'edit'])->name('services.edit');
+        Route::get('/services/{service}/edit', [ServiceController::class, 'edit'])->name('services.edit');
         Route::get('/services/{service}/print', [ServiceController::class, 'Print'])->name('services.print');
         Route::post('/services/{service}/update', [ServiceController::class, 'update'])->name('services.update');
         Route::post('/services/{service}/add_product', [ServiceController::class, 'AddServiceProduct'])->name('services.store_product');

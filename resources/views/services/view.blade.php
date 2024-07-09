@@ -131,24 +131,7 @@
 
                                                                     </p>
                                                                     <hr>
-                                                                    <strong>
-                                                                        <i
-                                                                            class="fa fa-book margin-r-5"></i>&nbsp;&nbsp;Service
-                                                                        Type
-                                                                    </strong>
-                                                                    <p class="text-muted">
-                                                                        {{ $service->type_name }}
-                                                                    </p>
-                                                                    <hr>
-                                                                    <strong>
-                                                                        <i
-                                                                            class="fa fa-book margin-r-5"></i>&nbsp;&nbsp;Issue
-                                                                        Type
-                                                                    </strong>
-                                                                    <p class="text-muted">
-                                                                        {{ $service->issue_name }}
-                                                                    </p>
-                                                                    <hr>
+                                                                    
                                                                     <strong>
                                                                         <i
                                                                             class="fa fa-book margin-r-5"></i>&nbsp;&nbsp;Priority
@@ -354,8 +337,36 @@
                                                                     {{ $product->product_description }}
                                                                 </div>
                                                             </div>
-                                                            <hr />
                                                         @endif
+                                                        <hr />
+                                                         <div class="row">
+                                                                <div class="col-md-3">
+                                                                    <span style="float:right ;font-weight:bold">
+                                                                        Service Type</span>
+                                                                </div>
+                                                                <div class="col-md-9">
+                                                                    {{ $service->type_name }}
+                                                                </div>
+                                                            </div>
+                                                         <div class="row">
+                                                                <div class="col-md-3">
+                                                                    <span style="float:right ;font-weight:bold">
+                                                                        Issue Type</span>
+                                                                </div>
+                                                                <div class="col-md-9">
+                                                                    {{ $service->issue_name }}
+                                                                </div>
+                                                            </div>
+                                                               <div class="row">
+                                                            <div class="col-md-3">
+                                                                <span style="float:right ;font-weight:bold">Issue
+                                                                    Description</span>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                {{ $service->service_note != null ? $service->service_note : 'NA' }}
+                                                            </div>
+                                                        </div>    
+                                                                    <hr>
                                                         <div>
                                                             <h5 class="">Other Information</h5>
                                                         </div>
@@ -392,15 +403,7 @@
                                                             </div>
 
                                                         </div>
-                                                        <div class="row">
-                                                            <div class="col-md-3">
-                                                                <span style="float:right ;font-weight:bold">Issue
-                                                                    Description</span>
-                                                            </div>
-                                                            <div class="col-md-6">
-                                                                {{ $service->service_note != null ? $service->service_note : 'NA' }}
-                                                            </div>
-                                                        </div>
+                                                        
                                                         <hr />
                                                         @if ($service->service_status == 5)
                                                             <div>

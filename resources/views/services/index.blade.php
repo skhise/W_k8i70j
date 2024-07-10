@@ -34,7 +34,7 @@ fas fa-plus-square"></i>
                                                     class="btn-status-filter btn btn-outline-success {{ $filter_status == 2 ? ' active' : '' }}">
                                                     Open <span class="badge badge-success">{{ $open }}</span>
                                                 </button>
-                                                <button data-key ="2" type="button"
+                                                <button data-key ="6" type="button"
                                                     class="btn-status-filter btn btn-outline-success {{ $filter_status == 6 ? ' active' : '' }}">
                                                     Assigned <span class="badge badge-success">{{ $assigned }}</span>
                                                 </button>

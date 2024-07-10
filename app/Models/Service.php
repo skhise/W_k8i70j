@@ -40,7 +40,8 @@ class Service extends Model
       'service_sub_status',
       'notification_flag',
       'service_category',
-      'close_note'
+      'close_note',
+      'product_sn'
    ];
 
    public function wasRecentlyUpdated($minutes = 1)

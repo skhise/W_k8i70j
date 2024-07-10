@@ -1226,6 +1226,10 @@ class ServiceController extends Controller
                     'service_type' => $request->service_type,
                     'service_priority' => $request->service_priority,
                     'service_note' => $request->service_note,
+                    'product_sn' => $request->product_sn,
+                    'product_description' => $request->product_description,
+                    'product_type' => $request->product_type,
+                    'product_name' => $request->product_name,
                 ]);
                 if ($update) {
                     if (Auth::user()->role == 3) {
@@ -1369,7 +1373,7 @@ class ServiceController extends Controller
             if ($services->service_status == $st->Status_Id) {
                 $selected = "selected";
             }
-            if (Auth::user()->role == 3 && $st->Status_Id == 6) {
+            if (Auth::user()->role == 3 && ($st->Status_Id == 6|| $st->Status_Id == 5)) {
                 //     $status_options .= "<option data-sub_status='" . $sub_status . "' value=" . $st->Status_Id . " " . $selected . ">" . $st->Status_Name . "</option>";
 
             } else {

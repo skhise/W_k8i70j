@@ -313,7 +313,7 @@
                                         </div>
                                     </div>
                                     <div
-                                        class="form-group noncontracted {{ old('selectedtab') == 'tab2' ? '' : 'hide' }}">
+                                        class="form-group noncontracted {{ old('selectedtab') == 'tab2' || $update    ? '' : 'hide' }}">
                                         <div class="row">
                                             <div class="col-md-2">
                                                 <span style="float:right ;font-weight:bold">Product
@@ -323,7 +323,7 @@
 
                                                 <input class="form-control text-box single-line product_name"
                                                     id="product_name" name="product_name" placeholder=""
-                                                    value="{{ old('product_name') }}" />
+                                                    value="{{ $update ? $service->product_name : old('product_name') }}" />
                                                 <label>Product Name</label>
                                                 <span class="text-danger field-validation-valid"
                                                     data-valmsg-for="product_name" data-valmsg-replace="true"></span>
@@ -332,7 +332,7 @@
 
                                                 <input class="form-control text-box single-line product_type"
                                                     id="product_type" name="product_type" placeholder=""
-                                                    value="{{ old('product_type') }}" />
+                                                    value="{{ $update ? $service->product_type : old('product_type') }}" />
                                                 <label>Product Type</label>
                                                 <span class="text-danger field-validation-valid"
                                                     data-valmsg-for="product_type" data-valmsg-replace="true"></span>
@@ -341,7 +341,7 @@
 
                                                 <input class="form-control text-box single-line product_sn"
                                                     id="product_sn" name="product_sn" placeholder=""
-                                                    value="{{ old('product_sn') }}" />
+                                                    value="{{ $update ? $service->product_sn : old('product_sn') }}" />
                                                 <label>Product S/N</label>
                                                 <span class="text-danger field-validation-valid"
                                                     data-valmsg-for="product_sn" data-valmsg-replace="true"></span>
@@ -350,7 +350,7 @@
 
                                         </div>
                                     </div>
-                                    <div class="form-group noncontracted hide">
+                                    <div class="form-group noncontracted {{ old('selectedtab') == 'tab2' || $update    ? '' : 'hide' }}">
                                         <div class="row">
                                             <div class="col-md-2">
                                                 <span style="float:right ;font-weight:bold">Product Description</span>
@@ -358,7 +358,7 @@
                                             <div class="col-md-6 floating-label">
 
                                                 <textarea class="form-control text-box single-line" id="product_description" name="product_description"
-                                                    placeholder="">{{ old('product_description') }}</textarea>
+                                                    placeholder="">{{ $update ? $service->product_description : old('product_description') }}</textarea>
                                                 <span class="text-danger field-validation-valid"
                                                     data-valmsg-for="product_description"
                                                     data-valmsg-replace="true"></span>

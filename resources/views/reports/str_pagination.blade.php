@@ -13,6 +13,7 @@
             <td>{{ $service->CST_Name }}</td>
             <td>{{ $service->type_name }}</td>
             <td>{{ $service->issue_name }}</td>
+            <td>{{ $service->service_note }}</td>
             <td>{{ $service->contact_person }}
                 {{ $service->created_at != null ? date('d-M-Y H:i', strtotime($service->created_at)) : '' }}
             </td>

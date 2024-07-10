@@ -91,6 +91,7 @@
                                                 <th class="table-width-20">Customer Name</th>
                                                 <th>Service Type </th>
                                                 <th>Issue Type </th>
+                                                <th>Issue Description </th>
                                                 <th>Problem Reported By Customer </th>
                                                 <th>Reported By</th>
                                                 <th>Response Time (Hours) </th>

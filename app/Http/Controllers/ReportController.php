@@ -306,7 +306,47 @@ class ReportController extends Controller
             "engineers" => $engineer,
         ]);
     }
-    
+    function GetServiceCountEng($engineer_id, $todate, $fromdate, $empId, $contract, $serviceType, $issueType, $status)
+    {
+
+        $services = Service::
+            join("master_service_status", "master_service_status.Status_Id", "services.service_status")
+            ->join("master_service_priority", "master_service_priority.id", "services.service_priority")
+            ->join("master_issue_type", "master_issue_type.id", "services.issue_type")
+            ->join("master_service_type", "master_service_type.id", "services.service_type")
+            ->join("clients", "clients.CST_ID", "services.customer_id")
+            ->leftJoin("users", "users.id", "services.assigned_to")
+            ->when($engineer_id != 0 && $engineer_id != "", function ($query) use ($engineer_id) {
+                $query->where("services.assigned_to", $engineer_id);
+            })
+            ->when($todate != "" && $fromdate != "", function ($query) use ($todate, $fromdate) {
+                $query->whereBetween(DB::raw('DATE_FORMAT(services.service_date, "%Y-%m-%d")'), [$todate, $fromdate]);
+            })
+            ->when($issueType != "", function ($query) use ($issueType) {
+                return $query->where('services.issue_type', $issueType);
+            })
+            ->when($serviceType != "", function ($query) use ($serviceType) {
+                return $query->where('services.service_type', $serviceType);
+            })
+            ->when($contract == 0, function ($query) use ($contract) {
+                return $query->where('services.contract_id', 0);
+            })
+            ->when(($contract != 0 && $contract != ""), function ($query) use ($contract) {
+                return $query->where('services.contract_id', ">", 1);
+            })
+            ->when($empId != "", function ($query) use ($empId) {
+                return $query->where('services.assigned_to', $empId);
+            })
+            ->when($status != "", function ($query) use ($status) {
+                return $query->where('services.service_status', $status);
+            })
+            ->get();
+        if (is_null($services)) {
+            return 0;
+        }
+        return count($services);
+
+    }
     function GetServiceCount($customer_id, $todate, $fromdate, $empId, $contract, $serviceType, $issueType, $status)
     {
 
@@ -444,22 +484,25 @@ class ReportController extends Controller
 
         $todate = $request->todate;
         $fromdate = $request->fromdate;
-        $customer_id = $request->cust_id;
-        $employees = Employee::orderby("EMP_ID", 'ASC')->get();
+        $engineer_id = $request->engineer;
+        $employees = Employee::orderby("EMP_ID", 'ASC')
+        ->when($engineer_id!= 0, function ($query) use ($engineer_id) {
+            return $query->where('EMP_ID', $engineer_id);
+        })->get();
 
         $employee = array();
         $employeeData = array();
         foreach ($employees as $emp) {
             array_push($employee, $emp->EMP_Name);
-            $count = $this->GetServiceCount($customer_id, $todate, $fromdate, $emp->EMP_ID, "", "", "", "");
+            $count = $this->GetServiceCountEng($engineer_id, $todate, $fromdate, $emp->EMP_ID, "", "", "", "");
             array_push($employeeData, $count);
         }
 
 
         $contractType = array("Contracted", "Non Contracted");
         $contractTypeData = array(15, 10);
-        $countContracted = $this->GetServiceCount($customer_id, $todate, $fromdate, "", 1, "", "", "");
-        $countNonContracted = $this->GetServiceCount($customer_id, $todate, $fromdate, "", 0, "", "", "");
+        $countContracted = $this->GetServiceCountEng($engineer_id, $todate, $fromdate, "", 1, "", "", "");
+        $countNonContracted = $this->GetServiceCountEng($engineer_id, $todate, $fromdate, "", 0, "", "", "");
 
         $contractTypeArr = array(array("label" => "Contracted", "y" => $countContracted), array("label" => "Non Contracted", "y" => $countNonContracted));
         $serviceType = array();
@@ -468,7 +511,7 @@ class ReportController extends Controller
         $serviceTypes = ServiceType::orderby("id", 'ASC')->get();
         foreach ($serviceTypes as $st) {
             array_push($serviceType, $st->type_name);
-            $count = $this->GetServiceCount($customer_id, $todate, $fromdate, "", "", $st->id, "", "");
+            $count = $this->GetServiceCountEng($engineer_id, $todate, $fromdate, "", "", $st->id, "", "");
             array_push($serviceTypeData, $count);
         }
 
@@ -478,13 +521,13 @@ class ReportController extends Controller
         $issueTypes = IssueType::orderby("id", 'ASC')->get();
         foreach ($issueTypes as $it) {
             array_push($issueType, $it->issue_name);
-            $count = $this->GetServiceCount($customer_id, $todate, $fromdate, "", "", "", $it->id, "");
+            $count = $this->GetServiceCountEng($engineer_id, $todate, $fromdate, "", "", "", $it->id, "");
             array_push($issueTypeData, $count);
         }
         $countArray = array();
         $serviceStatus = ServiceStatus::orderby("Status_Id", 'ASC')->get();
         foreach ($serviceStatus as $ss) {
-            $count = $this->GetServiceCount($customer_id, $todate, $fromdate, "", "", "", "", $ss->Status_Id);
+            $count = $this->GetServiceCountEng($engineer_id, $todate, $fromdate, "", "", "", "", $ss->Status_Id);
             //$obj = ."=>".$count;
             $countArray[$ss->Status_Name] = $count;
         }

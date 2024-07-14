@@ -27,7 +27,7 @@
                                     <div class="col-lg-2">
                                         <select class="form-control select2" id="date-range">
                                             <option value="">Date Range</option>
-                                            <option value="1">Any</option>
+                                            <option value="1" selected>Any</option>
                                             <option value="2">Today</option>
                                             <option value="3">Yesterday</option>
                                             <option value="5">Last 7 Days</option>
@@ -107,11 +107,11 @@
 
             function get_report() {
 
-                var cust_id = $("#client option:selected").val();
+                var engineer = $("#engineer option:selected").val();
                 var dayFilter = $("#date-range option:selected").val();
                 var ss = [];
 
-                if (cust_id != "" && dayFilter != "") {
+                if (engineer != "" && dayFilter != "") {
 
                     var ContractType = [];
 
@@ -144,8 +144,8 @@
 
                     });
 
-                    $.get("GetAnalysisReport?dayFilter=" + dayFilter + "&cust_id=" +
-                        cust_id + "&type=json",
+                    $.get("GetEngineerAnalysisReport?dayFilter=" + dayFilter + "&engineer=" +
+                        engineer + "&type=json",
                         function(data) {
                             console.log(data.contractTypeArr);
                             var obj = data.contractTypeArr;
@@ -199,7 +199,7 @@
 
                     });
 
-                    $.get("GetAnalysisReport?dayFilter=" + dayFilter + "&cust_id=" + cust_id +
+                    $.get("GetEngineerAnalysisReport?dayFilter=" + dayFilter + "&engineer=" + engineer +
                         "&type=json",
                         function(data) {
 
@@ -259,7 +259,7 @@
 
                     });
 
-                    $.get("GetAnalysisReport?dayFilter=" + dayFilter + "&cust_id=" + cust_id +
+                    $.get("GetEngineerAnalysisReport?dayFilter=" + dayFilter + "&engineer=" + engineer +
                         "&type=json",
                         function(data) {
 
@@ -317,8 +317,8 @@
 
                     });
 
-                    $.get("GetAnalysisReport?dayFilter=" + dayFilter + "&cust_id=" +
-                        cust_id + "&type=json",
+                    $.get("GetEngineerAnalysisReport?dayFilter=" + dayFilter + "&engineer=" +
+                        engineer + "&type=json",
                         function(data) {
 
                             var obj = data.serviceType;

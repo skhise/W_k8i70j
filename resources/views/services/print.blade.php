@@ -1,17 +1,6 @@
 <html>
 
 <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Service Call Report</title> <!-- Tell the browser to be responsive to screen width -->
-    <meta content="width=device-width, initial-scale= 1 , maximum-scale =1, user-scalable=no" name="viewport">
-    <!--Bootstrap 3.3.6 -->
-    <link rel="stylesheet" href="../../bootstrap/css/bootstrap.min.css"><!-- F ont Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/a jax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
-    <!-- Ionicons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudfl are.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
-    <!-- Theme style -->
-    <link rel="stylesheet" href="../../dist/css/AdminLTE.min.css">
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <style>
         @media print {
             @page {
@@ -31,10 +20,17 @@
         table {
             margin-bottom: 0px !important;
         }
+        table{
+            width:100%;
+        }
+        table th {
+            padding: 8px;
+            text-align: left;
+        }
     </style>
 </head>
 
-<body onload="window.print()" style="margin:15px;">
+<body style="margin:15px;">
 
     <!-- title row -->
 
@@ -64,11 +60,9 @@
 
                         <address style="margin:30px;">
 
-                            <b>demo company </b> <br>
+                            <b>{{ $service->CST_Name }} </b> <br>
 
-                            Plot No:03/202, Ambika Society
-                            S B Road, Chaturshrungi
-                            Pune - 411016 (MH) (INDIA) <br>
+                            {{ $service->CST_OfficeAddress }} <br>
 
 
 
@@ -78,12 +72,14 @@
 
                     <td style="width: 50%;">
 
-                        <p>Ticket No.:&nbsp;<b>12116</b></p>
-                        <p>Date:&nbsp;15-Mar-2024 09:44:41 AM</p>
-                        <p>Service Type:&nbsp;Under AMC</p>
-                        <p>Issue Type:&nbsp;Hardware</p>
-                        <p>Contract Type:&nbsp;Warranty</p>
-                        <p>Contract No.:&nbsp;22</p>
+                        <p>Ticket No.:&nbsp;<b>{{ $service->service_no }}</b></p>
+                        <p>Date:&nbsp;{{ $service->created_at }}</p>
+                        <p>Service Type:&nbsp;{{ $service->type_name }}</p>
+                        <p>Issue Type:&nbsp;{{ $service->issue_name }}</p>
+                        <p>Contract
+                            Type:&nbsp;{{ $service->contract_id == 0 ? 'Non-Contracted' : $contract->contract_type_name }}
+                        </p>
+                        <p>Contract No.:&nbsp;{{ $contract->CNRT_Number }}</p>
 
 
 
@@ -96,15 +92,15 @@
 
                     <td style="width: 50%;">
                         <p style="font-weight: 600;">csi india pvt ltd2</p>
-                        <p>Contact Person: ramesh</p>
-                        <p>Phone: 8888888888</p>
-                        <p>44sdfsdf</p>
+                        <p>Contact Person: {{ $service->contact_person }}</p>
+                        <p>Phone: {{ $service->contact_number1 }}</p>
+                        <p>{{ $service->site_address }}</p>
 
                     </td>
                     <td style="width: 50%;">
-                        <p>Call Staus:&nbsp;<b>Resolved</b></p>
-                        <p>Date/Time:&nbsp;11-May-2024 05:59:51 PM</p>
-                        <p>Assigned:&nbsp;wewrewr</p>
+                        <p>Ticket Staus:&nbsp;<b>{{ $service->Status_Name }}</b></p>
+                        <p>Date/Time:&nbsp;{{ $service->updated_at }}</p>
+                        <p>Assigned:&nbsp;{{ $service->EMP_Name }}</p>
                     </td>
 
                 </tr>
@@ -115,48 +111,40 @@
         <!-- call details end-->
 
         <!-- product details start-->
-
-        <table class="table table-bordered">
-
-            <tbody>
-                <tr>
-
-                    <td colspan="4"><b>Product Information</b></td>
-
-                </tr>
-
-                <tr>
-
-                    <td>Product Name</td>
-
-                    <td>DELL1010</td>
-
-                    <td>Product Type</td>
-
-                    <td>DESKTOP</td>
-
-                </tr>
-
-                <tr>
-
-
-
-                    <td>Serial No.</td>
-
-                    <td>dell123456</td>
-
-                    <td>Product Description</td>
-
-                    <td>test</td>
-
-                </tr>
-
-
-
-
-
-            </tbody>
+        <table>
+            <tr>
+                <td>DC Product Information</td>
+            </tr>
         </table>
+        <table class="table table-striped" id="tbRefClient">
+                        <thead>
+                            <tr>
+                                <th>Sr. No.</th>
+                                <th>Service. No.</th>
+                                <th>Client Name</th>
+                                <th>Issue Date</th>
+                                <th>Type</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if ($dc_products->count() == 0)
+                                <tr>
+                                    <td colspan="11" class="text-center">No
+                                        products
+                                        added yet.</td>
+                                </tr>
+                            @endif
+                            @foreach ($dc_products as $index => $dcp)
+                                <tr>
+                                    <td>{{ $index + 1 }}</td>
+                                    <td>{{ $dcp['service_no'] }}</td>
+                                    <td>{{ $dcp['CST_Name'] }}</td>
+                                    <td>{{ date('d-M-Y', strtotime($dcp['issue_date'])) }}</td>
+                                    <td>{{ $dcp['dc_type_name'] }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
 
         <br>
 
@@ -178,7 +166,7 @@
                 <tr>
 
                     <td>
-
+                        {{$service->service_note}}
 
                     </td>
 
@@ -245,42 +233,7 @@
         <!-- Customer Remark end-->
 
         <!-- product details start-->
-        <br>
-        <table class="table table-bordered" id="pageBreak">
-
-            <tbody>
-                <tr>
-
-                    <td colspan="4"><b>REPLACEMENT / UPGRADATION DETAILS</b></td>
-
-                </tr>
-
-                <tr>
-
-                    <td style="width:25%;">Item Name</td>
-
-                    <td style="width:25%;"></td>
-
-                    <td style="width:25%;"></td>
-
-                    <td style="width:25%;"></td>
-
-                </tr>
-
-                <tr>
-
-                    <td>Serial No.</td>
-
-                    <td style="width:25%;"></td>
-
-                    <td style="width:25%;"></td>
-
-                    <td style="width:25%;"></td>
-
-                </tr>
-
-            </tbody>
-        </table>
+      
         <br>
         <!-- product details end-->
 
@@ -310,11 +263,10 @@
                         Customer's Seal and Signature<br>
 
                         Customer Name &amp; Mobile No.<br><br>
-
-                        csi india pvt ltd2<br>
+                            {{$service->CST_Name}} & {{$service->CCP_Mobile}}<br>
                     </td>
 
-                    <td>
+                    <td style="float:right;margin-right:25px;">
 
                         Authorized Signatory
 
@@ -330,7 +282,15 @@
 
 
     </div>
+    <script>
+     window.onload = function() {
+            window.print();
+        };
 
+        window.onafterprint = function() {
+            window.close();
+        };
+    </script>
 
 
 </body>

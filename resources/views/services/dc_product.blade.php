@@ -20,7 +20,7 @@
                     @if ($dc_products->count() == 0)
                         <tr>
                             <td colspan="7" class="text-center">No
-                                serial number added yet.</td>
+                                dc products added yet.</td>
                         </tr>
                     @endif
                     @foreach ($dc_products as $index => $dc_product)

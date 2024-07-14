@@ -263,7 +263,8 @@ class ServiceController extends Controller
 
         return view('dcmanagement.print', compact('serviceDc', 'products', 'date'));
     }
-    public function DcView(ServiceDc $serviceDc, Request $request)
+
+   public function DcView(ServiceDc $serviceDc, Request $request)
     {
         $dc_products = ServiceDcProduct::select("product_serial_numbers.*", "master_product_type.*", "service_dc_product.id as sdp", "service_dc_product.*", "products.*")->where(['dc_id' => $serviceDc->id])
             ->join("products", "products.Product_ID", "service_dc_product.product_id")
@@ -1289,7 +1290,7 @@ class ServiceController extends Controller
             ->join("clients", "clients.CST_ID", "services.customer_id")
             ->leftJoin("employees", "employees.Emp_ID", "services.assigned_to")
             ->where('services.id', $service->id)->first();
-
+// dd($services);
         $product = ContractUnderProduct::where('contract_under_product.id', $service->product_id)->leftJoin("master_product_type", "master_product_type.id", "contract_under_product.product_type")->first();
         $contract = Contract::leftJoin("master_contract_type", "master_contract_type.id", "contracts.CNRT_Type")
             ->leftJoin("master_site_type", "master_site_type.id", "contracts.CNRT_SiteType")->where("CNRT_ID", $service->contract_id)->first();
@@ -1321,7 +1322,7 @@ class ServiceController extends Controller
                 $selected = "selected";
             }
             $employee_options .= "<option value=" . $employee->EMP_ID . " " . $selected . ">" . $employee->EMP_Name . "</option>";
-        }
+        }   
         // dd($status_options);
 
         $dc_products = ServiceDc::select(["dc_type.*", "clients.*", "services.*", "service_dc.id as dcp_id", "service_dc.*"])
@@ -1329,7 +1330,7 @@ class ServiceController extends Controller
             ->leftJoin("dc_type", "dc_type.id", "service_dc.dc_type")
             ->leftJoin("clients", "clients.CST_ID", "services.customer_id")
             ->where("service_dc.service_id", $service->id)->get();
-
+        // dd($dc_products);
         return view("services.print", [
             "product" => $product,
             "service" => $services,

@@ -79,7 +79,7 @@
                         <p>Contract
                             Type:&nbsp;{{ $service->contract_id == 0 ? 'Non-Contracted' : $contract->contract_type_name }}
                         </p>
-                        <p>Contract No.:&nbsp;{{ $contract->CNRT_Number }}</p>
+                        <p>Contract No.:&nbsp;{{ $contract->CNRT_Number ?? 'NA' }}</p>
 
 
 

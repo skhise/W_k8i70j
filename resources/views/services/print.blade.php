@@ -42,7 +42,7 @@
 
         <!-- call details start-->
 
-        <table class="table table-bordered">
+        <table class="table table-bordered" style="width:100%;">
 
             <tbody>
                 <tr class="center" style="text-align:center;">
@@ -70,7 +70,7 @@
 
                     </td>
 
-                    <td style="width: 50%;">
+                    <td style="width: 50%;float:right;">
 
                         <p>Ticket No.:&nbsp;<b>{{ $service->service_no }}</b></p>
                         <p>Date:&nbsp;{{ $service->created_at }}</p>
@@ -97,7 +97,7 @@
                         <p>{{ $service->site_address }}</p>
 
                     </td>
-                    <td style="width: 50%;">
+                    <td style="width: 50%; float:right;">
                         <p>Ticket Staus:&nbsp;<b>{{ $service->Status_Name }}</b></p>
                         <p>Date/Time:&nbsp;{{ $service->updated_at }}</p>
                         <p>Assigned:&nbsp;{{ $service->EMP_Name }}</p>
@@ -116,7 +116,7 @@
                 <td>DC Product Information</td>
             </tr>
         </table>
-        <table class="table table-striped" id="tbRefClient">
+        <table class="table table-striped bordered" id="tbRefClient" style="border:1 solid black;">
                         <thead>
                             <tr>
                                 <th>Sr. No.</th>
@@ -129,7 +129,7 @@
                         <tbody>
                             @if ($dc_products->count() == 0)
                                 <tr>
-                                    <td colspan="11" class="text-center">No
+                                    <td colspan="5" class="text-center" style="text-align:center;">No
                                         products
                                         added yet.</td>
                                 </tr>

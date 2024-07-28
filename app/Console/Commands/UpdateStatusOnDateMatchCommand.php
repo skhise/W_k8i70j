@@ -18,8 +18,8 @@ class UpdateStatusOnDateMatchCommand extends Command
         $sql = "UPDATE contracts SET CNRT_Status = 3 WHERE DATE(CNRT_EndDate) < CURDATE()";
         DB::statement($sql);
 
-        $sql1 = "UPDATE contracts SET CNRT_Status = 2 WHERE DATEDIFF(CNRT_EndDate, CURDATE()) = 15";
-        DB::statement($sql1);
+        // $sql1 = "UPDATE contracts SET CNRT_Status = 2 WHERE DATEDIFF(CNRT_EndDate, CURDATE()) = 15";
+        // DB::statement($sql1);
 
         $this->info('Status updated successfully');
     }

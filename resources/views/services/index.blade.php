@@ -53,7 +53,7 @@ fas fa-plus-square"></i>
                                                         class="badge badge-secondary">{{ $closed }}</span>
                                                 </button>
                                             </div>
-                                            <div class="d-flex float-right justify-space-between" style="width:35%;">
+                                            <div class="d-flex float-right justify-space-between" style="width:45%;">
                                                 <select class="form-control select2 mr-2" id="dayFilter"
                                                     name="dayFilter">
                                                     <option value="" {{ $dayFilter == '' ? 'selected' : '' }}>Any
@@ -76,20 +76,40 @@ fas fa-plus-square"></i>
                                                     <input type="text" class="form-control"
                                                         value="{{ $search }}" id="search" name="search"
                                                         placeholder="Search">
-                                                    <div class="input-group-append">
+                                                    <div class="input-group-append ml-2">
                                                         <button class="btn btn-primary filter-dropdown"
                                                             data-toggle="dropdown"><i
                                                                 class="fas fa-filter"></i></button>
                                                         <div class="edit-filter-modal dropdown-menu-right hidden">
                                                             <li class="dropdown-title">Filter By</li>
-                                                            <select class="mt-2 select2" name="filter_contract_type"
-                                                                id="filter_contract_type">
-                                                                <option value="" selected>Contact Type</option>
-                                                            </select>
+                                                            <select class="mt-2 select2" name="filter_type"
+                                                                id="filter_type">
+                                                                <option value="">Type</option>
+                                                                <option value="0" {{$filter_type ==0 ? 'selected':''}}>Contracted</option>
+                                                                <option value="1" {{$filter_type ==1 ? 'selected':''}}>Non-Contracted</option>
+                                                            </select>   
                                                             <br />
-                                                            <select class="mt-2 select2" name="filter_site_type"
-                                                                id="filter_site_type">
-                                                                <option value="" selected>Site Type</option>
+                                                            <select class="mt-2 select2" name="filter_service_type"
+                                                                id="filter_type">
+                                                                <option value="" selected>Service Type</option>
+                                                                @foreach($service_types as $sts)
+                                                                     <option value={{$sts->id}} {{$filter_service_type == $sts->id ? 'selected':''}}>{{$sts->type_name}}</option>               
+                                                                @endforeach
+                                                            </select>   
+                                                            <br />
+                                                            <select class="mt-2 select2" name="filter_issue_type"
+                                                                id="filter_issue_type">
+                                                                <option value="" selected>Issue Type</option>
+                                                                @foreach($issue_type as $it)
+                                                                    <option value="{{$it->id}}" {{$filter_issue_type == $it->id ? 'selected':''}}>{{$it->issue_name}}</option>
+                                                                @endforeach
+                                                            </select>
+                                                            <select class="mt-2 select2" name="filter_status_type"
+                                                                id="filter_status_type">
+                                                                <option value="" selected>Status</option>
+                                                                @foreach($service_status as $ss)
+                                                                    <option value="{{$ss->Status_Id}}" {{$filter_status_type == $ss->Status_Id ? 'selected' : ''}}>{{$ss->Status_Name}}</option>
+                                                                @endforeach
                                                             </select>
 
                                                             <button type="submit"
@@ -242,10 +262,15 @@ fas fa-plus-square"></i>
 
                 $(".filter-remove").click(function() {
                     $("#search_field").val("");
+                    $("#filter_type").val("");
+                    $("#filter_service_type").val("");
+                    $("#filter_issue_type").val("");
+                    $("#filter_status_type").val("");
                     $("#search").val("");
                     $("#filter_status").val("");
                     $("#dayFilter").val("180");
-                    $("#search_form_all")[0].submit();
+                    window.location.replace("services");
+                    //$("#search_form_all")[0].submit();
                     $(".edit-filter-modal").toggleClass("hidden");
                 });
 

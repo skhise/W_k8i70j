@@ -59,7 +59,10 @@
             height: auto !important;
             resize: none;
         }
-
+        .btn-status-filter{
+            padding: 1px 2px 1px 2px;
+            height: 30px;
+        }
         .select2-container--default .select2-selection--single .select2-selection__rendered {
             color: #444;
             line-height: 42px !important;

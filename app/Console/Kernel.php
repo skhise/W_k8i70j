@@ -14,6 +14,7 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         $schedule->command('update:status')->daily();
+        $schedule->command('app:update-contract-renewal-status')->daily();
     }
 
     /**

@@ -85,8 +85,8 @@ fas fa-plus-square"></i>
                                                             <select class="mt-2 select2" name="filter_type"
                                                                 id="filter_type">
                                                                 <option value="">Type</option>
-                                                                <option value="0" {{$filter_type ==0 ? 'selected':''}}>Contracted</option>
-                                                                <option value="1" {{$filter_type ==1 ? 'selected':''}}>Non-Contracted</option>
+                                                                <option value="1" {{$filter_type ==0 ? 'selected':''}}>Contracted</option>
+                                                                <option value="0" {{$filter_type ==1 ? 'selected':''}}>Non-Contracted</option>
                                                             </select>   
                                                             <br />
                                                             <select class="mt-2 select2" name="filter_service_type"

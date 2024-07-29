@@ -53,14 +53,29 @@ fas fa-plus-square"></i>
                                                                 class="fas fa-filter"></i></button>
                                                         <div class="edit-filter-modal dropdown-menu-right hidden">
                                                             <li class="dropdown-title">Filter By</li>
+                                                           
                                                             <select class="mt-2 select2" name="filter_contract_type"
                                                                 id="filter_contract_type">
-                                                                <option value="" selected>Contact Type</option>
+                                                                <option value="">Contact Type</option>
+                                                                @foreach($contract_types as $ctypes)
+                                                                    <option value="{{$ctypes->id}}" {{$filter_contract_type == $ctypes->id ? "selected" : ""}}>{{$ctypes->contract_type_name}}</option>
+                                                                @endforeach
                                                             </select>
                                                             <br />
+                                                           <select class="mt-2 select2" name="filter_status_type"
+                                                                id="filter_status_type">
+                                                                <option value="">Status</option>
+                                                                @foreach($contract_status as $status)
+                                                                    <option value="{{$status->id}}" {{$filter_status_type == $status->id ? "selected" : ""}}>{{$status->contract_status_name}}</option>
+                                                                @endforeach
+                                                            </select>
+                                                            <br/>
                                                             <select class="mt-2 select2" name="filter_site_type"
                                                                 id="filter_site_type">
                                                                 <option value="" selected>Site Type</option>
+                                                                 @foreach($contract_sites as $sites)
+                                                                    <option value="{{$sites->id}}" {{$filter_site_type == $sites->id ? "selected" : ""}}>{{$sites->site_type_name}}</option>
+                                                                @endforeach
                                                             </select>
 
                                                             <button type="submit"

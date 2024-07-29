@@ -1087,6 +1087,10 @@ class ContractController extends Controller
     }
     public function index(Request $request)
     {
+        $filter_site_type = $request->filter_site_type ?? "";
+        $filter_status_type = $request->filter_status_type ?? "";
+        $filter_contract_type = $request->filter_contract_type ?? "";
+
         $contrcats = Contract::leftJoin("master_contract_type", "master_contract_type.id", "contracts.CNRT_Type")
             ->leftJoin("master_site_type", "master_site_type.id", "contracts.CNRT_SiteType")
             ->leftJoin("master_contract_status", "master_contract_status.id", "contracts.CNRT_Status")
@@ -1095,6 +1099,15 @@ class ContractController extends Controller
             ->orderBy('contracts.updated_at', "DESC")
             ->filter($request->only('search', 'trashed', 'search_field', 'filter_status'))
             ->where("CNRT_Status", "!=", 0)
+            ->when($filter_site_type, function ($query) use($filter_site_type) {
+                $query->where('CNRT_SiteType', $filter_site_type);
+            })
+            ->when($filter_status_type !="",function($query) use($filter_status_type){
+                $query->where('CNRT_Status', $filter_status_type);
+            })
+            ->when($filter_contract_type !="",function($query) use($filter_contract_type){
+                $query->where('CNRT_Type', $filter_contract_type);
+            })
             ->paginate(10)
             ->withQueryString();
         $expired = $this->contract_status_count(3);
@@ -1108,7 +1121,13 @@ class ContractController extends Controller
             'search' => $request->search ?? '',
             'status' => $this->status,
             'contracts' => $contrcats,
+            'filter_site_type'=>$filter_site_type,
+            'filter_status_type'=>$filter_status_type,
+            'filter_contract_type'=>$filter_contract_type,
             'expired' => $expired,
+            'contract_types'=>ContractType::all(),
+            'contract_status'=>ContractStatus::all(),
+            'contract_sites'=>ContractSiteType::all(),
             'renewal' => $renewal,
             'active' => $active,
         ]);

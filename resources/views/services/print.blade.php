@@ -27,6 +27,10 @@
             padding: 8px;
             text-align: left;
         }
+ tbody tr {
+    border-top: 2px solid #ddd; /* Adds a 2px solid border at the top of each row */
+}
+       
     </style>
 </head>
 
@@ -42,7 +46,7 @@
 
         <!-- call details start-->
 
-        <table class="table table-bordered" style="width:100%;">
+        <table id="products_table" class="table table-bordered" style="width:100%;">
 
             <tbody>
                 <tr class="center" style="text-align:center;">
@@ -116,7 +120,7 @@
                 <td>DC Product Information</td>
             </tr>
         </table>
-        <table class="table table-striped bordered" id="tbRefClient" style="border:1 solid black;">
+        <table id="tbRefClient" style="border:1px solid black;">
                         <thead>
                             <tr>
                                 <th>Sr. No.</th>
@@ -128,14 +132,14 @@
                         </thead>
                         <tbody>
                             @if ($dc_products->count() == 0)
-                                <tr>
+                                <tr style="border-top: 1px solid black;">
                                     <td colspan="5" class="text-center" style="text-align:center;">No
                                         products
                                         added yet.</td>
                                 </tr>
                             @endif
                             @foreach ($dc_products as $index => $dcp)
-                                <tr>
+                                <tr style="border-top: 1px solid black;">
                                     <td>{{ $index + 1 }}</td>
                                     <td>{{ $dcp['service_no'] }}</td>
                                     <td>{{ $dcp['CST_Name'] }}</td>

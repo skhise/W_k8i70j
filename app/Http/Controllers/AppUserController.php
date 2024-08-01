@@ -999,6 +999,10 @@ class AppUserController extends Controller
             $password_status = Hash::check($request->password, $email_status->password);
             // if password is correct
             if ($password_status) {
+                if($email_status->status !=1){
+                    return response()->json(["success" => false, "message" => 'Your account has been deactivated', "user" =>[]]);
+                
+                } else
                 if ($email_status->role == 3) {
                     $token = Str::random(40); // Generate a random token with 40 characters
                     $email_status->api_token = $token;

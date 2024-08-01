@@ -22,7 +22,7 @@ class User extends Authenticatable
         'password',
         'role',
         'fcm_token',
-        'isOnline'
+        'isOnline',
     ];
 
     /**

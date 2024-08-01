@@ -95,7 +95,7 @@ class EmployeeController extends Controller
         // dd($request->status);
         $user = User::where("id", $request->userId);
         if ($user) {
-            $employee = Employee::where("EMP_ID", $request->userId)->update(['EMP_Status' => $request->status]);
+            $employee = Employee::where(["EMP_ID"=>$request->userId])->update(['EMP_Status' => $request->status]);
             $user->update(['status' => $request->status]);
             return true;
         } else {

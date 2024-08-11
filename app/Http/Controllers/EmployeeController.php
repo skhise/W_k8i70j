@@ -137,6 +137,7 @@ class EmployeeController extends Controller
             'filters' => $request->all('search', 'trashed', 'search_field', 'filter_status'),
             'search_field' => $request->search_field ?? '',
             'filter_status' => $request->filter_status ?? '',
+            "status" => $this->status,
             'search' => $request->search ?? '',
             'employees' => Employee::join("master_designation", "master_designation.id", "employees.EMP_Designation")
                 ->join("users", "users.id", "employees.EMP_ID")

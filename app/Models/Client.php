@@ -69,6 +69,11 @@ class Client extends Model
                     $contact->delete();
                 });
             }
+            if ($customer->quotations()->count() > 0) {
+                $customer->quotations()->each(function ($quotations) {
+                    $quotations->delete();
+                });
+            }
 
             // do the rest of the cleanup...
         });
@@ -76,6 +81,9 @@ class Client extends Model
     public function contracts()
     {
         return $this->hasMany(Contract::class, 'CNRT_CustomerID', 'CST_ID');
+    }
+    public function quotations(){
+        return $this->hasMany(Quotation::class, 'customer_id', 'CST_ID');
     }
     public function scopeFilter($query, array $filters)
     {

@@ -28,6 +28,11 @@ class ServiceDc extends Model
         }
         return $count;
     }
+
+    public static function dcType(){
+        $dcType = DcType::all();
+        return $dcType;
+    }
     public function scopeFilter($query, array $filters)
     {
 
@@ -37,7 +42,8 @@ class ServiceDc extends Model
             if (empty($search_field)) {
                 $query->where(function ($query) use ($search) {
                     $query->orWhere('dc_type', 'like', '%' . $search . '%')
-                        ->orWhere('clients.CST_Name', 'like', '%' . $search . '%');
+                        ->orWhere('clients.CST_Name', 'like', '%' . $search . '%')
+                        ->orWhere('services.service_no', 'like', '%' . $search . '%');
                 });
 
             }

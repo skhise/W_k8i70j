@@ -27,17 +27,11 @@
                                                     data-toggle="dropdown"><i class="fas fa-filter"></i></button>
                                                 <div class="edit-filter-modal dropdown-menu-right hidden">
                                                     <li class="dropdown-title">Filter By</li>
-                                                    <select class="mt-2 select2" name="filter_status"
-                                                        id="filter_status">
-                                                        <option value="" selected>Status</option>
-                                                        <option value="1" {{$filter_status == 1 ? 'selected' : '' }}>
-                                                            Active</option>
-                                                        <option value="2" {{$filter_status == 2 ? 'selected' : '' }}>
-                                                            Deactive</option>
-                                                    </select>
-                                                    <br />
                                                     <select class="mt-2 select2" name="filter_type" id="filter_type">
-                                                        <option value="" selected>Product Type</option>
+                                                        <option value="" >Product Type</option>
+                                                        @foreach($product_type as $ptype)
+                                                            <option value="{{$ptype->id}}" {{$ptype->id == $filter_type ? 'selected':''}}>{{$ptype->type_name}}</option>
+                                                        @endforeach
                                                     </select>
                                                     <br />
 
@@ -149,8 +143,8 @@
             $(".filter-remove").click(function () {
                 $("#search_field").val("");
                 $("#search").val("");
-                $("#filter_status").val("");
-                $("#search_form")[0].submit();
+                $("#filter_type").val("");
+                window.location.replace("products");
                 $(".edit-filter-modal").toggleClass("hidden");
             });
 

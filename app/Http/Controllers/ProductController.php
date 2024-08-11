@@ -219,14 +219,21 @@ class ProductController extends Controller
     }
     public function index(Request $request)
     {
+        $product_type = ProductType::all();
+        $filter_type  = $request->filter_type ?? "";
         return view("products.index", [
             'filters' => $request->all('search', 'trashed', 'search_field', 'filter_status'),
             'search_field' => $request->search_field ?? '',
             'filter_status' => $request->filter_status ?? '',
+            'product_type'=>$product_type,
+            'filter_type'=>$filter_type,
             'search' => $request->search ?? '',
             'products' => Product::leftJoin("master_product_type", "master_product_type.id", "products.Product_Type")
                 ->orderBy('products.updated_at', "DESC")
                 ->filter($request->only('search', 'trashed', 'search_field', 'filter_status'))
+                ->when($request->filter_type !="", function ($query) use ($request) {
+                    $query->where("products.Product_Type", $request->filter_type);
+                })
                 ->paginate(10)
                 ->withQueryString()
 

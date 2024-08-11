@@ -59,6 +59,7 @@ fas fa-plus-square"></i>
                                                 <th>Phone</th>
                                                 <th>Email</th>
                                                 <th>Department</th>
+                                                <th>Status</th>
                                                 <th class="action-1">Action</th>
                                             </tr>
                                         </thead>
@@ -81,6 +82,7 @@ fas fa-plus-square"></i>
                                                     {{$client['email']}}
                                                 </td>
                                                 <td>{{$client['department']}}</td>
+                                                <td>{!! $status[$client['CST_Status']] !!}</td>
                                                 <td>
                                                     <div class="flex-d">
                                                     <a href="{{route('clients.view', $client['id'])}}"

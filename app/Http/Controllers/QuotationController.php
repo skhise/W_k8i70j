@@ -35,6 +35,7 @@ class QuotationController extends Controller
             ->when(isset($request->quot_status), function ($query) use ($request) {
                 $query->where("quotation.quot_status", $request->quot_status);
             })
+            ->filter($request->only('search'))
             ->paginate(10)
             ->withQueryString();
         // dd($dc_products);
@@ -183,4 +184,5 @@ class QuotationController extends Controller
             return response()->json(["status" => false, 'message' => 'Something went wrong, try again.']);
         }
     }
+    
 }

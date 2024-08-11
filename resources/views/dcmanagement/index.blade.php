@@ -14,8 +14,6 @@
                                         <form action="{{ route('dcmanagements') }}" id="search_form">
                                             <input type="hidden" name="search_field" value="{{ $search_field }}"
                                                 id="search_field" />
-                                            <input type="hidden" value="{{ $filter_status }}" name="filter_status"
-                                                id="filter_status" />
                                             <div class="d-flex float-right justify-space-between" style="width:30%;">
                                                 <div class="input-group">
                                                     <input type="text" class="filter_values form-control"
@@ -27,7 +25,13 @@
                                                                 class="fas fa-filter"></i></button>
                                                         <div class="edit-filter-modal dropdown-menu-right hidden">
                                                             <li class="dropdown-title">Filter By</li>
-
+                                                            <select class="mt-2 select2" name="filter_type"
+                                                                id="filter_type">
+                                                                <option value="" selected>Type</option>
+                                                                @foreach($dcType as $dc)
+                                                                    <option value="{{$dc->id}}" {{$dc->id == $filter_type ? 'selected':''}}>{{$dc->dc_type_name}}</option>                
+                                                                @endforeach
+                                                            </select>
 
                                                             <button type="submit"
                                                                 class="filter_values mt-2 ml-2 apply-button btn btn-primary btn-sm">Apply</button>
@@ -81,7 +85,7 @@
                                                                     class="fa fa-trash"></i></a>
                                                             <a class="action-btn btn btn-sm btn-primary"
                                                                 href="{{ route('services.dc_view', $dcp['dcp_id']) }}"><i
-                                                                    class="fa fa-eye"></i></a>
+                                                                    class="fa fa-eye" style="color:white;"></i></a>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -97,5 +101,53 @@
             </div>
         </section>
     </div>
+ @section('script')
 
+    <script>
+        $(document).on('change', '#search', function () {
+            $("#search_form")[0].submit();
+        })
+        $(document).on('click', ".dropdown-item", function () {
+            $(".dropdown-item").removeClass("active");
+            var text = $(this).text();
+            if (text == "All") {
+                $("#search_field").val("");
+                // $("#search").val("");
+                $("#search").attr("placeholder", "Search");
+            } else {
+                $("#search_field").val($(this).data("field"));
+                $("#search").attr("placeholder", "Search by " + text);
+            }
+            $(this).addClass('active');
+            if ($("#search").val() != "") {
+                $("#search_form")[0].submit();
+            }
+        });
+        $(document).ready(function () {
+            $(".filter-dropdown, .text-button").click(function () {
+                $(".edit-filter-modal").toggleClass("hidden");
+
+            });
+            $(".apply-button").click(function () {
+                $(".edit-filter-modal").toggleClass("hidden");
+                $(".filter, .fa-plus, .fa-filter").toggleClass("filter-hidden");
+                $(".filter-dropdown-text").text("Add filter");
+            });
+
+            $(".filter-remove").click(function () {
+                $("#search_field").val("");
+                $("#search").val("");
+                $("#filter_type").val("");
+                window.location.replace("/dcmanagements");
+                $(".edit-filter-modal").toggleClass("hidden");
+            });
+
+
+
+
+        });
+    </script>
+
+    @stop   
+    
 </x-app-layout>

@@ -191,14 +191,35 @@
                         },
                         success: function(response) {
                             if (response.status) {
-                                alert("Saved");
+                                Swal.fire({
+                                    title: 'Success!',
+                                    text: 'Saved!',
+                                    dangerMode: true,
+                                    icon: 'success',
+                                    confirmButtonColor: '#d33',
+                                    cancelButtonColor: '#3085d6',
+                                });
                                 window.location.href = "{{ route('quotmanagements') }}";
                             } else {
-                                alert("Something went wrong, try again.");
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: 'Something went wrong, try again.',
+                                    dangerMode: true,
+                                    icon: 'warning',
+                                    confirmButtonColor: '#d33',
+                                    cancelButtonColor: '#3085d6',
+                                });
                             }
                         },
                         error: function(xhr, status, error) {
-                            alert("Something went wrong, try again.");
+                            Swal.fire({
+                                    title: 'Error!',
+                                    text: 'Something went wrong, try again.',
+                                    dangerMode: true,
+                                    icon: 'warning',
+                                    confirmButtonColor: '#d33',
+                                    cancelButtonColor: '#3085d6',
+                                });
                         }
                     });
                 }

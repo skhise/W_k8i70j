@@ -25,28 +25,25 @@
                                             <input type="text" class="form-control" value="{{$search}}" id="search"
                                                 name="search" placeholder="Search">
                                             <div class="input-group-append">
-                                                <button class="btn btn-primary" data-toggle="dropdown"
-                                                    class="btn btn-danger dropdown-toggle"><i
-                                                        class="fas fa-filter"></i></button>
-                                                <ul class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
-                                                    <li class="dropdown-title">Search By</li>
-                                                    <li><a href="#" data-field=""
-                                                            class="dropdown-item {{$search_field == '' ? 'active':''}}">All</a>
-                                                    </li>
-                                                    <li><a href="#" data-field="full_name"
-                                                            class="dropdown-item {{$search_field=='full_name' ? 'active' :''}}">Name</a>
-                                                    </li>
-                                                    <li><a href="#" data-field="emp_email"
-                                                            class="dropdown-item {{$search_field=='emp_email' ? 'active' :''}}">Email</a>
-                                                    </li>
-                                                    <li><a href="#" data-field="phone"
-                                                            class="dropdown-item {{$search_field=='phone' ? 'active' :''}}">Phone</a>
-                                                    </li>
-                                                    <li><a href="#" data-field="clear" class="dropdown-item">Clear
-                                                            Filter</a>
-                                                    </li>
-                                                </ul>
+                                                <button class="btn btn-primary filter-dropdown"
+                                                    data-toggle="dropdown"><i class="fas fa-filter"></i></button>
+                                                <div class="edit-filter-modal dropdown-menu-right hidden">
+                                                    <li class="dropdown-title">Filter By</li>
+                                                    <select class="mt-2 select2" name="filter_status"
+                                                        id="filter_status">
+                                                        <option value="" selected>Status</option>
+                                                        <option value="1" {{$filter_status == 1 ? 'selected' : '' }}>
+                                                            Active</option>
+                                                        <option value="2" {{$filter_status == 2 ? 'selected' : '' }}>
+                                                            Deactive</option>
+                                                    </select>
+                                                    <button type="submit"
+                                                        class="mt-2 ml-2 apply-button btn btn-primary btn-sm">Apply</button>
+                                                    <button type="button"
+                                                        class="mt-2 filter-remove btn btn-danger btn-sm">Cancel</button>
+                                                </div>
                                             </div>
+
                                         </div>
                                     </form>
                                 </div>
@@ -61,6 +58,7 @@
                                                 <th>Name</th>
                                                 <th>Mobile</th>
                                                 <th>Email</th>
+                                                <th>Status</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -76,6 +74,7 @@
                                                 <td>{{$employee['EMP_Name']}}</td>
                                                 <td>{{$employee['EMP_MobileNumber']}}</td>
                                                 <td>{{$employee['EMP_Email']}}</td>
+                                                <td> {!! $status[$employee['status']] !!}</td>
                                                 <td>
                                                     <a href="{{route('employees.view',$employee['EMP_ID'])}}"
                                                         class="btn btn-icon btn-sm btn-primary"><i
@@ -110,19 +109,15 @@
     @section('script')
 
     <script>
-        $(document).on('change', '#search', function () {
-            $("#search_form")[0].submit();
-        })
         $(document).on('click', ".dropdown-item", function () {
+            $(document).on('change', '#search', function () {
+                $("#search_form")[0].submit();
+            });
             $(".dropdown-item").removeClass("active");
             var text = $(this).text();
             if (text == "All") {
                 $("#search_field").val("");
                 // $("#search").val("");
-                $("#search").attr("placeholder", "Search");
-            } else if ($(this).data("field") == "clear") {
-                $("#search_field").val("");
-                $("#search").val("");
                 $("#search").attr("placeholder", "Search");
             } else {
                 $("#search_field").val($(this).data("field"));
@@ -132,6 +127,29 @@
             if ($("#search").val() != "") {
                 $("#search_form")[0].submit();
             }
+        });
+        $(document).ready(function () {
+            $(".filter-dropdown, .text-button").click(function () {
+                $(".edit-filter-modal").toggleClass("hidden");
+
+            });
+            $(".apply-button").click(function () {
+                $(".edit-filter-modal").toggleClass("hidden");
+                $(".filter, .fa-plus, .fa-filter").toggleClass("filter-hidden");
+                $(".filter-dropdown-text").text("Add filter");
+            });
+
+            $(".filter-remove").click(function () {
+                $("#search_field").val("");
+                $("#search").val("");
+                $("#filter_status").val("");
+                $("#search_form")[0].submit();
+                $(".edit-filter-modal").toggleClass("hidden");
+            });
+
+
+
+
         });
     </script>
 

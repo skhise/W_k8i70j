@@ -28,7 +28,10 @@ use Throwable;
 class ClientController extends Controller
 {
     private $status_code = 200;
-
+    public $status = [
+        "1" => '<div class="badge badge-success badge-shadow">Active</div>',
+        "2" => '<div class="badge badge-danger badge-shadow">De-Active</div>',
+    ];
     public function __construct()
     {
 
@@ -41,6 +44,7 @@ class ClientController extends Controller
             'filters' => $request->all('search', 'trashed', 'search_field', 'filter_status'),
             'search_field' => $request->search_field ?? '',
             'filter_status' => $request->filter_status ?? '',
+            'status'=>$this->status,
             'search' => $request->search ?? '',
             'clients' => Client::orderBy('updated_at', "DESC")
                 ->filter($request->only('search', 'trashed', 'search_field', 'filter_status'))
@@ -49,6 +53,7 @@ class ClientController extends Controller
                 ->through(fn($client) => [
                     'id' => $client->CST_ID,
                     'client_code' => $client->CST_Code,
+                    'CST_Status' => $client->CST_Status,
                     'phone' => $client->CCP_Mobile,
                     'email' => $client->CCP_Email,
                     'department' => $client->CCP_Department,

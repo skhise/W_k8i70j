@@ -74,7 +74,6 @@ class ScheduleController extends Controller
 
 
         } catch (Exception $ex) {
-            dd($ex->getMessage());
             Session::flash("error", "Something went wrong, try again.");
         }
         return view('schedules.index', [
@@ -91,7 +90,8 @@ class ScheduleController extends Controller
             join("master_service_status", "master_service_status.Status_Id", "services.service_status")
             ->where("id", $cs->Service_Call_Id)
             ->first();
-        if ($statusCode->id > 0) {
+        $id = $statusCode->id ?? 0;     
+        if ($id > 0) {
             $cs->MStatusName = $statusCode->Status_Name;
             $cs->MStatusColor = $statusCode->status_color;
         }

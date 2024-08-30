@@ -72,7 +72,7 @@
                                             <div class="col-md-2">
 
                                             </div>
-                                            <div class="col-md-3 floating-label">
+                                            <div class="col-md-3 floating-label required">
                                                 <select
                                                     class="form-control text-box single-line @error('CNRT_Type') is-invalid @enderror"
                                                     data-val="true"
@@ -91,14 +91,14 @@
                                                             {{ $contracttype->contract_type_name }}</option>
                                                     @endforeach
                                                 </select>
-                                                <label>Contarct Type</label>
+                                                <label class='control-label'>Contarct Type</label>
                                                 @if ($errors->has('CNRT_Type'))
                                                     <span class="text-danger field-validation-valid"
                                                         data-valmsg-for="CNRT_Type"
                                                         data-valmsg-replace="true">{{ $errors->first('CNRT_Type') }}</span>
                                                 @endif
                                             </div>
-                                            <div class="col-md-3 floating-label">
+                                            <div class="col-md-3 floating-label required">
                                                 <select
                                                     class="form-control text-box single-line @error('CNRT_SiteType') is-invalid @enderror"
                                                     data-val="true"
@@ -117,7 +117,7 @@
                                                             {{ $sitetype->site_type_name }}</option>
                                                     @endforeach
                                                 </select>
-                                                <label>Site Type</label>
+                                                <label class="control-label">Site Type</label>
                                                 @if ($errors->has('CNRT_Type'))
                                                     <span class="text-danger field-validation-valid"
                                                         data-valmsg-for="CNRT_SiteType"
@@ -139,10 +139,10 @@
 
                                     <div class="form-group">
                                         <div class="row">
-                                            <div class="col-md-2">
-                                                <span style="float:right ;font-weight:bold">Customer Details</span>
+                                            <div class="col-md-2 required">
+                                                <span class="control-label" style="float:right ;font-weight:bold">Customer Details</span>
                                             </div>
-                                            <div class="col-md-4 floating-label">
+                                            <div class="col-md-4 floating-label ">
                                                 @if ($update)
                                                     <input id="CNRT_CustomerID" name="CNRT_CustomerID"
                                                         value="{{ $contract->CNRT_CustomerID }}" type="text"

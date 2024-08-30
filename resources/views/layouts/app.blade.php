@@ -36,6 +36,11 @@
     <link rel="stylesheet" href="{{ asset('bundles/pretty-checkbox/pretty-checkbox.min.css') }}">
     <!-- <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}"> -->
     <style>
+    .required .control-label:after { 
+            color: #d00;
+            content: "*";
+            position: absolute;
+        }
         .action-2 {
             width: 10% !important;
         }
@@ -80,7 +85,7 @@
             -webkit-animation-timing-function: ease-in-out;
             -webkit-animation-direction: alternate;
         }
-
+        
         @-webkit-keyframes blinker {
             from {
                 opacity: 1.0;

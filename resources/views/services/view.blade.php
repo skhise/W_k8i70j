@@ -288,6 +288,14 @@
                                                             <div class="row">
                                                                 <div class="col-md-3">
                                                                     <span style="float:right ;font-weight:bold">
+                                                                        Serial Number</span>
+                                                                </div>
+                                                                <div class="col-md-9">{{ $service->nrnumber }}
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-3">
+                                                                    <span style="float:right ;font-weight:bold">
                                                                         Name</span>
                                                                 </div>
                                                                 <div class="col-md-9">{{ $service->product_name }}

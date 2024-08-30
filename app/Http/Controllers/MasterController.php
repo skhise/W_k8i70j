@@ -681,6 +681,82 @@ class MasterController extends Controller
             }
         }
     }
+
+    public function sts_index(Request $request)
+    {
+        $area = array();
+        try {
+            $service_type = ServiceType::paginate(10)
+                ->withQueryString();
+
+        } catch (Exception $ex) {
+            // return $ex->errorInfo;
+        }
+        return view("masters.service_type.index", ["serviceType" => $service_type]);
+    }
+    public function sts_delete(Request $request)
+    {
+        $id = $request->id ?? 0;
+        $res['message'] = 'action failed, try again';
+        $res['code'] = 400;
+        try {
+            $delete = ServiceType::where('id', $id)->delete();
+            if ($delete) {
+                $res['message'] = 'Deleted';
+                $res['code'] = 200;
+            }
+        } catch (Exception $ex) {
+            // return $ex->getMessage();
+            $res['message'] = 'action failed, try again' . $ex->getMessage();
+            $res['code'] = 400;
+        }
+        return json_encode($res);
+    }
+    public function sts_saveupdate(Request $request)
+    {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                "id" => "required",
+                "name" => "required",
+                "flag" => "required",
+            ]
+        );
+        if ($validator->fails()) {
+            return response()->json(["success" => false, "message" => "data missing, try again.", "validation_error" => $validator->errors()]);
+        }
+        if ($request->flag == 1) {
+            $checkName = ServiceType::where('type_name', $request->name)
+                ->where('id', "!=", $request->id)->get();
+            if ($checkName->count() > 0) {
+                return response()->json(["success" => false, "message" => "duplicate service type name.", "validation_error" => $validator->errors()]);
+            } else {
+                $update = ServiceType::where('id', $request->id)->update([
+                    'type_name' => $request->name
+                ]);
+                if ($update) {
+                    return response()->json(["success" => true, "message" => "Service type updated.", "validation_error" => $validator->errors()]);
+                } else {
+                    return response()->json(["success" => false, "message" => "action failed, try again.", "validation_error" => $validator->errors()]);
+                }
+            }
+
+        } else {
+            $checkName = ServiceType::where('type_name', $request->name)->get();
+            if ($checkName->count() == 0) {
+                $create = ServiceType::create([
+                    'type_name' => $request->name
+                ]);
+                if ($create) {
+                    return response()->json(["success" => true, "message" => "Created", "validation_error" => $validator->errors()]);
+                } else {
+                    return response()->json(["success" => false, "message" => "action failed, try again.", "validation_error" => $validator->errors()]);
+                }
+            } else {
+                return response()->json(["success" => false, "message" => "duplicate area name.", "validation_error" => $validator->errors()]);
+            }
+        }
+    }
     public function SiteArea(Request $request)
     {
         $validator = Validator::make(

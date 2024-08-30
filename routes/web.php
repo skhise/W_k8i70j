@@ -182,6 +182,11 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
         Route::post('/masters/service-sub-status', [MasterController::class, 'sbs_saveupdate'])->name('masters.service-sub-status-store');
         Route::delete('/masters/service-sub-status', [MasterController::class, 'sbs_delete'])->name('masters.service-sub-status-delete');
     });
+    Route::middleware('auth')->group(function () {
+        Route::get('/masters/service-type', [MasterController::class, 'sts_index'])->name('masters.service-type');
+        Route::post('/masters/service-type', [MasterController::class, 'sts_saveupdate'])->name('masters.service-type-store');
+        Route::delete('/masters/service-type', [MasterController::class, 'sts_delete'])->name('masters.service-type-delete');
+    });
     /*end master routes*/
 
     Route::middleware('auth')->group(function () {

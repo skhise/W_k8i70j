@@ -7,8 +7,11 @@ use App\Exports\ServiceExport;
 use App\Exports\SweviceExport;
 use App\Exports\UsersExport;
 use App\Models\Client;
+use App\Models\ContractScheduleService;
 use App\Models\ContractStatus;
+use App\Models\ContractUnderProduct;
 use App\Models\DcType;
+use App\Models\ProductType;
 use App\Models\Quotation;
 use App\Models\QuotationStatus;
 use App\Models\QuotationType;
@@ -136,6 +139,48 @@ class ReportController extends Controller
         // return Excel::download(new ContractExport($items), $fileName, null, [\Maatwebsite\Excel\Excel::XLSX]);
 
         // return response()->json(["file" => $file, "filename" => $fileName]);
+    }
+    public function crs_index(Contract $contract){
+        $contract_obj = Contract::leftJoin("master_contract_type", "master_contract_type.id", "contracts.CNRT_Type")
+        ->leftJoin("master_site_type", "master_site_type.id", "contracts.CNRT_SiteType")
+        ->leftJoin("master_contract_status", "master_contract_status.id", "contracts.CNRT_Status")
+        ->leftJoin("clients", "clients.CST_ID", "contracts.CNRT_CustomerID")
+        ->where("CNRT_ID", $contract->CNRT_ID)->first();
+    $issueOptions = '<option value="">Select Type</option>';
+    $issue_types = IssueType::all();
+    foreach ($issue_types as $issue_type) {
+        $issueOptions .= '<option value="' . $issue_type->id . '">' . $issue_type->issue_name . '</option>';
+    }
+    $serviceTypeOptions = '<option value="">Select Type</option>';
+    $service_types = ServiceType::all();
+    foreach ($service_types as $service_type) {
+        $serviceTypeOptions .= '<option value="' . $service_type->id . '">' . $service_type->type_name . '</option>';
+    }
+    $productOptions = '<option value="">Select Product</option>';
+    $products = ContractUnderProduct::where("contractId", $contract->CNRT_ID)->get();
+    foreach ($products as $product) {
+        $productOptions .= '<option value="' . $product->id . '">' . $product->nrnumber . '/' . $product->product_name . '</option>';
+    }
+    $services = ContractScheduleService::select("master_service_status.*", "contract_under_product.*", "contract_schedule_service.id as cupId", "contract_schedule_service.*", "master_issue_type.*", "master_service_type.*")->where("contract_schedule_service.contractId", $contract->CNRT_ID)
+        ->leftJoin("master_issue_type", "master_issue_type.id", "contract_schedule_service.issueType")
+        ->leftJoin("contract_under_product", "contract_under_product.id", "contract_schedule_service.product_Id")
+        ->leftJoin("master_service_type", "master_service_type.id", "contract_schedule_service.serviceType")
+        ->leftJoin("master_service_status", "master_service_status.Status_Id", "contract_schedule_service.Schedule_Status")->get();
+
+    return view('reports.contract_summery', [
+        'contract' => $contract_obj,
+        'project_count' => 0,
+        'status' => $this->status,
+        'productType' => ProductType::all(),
+        'issueType' => $issueOptions,
+        'serviceType' => $serviceTypeOptions,
+        'checklists' => $contract->checklist,
+        'renewals' => $contract->renewals,
+        'productOption' => $productOptions,
+        'products' => ContractUnderProduct::where("contractId", $contract->CNRT_ID)->get(),
+        'services' => $services
+
+    ]);
     }
     public function cr_index(Request $request)
     {

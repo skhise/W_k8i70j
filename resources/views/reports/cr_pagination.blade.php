@@ -17,7 +17,7 @@
             <td>{{ date('d-M-Y', strtotime($contract->CNRT_StartDate)) }}</td>
             <td>{{ date('d-M-Y', strtotime($contract->CNRT_EndDate)) }}</td>
             <td>{!! $status[$contract->CNRT_Status] !!}</td>
-            <td><a href="{{ route('contracts.view', $contract['CNRT_ID']) }}" class="btn btn-primary"><i
+            <td><a href="{{ route('contract-report-summary', $contract['CNRT_ID']) }}" class="btn btn-primary"><i
                         class="far fa-eye"></i></a></td>
         </tr>
     @endforeach

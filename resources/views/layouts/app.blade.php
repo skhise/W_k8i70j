@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta charset="UTF-8">
-    <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
+    <meta content="width=device-width, initial-scale=0.9, maximum-scale=1, shrink-to-fit=no" name="viewport">
     <link rel='shortcut icon' type='image/x-icon' href="{{ asset('img/favicon.ico') }}" />
     <title>{{ config('app.name', 'PMS') }}</title>
 
@@ -15,7 +15,7 @@
     <!-- <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" /> -->
     <!-- @vite(['resources/js/app.js', 'resources/css/app.css']); -->
     <!-- Scripts -->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">-->
 
     <link rel="stylesheet" href="{{ asset('css/app.min.css') }}">
 
@@ -36,6 +36,9 @@
     <link rel="stylesheet" href="{{ asset('bundles/pretty-checkbox/pretty-checkbox.min.css') }}">
     <!-- <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}"> -->
     <style>
+    body {
+    zoom: 90%;
+}
     .required .control-label:after { 
             color: #d00;
             content: "*";

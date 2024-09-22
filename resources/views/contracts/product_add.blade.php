@@ -55,7 +55,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="control-label">Sr. Number (Total: <span id="add_sr_no">1</span>) <span
+                            <label class="control-label">Sr. Number (Total: <span id="add_sr_no">1</span>)(Unique serial number) <span
                                     class="text-danger-error text-danger srnumber-field-validation-valid"
                                     data-valmsg-replace="true"></span></label>
                             <div class="row">

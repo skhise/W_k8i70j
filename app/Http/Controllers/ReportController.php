@@ -60,6 +60,45 @@ class ReportController extends Controller
         "3" => '<div class="badge badge-danger badge-shadow">Expired</div>',
         "4" => '<div class="badge badge-danger badge-shadow">Deactivated</div>',
     ];
+
+    function Logs(Request $request){
+        $systemlogs = SystemLog::select(["users.*", "systemlogs.*"])
+        ->join("users", "users.id", "systemlogs.loginId")
+        // ->withQueryString()
+        ->paginate(10);
+    // dd($dc_products);
+        return view("reports.logs", [
+            "systemlogs" => $systemlogs,
+        ]);
+    }
+    public function Logs_Data(Request $request)
+    {
+        $systemlogs = null;
+        $date_range = $request->date_range;
+        $today = date("Y-m-d");
+        $todate = date("Y-m-d");
+        $fromdate = date('Y-m-d', strtotime($todate . '-' . $date_range . ' days'));
+        if ($date_range == 0) {
+            $fromdate = $todate;
+        }
+        if ($date_range == 1) {
+            $todate = date('Y-m-d', strtotime($today . '-1 days'));
+            $fromdate = date('Y-m-d', strtotime($today . '-1 days'));
+        }
+        try {
+            $systemlogs = SystemLog::join( "users", "users.id", "systemlogs.loginId")
+            ->when($date_range != "" && $date_range != -1, function ($query) use ($todate, $fromdate) {
+                return $query->whereBetween(DB::raw('DATE_FORMAT(systemlogs.created_at, "%Y-%m-%d")'), [$fromdate, $todate]);
+
+            })
+            ->paginate(10);
+        } catch (Exception $exp) {
+        }
+        if ($request->ajax()) {
+            return view('reports.log_pagination', compact('systemlogs', 'date_range'));
+        }
+        return view('reports.logs', compact('systemlogs'));
+    }
     function dc_index(Request $request)
     {
         $dc_products = ServiceDc::select(["dc_type.*", "clients.*", "services.*", "service_dc.id as dcp_id", "service_dc.*"])
@@ -161,12 +200,21 @@ class ReportController extends Controller
     foreach ($products as $product) {
         $productOptions .= '<option value="' . $product->id . '">' . $product->nrnumber . '/' . $product->product_name . '</option>';
     }
-    $services = ContractScheduleService::select("master_service_status.*", "contract_under_product.*", "contract_schedule_service.id as cupId", "contract_schedule_service.*", "master_issue_type.*", "master_service_type.*")->where("contract_schedule_service.contractId", $contract->CNRT_ID)
+    $services_schedule = ContractScheduleService::select("master_service_status.*", "contract_under_product.*", "contract_schedule_service.id as cupId", "contract_schedule_service.*", "master_issue_type.*", "master_service_type.*")->where("contract_schedule_service.contractId", $contract->CNRT_ID)
         ->leftJoin("master_issue_type", "master_issue_type.id", "contract_schedule_service.issueType")
         ->leftJoin("contract_under_product", "contract_under_product.id", "contract_schedule_service.product_Id")
         ->leftJoin("master_service_type", "master_service_type.id", "contract_schedule_service.serviceType")
-        ->leftJoin("master_service_status", "master_service_status.Status_Id", "contract_schedule_service.Schedule_Status")->get();
+        ->leftJoin("master_service_status", "master_service_status.Status_Id", "contract_schedule_service.Schedule_Status")
+        ->where("contract_schedule_service.Schedule_Status",7)->get();
 
+    $ongoing_services = Service::select("master_service_status.*", "contract_under_product.*","services.id as cupId", "services.*", "master_issue_type.*", "master_service_type.*")
+        ->where("services.contract_id", operator: $contract->CNRT_ID)
+        ->leftJoin("contract_under_product", "contract_under_product.id", "services.product_id")
+        ->leftJoin("master_issue_type", "master_issue_type.id", "services.issue_type")
+        ->leftJoin("master_service_type", "master_service_type.id", "services.service_type")
+        ->leftJoin("master_service_status", "master_service_status.Status_Id", "services.service_status")
+        ->get();
+        // dd($ongoing_services);
     return view('reports.contract_summery', [
         'contract' => $contract_obj,
         'project_count' => 0,
@@ -178,7 +226,8 @@ class ReportController extends Controller
         'renewals' => $contract->renewals,
         'productOption' => $productOptions,
         'products' => ContractUnderProduct::where("contractId", $contract->CNRT_ID)->get(),
-        'services' => $services
+        'services' => $services_schedule,
+        'ongoing_services' => $ongoing_services
 
     ]);
     }
@@ -317,7 +366,7 @@ class ReportController extends Controller
 
     public function etr_index(Request $request)
     {
-        $employee = Employee::all();
+        $employee = Employee::where(["EMP_Status"=>1,"Access_Role"=>4,'deleted_at'=>null])->get();
         $status = ServiceStatus::all();
         $service_types = ServiceType::all();
         return view(
@@ -346,7 +395,7 @@ class ReportController extends Controller
     }
     public function easr_index(Request $request)
     {
-        $engineer = Employee::all();
+        $engineer = Employee::where(["EMP_Status"=>1,"Access_Role"=>4,'deleted_at'=>null])->get();
         return view('reports.engineer-service-analysis', [
             "engineers" => $engineer,
         ]);
@@ -530,6 +579,7 @@ class ReportController extends Controller
         $todate = $request->todate;
         $fromdate = $request->fromdate;
         $engineer_id = $request->engineer;
+       
         $employees = Employee::orderby("EMP_ID", 'ASC')
         ->when($engineer_id!= 0, function ($query) use ($engineer_id) {
             return $query->where('EMP_ID', $engineer_id);
@@ -576,7 +626,6 @@ class ReportController extends Controller
             //$obj = ."=>".$count;
             $countArray[$ss->Status_Name] = $count;
         }
-
 
 
         return response()->json([
@@ -738,13 +787,14 @@ class ReportController extends Controller
         }
 
         $services = array();
-        $services = Service::select("*", "services.id as service_id")
+        $services = Service::select("*", "services.id as service_id","contract_under_product.*")
             ->join("master_service_status", "master_service_status.Status_Id", "services.service_status")
             ->join("master_service_priority", "master_service_priority.id", "services.service_priority")
             ->join("master_issue_type", "master_issue_type.id", "services.issue_type")
             ->join("master_service_type", "master_service_type.id", "services.service_type")
             ->join("clients", "clients.CST_ID", "services.customer_id")
             ->leftJoin("contracts", "contracts.CNRT_ID", "services.contract_id")
+            ->leftJoin("contract_under_product", "contract_under_product.id", "services.product_id")
             ->leftJoin("employees", "employees.EMP_ID", "services.assigned_to")
             ->when($customerId != 0, function ($query) use ($customerId) {
                 return $query->where('clients.CST_ID', $customerId);

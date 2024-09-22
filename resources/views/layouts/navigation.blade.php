@@ -127,48 +127,48 @@
             <li class="menu-header">Main</li>
             <li class="dropdown {{ Request::is('dashboard') ? 'active' : '' }}">
                 <a href="{{ route('dashboard') }}" class="nav-link"><i
-                        data-feather="monitor"></i><span>Dashboard</span></a>
+                        data-feather="grid"></i><span>Dashboard</span></a>
             </li>
             <li class="dropdown {{ Request::is('employees') || Request::is('employees/*') ? 'active' : '' }}">
                 <a href="{{ route('employees') }}" class="nav-link"><i
                         data-feather="users"></i><span>Employees</span></a>
             </li>
             <li class="{{ Request::is('clients') || Request::is('clients/*') ? 'active' : '' }}">
-                <a class="nav-link" href="{{ route('clients') }}"><i data-feather="briefcase"></i> Clients</a>
+                <a class="nav-link" href="{{ route('clients') }}"><i data-feather="user-plus"></i> Clients</a>
             </li>
 
 
             <li class="dropdown {{ Request::is('contracts/*') || Request::is('contracts') ? 'active' : '' }}">
                 <a href="{{ route('contracts') }}" class="nav-link"><i
-                        data-feather="file"></i><span>Contract</span></a>
+                        data-feather="edit"></i><span>Contract</span></a>
             </li>
             <li class="dropdown {{ Request::is('services') || Request::is('services/*') ? 'active' : '' }}">
                 <a href="{{ route('services') }}" class="nav-link"><i
-                        data-feather="figma"></i><span>Services</span></a>
+                        data-feather="bar-chart"></i><span>Services</span></a>
             </li>
             <li class="dropdown {{ Request::is('schedules') || Request::is('schedules/*') ? 'active' : '' }}">
-                <a href="{{ route('schedules') }}" class="nav-link"><i data-feather="figma"></i><span>Schedules
+                <a href="{{ route('schedules') }}" class="nav-link"><i data-feather="clock"></i><span>Schedules
                         Services</span></a>
             </li>
             <li class="dropdown {{ Request::is('dcmanagements') || Request::is('dcmanagements/*') ? 'active' : '' }}">
-                <a href="{{ route('dcmanagements') }}" class="nav-link"><i data-feather="figma"></i><span>DC
+                <a href="{{ route('dcmanagements') }}" class="nav-link"><i data-feather="file"></i><span>DC
                         Management</span></a>
             </li>
             <li
                 class="dropdown {{ Request::is('quotmanagements') || Request::is('quotmanagements/*') ? 'active' : '' }}">
                 <a href="{{ route('quotmanagements') }}" class="nav-link"><i
-                        data-feather="figma"></i><span>Quotation
+                        data-feather="file-text"></i><span>Quotation
                         Management</span></a>
             </li>
 
             <li class="dropdown {{ Request::is('products/*') || Request::is('products') ? 'active' : '' }}">
                 <a href="{{ route('products') }}" class="nav-link"><i
-                        data-feather="figma"></i><span>Products</span></a>
+                        data-feather="box"></i><span>Products</span></a>
             </li>
             <li class="dropdown {{ Request::is('reports/*') || Request::is('reports') ? 'active' : '' }}">
                 <a href="#"
                     class="menu-toggle nav-link has-dropdown {{ Request::is('reports/*') || Request::is('reports') ? 'toggled' : '' }}"><i
-                        data-feather="briefcase"></i><span>System Reports</span></a>
+                        data-feather="pie-chart"></i><span>System Reports</span></a>
                 <ul class="dropdown-menu">
                     <li class="{{ Request::is('reports/contract-report') ? 'active' : '' }}"><a
                             class="nav-link active" href="{{ route('contract-report') }}">Contract Reports</a></li>
@@ -186,10 +186,12 @@
                             href="{{ route('dc-report') }}">Dc Report</a></li>
                     <li class="{{ Request::is('reports/quotation-report') ? 'active' : '' }}"><a class="nav-link"
                             href="{{ route('quotation-report') }}">Quotation Report</a></li>
+                    <li class="{{ Request::is('reports/logs') ? 'active' : '' }}"><a
+                            class="nav-link" href="{{ route('logs') }}">Logs</a></li>
                 </ul>
             </li>
             <li class="dropdown {{ Request::is('masters/*') || Request::is('masters') ? 'active' : '' }}">
-                <a href="{{ route('masters') }}" class="nav-link"><i data-feather="figma"></i><span>Master
+                <a href="{{ route('masters') }}" class="nav-link"><i data-feather="settings"></i><span>Master
                         Settings</span></a>
             </li>
         </ul>

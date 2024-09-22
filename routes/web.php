@@ -66,8 +66,12 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
 
         Route::get('/reports/engineer-service-analysis', [ReportController::class, 'easr_index'])->name('engineer-service-analysis');
         Route::get('/reports/GetEngineerAnalysisReport', [ReportController::class, 'GetEngineerAnalysisReport'])->name('GetEngineerAnalysisReport');
+        
+        Route::get('/reports/logs', [ReportController::class, 'Logs'])->name('logs');
+        Route::get('/reports/logs_data', [ReportController::class, 'Logs_Data'])->name('logs_data');
     });
 
+    
     /*Clients Route*/
     Route::middleware('auth')->group(function () {
         Route::get('/clients', [ClientController::class, 'index'])->name('clients');
@@ -198,7 +202,7 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
         Route::get('/quotmanagements/create', [QuotationController::class, 'create'])->name('quotmanagements.create');
         Route::post('/quotmanagements/store', [QuotationController::class, 'store'])->name('quotmanagements.store');
         Route::get('/quotmanagements/{quotation}/view', [QuotationController::class, 'View'])->name('quotmanagements.view');
-        Route::get('/quotmanagements/{quotation}/delete', [QuotationController::class, 'Delete'])->name('quotmanagements.delete');
+        Route::get('/quotmanagements/{quotation}/delete', [QuotationController::class, 'delete'])->name('quotmanagements.delete');
         Route::get('/quotmanagements/{quotation}/print', [QuotationController::class, 'Print'])->name('quotmanagements.print');
         Route::get('/quotmanagements/{quotation_product}/delete_qp', [QuotationController::class, 'DeleteQP'])->name('quotmanagements.delete_qp');
 
@@ -223,6 +227,7 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
         Route::get('/products/create', [ProductController::class, 'create'])->name("products.create");
         Route::get('/products/{product}/view', [ProductController::class, 'view'])->name("products.view");
         Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name("products.edit");
+        Route::get('/products/{product}/delete', [ProductController::class, 'DeleteProduct'])->name("products.delete");
         Route::post('/products/{product}/update', [ProductController::class, 'update'])->name("products.update");
         Route::post('/products/store', [ProductController::class, 'store'])->name("products.store");
         Route::post('/products/{product}/upload', [ProductController::class, 'upload'])->name("products.upload");

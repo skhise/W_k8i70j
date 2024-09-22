@@ -23,6 +23,8 @@
                                                         <button class="btn btn-primary filter-dropdown"
                                                             data-toggle="dropdown"><i
                                                                 class="fas fa-filter"></i></button>
+                                                        <button class="filter-remove_btn btn btn-danger ml-2">
+                                                            <i class="fa fa-times"></i></button>
                                                         <div class="edit-filter-modal dropdown-menu-right hidden">
                                                             <li class="dropdown-title">Filter By</li>
                                                             <select class="mt-2 select2" name="filter_type"
@@ -141,7 +143,12 @@
                 window.location.replace("/dcmanagements");
                 $(".edit-filter-modal").toggleClass("hidden");
             });
-
+            $(".filter-remove_btn").click(function () {
+                $("#search_field").val("");
+                $("#search").val("");
+                $("#filter_type").val("");
+                window.location.replace("dcmanagements");
+            });
 
 
 

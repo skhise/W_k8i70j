@@ -80,6 +80,9 @@ fas fa-plus-square"></i>
                                                         <button class="btn btn-primary filter-dropdown"
                                                             data-toggle="dropdown"><i
                                                                 class="fas fa-filter"></i></button>
+                                                        <button class="filter-remove btn btn-danger ml-2">
+                                                            <i class="fa fa-times"></i></button>   
+
                                                         <div class="edit-filter-modal dropdown-menu-right hidden">
                                                             <li class="dropdown-title">Filter By</li>
                                                             <select class="mt-2 select2" name="filter_type"
@@ -260,7 +263,8 @@ fas fa-plus-square"></i>
                     $(".filter-dropdown-text").text("Add filter");
                 });
 
-                $(".filter-remove").click(function() {
+                $(".filter-remove").click(function(e) {
+                    e.preventDefault();
                     $("#search_field").val("");
                     $("#filter_type").val("");
                     $("#filter_service_type").val("");
@@ -271,7 +275,6 @@ fas fa-plus-square"></i>
                     $("#dayFilter").val("180");
                     window.location.replace("services");
                     //$("#search_form_all")[0].submit();
-                    $(".edit-filter-modal").toggleClass("hidden");
                 });
 
 

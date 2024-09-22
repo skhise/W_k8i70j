@@ -27,6 +27,8 @@
                                             <div class="input-group-append">
                                                 <button class="btn btn-primary filter-dropdown"
                                                     data-toggle="dropdown"><i class="fas fa-filter"></i></button>
+                                                 <button class="filter-remove_btn btn btn-danger ml-2">
+                                                    <i class="fa fa-times"></i></button>
                                                 <div class="edit-filter-modal dropdown-menu-right hidden">
                                                     <li class="dropdown-title">Filter By</li>
                                                     <select class="mt-2 select2" name="filter_status"
@@ -37,15 +39,26 @@
                                                         <option value="2" {{$filter_status == 2 ? 'selected' : '' }}>
                                                             Deactive</option>
                                                     </select>
+                                                    <select class="mt-2 select2" name="filter_role"
+                                                        id="filter_role">
+                                                        <option value="" selected>Role</option>
+                                                         @foreach($roles as $index=>$role)
+                                                            <option value="{{$role->id}}" {{$role->id == $filter_role ? 'selected' : ''}}>{{$role->access_role_name}}</option>
+                                                         @endforeach   
+                                                    </select>
                                                     <button type="submit"
                                                         class="mt-2 ml-2 apply-button btn btn-primary btn-sm">Apply</button>
                                                     <button type="button"
                                                         class="mt-2 filter-remove btn btn-danger btn-sm">Cancel</button>
                                                 </div>
                                             </div>
+                                            
 
                                         </div>
+                                        
                                     </form>
+                                    <div class="clearfix mb-3"></div>
+                                   
                                 </div>
                                 <div class="clearfix mb-3"></div>
                                 <div class="table-responsive">
@@ -58,6 +71,7 @@
                                                 <th>Name</th>
                                                 <th>Mobile</th>
                                                 <th>Email</th>
+                                                <th>Role</th>
                                                 <th>Status</th>
                                                 <th>Action</th>
                                             </tr>
@@ -74,6 +88,7 @@
                                                 <td>{{$employee['EMP_Name']}}</td>
                                                 <td>{{$employee['EMP_MobileNumber']}}</td>
                                                 <td>{{$employee['EMP_Email']}}</td>
+                                                <td>{{$employee['access_role_name']}}</td>
                                                 <td> {!! $status[$employee['status']] !!}</td>
                                                 <td>
                                                     <a href="{{route('employees.view',$employee['EMP_ID'])}}"
@@ -143,10 +158,18 @@
                 $("#search_field").val("");
                 $("#search").val("");
                 $("#filter_status").val("");
-                $("#search_form")[0].submit();
+                $("#filter_role").val("");
                 $(".edit-filter-modal").toggleClass("hidden");
+                window.location.replace("employees");
+                
             });
-
+            $(".filter-remove_btn").click(function () {
+                $("#search_field").val("");
+                $("#search").val("");
+                $("#filter_status").val("");
+                $("#filter_role").val("");
+                window.location.replace("employees");
+            });
 
 
 

@@ -290,7 +290,7 @@
                                                                     <span style="float:right ;font-weight:bold">
                                                                         Serial Number</span>
                                                                 </div>
-                                                                <div class="col-md-9">{{ $service->nrnumber }}
+                                                                <div class="col-md-9">{{ $service->nrnumber ?? $service->product_sn  }}
                                                                 </div>
                                                             </div>
                                                             <div class="row">
@@ -618,7 +618,7 @@
                 });
                 if (status_id == 5) {
                     $("#close_call_div").removeClass("hide");
-                    $("#action_description_lbl").text("Close Note *");
+                    $("#action_description_lbl").text("Close Note / Remark *");
                 } else {
                     $("#close_call_div").addClass("hide");
                     $("#action_description_lbl").text("Description *");
@@ -812,6 +812,8 @@
                 $("#btn_service_status_save").attr("disabled", false);
                 $("#btn_service_status_save").html("Save");
                 $('.text-danger-error').html('');
+                $("#close_call_div").addClass("hide");
+                $("#action_description_lbl").text("Description *");
                 $("#form_service_status")[0].reset();
                 $(".required").removeClass('error_border')
                 $("#btn_close_service_status").trigger('click');

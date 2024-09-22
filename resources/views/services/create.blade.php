@@ -488,7 +488,7 @@
                                                             {{ $issuetype->type_name }}</option>
                                                     @endforeach
                                                 </select>
-                                                <label>Service Type</label>
+                                                <label>Service Type <span class="text-danger">*</span></label>
                                                 @if ($errors->has('service_type'))
                                                     <span class="text-danger field-validation-valid"
                                                         data-valmsg-for="issue_type"
@@ -514,7 +514,7 @@
                                                             {{ $issuetype->issue_name }}</option>
                                                     @endforeach
                                                 </select>
-                                                <label>Issue Type</label>
+                                                <label>Issue Type <span class="text-danger">*</span></label>
                                                 @if ($errors->has('issue_type'))
                                                     <span class="text-danger field-validation-valid"
                                                         data-valmsg-for="issue_type"
@@ -538,7 +538,7 @@
                                                             {{ $priority->priority_name }}</option>
                                                     @endforeach
                                                 </select>
-                                                <label>Select priority</label>
+                                                <label>Select priority <span class="text-danger">*</span></label>
                                                 @if ($errors->has('service_priority'))
                                                     <span class="text-danger field-validation-valid"
                                                         data-valmsg-for="service_priority"
@@ -573,10 +573,11 @@
                                         <div class="card-footer float-right">
                                             <button style='display:none;' type='reset' id="btn_reset"></button>
                                             <div class="d-flex">
-                                                <button type="submit" id="btnAddClient"
-                                                    class="btn-action btn btn-primary mr-2">{{ $update ? 'Update' : 'Save' }}</button>
-                                                <a type="button" class="btn-action btn btn-danger "
+                                            <a type="button" class="btn-action btn btn-danger "
                                                     href="{{ $update ? route('services.view', $service->service_id) : route('services') }}">Cancel</a>
+                                                <button type="submit" id="btnAddClient"
+                                                    class="btn-action btn btn-primary mr-2 ml-2">{{ $update ? 'Update' : 'Save' }}</button>
+                                                
                                             </div>
 
                                         </div>

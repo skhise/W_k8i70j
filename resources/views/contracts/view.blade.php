@@ -184,7 +184,7 @@
                                                             </div>
                                                             <div class="col-md-2"
                                                                 style="float:left ;font-weight:bold">
-                                                                {{ $contract->CNRT_Charges_Paid }}</div>
+                                                                {{ $contract->CNRT_Charges_Pending }}</div>
                                                         </div>
 
                                                         <hr />

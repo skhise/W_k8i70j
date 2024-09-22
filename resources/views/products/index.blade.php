@@ -25,6 +25,8 @@
                                             <div class="input-group-append">
                                                 <button class="btn btn-primary filter-dropdown"
                                                     data-toggle="dropdown"><i class="fas fa-filter"></i></button>
+                                                <button class="filter-remove_btn btn btn-danger ml-2">
+                                                            <i class="fa fa-times"></i></button>
                                                 <div class="edit-filter-modal dropdown-menu-right hidden">
                                                     <li class="dropdown-title">Filter By</li>
                                                     <select class="mt-2 select2" name="filter_type" id="filter_type">
@@ -74,13 +76,11 @@
             Str::limit($product['Product_Description'], 50, ' ...') !!}
                                                 </td>
                                                 <td>
-                                                    <div class="d-flex">
+                                                    <div class="">
                                                     <a href="{{route('products.view', $product['Product_ID'])}}"
                                                         class="action-btn btn btn-icon btn-sm btn-primary"><i
                                                             class="far fa-eye"></i></a>
-                                                    <a href="{{route('products.edit', $product['Product_ID'])}}"
-                                                        class="action-btn btn btn-icon btn-sm btn-info"><i
-                                                            class="far fa-edit"></i></a>
+                                                    
                                                     </div>
                                                     
                                                 </td>
@@ -146,6 +146,13 @@
                 $("#filter_type").val("");
                 window.location.replace("products");
                 $(".edit-filter-modal").toggleClass("hidden");
+            });
+            $(".filter-remove_btn").click(function (e) {
+                e.preventDefault();
+                $("#search_field").val("");
+                $("#search").val("");
+                $("#filter_type").val("");
+                window.location.replace("products");
             });
 
 

@@ -93,6 +93,9 @@ class ClientController extends Controller
         $contracts = $client->contracts;
         if (count($contracts) == 0) {
             $client->delete();
+            $action = "Client Deleted,  CST_Name:" . $client->CST_Name;
+            $log = App(\App\Http\Controllers\LogController::class);
+            $log->SystemLog(Auth()::user->id, $action);
             return redirect()->back()->with('success', 'Deleted.');
         } else {
             return redirect()->back()->with('error', 'Can\'t delete, Client have active contracts.');
@@ -147,12 +150,14 @@ class ClientController extends Controller
         $validator = Validator::make(
             $request->all(),
             [
-                "CST_Name" => "required|unique:clients,CST_Name",
+                "CST_Name" => "required",
                 "CCP_Mobile" => "required",
+                "CCP_Email" => "required",
             ],
             [
-                'CST_Name.required' => 'Contcat person name required!',
-                'CCP_Mobile.required' => 'Contcat person mobile required!',
+                'CST_Name.required' => 'Contact person name required!',
+                'CCP_Mobile.required' => 'Contact person mobile required!',
+                'CCP_Email.required' => 'Contact email required!',
 
             ]
         );
@@ -281,7 +286,7 @@ class ClientController extends Controller
         $isService = $this->CheckIfServiceCall($request->id);
         $isContract = $this->CheckIfContract($request->id);
         if ($isService && $isContract) {
-            $update = Customer::find($request->id)->update(['CST_Status' => 0]);
+            $update = Client::find($request->id)->update(['CST_Status' => 0]);
             if ($update) {
                 $action = "Customer Deleted,  CST_Name:" . $request->CST_Name;
                 $log = App(\App\Http\Controllers\LogController::class);

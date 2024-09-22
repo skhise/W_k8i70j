@@ -44,10 +44,10 @@
                                     <td>{{ $product['product_type'] }}</td>
                                     <td>{{ $product['nrnumber'] }}</td>
                                     <td>{{ $product['product_description'] }}</td>
-                                    <th>{{ $product['product_price'] }}</th>
-                                    <th>{{ $product['branch'] }}</th>
-                                    <th>{{ $product['remark'] }}</th>
-                                    <th>{{ $product['service_period'] }}</th>
+                                    <td>{{ $product['product_price'] }}</td>
+                                    <td>{{ $product['branch'] }}</td>
+                                    <td>{{ $product['remark'] }}</td>
+                                    <td>{{ $product['service_period'] }}</td>
                                     <td><a href="#" data-toggle="modal" id="showEditModal"
                                             data-product_name="{{ $product['product_name'] }}"
                                             data-product_type="{{ $product['product_type'] }}"

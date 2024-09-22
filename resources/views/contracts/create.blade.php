@@ -304,19 +304,19 @@
                                                     data-valmsg-for="CNRT_Charges" data-valmsg-replace="true"></span>
                                             </div>
 
-                                            <div class="col-md-3 floating-label" style="display:none;">
+                                            <div class="col-md-3 floating-label">
                                                 <input class="form-control text-box single-line"
                                                     id="CNRT_Charges_Paid" name="CNRT_Charges_Paid" placeholder=""
-                                                    type="number" value="0" />
+                                                    type="number" value="{{ $contract->CNRT_Charges_Paid ?? old('CNRT_Charges_Paid') }}" />
                                                 <label>Paid Amount</label>
                                                 <span class="text-danger field-validation-valid"
                                                     data-valmsg-for="CNRT_Charges_Paid"
                                                     data-valmsg-replace="true"></span>
                                             </div>
-                                            <div class="col-md-3 floating-label" style="display:none;">
+                                            <div class="col-md-3 floating-label">
                                                 <input class="disabled form-control text-box single-line"
                                                     id="CNRT_Charges_Pending" name="CNRT_Charges_Pending"
-                                                    placeholder="" type="number" value="0" />
+                                                    placeholder="" type="number" value="{{ $contract->CNRT_Charges_Pending ?? old('CNRT_Charges_Pending') }}" />
                                                 <label>Charges Pending</label>
                                                 <span class="text-danger field-validation-valid"
                                                     data-valmsg-for="CNRT_Charges_Pending"

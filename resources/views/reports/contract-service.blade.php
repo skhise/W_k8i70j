@@ -53,47 +53,124 @@
                                 <div class="clearfix mb-3"></div>
                                 <hr />
                                 <div class="row hide report-div">
-                                    <div class="col-12 col-sm-12 col-lg-6">
-                                        <div class="card">
-                                            <div class="card-header">
-                                                <h4>Contract Type</h4>
+                                    <div class="col-lg-12">
+                                        <div class="row ">
+                                            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                                                <div class="card">
+                                                    <div class="card-statistic-4">
+                                                        <div class="align-items-center justify-content-between">
+                                                            <div class="row ">
+                                                                <div
+                                                                    class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pr-0 pt-3">
+                                                                    <div class="card-content">
+                                                                        <h5 class="font-15">Total Calls</h5>
+                                                                        <!-- <p class="mb-0"><span class="col-green">10%</span> Increase</p> -->
+                                                                    </div>
+                                                                </div>
+                                                                <div
+                                                                    class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pr-0 pt-3">
+                                                                    <div class="card-content">
+                                                                        <h2 class="mb-3 font-18" id="total_call">{{ 0 }}
+                                                                        </h2>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="card-body">
-                                                <div id="contract_type" class="chartsh"></div>
+                                            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                                                <div class="card">
+                                                    <div class="card-statistic-4">
+                                                        <div class="align-items-center justify-content-between">
+                                                            <div class="row ">
+                                                                <div
+                                                                    class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pr-0 pt-3">
+                                                                    <div class="card-content">
+                                                                        <h5 class="font-15">Complete</h5>
+                                                                    </div>
+                                                                </div>
+                                                                <div
+                                                                    class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pr-0 pt-3">
+                                                                    <div class="card-content">
+                                                                        <h2 class="mb-3 font-18" id="complete_call">{{ 0 }}
+                                                                        </h2>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                                                <div class="card">
+                                                    <div class="card-statistic-4">
+                                                        <div class="align-items-center justify-content-between">
+                                                            <div class="row ">
+                                                                <div
+                                                                    class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pr-0 pt-3">
+                                                                    <div class="card-content">
+                                                                        <h5 class="font-15">Pending</h5>
+                                                                    </div>
+                                                                </div>
+                                                                <div
+                                                                    class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pr-0 pt-3">
+                                                                    <div class="card-content">
+                                                                        <h2 class="mb-3 font-18" id="pending_call">{{ 0 }}
+                                                                        </h2>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="col-12 col-sm-12 col-lg-6">
-                                        <div class="card">
-                                            <div class="card-header">
-                                                <h4>Team</h4>
+                                        <div class="row">
+                                            <div class="col-12 col-sm-12 col-lg-6">
+                                                <div class="card">
+                                                    <div class="card-header">
+                                                        <h4>Contract Type</h4>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div id="contract_type" class="chartsh"></div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="card-body">
-                                                <div id="team" class="chartsh"></div>
+                                            <div class="col-12 col-sm-12 col-lg-6">
+                                                <div class="card">
+                                                    <div class="card-header">
+                                                        <h4>Assigned</h4>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div id="team" class="chartsh"></div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-12 col-sm-12 col-lg-6">
-                                        <div class="card">
-                                            <div class="card-header">
-                                                <h4>Service Type</h4>
+                                            <div class="col-12 col-sm-12 col-lg-6">
+                                                <div class="card">
+                                                    <div class="card-header">
+                                                        <h4>Service Type</h4>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div id="service_type" class="chartsh"></div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="card-body">
-                                                <div id="service_type" class="chartsh"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-12 col-sm-12 col-lg-6">
-                                        <div class="card">
-                                            <div class="card-header">
-                                                <h4>Issue Type</h4>
-                                            </div>
-                                            <div class="card-body">
-                                                <div id="issue_type" class="chartsh"></div>
+                                            <div class="col-12 col-sm-12 col-lg-6">
+                                                <div class="card">
+                                                    <div class="card-header">
+                                                        <h4>Issue Type</h4>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div id="issue_type" class="chartsh"></div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+
 
                             </div>
                         </div>
@@ -121,7 +198,7 @@
 
                         title: {
 
-                            text: "Contract Type"
+                            text: ""
 
                         },
                         axisX: {
@@ -136,35 +213,13 @@
 
                             yValueFormatString: "##0",
 
-                            indexLabel: "{label} {y}",
+                            indexLabel: "{y}",
 
                             dataPoints: ContractType
 
                         }]
 
                     });
-
-                    $.get("GetAnalysisReport?dayFilter=" + dayFilter + "&cust_id=" +
-                        cust_id + "&type=json",
-                        function(data) {
-                            console.log(data.contractTypeArr);
-                            var obj = data.contractTypeArr;
-
-                            for (var i = 0; i < obj.length; i++) {
-
-                                ContractType.push({
-                                    y: parseInt(obj[i].y),
-                                    label: obj[i].label
-                                });
-
-                            }
-
-                            chartContractType.render();
-
-                        });
-
-
-
                     //pieChartTeam
 
                     var ChartTeam = [];
@@ -175,7 +230,7 @@
 
                         title: {
 
-                            text: "Team"
+                            text: ""
 
                         },
                         axisX: {
@@ -191,39 +246,13 @@
 
                             yValueFormatString: "##0",
 
-                            indexLabel: "{label} {y}",
+                            indexLabel: "{y}",
 
                             dataPoints: ChartTeam
 
                         }]
 
                     });
-
-                    $.get("GetAnalysisReport?dayFilter=" + dayFilter + "&cust_id=" + cust_id +
-                        "&type=json",
-                        function(data) {
-
-
-
-                            var obj = data.employee;
-                            var objd = data.employeeData;
-
-                            for (var i = 0; i < obj.length; i++) {
-
-                                ChartTeam.push({
-                                    y: parseInt(objd[i]),
-                                    label: obj[i]
-                                });
-
-                            }
-
-                            chartpieChartTeam.render();
-
-                        });
-
-
-
-
 
                     //Issue Type
 
@@ -235,7 +264,7 @@
 
                         title: {
 
-                            text: "Issue Type"
+                            text: ""
 
                         },
                         axisX: {
@@ -251,7 +280,7 @@
 
                             yValueFormatString: "##0",
 
-                            indexLabel: "{label} {y}",
+                            indexLabel: "{y}",
 
                             dataPoints: IssueType
 
@@ -259,27 +288,6 @@
 
                     });
 
-                    $.get("GetAnalysisReport?dayFilter=" + dayFilter + "&cust_id=" + cust_id +
-                        "&type=json",
-                        function(data) {
-
-
-
-                            var obj = data.issueType;
-                            var objd = data.issueTypeData;
-
-                            for (var i = 0; i < obj.length; i++) {
-
-                                IssueType.push({
-                                    y: parseInt(objd[i]),
-                                    label: obj[i]
-                                });
-
-                            }
-
-                            chartIssueType.render();
-
-                        });
 
                     //Service Type
 
@@ -291,7 +299,7 @@
 
                         title: {
 
-                            text: "Service Type"
+                            text: ""
 
                         },
 
@@ -309,7 +317,7 @@
 
                             yValueFormatString: "##0",
 
-                            indexLabel: "{label} {y}",
+                            indexLabel: "{y}",
 
                             dataPoints: serviceType
 
@@ -323,17 +331,61 @@
 
                             var obj = data.serviceType;
                             var objd = data.serviceTypeData;
+                            var stausCount = data.countArray;
+                            var pending = parseInt(stausCount.New)+stausCount.Pending + parseInt(stausCount.Open);
+                            var complete = parseInt(stausCount.Resolved) + parseInt(stausCount.Closed);
+                            var total = parseInt(stausCount.New) + parseInt(stausCount.Open) + parseInt(stausCount.Resolved)+ parseInt(stausCount.Closed);
+                            $("#pending_call").html(pending);
+                            $("#total_call").html(total);
+                            $("#complete_call").html(complete);
 
                             for (var i = 0; i < obj.length; i++) {
 
                                 serviceType.push({
-                                    y: parseInt(objd),
+                                    y: parseInt(objd[i]),
+                                    label: obj[i]
+                                });
+
+                            }
+                            
+                            var obj = data.issueType;
+                            var objd = data.issueTypeData;
+
+                            for (var i = 0; i < obj.length; i++) {
+
+                                IssueType.push({
+                                    y: parseInt(objd[i]),
                                     label: obj[i]
                                 });
 
                             }
 
+                            var obj = data.employee;
+                            var objd = data.employeeData;
+
+                            for (var i = 0; i < obj.length; i++) {
+
+                                ChartTeam.push({
+                                    y: parseInt(objd[i]),
+                                    label: obj[i]
+                                });
+
+                            }
+                             var obj = data.contractTypeArr;
+
+                            for (var i = 0; i < obj.length; i++) {
+
+                                ContractType.push({
+                                    y: parseInt(obj[i].y),
+                                    label: obj[i].label
+                                });
+
+                            }
+
                             chartServiceType.render();
+                             chartIssueType.render();
+                             chartContractType.render();
+                             chartpieChartTeam.render();
 
                         });
 

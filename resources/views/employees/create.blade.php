@@ -3,9 +3,6 @@
         <section class="section">
             <div class="section-body">
                 <div class="row">
-                    @if ($errors->any())
-                        {!! implode('', $errors->all('<div class="alert alert-danger">:message</div>')) !!}
-                    @endif
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header">
@@ -82,7 +79,8 @@
                                                         @foreach ($roles as $role)
                                                             <option value="{{ $role->id }}"
                                                                 {{ $role->id == old('Access_Role') ? 'selected' : '' }}
-                                                                {{ $role->id == $employee->Access_Role ? 'selected' : '' }}>
+                                                                {{ $role->id == $employee->Access_Role ? 'selected' : '' }}
+                                                                {{  $employee->Access_Role == 4 ? 'selected' : '' }}>
                                                                 {{ $role->access_role_name }}</option>
                                                         @endforeach
                                                     </select>
@@ -135,7 +133,7 @@
                                                         data-val="true" id="EMP_Email" name="EMP_Email"
                                                         placeholder="" required="required" type="text"
                                                         value="{{ old('EMP_Email') ?? $employee->EMP_Email }}" />
-                                                    <label>Email</label>
+                                                    <label>Email <span class="text-danger">*</span></label>
                                                     @if ($errors->has('EMP_Email'))
                                                         <span class="text-danger field-validation-valid"
                                                             data-valmsg-for="EMP_Email"
@@ -272,10 +270,11 @@
                                     </div>
                                     <div class="form-group">
                                         <div class="card-footer text-right">
+                                        <a type="button" class="btn btn-danger"
+                                                href="{{ route('employees') }}">Back</a>
                                             <input type="button" id="btnAddEmployee"
                                                 value="{{ $update ? 'Update' : 'Save' }}" class="btn btn-primary">
-                                            <a type="button" class="btn btn-danger"
-                                                href="{{ route('employees') }}">Back</a>
+                                            
                                         </div>
                                     </div>
                             </div>

@@ -94,10 +94,15 @@ class ServiceController extends Controller
 
             $dcproduct_count = ServiceDcProduct::where(["dc_id"=>$serviceDc->id])->count();
             if($dcproduct_count>0){
+              
                 ServiceDcProduct::where(["dc_id"=>$serviceDc->id])->delete();
+               
             }
             $serviceDc->delete();
-
+            $service = Service::where('id',$serviceDc->service_id)->one();
+            $action = "Service DC marked as deleted, Name:" . $service->service_no;
+            $log = App(\App\Http\Controllers\LogController::class);
+            $log->SystemLog($request->loginId, $action);
             return back()->with("success", "Deleted!");
         } catch (Exception $exp) {
             dd($exp->getMessage());
@@ -319,6 +324,9 @@ class ServiceController extends Controller
             if($count == 0){
                 $isDelete = $service->delete();
                 if ($isDelete) {
+                    $action = "Service Deleted,  Service No.:" .$service->service_no;
+                    $log = App(\App\Http\Controllers\LogController::class);
+                    $log->SystemLog(Auth()::user->id, $action);
                     return Redirect("services")->with("success", "Deleted");
                 }
                 return back()
@@ -1346,7 +1354,7 @@ class ServiceController extends Controller
                 $status_options .= "<option data-sub_status='" . $sub_status . "' value=" . $st->Status_Id . " " . $selected . ">" . $st->Status_Name . "</option>";
             }
         }
-        $employees = Employee::where("EMP_Status", 1)->get();
+        $employees = Employee::where(["EMP_Status"=>1,"Access_Role"=>4,'deleted_at'=>null])->get();
         $employee_options = "<option value=''>Select Employee</option>";
         foreach ($employees as $employee) {
             $selected = "";
@@ -1413,7 +1421,7 @@ class ServiceController extends Controller
                 $status_options .= "<option data-sub_status='" . $sub_status . "' value=" . $st->Status_Id . " " . $selected . ">" . $st->Status_Name . "</option>";
             }
         }
-        $employees = Employee::where("EMP_Status", 1)->get();
+        $employees = Employee::where(["EMP_Status"=>1,"Access_Role"=>4,'deleted_at'=>null])->get();
         $employee_options = "<option value=''>Select Employee</option>";
         foreach ($employees as $employee) {
             $selected = "";
@@ -1523,6 +1531,7 @@ class ServiceController extends Controller
                     'service_status' => 1,
                     'service_category' => isset($request->contract_id) && $request->contract_id == 0 ? 2 : 1,
                     'service_note' => $request->service_note,
+                    'product_sn' => $request->product_sn,
                 ]);
                 if ($service) {
                     $history = ServiceHistory::create([
@@ -1538,7 +1547,7 @@ class ServiceController extends Controller
                             $contractservice = ContractScheduleService::where(['id' => $request->contractserviceid])->first();
                             if (!empty($contractservice)) {
                                 $contractservice->Service_Call_Id = $service->id;
-                                $contractservice->Schedule_Status = 9;
+                                $contractservice->Schedule_Status = 2;
                                 $contractservice->save();
                             } else {
                                 DB::rollBack();

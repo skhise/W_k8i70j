@@ -116,7 +116,11 @@ class QuotationController extends Controller
         try {
             $delete = QuotationProduct::where(['quot_id' => $quotation->id])->delete();
             if ($delete) {
+                
                 $quotation->delete();
+                $action = "Quotation Deleted,  Quotation Id.:" .$quotation->id;
+                $log = App(\App\Http\Controllers\LogController::class);
+                $log->SystemLog(Auth()::user->id, $action);
                 return back()->with("success", "Deleted");
             }
             return back()->with("error", "Action failed, try again");

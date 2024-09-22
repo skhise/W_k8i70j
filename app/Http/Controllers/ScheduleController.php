@@ -45,6 +45,7 @@ class ScheduleController extends Controller
                 "master_service_type.*",
                 "contract_schedule_service.id as cupId",
                 "contract_schedule_service.*",
+                "contract_under_product.*",
                 "contracts.*",
                 "clients.*",
                 "master_service_status.*"
@@ -60,7 +61,7 @@ class ScheduleController extends Controller
                 ->leftJoin("master_service_status", "contract_schedule_service.Schedule_Status", "master_service_status.Status_Id")
                 ->leftJoin("master_service_type", "master_service_type.id", "contract_schedule_service.serviceType")
                 ->leftJoin("master_issue_type", "master_issue_type.id", "contract_schedule_service.issueType")
-                ->where("isManaged", 0)
+                ->where("Service_Call_Id", 0)
                 ->orderBy("Schedule_Date", "DESC")
                 ->paginate(10)
                 ->withQueryString();

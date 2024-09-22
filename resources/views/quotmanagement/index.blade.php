@@ -35,6 +35,8 @@ fas fa-plus-square"></i>
                                                         <button class="btn btn-primary filter-dropdown"
                                                             data-toggle="dropdown"><i
                                                                 class="fas fa-filter"></i></button>
+                                                        <button class="filter-remove_btn btn btn-danger ml-2">
+                                                            <i class="fa fa-times"></i></button>        
                                                         <div class="edit-filter-modal dropdown-menu-right hidden">
                                                             <li class="dropdown-title">Filter By</li>
                                                             <select
@@ -167,6 +169,15 @@ fas fa-plus-square"></i>
                     //$("#quotation_filter")[0].submit();
                     window.location.replace("/quotmanagements");
                     $(".edit-filter-modal").toggleClass("hidden");
+                });
+                $(".filter-remove_btn").click(function(e) {
+                    e.preventDefault();
+                    $("#search_field").val("");
+                    $("#customer_id").val("");
+                    $("#c").val("");
+                    $("#search").val("");
+                    $("#filter_status").val("");
+                    window.location.replace("/quotmanagements");
                 });
 
 

@@ -77,25 +77,28 @@
                                     <table class="table table-striped" id="contract-report">
                                         <thead>
                                             <tr>
+                                                <tr>
                                                 <th>Ticket No. </th>
                                                 <th>Type </th>
                                                 <th>Contract No.</th>
                                                 <th class="table-width-20">Customer Name</th>
+                                                <th class="table-width-20">Product</th>
                                                 <th>Service Type </th>
                                                 <th>Issue Type </th>
-                                                <th>Problem Reported By Customer </th>
-                                                <th>Reported By</th>
+                                                <th>Issue Description </th>
+                                                <th>Contact Person</th>
+                                                <th>Reported At</th>
                                                 <th>Response Time (Hours) </th>
-                                                <th>Problem Reported By Engineer </th>
                                                 <th>Action Taken By Engineer </th>
                                                 <th>Status </th>
                                                 <th>Engineer</th>
                                                 <th>Resolved At </th>
-                                                <th>Age(Hours) </th>
                                                 <th>Closed At </th>
+                                                <th>Age(Hours) </th>
                                                 <th>Expansion </th>
                                                 <th>Customer Charges </th>
                                                 <th>Remark</th>
+                                            </tr>
                                             </tr>
                                         </thead>
                                         <tbody id="contractReportList">

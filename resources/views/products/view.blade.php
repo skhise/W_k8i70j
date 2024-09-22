@@ -8,6 +8,13 @@
                             <div class="card-header">
                                 <h4 class="card-title">Product Details</h4>
                                 <div class="card-header-action">
+                                    <a href="{{route('products.edit', $product['Product_ID'])}}"
+                                                        class="action-btn btn btn-icon btn-sm btn-info"><i
+                                                            class="far fa-edit"></i></a>
+
+                                    <a href="{{route('products.delete', $product['Product_ID'])}}"
+                                                        class="delete-btn action-btn btn btn-icon btn-sm btn-danger"><i
+                                                            class="fa fa-trash"></i></a>
                                     <a class="btn btn-danger" href="{{ route('products') }}">Back</a>
                                 </div>
                             </div>

@@ -12,6 +12,7 @@
                         <h4>Engineer Analysis Report</h4>
                     </div>
                     <div class="card-body">
+
                         <div class="form-horizontal">
                             <div class="form-group">
                                 <div class="row">
@@ -20,7 +21,8 @@
                                             <option value="">Select Employee</option>
                                             <option value="0">All</option>
                                             @foreach ($engineers as $engineer)
-                                                <option value="{{ $engineer->EMP_ID }}">{{ $engineer->EMP_Name }}</option>
+                                                <option value="{{ $engineer->EMP_ID }}">{{ $engineer->EMP_Name }}
+                                                </option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -50,50 +52,129 @@
                                         <button id="btn-reset" class="btn btn-danger">Reset</button>
                                     </div>
                                 </div>
+
                                 <div class="clearfix mb-3"></div>
                                 <hr />
                                 <div class="row hide report-div">
-                                    <div class="col-12 col-sm-12 col-lg-6">
-                                        <div class="card">
-                                            <div class="card-header">
-                                                <h4>Contract Type</h4>
+                                    <div class="col-lg-12">
+                                        <div class="row ">
+                                            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                                                <div class="card">
+                                                    <div class="card-statistic-4">
+                                                        <div class="align-items-center justify-content-between">
+                                                            <div class="row ">
+                                                                <div
+                                                                    class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pr-0 pt-3">
+                                                                    <div class="card-content">
+                                                                        <h5 class="font-15">Total Calls</h5>
+                                                                        <!-- <p class="mb-0"><span class="col-green">10%</span> Increase</p> -->
+                                                                    </div>
+                                                                </div>
+                                                                <div
+                                                                    class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pr-0 pt-3">
+                                                                    <div class="card-content">
+                                                                        <h2 class="mb-3 font-18" id="total_call">0
+                                                                        </h2>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div class="card-body">
-                                                <div id="contract_type" class="chartsh"></div>
+                                            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                                                <div class="card">
+                                                    <div class="card-statistic-4">
+                                                        <div class="align-items-center justify-content-between">
+                                                            <div class="row ">
+                                                                <div
+                                                                    class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pr-0 pt-3">
+                                                                    <div class="card-content">
+                                                                        <h5 class="font-15">Complete</h5>
+                                                                    </div>
+                                                                </div>
+                                                                <div
+                                                                    class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pr-0 pt-3">
+                                                                    <div class="card-content">
+                                                                        <h2 class="mb-3 font-18" id="complete_call">
+                                                                        </h2>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                                                <div class="card">
+                                                    <div class="card-statistic-4">
+                                                        <div class="align-items-center justify-content-between">
+                                                            <div class="row ">
+                                                                <div
+                                                                    class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pr-0 pt-3">
+                                                                    <div class="card-content">
+                                                                        <h5 class="font-15" >Pending</h5>
+                                                                    </div>
+                                                                </div>
+                                                                <div
+                                                                    class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pr-0 pt-3">
+                                                                    <div class="card-content">
+                                                                        <h2 class="mb-3 font-18" id="pending_call">{{ 0 }}
+                                                                        </h2>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12 col-sm-12 col-lg-6">
+                                                <div class="card">
+                                                    <div class="card-header">
+                                                        <h4>Contract Type</h4>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div id="contract_type" class="chartsh"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-sm-12 col-lg-6">
+                                                <div class="card">
+                                                    <div class="card-header">
+                                                        <h4>Assigned</h4>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div id="team" class="chartsh"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-sm-12 col-lg-6">
+                                                <div class="card">
+                                                    <div class="card-header">
+                                                        <h4>Service Type</h4>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div id="service_type" class="chartsh"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-sm-12 col-lg-6">
+                                                <div class="card">
+                                                    <div class="card-header">
+                                                        <h4>Issue Type</h4>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div id="issue_type" class="chartsh"></div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-12 col-sm-12 col-lg-6">
-                                        <div class="card">
-                                            <div class="card-header">
-                                                <h4>Team</h4>
-                                            </div>
-                                            <div class="card-body">
-                                                <div id="team" class="chartsh"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-12 col-sm-12 col-lg-6">
-                                        <div class="card">
-                                            <div class="card-header">
-                                                <h4>Service Type</h4>
-                                            </div>
-                                            <div class="card-body">
-                                                <div id="service_type" class="chartsh"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-12 col-sm-12 col-lg-6">
-                                        <div class="card">
-                                            <div class="card-header">
-                                                <h4>Issue Type</h4>
-                                            </div>
-                                            <div class="card-body">
-                                                <div id="issue_type" class="chartsh"></div>
-                                            </div>
-                                        </div>
-                                    </div>
+
                                 </div>
+
 
                             </div>
                         </div>
@@ -105,7 +186,7 @@
                 window.location.reload();
             }
 
-            function get_report() {
+            function get_report() { 
 
                 var engineer = $("#engineer option:selected").val();
                 var dayFilter = $("#date-range option:selected").val();
@@ -121,7 +202,7 @@
 
                         title: {
 
-                            text: "Contract Type"
+                            text: ""
 
                         },
                         axisX: {
@@ -136,35 +217,13 @@
 
                             yValueFormatString: "##0",
 
-                            indexLabel: "{label} {y}",
+                            indexLabel: "{y}",
 
                             dataPoints: ContractType
 
                         }]
 
                     });
-
-                    $.get("GetEngineerAnalysisReport?dayFilter=" + dayFilter + "&engineer=" +
-                        engineer + "&type=json",
-                        function(data) {
-                            console.log(data.contractTypeArr);
-                            var obj = data.contractTypeArr;
-
-                            for (var i = 0; i < obj.length; i++) {
-
-                                ContractType.push({
-                                    y: parseInt(obj[i].y),
-                                    label: obj[i].label
-                                });
-
-                            }
-
-                            chartContractType.render();
-
-                        });
-
-
-
                     //pieChartTeam
 
                     var ChartTeam = [];
@@ -175,7 +234,7 @@
 
                         title: {
 
-                            text: "Team"
+                            text: ""
 
                         },
                         axisX: {
@@ -191,7 +250,7 @@
 
                             yValueFormatString: "##0",
 
-                            indexLabel: "{label} {y}",
+                            indexLabel: "{y}",
 
                             dataPoints: ChartTeam
 
@@ -199,27 +258,7 @@
 
                     });
 
-                    $.get("GetEngineerAnalysisReport?dayFilter=" + dayFilter + "&engineer=" + engineer +
-                        "&type=json",
-                        function(data) {
-
-
-
-                            var obj = data.employee;
-                            var objd = data.employeeData;
-
-                            for (var i = 0; i < obj.length; i++) {
-
-                                ChartTeam.push({
-                                    y: parseInt(objd[i]),
-                                    label: obj[i]
-                                });
-
-                            }
-
-                            chartpieChartTeam.render();
-
-                        });
+                    
 
 
 
@@ -235,7 +274,7 @@
 
                         title: {
 
-                            text: "Issue Type"
+                            text: ""
 
                         },
                         axisX: {
@@ -251,35 +290,13 @@
 
                             yValueFormatString: "##0",
 
-                            indexLabel: "{label} {y}",
+                            indexLabel: "{y}",
 
                             dataPoints: IssueType
 
                         }]
 
                     });
-
-                    $.get("GetEngineerAnalysisReport?dayFilter=" + dayFilter + "&engineer=" + engineer +
-                        "&type=json",
-                        function(data) {
-
-
-
-                            var obj = data.issueType;
-                            var objd = data.issueTypeData;
-
-                            for (var i = 0; i < obj.length; i++) {
-
-                                IssueType.push({
-                                    y: parseInt(objd[i]),
-                                    label: obj[i]
-                                });
-
-                            }
-
-                            chartIssueType.render();
-
-                        });
 
                     //Service Type
 
@@ -291,7 +308,7 @@
 
                         title: {
 
-                            text: "Service Type"
+                            text: ""
 
                         },
 
@@ -309,34 +326,75 @@
 
                             yValueFormatString: "##0",
 
-                            indexLabel: "{label} {y}",
+                            indexLabel: "{y}",
 
                             dataPoints: serviceType
 
                         }]
 
                     });
+                  
 
-                    $.get("GetEngineerAnalysisReport?dayFilter=" + dayFilter + "&engineer=" +
-                        engineer + "&type=json",
+                    $.get("GetEngineerAnalysisReport?dayFilter=" + dayFilter + "&engineer=" + engineer +
+                        "&type=json",
                         function(data) {
+                            console.log(data);
+                            var obj = data.employee;
+                            var objd = data.employeeData;
+                            var stausCount = data.countArray;
+                            var pending = parseInt(stausCount.New)+stausCount.Pending + parseInt(stausCount.Open);
+                            var complete = parseInt(stausCount.Resolved) + parseInt(stausCount.Closed);
+                            var total = parseInt(stausCount.New) + parseInt(stausCount.Open) + parseInt(stausCount.Resolved)+ parseInt(stausCount.Closed);
+                            $("#pending_call").html(pending);
+                            $("#total_call").html(total);
+                            $("#complete_call").html(complete);
+                            for (var i = 0; i < obj.length; i++) {
 
-                            var obj = data.serviceType;
+                                ChartTeam.push({
+                                    y: parseInt(objd[i]),
+                                    label: obj[i]
+                                });
+
+                            }
+                             var obj = data.serviceType;
                             var objd = data.serviceTypeData;
 
                             for (var i = 0; i < obj.length; i++) {
 
                                 serviceType.push({
-                                    y: parseInt(objd),
+                                    y: parseInt(objd[i]),
                                     label: obj[i]
                                 });
 
                             }
+                            var obj = data.issueType;
+                            var objd = data.issueTypeData;
 
-                            chartServiceType.render();
+                            for (var i = 0; i < obj.length; i++) {
+
+                                IssueType.push({
+                                    y: parseInt(objd[i]),
+                                    label: obj[i]
+                                });
+
+                            }
+                            var obj = data.contractTypeArr;
+
+                            for (var i = 0; i < obj.length; i++) {
+
+                                ContractType.push({
+                                    y: parseInt(obj[i].y),
+                                    label: obj[i].label
+                                });
+
+                            }
+
+                            chartpieChartTeam.render();
+                             chartServiceType.render();
+                             chartIssueType.render();
+                             chartContractType.render();
 
                         });
-
 
                     $(".canvasjs-chart-credit").addClass("hide");
                 }

@@ -32,6 +32,9 @@ class EmployeeController extends Controller
     {
         $delete = $employee->delete();
         if ($delete) {
+            $action = "Employee Deleted,  Employee Name:" . $employee->EMP_Name;
+            $log = App(\App\Http\Controllers\LogController::class);
+            $log->SystemLog(Auth()::user->id, $action);
             return redirect()->route('employees')->with("success", "Deleted!");
         }
         return back()->withErrors("Action failed, try again.");
@@ -137,14 +140,16 @@ class EmployeeController extends Controller
             'filters' => $request->all('search', 'trashed', 'search_field', 'filter_status'),
             'search_field' => $request->search_field ?? '',
             'filter_status' => $request->filter_status ?? '',
+            'filter_role' => $request->filter_role ?? '',
             "status" => $this->status,
+            'roles' => AccessMaster::where('use_status',1)->get(),
             'search' => $request->search ?? '',
             'employees' => Employee::join("master_designation", "master_designation.id", "employees.EMP_Designation")
                 ->join("users", "users.id", "employees.EMP_ID")
                 ->leftJoin("master_role_access", "master_role_access.id", "employees.Access_Role")
                 ->where("EMP_Status", 1)
                 ->orderBy("employees.EMP_ID", "DESC")
-                ->filter($request->only('search', 'trashed', 'search_field', 'filter_status'))
+                ->filter($request->only('search', 'trashed', 'search_field', 'filter_status','filter_role'))
                 ->paginate(10)
                 ->withQueryString()
         ]);
@@ -167,7 +172,7 @@ class EmployeeController extends Controller
         // dd($contract->CNRT_EndDate);
         return view('employees.create', [
             'update' => true,
-            'roles' => AccessMaster::all(),
+            'roles' => AccessMaster::where('use_status',1)->get(),
             'designations' => Designation::all(),
             'employee' => $employee,
         ]);
@@ -241,7 +246,7 @@ class EmployeeController extends Controller
     {
         return view('employees.create', [
             'update' => false,
-            'roles' => AccessMaster::all(),
+            'roles' => AccessMaster::where('use_status',1)->get(),
             'designations' => Designation::all(),
             'employee' => new Employee(),
         ]);

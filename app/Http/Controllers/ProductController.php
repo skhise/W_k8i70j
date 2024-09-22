@@ -117,29 +117,18 @@ class ProductController extends Controller
         $ProductType = ProductType::all();
         return $ProductType;
     }
-    public function DeleteProduct(Request $request)
+    public function DeleteProduct(Request $request,Product $product)
     {
-        $validator = Validator::make(
-            $request->all(),
-            [
-                'id' => "required",
-            ]
-        );
-        if ($validator->fails()) {
-            return response()->json(["success" => false, "message" => "Product information missing.", "validation_error" => $validator->errors()]);
-        }
-        $update = Product::find($request->id)->update(['Status' => 0]);
+        $update = $product->delete();//::find($product->Product_ID)->update(['Status' => 0]);
         if ($update) {
-            $product = Product::find($request->id);
             $action = "Product marked as deleted, Name:" . $product->Product_Name;
             $log = App(\App\Http\Controllers\LogController::class);
             $log->SystemLog($request->loginId, $action);
-            return response()->json(["success" => true, "message" => "Product marked as deleted."]);
+            return Redirect("products")->with("success", "Product marked as deleted");
+            // return response()->json(["success" => true, "message" => "Product marked as deleted."]);
         } else {
-            return response()->json(["success" => true, "message" => "Action failed, try again."]);
+            return Redirect("products")->with("error", "Action failed, try again.");
         }
-
-
     }
     public function UpdateProductAccessory(Request $request)
     {

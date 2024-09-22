@@ -50,8 +50,11 @@ class Employee extends Model
             } elseif ($trashed === 'only') {
                 $query->onlyTrashed();
             }
-        })->when($filters['filter_status'] ?? null, function ($query, $search) {
+        })->when($filters['filter_role'] ?? null, function ($query, $search) {
             $query->where('Access_Role', 'like', '%' . $search . '%');
+        })
+        ->when($filters['filter_status'] ?? null, function ($query, $search) {
+            $query->where('EMP_Status', 'like', '%' . $search . '%');
         });
     }
 }

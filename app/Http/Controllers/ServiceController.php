@@ -326,7 +326,7 @@ class ServiceController extends Controller
                 if ($isDelete) {
                     $action = "Service Deleted,  Service No.:" .$service->service_no;
                     $log = App(\App\Http\Controllers\LogController::class);
-                    $log->SystemLog(Auth()::user->id, $action);
+                    $log->SystemLog(Auth::user()->id, $action);
                     return Redirect("services")->with("success", "Deleted");
                 }
                 return back()

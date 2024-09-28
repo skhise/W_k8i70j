@@ -120,7 +120,7 @@ class QuotationController extends Controller
                 $quotation->delete();
                 $action = "Quotation Deleted,  Quotation Id.:" .$quotation->id;
                 $log = App(\App\Http\Controllers\LogController::class);
-                $log->SystemLog(Auth()::user->id, $action);
+                $log->SystemLog(Auth::user()->id, $action);
                 return back()->with("success", "Deleted");
             }
             return back()->with("error", "Action failed, try again");

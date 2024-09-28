@@ -205,7 +205,7 @@ button:hover {
   border-radius: 4px;
   /* left: 8px; */
 }
-
+/* 
 .floating-label select:focus+label,
 .floating-label select:not(:placeholder-shown)+label {
   top: -9px;
@@ -214,8 +214,8 @@ button:hover {
   background-color: #ffffff;
   padding: 0 4px;
   border-radius: 4px;
-  /* left: 8px; */
-}
+ left: 8px; 
+} */
 
 .disabled {
   pointer-events: none !important;

@@ -95,7 +95,7 @@ class ClientController extends Controller
             $client->delete();
             $action = "Client Deleted,  CST_Name:" . $client->CST_Name;
             $log = App(\App\Http\Controllers\LogController::class);
-            $log->SystemLog(Auth()::user->id, $action);
+            $log->SystemLog(Auth::user()->id, $action);
             return redirect()->back()->with('success', 'Deleted.');
         } else {
             return redirect()->back()->with('error', 'Can\'t delete, Client have active contracts.');

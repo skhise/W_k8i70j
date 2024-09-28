@@ -34,7 +34,7 @@ class EmployeeController extends Controller
         if ($delete) {
             $action = "Employee Deleted,  Employee Name:" . $employee->EMP_Name;
             $log = App(\App\Http\Controllers\LogController::class);
-            $log->SystemLog(Auth()::user->id, $action);
+            $log->SystemLog(Auth::user()->id, $action);
             return redirect()->route('employees')->with("success", "Deleted!");
         }
         return back()->withErrors("Action failed, try again.");

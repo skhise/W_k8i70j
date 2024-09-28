@@ -2,7 +2,6 @@
     <style>
         .floating-label label {
             z-index: 10;
-            left
         }
     </style>
     <div class="main-content">

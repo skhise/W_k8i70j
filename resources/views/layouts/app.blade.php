@@ -30,6 +30,7 @@
     <link rel="stylesheet" href="{{ asset('bundles/datatables/datatables.min.css') }}">
     <link rel="stylesheet"
         href="{{ asset('bundles/datatables/DataTables-1.10.16/css/dataTables.bootstrap4.min.css') }}">
+    <!-- <link rel="stylesheet" href="{{ asset('bundles/select2/dist/css/select2.min.css') }}"> -->
     <link rel="stylesheet" href="{{ asset('bundles/select2/dist/css/select2.min.css') }}">
     <link rel="stylesheet" href="{{ asset('bundles/jquery-selectric/selectric.css') }}">
     <link rel="stylesheet" href="{{ asset('css/jquery-editable-select.min.css') }}">

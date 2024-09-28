@@ -38,7 +38,7 @@
     <!-- <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}"> -->
     <style>
     body {
-    zoom: 90%;
+    /* zoom: 90%; */
 }
     .required .control-label:after { 
             color: #d00;

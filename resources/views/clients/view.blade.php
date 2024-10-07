@@ -23,19 +23,19 @@ $add_cp_url = "{{route('clients.view',$client->id)}}";
                             <div class="card-body">
                                 <ul class="nav nav-tabs" id="myTab2" role="tablist">
                                     <li class="nav-item">
-                                        <a class="nav-link active" id="home-tab2" data-toggle="tab"
+                                        <a class="nav-link {{ session('contract_activeTab') === 'home' || session('contract_activeTab') == '' ? ' active' : '' }}" id="home-tab2" data-toggle="tab"
                                             href="#ClientDetails" role="tab" aria-controls="home"
                                             aria-selected="true">Details</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" id="profile-tab2" data-toggle="tab" href="#ContactPersons"
+                                        <a class="nav-link {{ session('contract_activeTab') === 'refclient' ? ' active' : '' }}" id="profile-tab2" data-toggle="tab" href="#ContactPersons"
                                             role="tab" aria-controls="refclient" aria-selected="false">Contact
                                             Persons</a>
                                     </li>
 
                                 </ul>
                                 <div class="tab-content tab-bordered">
-                                    <div class="tab-pane fade show active" id="ClientDetails" role="tabpanel"
+                                    <div class="tab-pane fade {{ session('contract_activeTab') === 'home' || session('contract_activeTab') == '' ? ' show active' : '' }}" id="ClientDetails" role="tabpanel"
                                         aria-labelledby="home-tab2">
 
                                         <div class="row">
@@ -186,7 +186,7 @@ $add_cp_url = "{{route('clients.view',$client->id)}}";
 
 
                                     </div>
-                                    <div class="tab-pane fade" id="ContactPersons" role="tabpanel"
+                                    <div class="tab-pane fade {{ session('contract_activeTab') === 'home' || session('contract_activeTab') == '' ? ' show active' : '' }}" id="ContactPersons" role="tabpanel"
                                         aria-labelledby="profile-tab2">
 
                                         <div class="row">

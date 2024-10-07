@@ -7,11 +7,12 @@
                         <div class="card author-box">
                             <div class="card-body">
                                 <div class="author-box-center">
-                                    <img alt="image" src="{{Vite::asset('assets/img/users/user-1.png')}}"
+                                    <img alt="image" src="{{asset('img/logo.png')}}"
                                         class="rounded-circle author-box-picture">
+                                        
                                     <div class="clearfix"></div>
-                                    <div class="author-box-name">
-                                        <a href="#">{{Auth::user()->name}}</a>
+                                    <div class="author-box-name mt-3">
+                                        <a href="#">{{$profile->comapny_name}}</a>  
                                     </div>
                                 </div>
                                 <!-- <div class="text-center">
@@ -50,12 +51,13 @@
 
                                     <p class="clearfix">
                                         <span class="float-left">
-                                            Phone
+                                            Name
                                         </span>
                                         <span class="float-right text-muted">
-                                            (0123)123456789
+                                        {{Auth::user()->name}}
                                         </span>
                                     </p>
+                                   
                                     <p class="clearfix">
                                         <span class="float-left">
                                             Mail
@@ -105,29 +107,46 @@
                                             </div>
                                             <div class="card-body">
                                                 <div class="row">
-                                                    <div class="form-group col-md-6 col-12">
-                                                        <label>Name</label>
-                                                        <input type="text" id="name" name="name" class="form-control"
-                                                            value="{{old('name', $user->name)}}" required autofocus
-                                                            autocomplete="name">
-                                                        <x-input-error class="mt-2" :messages="$errors->get('name')" />
-                                                    </div>
-                                                </div>
-                                                <div class="row">
                                                     <div class="form-group col-md-7 col-12">
-                                                        <label>Email</label>
-                                                        <input type="email" class="form-control"
-                                                            value="{{old('email', $user->email)}}" required
-                                                            autocomplete="username">
+                                                        <label>Address</label>
+                                                        <textarea type="address" class="form-control"
+                                                            rows="2" required
+                                                            autocomplete="address">{{old('address', $profile->address)}}</textarea>
                                                         <div class="invalid-feedback">
-                                                            Please fill in the email
+                                                            Please fill in the address
                                                         </div>
                                                     </div>
                                                     <div class="form-group col-md-5 col-12">
-                                                        <label>Phone</label>
-                                                        <input type="tel" class="form-control" value="">
+                                                        <label for="contact_number">Contact number</label>
+                                                        <input type="tel"  class="form-control" name="contact_number" id="contact_number" value="{{old('contact_number', $profile->contact_number)}}">
                                                     </div>
                                                 </div>
+                                                <div class="row">
+                                                    <div class="col-lg-12">
+                                                    <hr/>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="form-group col-md-4 col-12">
+                                                        <label for="wp_user_name">WhatsApp Username</label>
+                                                        <input class="form-control" name="wp_user_name" id="wp_user_name" value="{{old('wp_user_name', $profile->wp_user_name)}}">
+                                                    </div>
+                                                    <div class="form-group col-md-8 col-12">
+                                                        <label for="wp_api_key">WhatsApp Api Key</label>
+                                                        <input class="form-control" name="wp_api_key" id="wp_api_key" value="{{old('wp_api_key', $profile->wp_api_key)}}">
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-lg-12">
+                                                    <hr/>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="form-group col-md-4 col-12">
+                                                        <button class="btn btn-primary float-left">Save</button>
+                                                    </div>
+                                                </div>
+
                                             </div>
                                         </form>
                                     </div>

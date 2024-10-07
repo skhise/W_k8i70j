@@ -80,6 +80,11 @@ class Contract extends Model
         return $this->hasMany(ProductImage::class, 'Contract_Id', 'CNRT_ID');
 
     }
+    public function contractscheduleservice()
+    {
+        return $this->hasMany(ContractScheduleService::class, 'contractId', 'CNRT_ID');
+
+    }
     public function attachment()
     {
         return $this->hasMany(Attachment::class, 'Contract_Id', 'CNRT_ID');
@@ -111,6 +116,11 @@ class Contract extends Model
             if ($contract->attachment()->count() > 0) {
                 $contract->attachment()->each(function ($attachment) {
                     $attachment->delete(); // <-- direct deletion
+                });
+            }
+            if ($contract->contractscheduleservice()->count() > 0) {
+                $contract->contractscheduleservice()->each(function ($contractscheduleservice) {
+                    $contractscheduleservice->delete(); // <-- direct deletion
                 });
             }
 

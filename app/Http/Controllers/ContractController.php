@@ -122,43 +122,42 @@ class ContractController extends Controller
             return response()->json(["success" => false, "message" => "Action failed, try again."]);
         }
     }
-    public function DeleteContract(Request $request)
+    public function DeleteContract(Request $request, Contract $contract)
     {
-        $validator = Validator::make(
-            $request->all(),
-            [
-                'id' => "required",
-                'loginId' => "required"
-            ]
-        );
-        if ($validator->fails()) {
-            return response()->json(["success" => false, "message" => "Contract information missing.", "validation_error" => $validator->errors()]);
-        }
-        $isService = $this->CheckIfServiceCall($request->id);
-        if ($isService) {
-            $contract = Contract::find($request->id);
-            $isDelete = Contract::find($request->id)->delete();
+        $isService = $this->CheckIfServiceCall($contract->CNRT_ID);
+        if (!$isService) {
+            $isDelete = Contract::find($contract->CNRT_ID)->delete();
             if ($isDelete) {
-                $action = "Contract Delete, Contract Number:" . $contract->CNRT_Number . ", Customer Name:" . $contract->CNRT_CustomerName;
+                $action = "Contract Delete, Contract Number:" . $contract->CNRT_Number;
                 $log = App(\App\Http\Controllers\LogController::class);
-                $log->SystemLog($request->loginId, $action);
-                return response()->json(["success" => true, "message" => "Contract Deleted."]);
-                return response()->json(["success" => true, "message" => "Action failed, try again."]);
+                $log->SystemLog(Auth::user()->id, $action);
+                return redirect()->route('contracts')->with("success", "Contract Deleted!");
             } else {
-                return response()->json(["success" => true, "message" => "Action failed, try again."]);
+                $log = App(\App\Http\Controllers\LogController::class);
+                $log->SystemLog(Auth::user()->id, "contract delete action failed");
+                return back()->withErrors("Action failed, try again.");
             }
 
         } else {
-            $contract = Contract::find($request->id);
-            $update = Contract::find($request->id)->update(['CNRT_Status' => 0]);
-            if ($update) {
-                $action = "Contract marked as deleted, Contract Number:" . $contract->CNRT_Number . ", Customer Name:" . $contract->CNRT_CustomerName;
+            try{
+                $update = Contract::where(["CNRT_ID"=>$contract->CNRT_ID])->update(['CNRT_Status' => 0]);
+                if ($update) {
+                    $action = "Contract marked as deleted, Contract Number:" . $contract->CNRT_Number;
+                    $log = App(\App\Http\Controllers\LogController::class);
+                    $log->SystemLog(Auth::user()->id, $action);
+                    return redirect()->route('contracts')->with("success", "Contract Deleted!");
+                } else {
+                    $log = App(\App\Http\Controllers\LogController::class);
+                    $log->SystemLog(Auth::user()->id, "contract delete action failed");
+                   return back()->withErrors("Action failed, try again.");
+                }
+            }catch(Exception $exp){
                 $log = App(\App\Http\Controllers\LogController::class);
-                $log->SystemLog($request->loginId, $action);
-                return response()->json(["success" => true, "message" => "Contract marked as deleted."]);
-            } else {
-                return response()->json(["success" => true, "message" => "Action failed, try again."]);
+                $log->SystemLog(Auth::user()->id, "contract delete action failed");
+                return back()->withErrors($exp->getMessage());
             }
+           
+            
         }
     }
     public function CheckIfServiceCall($id)

@@ -115,7 +115,7 @@
     @section('script')
         <script>
             $(document).on("click", ".btn-reset", function() {
-                window.location.replace("contract-report");
+                window.location.replace("engineer-service-analysis");
             });
             $(document).on("click", ".btn-fetch-report", function() {
                 var employee = $("#employee option:selected").val();

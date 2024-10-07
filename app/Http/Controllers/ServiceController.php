@@ -50,6 +50,8 @@ use App\Http\Controllers\MailController;
 use Notification;
 use Exception;
 use App\Notifications\SendPushNotification;
+use App\Services\MessageService;
+
 
 class ServiceController extends Controller
 {
@@ -1559,6 +1561,11 @@ class ServiceController extends Controller
                         }
                         DB::commit();
                         $this->SendNewCallMail($service);
+                       try{
+                        $message = "Dear Customer We have received your request \n Service No: ".$service->service_no."\n Service Date: ".$request->service_date."\n We will get back you soon. \n Thank You,\n";
+                        $response = MessageService::sendMessage($request->contact_number1,$message);
+                       } catch(Exception $exp){
+                       }
                         return Redirect("services")->with("success", "Service added!");
                         // return response()->json(['success' => true, 'message' => 'Service Created.']);
                     } else {
@@ -1589,6 +1596,7 @@ class ServiceController extends Controller
         }
 
     }
+   
     public function SendNewCallMail($service)
     {
         try {

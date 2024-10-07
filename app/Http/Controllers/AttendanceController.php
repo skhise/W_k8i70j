@@ -14,6 +14,8 @@ use App\Models\Account_Setting;
 use App\Models\Attendance;
 use App\Models\UserLeave;
 
+use Illuminate\Support\Facades\Auth;
+
 
 class AttendanceController extends Controller
 {

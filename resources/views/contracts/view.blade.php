@@ -7,10 +7,30 @@
                         <div class="card">
                             <div class="card-header">
                                 <h4 class="card-title">Contract Details</h4>
-                                <div class="card-header-action"><a class="btn btn-danger"
-                                        href="{{ route('contracts') }}">Back</a>
-                                    <a class="btn btn-primary"
-                                        href="{{ route('contracts.edit', $contract['CNRT_ID']) }}">Edit</a>
+                                <div class="card-header-action">
+                                    <a href="{{ route('contracts') }}" class="btn btn-icon btn-sm btn-danger">Back</a>
+                                    <div class="dropdown d-inline  ml-2">
+
+                                        <button class="btn btn-light dropleft  dropdown-toggle" type="button"
+                                            id="dropdownMenuButton2" data-toggle="dropdown" aria-haspopup="true"
+                                            aria-expanded="true">
+                                            More
+                                        </button>
+                                        <div class="dropdown-menu dropdown-menu-right" x-placement="top-start"
+                                            style="position: absolute; transform: translate3d(0px, -133px, 0px); top: 0px; left: 0px; will-change: transform;">
+                                            @if (auth()->user()->role == 1)
+                                                <a class="dropdown-item has-icon"
+                                                    href="{{ route('contracts.edit', $contract['CNRT_ID']) }}"><i
+                                                        class="far fa-edit"></i> Edit</a>
+                                                <a class="delete-btn action-btn dropdown-item has-icon"
+                                                    href="{{ route('contracts.delete', $contract['CNRT_ID']) }}"><i
+                                                        class="fa fa-trash"></i>
+                                                    Delete</a>
+                                            @endif
+
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
                             <div class="card-body">

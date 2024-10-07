@@ -47,7 +47,7 @@
                                     </div>
                                     <div class="col-lg-2 d-flex">
                                         <button id="btn-generate" class="btn btn-primary mr-1">Generate</button>
-                                        <button id="btn-reset" class="btn btn-danger">Reset</button>
+                                        <button class="btn btn-danger btn-reset">Reset</button>
                                     </div>
                                 </div>
                                 <div class="clearfix mb-3"></div>
@@ -181,6 +181,9 @@
             function resetSelection() {
                 window.location.reload();
             }
+            $(document).on("click", ".btn-reset", function() {
+                window.location.replace("contract-service-report");
+            });
 
             function get_report() {
 

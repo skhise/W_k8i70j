@@ -49,7 +49,7 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
         Route::get('/reports/engineer-report-export', [ReportController::class, 'engineer_export'])->name('engineer-report-export');
         Route::get('/reports/quot-report-export', [ReportController::class, 'quot_export'])->name('quot-report-export');
         Route::get('/reports/dec-report-export', [ReportController::class, 'dc_export'])->name('dc-report-export');
-        Route::get('/reports/contract-service-report', [ReportController::class, 'csr_index'])->name('contract-service-report');
+        Route::get('/analysis/contract-service-report', [ReportController::class, 'csr_index'])->name('contract-service-report');
         Route::get('/reports/dc-report', [ReportController::class, 'dc_index'])->name('dc-report');
         Route::get('/reports/quotation-report', [ReportController::class, 'quotation_index'])->name('quotation-report');
 
@@ -60,12 +60,12 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
         
         Route::get('/reports/engineer-ticket-report-data', [ReportController::class, 'GetEngineerCallReport'])->name('engineer-ticket-report-data');
 
-        Route::get('/reports/contract-service-report-data', [ReportController::class, 'csr_data'])->name('contract-service-report-data');
+        Route::get('/analysis/contract-service-report-data', [ReportController::class, 'csr_data'])->name('contract-service-report-data');
 
-        Route::get('/reports/GetAnalysisReport', [ReportController::class, 'GetAnalysisReport'])->name('GetAnalysisReport');
+        Route::get('/analysis/GetAnalysisReport', [ReportController::class, 'GetAnalysisReport'])->name('GetAnalysisReport');
 
-        Route::get('/reports/engineer-service-analysis', [ReportController::class, 'easr_index'])->name('engineer-service-analysis');
-        Route::get('/reports/GetEngineerAnalysisReport', [ReportController::class, 'GetEngineerAnalysisReport'])->name('GetEngineerAnalysisReport');
+        Route::get('/analysis/engineer-service-analysis', [ReportController::class, 'easr_index'])->name('engineer-service-analysis');
+        Route::get('/analysis/GetEngineerAnalysisReport', [ReportController::class, 'GetEngineerAnalysisReport'])->name('GetEngineerAnalysisReport');
         
         Route::get('/reports/logs', [ReportController::class, 'Logs'])->name('logs');
         Route::get('/reports/logs_data', [ReportController::class, 'Logs_Data'])->name('logs_data');
@@ -123,6 +123,7 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
         Route::post('/contracts/renewal', [ContractController::class, 'ContractRenew'])->name('contracts.renewal');
         Route::get('/contracts/{contract}/view', [ContractController::class, 'view'])->name('contracts.view');
         Route::get('/contracts/{contract}/edit', [ContractController::class, 'edit'])->name('contracts.edit');
+        Route::get('/contracts/{contract}/delete', [ContractController::class, 'DeleteContract'])->name('contracts.delete');
         Route::post('/contracts/{contract}/update', [ContractController::class, 'update'])->name('contracts.update');
         Route::post('/contracts/{contract}/add_product', [ContractController::class, 'AddContractProduct'])->name('contracts.add_product');
         Route::post('/contracts/{contract}/update_product', [ContractController::class, 'UpdateContractProduct'])->name('contracts.update_product');

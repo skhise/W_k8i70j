@@ -38,7 +38,7 @@
                                                         class="far fa-edit"></i> Edit</a>
                                                 <a class="delete-btn action-btn dropdown-item has-icon"
                                                     href="{{ route('employees.delete', $employee['EMP_ID']) }}"><i
-                                                        class="far fa-file"></i>
+                                                        class="fa fa-trash"></i>
                                                     Delete</a>
                                             @endif
 

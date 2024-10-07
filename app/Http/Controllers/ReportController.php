@@ -48,7 +48,7 @@ use App\Models\SystemLog;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
 use Storage;
-
+use Illuminate\Support\Facades\Auth;
 
 
 class ReportController extends Controller
@@ -62,11 +62,15 @@ class ReportController extends Controller
     ];
 
     function Logs(Request $request){
+
+        $todate = date("Y-m-d");
+        $fromdate = $todate;
+
         $systemlogs = SystemLog::select(["users.*", "systemlogs.*"])
         ->join("users", "users.id", "systemlogs.loginId")
-        // ->withQueryString()
+        ->whereBetween(DB::raw('DATE_FORMAT(systemlogs.created_at, "%Y-%m-%d")'), [$fromdate, $todate])
+        ->orderBy('systemlogs.id', 'desc')
         ->paginate(10);
-    // dd($dc_products);
         return view("reports.logs", [
             "systemlogs" => $systemlogs,
         ]);
@@ -78,6 +82,7 @@ class ReportController extends Controller
         $today = date("Y-m-d");
         $todate = date("Y-m-d");
         $fromdate = date('Y-m-d', strtotime($todate . '-' . $date_range . ' days'));
+        $date_range = $date_range == "" ? 0 : $date_range;
         if ($date_range == 0) {
             $fromdate = $todate;
         }
@@ -85,12 +90,14 @@ class ReportController extends Controller
             $todate = date('Y-m-d', strtotime($today . '-1 days'));
             $fromdate = date('Y-m-d', strtotime($today . '-1 days'));
         }
+       
         try {
             $systemlogs = SystemLog::join( "users", "users.id", "systemlogs.loginId")
             ->when($date_range != "" && $date_range != -1, function ($query) use ($todate, $fromdate) {
                 return $query->whereBetween(DB::raw('DATE_FORMAT(systemlogs.created_at, "%Y-%m-%d")'), [$fromdate, $todate]);
 
             })
+            ->orderBy('systemlogs.id', 'desc')
             ->paginate(10);
         } catch (Exception $exp) {
         }

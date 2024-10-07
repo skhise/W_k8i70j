@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
+use App\Models\ProfileSetup;
 use Request;
 
 
@@ -15,6 +16,8 @@ class ProfileController extends Controller
     public function edit(Request $request)
     {
         $user = Auth::user();
-        return view('profile.edit', ["user" => $user]);
+        $profile = ProfileSetup::where(['id'=>1])->first();
+        // dd($profile['comapny_name']);
+        return view('profile.edit', ["user" => $user,'profile'=>$profile]);
     }
 }

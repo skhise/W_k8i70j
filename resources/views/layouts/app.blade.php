@@ -335,6 +335,7 @@
 
             // Restore selected tab on page load
             var activeTab = localStorage.getItem('contract_activeTab');
+            alert
             if (activeTab) {
                 $('#' + activeTab).tab('show');
             }

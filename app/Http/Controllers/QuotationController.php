@@ -10,6 +10,8 @@ use App\Models\Quotation;
 use App\Models\QuotationProduct;
 use App\Models\QuotationStatus;
 use App\Models\QuotationType;
+use Illuminate\Support\Facades\Auth;
+
 use App\Models\ServiceQuotation;
 use Exception;
 use Illuminate\Support\Facades\DB;

@@ -18,6 +18,7 @@ use App\Models\MailSetting;
 use App\Models\Account_Setting;
 use App\Models\Service;
 use App\Http\Controllers\MailController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 

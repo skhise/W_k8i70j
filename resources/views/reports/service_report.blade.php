@@ -121,7 +121,7 @@
     @section('script')
         <script>
             $(document).on("click", ".btn-reset", function() {
-                window.location.reload();
+                window.location.replace("contract-service-report");
             });
             $(document).on("click", ".btn-fetch-report", function() {
                 var cust_id = $("#client option:selected").val();

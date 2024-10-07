@@ -138,6 +138,7 @@ fas fa-plus-square"></i>
                                                             class="btn btn-primary"><i class="far fa-eye"></i></a>
                                                         <a href="{{ route('contracts.edit', $contract['CNRT_ID']) }}"
                                                             class="btn btn-warning"><i class="far fa-edit"></i></a>
+                                                        
                                                         @if ($contract['CNRT_Status'] == 2 || $contract['CNRT_Status'] == 3)
                                                             <a title="click to renew contract"
                                                                 data-target=".bd-RefContractRenew-modal-lg"

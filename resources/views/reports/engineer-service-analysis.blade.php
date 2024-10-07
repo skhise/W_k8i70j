@@ -185,6 +185,9 @@
             function resetSelection() {
                 window.location.reload();
             }
+            $(document).on("click", ".btn-reset", function() {
+                window.location.reload();
+            });
 
             function get_report() { 
 

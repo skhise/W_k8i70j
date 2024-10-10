@@ -101,13 +101,12 @@ class ServiceController extends Controller
                
             }
             $serviceDc->delete();
-            $service = Service::where('id',$serviceDc->service_id)->one();
+            $service = Service::where('id',$serviceDc->service_id)->first();
             $action = "Service DC marked as deleted, Name:" . $service->service_no;
             $log = App(\App\Http\Controllers\LogController::class);
             $log->SystemLog($request->loginId, $action);
             return back()->with("success", "Deleted!");
         } catch (Exception $exp) {
-            dd($exp->getMessage());
             return back()
                 ->withError("Action failed, try again.");
         }
@@ -291,7 +290,7 @@ class ServiceController extends Controller
         ]);
     }
     public function DcpDelete(ServiceDcProduct $serviceDcProduct)
-    { dd("hello");
+    { 
         try {
            
             $serviceDcProduct->delete();
@@ -1439,6 +1438,7 @@ class ServiceController extends Controller
             ->leftJoin("dc_type", "dc_type.id", "service_dc.dc_type")
             ->leftJoin("clients", "clients.CST_ID", "services.customer_id")
             ->where("service_dc.service_id", $service->id)->get();
+            // dd($services);
 
         return view("services.view", [
             "product" => $product,

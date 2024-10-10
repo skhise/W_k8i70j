@@ -172,7 +172,7 @@
                                                                         <span style="float:right ;font-weight:bold">
                                                                             Contract Number</span>
                                                                     </div>
-                                                                    <div class="col-md-9">{{ $contract->CNRT_Number }}
+                                                                    <div class="col-md-9">{{ $contract->CNRT_Number ?? "" }}
                                                                     </div>
                                                                 </div>
                                                                 <div class="row">
@@ -469,6 +469,7 @@
                                                                     <a class="text-white" href="#"><span
                                                                             class="badge badge-shadow {{ $time_line['status_color'] ?? 'bg-primary' }}">
                                                                             {{ $time_line['Status_Name'] }}</span></a>
+                                                                            <span><strong>{{$service['assigned_to']!=0 && $time_line['Status_Id']== 6 ? " To : ".$service['EMP_Name'] : "" }}</strong></span>
                                                                     <span class="float-right"
                                                                         style="font-size: 14px;">{{ date(
                                                                             "d-m-Y

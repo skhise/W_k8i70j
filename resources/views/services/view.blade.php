@@ -211,7 +211,7 @@
                                                                         </span>
                                                                     </div>
                                                                     <div class="col-md-3">
-                                                                        {{ date('d-M-Y', strtotime($contract->CNRT_StartDate)) ?? 'NA' }}
+                                                                        {{ isset($contract->CNRT_StartDate) ? date('d-M-Y', strtotime($contract->CNRT_StartDate)) : 'NA' }}
                                                                     </div>
                                                                     <div class="col-md-2">
                                                                         <span style="float:right ;font-weight:bold">
@@ -219,7 +219,7 @@
                                                                         </span>
                                                                     </div>
                                                                     <div class="col-md-3">
-                                                                        {{ date('d-M-Y', strtotime($contract->CNRT_EndDate)) ?? 'NA' }}
+                                                                        {{isset($contract->CNRT_EndDate) ?  date('d-M-Y', strtotime($contract->CNRT_EndDate)) : 'NA' }}
                                                                     </div>
                                                                 </div>
                                                                 <div class="row">

@@ -182,7 +182,7 @@
                                                                             Type</span>
                                                                     </div>
                                                                     <div class="col-md-3">
-                                                                        {{ $contract->contract_type_name }}</div>
+                                                                        {{ $contract->contract_type_name ?? "" }}</div>
                                                                 </div>
                                                                 <div class="row">
                                                                     <div class="col-md-3">
@@ -191,7 +191,7 @@
                                                                         </span>
                                                                     </div>
                                                                     <div class="col-md-3">
-                                                                        {{ $contract->site_type_name }}
+                                                                        {{ $contract->site_type_name ?? "" }}
                                                                     </div>
                                                                 </div>
                                                                 <div class="row">
@@ -230,21 +230,21 @@
                                                                     </div>
                                                                     <div class="col-md-2 "
                                                                         style="float:left ;font-weight:bold">
-                                                                        {{ $contract->CNRT_Charges }}</div>
+                                                                        {{ $contract->CNRT_Charges ?? "0" }}</div>
                                                                     <div class="col-md-1">
                                                                         <span
                                                                             style="float:right ;font-weight:bold">Paid</span>
                                                                     </div>
                                                                     <div class="col-md-2"
                                                                         style="float:left ;font-weight:bold">
-                                                                        {{ $contract->CNRT_Charges_Paid }}</div>
+                                                                        {{ $contract->CNRT_Charges_Paid ?? "0" }}</div>
                                                                     <div class="col-md-2">
                                                                         <span
                                                                             style="float:right ;font-weight:bold">Pending</span>
                                                                     </div>
                                                                     <div class="col-md-2"
                                                                         style="float:left ;font-weight:bold">
-                                                                        {{ $contract->CNRT_Charges_Paid }}</div>
+                                                                        {{ $contract->CNRT_Charges_Paid ?? "0" }}</div>
                                                                 </div>
 
                                                                 <hr />
@@ -260,23 +260,23 @@
                                                                 <span style="float:right ;font-weight:bold">
                                                                     Contact Person</span>
                                                             </div>
-                                                            <div class="col-md-9">{{ $service->contact_person }}</div>
+                                                            <div class="col-md-9">{{ $service->contact_person ?? "" }}</div>
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-3">
                                                                 <span style="float:right ;font-weight:bold">
                                                                     Email</span>
                                                             </div>
-                                                            <div class="col-md-9">{{ $service->contact_email }}</div>
+                                                            <div class="col-md-9">{{ $service->contact_email ?? "" }}</div>
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-3">
                                                                 <span style="float:right ;font-weight:bold">
                                                                     Phone Numbers</span>
                                                             </div>
-                                                            <div class="col-md-3">{{ $service->contact_number1 }}
+                                                            <div class="col-md-3">{{ $service->contact_number1 ?? "" }}
                                                                 &nbsp;&nbsp;
-                                                                {{ $service->contact_number2 }}</div>
+                                                                {{ $service->contact_number2 ?? "" }}</div>
                                                         </div>
                                                         <hr />
                                                         <div>
@@ -298,7 +298,7 @@
                                                                     <span style="float:right ;font-weight:bold">
                                                                         Name</span>
                                                                 </div>
-                                                                <div class="col-md-9">{{ $service->product_name }}
+                                                                <div class="col-md-9">{{ $service->product_name ?? "" }}
                                                                 </div>
                                                             </div>
                                                             <div class="row">
@@ -306,7 +306,7 @@
                                                                     <span style="float:right ;font-weight:bold">
                                                                         Type</span>
                                                                 </div>
-                                                                <div class="col-md-3">{{ $service->product_type }}
+                                                                <div class="col-md-3">{{ $service->product_type ?? ""}}
                                                                 </div>
                                                             </div>
                                                             <div class="row">
@@ -315,7 +315,7 @@
                                                                         Description</span>
                                                                 </div>
                                                                 <div class="col-md-9">
-                                                                    {{ $service->product_description }}
+                                                                    {{ $service->product_description  ?? "" }}
                                                                 </div>
                                                             </div>
                                                             <hr />
@@ -326,7 +326,7 @@
                                                                     <span style="float:right ;font-weight:bold">
                                                                         Name</span>
                                                                 </div>
-                                                                <div class="col-md-9">{{ $product->product_name }}
+                                                                <div class="col-md-9">{{ $product->product_name ?? ""}}
                                                                 </div>
                                                             </div>
                                                             <div class="row">
@@ -334,7 +334,7 @@
                                                                     <span style="float:right ;font-weight:bold">
                                                                         Type</span>
                                                                 </div>
-                                                                <div class="col-md-3">{{ $product->type_name }}</div>
+                                                                <div class="col-md-3">{{ $product->type_name ?? "" }}</div>
                                                             </div>
                                                             <div class="row">
                                                                 <div class="col-md-3">
@@ -342,7 +342,7 @@
                                                                         Description</span>
                                                                 </div>
                                                                 <div class="col-md-9">
-                                                                    {{ $product->product_description }}
+                                                                    {{ $product->product_description ?? "" }}
                                                                 </div>
                                                             </div>
                                                         @endif
@@ -353,7 +353,7 @@
                                                                         Service Type</span>
                                                                 </div>
                                                                 <div class="col-md-9">
-                                                                    {{ $service->type_name }}
+                                                                    {{ $service->type_name ?? "" }}
                                                                 </div>
                                                             </div>
                                                          <div class="row">
@@ -362,7 +362,7 @@
                                                                         Issue Type</span>
                                                                 </div>
                                                                 <div class="col-md-9">
-                                                                    {{ $service->issue_name }}
+                                                                    {{ $service->issue_name ?? "" }}
                                                                 </div>
                                                             </div>
                                                                <div class="row">
@@ -387,7 +387,7 @@
                                                             </div>
                                                             <div class="col-md-1">
                                                                 @if ($service->site_google_link != '')
-                                                                    <a href="{{ $service->site_google_link ?? '#' }}"
+                                                                    <a href="{{ $service->site_google_link ?? 'javascript:void()' }}"
                                                                         target="_blank"><i class="fa fa-map-marker"
                                                                             aria-hidden="true"></i>
 

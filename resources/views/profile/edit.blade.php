@@ -66,6 +66,14 @@
                                             {{Auth::user()->email}}
                                         </span>
                                     </p>
+                                    <p class="clearfix">
+                                        <span class="float-right text-muted">
+                                        <button data-target=".bd-RefPasswordReset-modal-lg"
+                                                            data-toggle="modal" type="button"
+                                                            class="float-left btn btn-primary">Change
+                                                            Password</button>
+                                        </span>
+                                    </p>
                                     <!-- <p class="clearfix">
                                         <span class="float-left">
                                             Facebook
@@ -98,7 +106,7 @@
                                 <div class="tab-content tab-bordered" id="myTab3Content">
                                     <div class="tab-pane fade show active" id="settings" role="tabpanel"
                                         aria-labelledby="profile-tab2">
-                                        <form method="post" action="{{ route('profile.update') }}"
+                                        <form id="profile_form" method="post" action="{{ route('profile.update') }}"
                                             class="needs-validation">
                                             @csrf
                                             @method('patch')
@@ -111,14 +119,14 @@
                                                         <label>Address</label>
                                                         <textarea type="address" class="form-control"
                                                             rows="2" required
-                                                            autocomplete="address">{{old('address', $profile->address)}}</textarea>
+                                                            autocomplete="address" name="address" id="address">{{old('address', $profile->address)}}</textarea>
                                                         <div class="invalid-feedback">
                                                             Please fill in the address
                                                         </div>
                                                     </div>
                                                     <div class="form-group col-md-5 col-12">
                                                         <label for="contact_number">Contact number</label>
-                                                        <input type="tel"  class="form-control" name="contact_number" id="contact_number" value="{{old('contact_number', $profile->contact_number)}}">
+                                                        <input type="tel"  onkeypress="return isNumberKey(event)"  class="form-control" name="contact_number" id="contact_number" value="{{old('contact_number', $profile->contact_number)}}">
                                                     </div>
                                                 </div>
                                                 <div class="row">
@@ -143,7 +151,7 @@
                                                 </div>
                                                 <div class="row">
                                                     <div class="form-group col-md-4 col-12">
-                                                        <button class="btn btn-primary float-left">Save</button>
+                                                        <button class="btn-save btn btn-primary float-left">Save</button>
                                                     </div>
                                                 </div>
 
@@ -252,5 +260,78 @@
                 </div>
             </div>
         </div>
+        @include('profile.change_password');
     </div>
+   
+
+    @section('script')
+    <script>
+          $(document).on("click", ".btn-save", function() {
+            $(this).attr("disabled", true);
+            $(this).html("Saving...");
+            $("#profile_form").submit();
+            return true;
+          });
+        $(document).on("click", "#btn_password_save", function() {
+                $('.text-danger-error').html('');
+                $(this).attr("disabled", true);
+                $(this).html("Saving...");
+                var url = '{{ route('profile.change-password') }}';
+                var isValid = true;
+
+                // Loop through each input field and validate
+                $('#form_password_reset .required').each(function() {
+                    if (!validateInput($(this))) {
+                        isValid = false;
+                        $("#btn_password_save").attr("disabled", false);
+                        $("#btn_password_save").html("Save");
+                    }
+                });
+                if (isValid) {
+                    $.ajax({
+                        url: url,
+                        type: "POST",
+                        data: $("#form_password_reset").serialize(),
+                        success: function(response) {
+                            //  var obj = JSON.parse(response);
+                            if (response.success) {
+                                showSuccessSwal("Password Changed");
+                                CancelModelBoxPassword();
+                          
+                            } else {
+
+                                $("#btn_password_save").attr("disabled", false);
+                                $("#btn_password_save").html("Save");
+                                $('.errorMsgntainer').html("");
+                                if (typeof response.validation_error != 'undefined') {
+                                    $.each(response.validation_error, function(index, value) {
+                                        $('.' + index + "-field-validation-valid").html(value);
+                                    });
+                                } else {
+                                    $('.errorMsgntainer').html(response.message);
+                                }
+                            }
+
+                        },
+                        error: function(error) {
+                            $("#btn_password_save").attr("disabled", false);
+                            $("#btn_password_save").html("Save");
+                            showErrorSwal("Something went wrong, try again");
+                        }
+                    })
+                }
+
+            });
+         function CancelModelBoxPassword() {
+            
+                $("#btn_password_save").attr("disabled", false);
+                $("#btn_password_save").html("Save");
+                $('.text-danger-error').html('');
+                $("#form_password_reset")[0].reset();
+                $(".required").removeClass('error_border')
+                $("#btn_close_password").trigger('click');
+            }
+    </script>
+    @endsection
+    
 </x-app-layout>

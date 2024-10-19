@@ -39,6 +39,7 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+        Route::post('/change-password', [ProfileController::class, 'change_password'])->name('profile.change-password');
     });
     Route::middleware('auth')->group(function () {
         Route::get('/reports/contract-report', [ReportController::class, 'cr_index'])->name('contract-report');

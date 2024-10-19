@@ -42,9 +42,10 @@ if ($response === false) {
     if ($http_code == 200) {
         // Process the response
         $data = json_decode($response, true);
-        print_r($data);
+        // print_r($data);/
+
     } else {
-        echo "HTTP Error: " . $http_code . " - " . $response;
+        // echo "HTTP Error: " . $http_code . " - " . $response;
     }
 }
 

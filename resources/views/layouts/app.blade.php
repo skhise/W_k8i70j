@@ -349,7 +349,7 @@
             Swal.fire({
                 title: 'Sucess!',
                 text: message,
-                icon: 'success',
+                // icon: 'success',
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
             });
@@ -359,7 +359,7 @@
             Swal.fire({
                 title: 'Error!',
                 text: message,
-                icon: 'warning',
+                // icon: 'warning',
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
             });

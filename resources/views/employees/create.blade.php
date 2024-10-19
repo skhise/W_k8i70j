@@ -9,7 +9,7 @@
                                 <h4>{{ $update ? 'Update Employee' : 'Add Employee' }}</h4>
                             </div>
                             <div class="card-body">
-                                <form id="frmcreateemployee" method="post" enctype="multipart/form-data"
+                                <form autocomplete="off" id="frmcreateemployee" method="post" enctype="multipart/form-data"
                                     action="{{ $update ? route('employees.update', $employee->EMP_ID) : route('employees.store') }}">
                                     @csrf
                                     @if (!$update)
@@ -128,7 +128,7 @@
                                                     @endif
                                                 </div>
                                                 <div class="col-md-4 floating-label">
-                                                    <input
+                                                    <input autocomplete="off"
                                                         class="form-control text-box single-line @error('EMP_Email') is-invalid @enderror"
                                                         data-val="true" id="EMP_Email" name="EMP_Email"
                                                         placeholder="" required="required" type="text"
@@ -230,7 +230,7 @@
                                                 </div>
 
                                                 <div class="col-md-4 floating-label">
-                                                    <input
+                                                    <input autocomplete="off"
                                                         class="form-control text-box single-line @error('email') is-invalid @enderror"
                                                         data-val="true" id="email" name="email" placeholder=""
                                                         required="required" type="text"
@@ -244,7 +244,7 @@
                                                 </div>
                                                 <div class="col-md-3 floating-label">
                                                     <div class="password-container">
-                                                        <input
+                                                        <input autocomplete="off"
                                                             class="form-control text-box single-line @error('password') is-invalid @enderror"
                                                             data-val="true" id="password" name="password"
                                                             placeholder="" required="required" type="password"

@@ -70,5 +70,6 @@ class Kernel extends HttpKernel
     ];
     protected $routeMiddleware = [
         'menu.permission' => \App\Http\Middleware\CheckMenuPermission::class,
+        'validate'=> \App\Http\Middleware\Validate::class,
     ];
 }

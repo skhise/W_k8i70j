@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AccessMaster;
 use App\Models\Client;
 use App\Models\Designation;
+use App\Models\Generate;
 use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -245,6 +246,9 @@ class EmployeeController extends Controller
     }
     public function create(Request $request)
     {
+
+
+        
         return view('employees.create', [
             'update' => false,
             'roles' => AccessMaster::where('use_status',1)->get(),

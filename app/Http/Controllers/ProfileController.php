@@ -1,10 +1,13 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\Generate;
 use Illuminate\Support\Facades\Auth;
 use App\Models\ProfileSetup;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Crypt;
+
 
 /* 
  * To change this license header, choose License Headers in Project Properties.
@@ -17,8 +20,14 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
         $profile = ProfileSetup::where(['id'=>1])->first();
+        $generate = Generate::find(1);
+       
+        $users = Crypt::decrypt($generate->product_key);
         // dd($profile['comapny_name']);
-        return view('profile.edit', ["user" => $user,'profile'=>$profile]);
+        return view('profile.edit', ["user" => $user,'profile'=>$profile,"users"=>$users]);
+    }
+    public function limit(Request $request){
+        return view('auth.limit');
     }
     public function update(Request $request)   {
         $user = Auth::user();
@@ -45,5 +54,14 @@ class ProfileController extends Controller
         }
         return response()->json(['success'=> false]);
 
+    }
+    public function master_setup(Request $request)
+    {
+        $encrypted = "";
+        if(isset($request->number)){
+            
+            $encrypted = Crypt::encrypt($request->number);
+        }
+        return view('setup.password-protected', ['encrypted' => $encrypted,"number"=>$request->number]);
     }
 }

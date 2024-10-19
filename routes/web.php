@@ -30,15 +30,20 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+// Route::get('/master_setup_api', [ProfileController::class, 'master_setup'])->name('master_setup_api');
+Route::get('/generate', [ProfileController::class, 'master_setup'])->name('generate');
+
 Route::middleware(['prevent-back-history', 'menu.permission'])->group(function () {
     Route::middleware('auth')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/', [DashboardController::class, 'index']);
     });
+
     Route::middleware('auth')->group(function () {
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+        Route::get('/limit', [ProfileController::class, 'limit'])->name('limit');
         Route::post('/change-password', [ProfileController::class, 'change_password'])->name('profile.change-password');
     });
     Route::middleware('auth')->group(function () {
@@ -211,18 +216,21 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
     });
     Route::middleware('auth')->group(function () {
         Route::get('/employees', [EmployeeController::class, 'index'])->name('employees');
-    });
-    Route::middleware('auth')->group(function () {
-        Route::get('/employee/create', [EmployeeController::class, 'create'])->name('employees.create');
         Route::get('employee/{employee}/view', [EmployeeController::class, 'view'])
-            ->name('employees.view');
-
-        Route::post('employees.store', [EmployeeController::class, 'store'])
-            ->name('employees.store')
-            ->middleware('auth');
+        ->name('employees.view');
         Route::post('employees.status_change', [EmployeeController::class, 'StatusChange'])
-            ->name('employees.status_change')
-            ->middleware('auth');
+        ->name('employees.status_change');
+
+    });
+    ;
+
+    Route::middleware(['auth','validate'])->group(function () {
+       
+        Route::post('employees.store', [EmployeeController::class, 'store'])
+        ->name('employees.store');
+        Route::get('/employee/create', [EmployeeController::class, 'create'])
+        ->name('employees.create');
+       
     });
     Route::middleware('auth')->group(function () {
         Route::get('/products', [ProductController::class, 'index'])->name("products");
@@ -249,6 +257,8 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
     Route::middleware('auth')->group(function () {
         Route::get('/reports/invoice', [ReportController::class, 'invoice'])->name('reports.invoice');
     });
+
+
 
 });
 require __DIR__ . '/auth.php';

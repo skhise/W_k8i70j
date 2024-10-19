@@ -57,7 +57,14 @@
                                         {{Auth::user()->name}}
                                         </span>
                                     </p>
-                                   
+                                    <p class="clearfix">
+                                        <span class="float-left">
+                                            Users
+                                        </span>
+                                        <span class="float-right text-muted">
+                                            {{ $users}}
+                                        </span>
+                                    </p>
                                     <p class="clearfix">
                                         <span class="float-left">
                                             Mail
@@ -66,6 +73,7 @@
                                             {{Auth::user()->email}}
                                         </span>
                                     </p>
+                                    
                                     <p class="clearfix">
                                         <span class="float-right text-muted">
                                         <button data-target=".bd-RefPasswordReset-modal-lg"

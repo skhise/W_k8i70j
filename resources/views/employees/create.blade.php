@@ -22,7 +22,7 @@
                                         value="{{ Auth::user()->id }}" />
                                     <input type="hidden" id="account_id" name="account_id"
                                         value="{{ Auth::user()->account_id }}" />
-                                        <input type="text" style="display:none">
+                                        <input type="email" style="display:none">
                                         <input type="password" style="display:none">
 
                                     <div class="form-horizontal">
@@ -131,7 +131,7 @@
                                                     @endif
                                                 </div>
                                                 <div class="col-md-4 floating-label">
-                                                    <input autocomplete="off"
+                                                    <input autocomplete="nope"
                                                         class="form-control text-box single-line @error('EMP_Email') is-invalid @enderror"
                                                         data-val="true" id="EMP_Email" name="EMP_Email"
                                                         placeholder="" required="required" type="text"
@@ -247,7 +247,7 @@
                                                 </div>
                                                 <div class="col-md-3 floating-label">
                                                     <div class="password-container">
-                                                        <input autocomplete="off"
+                                                        <input autocomplete="nope"
                                                             class="form-control text-box single-line @error('password') is-invalid @enderror"
                                                             data-val="true" id="password" name="password"
                                                             placeholder="" required="required" type="password"

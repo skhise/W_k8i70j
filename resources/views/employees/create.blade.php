@@ -22,6 +22,9 @@
                                         value="{{ Auth::user()->id }}" />
                                     <input type="hidden" id="account_id" name="account_id"
                                         value="{{ Auth::user()->account_id }}" />
+                                        <input type="text" style="display:none">
+                                        <input type="password" style="display:none">
+
                                     <div class="form-horizontal">
 
                                         <h3 style="color:orangered"></h3>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Client;
 use App\Models\Employee;
 use App\Models\LocationHistory;
+use App\Models\ProductType;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -372,13 +373,40 @@ class AppUserController extends Controller
         }
 
     }
+    public function f(Request $request)
+    {
+        $products = array();
+        try {
+            $products = Product::where("Status", 1)->where("Product_Type",operator: $request->type_id)->get();
+            foreach ($products as $product) {
+                $product->title = $product->Product_Name;
+                $product->id = $product->Product_ID;
+                $product->price = $product->Product_Price;
+            }
+            return response()->json(["success" => true, "message" => "", "product" => $products]);
+        } catch (Illuminate\Database\QueryException $ex) {
+            return response()->json(["success" => false, "message" => $ex->errorInfo, "product" => $products]);
+        }
+
+    }
+    public function GetProductType(Request $request)
+    {
+        
+        $ProductType = array();
+        try {
+            $ProductType = ProductType::all();
+            return response()->json(["success" => true, "message" => "", "ProductType" => $ProductType]);
+        } catch (Exception $ex) {
+            return response()->json(["success" => false, "message" => $ex->getMessage(), "ProductType" => $ProductType]);
+        }
+    }
     public function getCategoryListApp(Request $request)
     {
         $categorys = array();
         try {
             $categorys = StoreProductCategory::all();
-        } catch (Illuminate\Database\QueryException $ex) {
-            return $ex->errorInfo;
+        } catch (Exception $ex) {
+            return $ex->getMessage();
         }
         return $categorys;
     }

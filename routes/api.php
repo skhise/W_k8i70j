@@ -41,6 +41,8 @@ Route::group(['namespace' => 'API', 'prefix' => 'v1', 'middleware' => ['cors', '
     Route::get("GetServiceFieldReportApp", [AppUserController::class, "GetServiceFieldReportApp"]);
     Route::get("GetContractProductListApp", [AppUserController::class, "GetContractProductListApp"]);
     Route::get("GetContractProductAccessoryApp", [AppUserController::class, "GetContractProductAccessoryApp"]);
+    Route::get("GetAllProductType", [AppUserController::class, "GetProductType"]);
+    Route::get("GetAllProductListByTypeApp", [AppUserController::class, "GetAllProductListByTypeApp"]);
     Route::get("GetAllProductListApp", [AppUserController::class, "GetAllProductListApp"]);
     Route::get("GetAllProductAccessoryApp", [AppUserController::class, "GetAllProductAccessoryApp"]);
     Route::post("AddServiceCallAccessoryApp", [AppUserController::class, "AddServiceCallAccessoryApp"]);

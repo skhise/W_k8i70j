@@ -64,6 +64,7 @@
                                             <tr>
                                                 <th>Sr. No.</th>
                                                 <th>Client Name</th>
+                                                <th>Contract No.</th>
                                                 <th>Service. No.</th>
                                                 <th>QTY</th>
                                                 <th>Total Amount</th>
@@ -84,6 +85,7 @@
                                                 <tr>
                                                     <td>{{ $index + 1 }}</td>
                                                     <td>{{ $dcp['CST_Name'] }}</td>
+                                                    <td>{{ $dcp['CNRT_Number'] }}</td>
                                                     <td>{{ $dcp['service_no'] }}</td>
                                                     <td>{{ $dcp->totalProduct($dcp['dcp_id']) }}</td>
                                                     <td>{{ $dcp['dc_amount'] }}</td>

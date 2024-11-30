@@ -16,10 +16,10 @@
                                 <th>Sr. No.</th>
                                 <th>Name</th>
                                 <th>Type</th>
-                                <th>Sr. Number</th>
+                                <th>Tag/Sr. Number</th>
                                 <th>Description</th>
                                 <th>Price</th>
-                                <th>Location</th>
+                                <th>Branch/Location</th>
                                 <th>Remark</th>
                                 <th>Service Period</th>
                                 <th>Actions</th>

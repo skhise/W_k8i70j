@@ -13,9 +13,9 @@ $baseUrl = 'https://int.chatway.in/api/send-msg';
 
 // Parameters
 $username = 'AMCMANAGE';
-$number = '8408013399';
+$number = '+91'.$number;
 $token = 'U0d4dXUxWkhVS2FZdXVENlUrU29xQT09';
-$message = 'hello test'; // Example message
+// $message = 'hello test'; // Example message
 
 // Construct the URL with encoded parameters
 $url = $baseUrl . '?username=' . urlencode($username) . 

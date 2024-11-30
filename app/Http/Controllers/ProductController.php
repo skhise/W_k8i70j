@@ -443,18 +443,18 @@ class ProductController extends Controller
         if ($validator->fails()) {
             return response()->json(["success" => false, "message" => "data missing, refresh and try again."]);
         }
-        // $upload = $this->UploadProductImage($request);
-        $disk = Storage::disk('google');
-        $exist = $disk->exists("abc.jpg");
-        echo $exist;
-        die;
-        $path = $request->file('Image_Path')->store('images', 'gcs');
+        $upload = $this->UploadProductImage($request);
+        // $disk = Storage::disk('google');
+        // $exist = $disk->exists("abc.jpg");
+        // echo $exist;
+        // die;
+        // $path = $request->file('Image_Path')->store('images', 'gcs');
 
         // Optionally, retrieve the public URL of the uploaded image
-        $url = Storage::disk('google')->url($path);
+        // $url = Storage::disk('google')->url($path);
 
         // Return any necessary response, such as the URL of the uploaded image
-        $upload = response()->json(['url' => $url]);
+        // $upload = response()->json(['url' => $url]);
         // $upload = $this->uploadImage($request);
         if ($upload != "") {
             try {

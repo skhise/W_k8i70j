@@ -1401,9 +1401,12 @@ class ServiceController extends Controller
 
         $product = ContractUnderProduct::where('contract_under_product.id', $service->product_id)->leftJoin("master_product_type", "master_product_type.id", "contract_under_product.product_type")->first();
         $contract = Contract::leftJoin("master_contract_type", "master_contract_type.id", "contracts.CNRT_Type")
-            ->leftJoin("master_site_type", "master_site_type.id", "contracts.CNRT_SiteType")->where("CNRT_ID", $service->contract_id)->first();
+            ->leftJoin("master_site_type", "master_site_type.id", "contracts.CNRT_SiteType")
+            ->leftJoin("master_site_area", "master_site_area.id", "contracts.CNRT_Site")
+            ->where("CNRT_ID", $service->contract_id)->first();
         $timeline = ServiceHistory::leftJoin("master_service_status", "master_service_status.Status_Id", "service_action_history.status_id")
             ->leftJoin("master_service_sub_status", "master_service_sub_status.Sub_Status_Id", "service_action_history.sub_status_id")
+          
             ->where("service_id", $service->id)
             ->orderBy("service_action_history.id", "DESC")
             ->get();
@@ -1522,6 +1525,7 @@ class ServiceController extends Controller
                     'contact_number2' => $request->contact_number2,
                     'contact_email' => $request->contact_email,
                     'areaId' => $request->areaId,
+                    'site_address'=>$request->site_address,
                     'site_google_link' => $request->site_google_link,
                     'issue_type' => $request->issue_type,
                     'service_type' => $request->service_type,
@@ -1545,7 +1549,6 @@ class ServiceController extends Controller
                     ]);
                     if ($history) {
                         if ($request->contractserviceid > 0) {
-
                             $contractservice = ContractScheduleService::where(['id' => $request->contractserviceid])->first();
                             if (!empty($contractservice)) {
                                 $contractservice->Service_Call_Id = $service->id;
@@ -1557,13 +1560,16 @@ class ServiceController extends Controller
                                     ->withInput()
                                     ->withErrors("Action failed, try again.");
                             }
-
                         }
                         DB::commit();
                         $this->SendNewCallMail($service);
                        try{
-                        $message = "Dear Customer We have received your request \n Service No: ".$service->service_no."\n Service Date: ".$request->service_date."\n We will get back you soon. \n Thank You,\n";
-                        $response = MessageService::sendMessage($request->contact_number1,$message);
+                        $send_wp = isset($request->send_wp_notification) ? true : false;
+                        if($send_wp){
+                            $message = "Dear Customer We have received your request \n\n Service No: ".$service->service_no."\n Service Date: ".$request->service_date."\n We will get back you soon. \n\n Thank You,\n";
+                            MessageService::sendMessage($request->contact_number1,$message);
+                        }
+                        
                        } catch(Exception $exp){
                        }
                         return Redirect("services")->with("success", "Service added!");

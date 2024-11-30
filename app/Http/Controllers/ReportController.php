@@ -108,10 +108,11 @@ class ReportController extends Controller
     }
     function dc_index(Request $request)
     {
-        $dc_products = ServiceDc::select(["dc_type.*", "clients.*", "services.*", "service_dc.id as dcp_id", "service_dc.*"])
+        $dc_products = ServiceDc::select(["contracts.*","dc_type.*", "clients.*", "services.*", "service_dc.id as dcp_id", "service_dc.*"])
             ->join("services", "services.id", "service_dc.service_id")
             ->leftJoin("dc_type", "dc_type.id", "service_dc.dc_type")
             ->leftJoin("clients", "clients.CST_ID", "services.customer_id")
+            ->leftJoin("contracts", "contracts.CNRT_ID", "services.contract_id")
             ->when(isset($request->customer_id), function ($query) use ($request) {
                 $query->where("services.customer_id", $request->customer_id);
             })

@@ -40,6 +40,7 @@ class ScheduleController extends Controller
         $contractsSchedule = array();
         try {
             $today = date("Y-m-d");
+            $search = $request->search ?? "";
             $contractsSchedule = ContractScheduleService::select(
                 "master_issue_type.*",
                 "master_service_type.*",
@@ -63,12 +64,18 @@ class ScheduleController extends Controller
                 ->leftJoin("master_issue_type", "master_issue_type.id", "contract_schedule_service.issueType")
                 ->where("Service_Call_Id", 0)
                 ->orderBy("Schedule_Date", "DESC")
+                ->filter($request->only('search', 'trashed', 'search_field', 'filter_status'))
                 ->paginate(10)
                 ->withQueryString();
-            foreach ($contractsSchedule as $cs) {
+            foreach ($contractsSchedule as $index => $cs) {
                 $cs->View = "/service/view-service?id=" . $cs->Service_Call_Id;
                 if ($cs->Service_Call_Id != 0) {
                     $this->getManagedServiceStatus($cs);
+                }
+                if (Carbon::parse($cs->Schedule_Date)->isPast()) {
+                    $cs->due_status = '<span class="text-white badge badge-shadow bg-danger">Due</span>';
+                } else {
+                    $cs->due_status = '<span class="text-white badge badge-shadow bg-secondary">NA</span>';
                 }
             }
 
@@ -77,6 +84,8 @@ class ScheduleController extends Controller
         } catch (Exception $ex) {
             Session::flash("error", "Something went wrong, try again.");
         }
+
+        // dd($contractsSchedule);
         return view('schedules.index', [
             'filters' => $request->all('search', 'trashed', 'search_field', 'filter_status'),
             'search_field' => $request->search_field ?? '',

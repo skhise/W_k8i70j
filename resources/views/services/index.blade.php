@@ -125,9 +125,9 @@ fas fa-plus-square"></i>
                                                 </div>
                                             </div>
 
+                                            </form>
                                     </div>
                                 </div>
-                                </form>
                             </div>
                             <div class="clearfix mb-3"></div>
                             <div class="table-responsive">

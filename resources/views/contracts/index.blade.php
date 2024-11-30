@@ -102,6 +102,7 @@ fas fa-plus-square"></i>
                                                     #Code
                                                 </th>
                                                 <th class="table-width-20">Customer Name</th>
+                                                <th class="table-width-20">Ref. Name</th>
                                                 <th>Contract Type</th>
                                                 <th>Site Type</th>
                                                 <th>Expiry Date</th>
@@ -112,7 +113,7 @@ fas fa-plus-square"></i>
                                         <tbody>
                                             @if (count($contracts) == 0)
                                                 <tr>
-                                                    <td colspan="6" class="text-center">No contracts to show</td>
+                                                    <td colspan="8" class="text-center">No contracts to show</td>
                                                 </tr>
                                             @endif
                                             @foreach ($contracts as $key => $contract)
@@ -122,6 +123,9 @@ fas fa-plus-square"></i>
                                                     </td>
                                                     <td>
                                                         {{ $contract['CST_Name'] }}
+                                                    </td>
+                                                    <td>
+                                                        {{ $contract['CNRT_RefNumber']!=null ? $contract['CNRT_RefNumber'] : 'NA'   }}
                                                     </td>
                                                     <td>{{ $contract['contract_type_name'] }}</td>
                                                     <td>

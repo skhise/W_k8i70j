@@ -11,10 +11,43 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header">
-                                <h4>Schedule Services</h4>
+                                <h4>Contracts Schedule Services</h4>
 
                             </div>
                             <div class="card-body">
+                            <div class="float-right">
+                                    <form action="{{route('schedules')}}" id="search_form">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" value="{{$search}}" id="search"
+                                                name="search" placeholder="Search">
+                                            <div class="input-group-append">
+                                                <button class="btn btn-primary filter-dropdown"
+                                                    data-toggle="dropdown"><i class="fas fa-filter"></i></button>
+                                                 <button class="filter-remove_btn btn btn-danger ml-2">
+                                                    <i class="fa fa-times"></i></button>
+                                                <div class="edit-filter-modal dropdown-menu-right hidden">
+                                                    <li class="dropdown-title">Filter By</li>
+                                                    <select class="mt-2 select2" name="filter_status"
+                                                        id="filter_status">
+                                                        <option value="" selected>Status</option>
+                                                        <option value="1" {{$filter_status == 1 ? 'selected' : '' }}>
+                                                            Due</option>
+                                                    </select>
+                                                    <button type="submit"
+                                                        class="mt-2 ml-2 apply-button btn btn-primary btn-sm">Apply</button>
+                                                    <button type="button"
+                                                        class="mt-2 filter-remove btn btn-danger btn-sm">Cancel</button>
+                                                </div>
+                                            </div>
+                                            
+
+                                        </div>
+                                        
+                                    </form>
+                                    <div class="clearfix mb-3"></div>
+                                   
+                                </div>
+                                <div class="clearfix mb-3"></div>
                                 <div class="table-responsive">
                                     <table class="table table-striped" id="tbRefClient">
                                         <thead>
@@ -53,8 +86,8 @@
                                                     <td>{{ $service['type_name'] }}</td>
                                                     <td>{{ $service['product_Id'] != 0 ? $service['nrnumber'] . '/' . $service['product_name'] : 'NA' }}
                                                     </td>
-                                                    <td>{{ $service['description'] }}</td>
-                                                    <td></td>
+                                                    <td>{{ $service['description']}}</td>
+                                                    <td>{!!$service['due_status'] !!}</td>
                                                     <td>
 
                                                         @if ($service['Service_Call_Id'] == 0)
@@ -81,7 +114,7 @@
                                     </table>
                                     <div class="float-left">
                                         @if ($schedules->total())
-                                            <p>Found {{ $schedules->total() }} records</p>
+                                            <p>Found {{ $schedules->total() }} record  s</p>
                                         @endif
                                     </div>
                                     <div class="float-right">

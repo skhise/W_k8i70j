@@ -41,4 +41,29 @@ class ContractScheduleService extends Model
     {
         return $this->belongsTo(ContractUnderProduct::class, "product_Id", "id");
     }
+    public function scopeFilter($query, array $filters)
+{
+    // Apply search filter if 'search' is provided in filters
+    $query->when($filters['search'] ?? null, function ($query, $search) use ($filters) {
+        $search_field = $filters['search'] ?? '';
+        
+        if (!empty($search)) {
+            $query->where(function ($query) use ($search) {
+                // Use 'like' for case-insensitive search (matches CST_Name)
+                $query->orWhere('clients.CST_Name', 'like', ['%' . $search . '%']);
+                // Optionally, add more fields to search
+                $query->orWhere('CNRT_Number', 'like', '%' . $search . '%');
+            });
+        }
+    })
+    // Handle trashed status filter
+    ->when($filters['trashed'] ?? null, function ($query, $trashed) {
+        if ($trashed === 'with') {
+            $query->withTrashed(); // Include soft deleted records
+        } elseif ($trashed === 'only') {
+            $query->onlyTrashed(); // Only show soft deleted records
+        }
+    });
+}
+
 }

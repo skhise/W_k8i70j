@@ -1137,6 +1137,7 @@ class ContractController extends Controller
         $contract_obj = Contract::leftJoin("master_contract_type", "master_contract_type.id", "contracts.CNRT_Type")
             ->leftJoin("master_site_type", "master_site_type.id", "contracts.CNRT_SiteType")
             ->leftJoin("master_contract_status", "master_contract_status.id", "contracts.CNRT_Status")
+            ->leftJoin("master_site_area", "master_site_area.id", "contracts.CNRT_Site")
             ->leftJoin("clients", "clients.CST_ID", "contracts.CNRT_CustomerID")
             ->where("CNRT_ID", $contract->CNRT_ID)->first();
         $issueOptions = '<option value="">Select Type</option>';
@@ -1159,7 +1160,7 @@ class ContractController extends Controller
             ->leftJoin("contract_under_product", "contract_under_product.id", "contract_schedule_service.product_Id")
             ->leftJoin("master_service_type", "master_service_type.id", "contract_schedule_service.serviceType")
             ->leftJoin("master_service_status", "master_service_status.Status_Id", "contract_schedule_service.Schedule_Status")->get();
-
+        // dd($contract_obj);
         return view('contracts.view', [
             'contract' => $contract_obj,
             'project_count' => 0,

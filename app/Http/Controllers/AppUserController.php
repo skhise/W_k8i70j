@@ -395,6 +395,9 @@ class AppUserController extends Controller
         $ProductType = array();
         try {
             $ProductType = ProductType::all();
+            foreach ($ProductType as $type) {
+                $type->title = $type->type_name;
+            }
             return response()->json(["success" => true, "message" => "", "ProductType" => $ProductType]);
         } catch (Exception $ex) {
             return response()->json(["success" => false, "message" => $ex->getMessage(), "ProductType" => $ProductType]);

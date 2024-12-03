@@ -252,15 +252,23 @@ class AppUserController extends Controller
             if ($validator->fails()) {
                 return response()->json(["success" => false, "message" => "Product information missing.", "validation_error" => $validator->errors()]);
             }
+
             DB::beginTransaction();
-            $dc = ServiceDc::create([
-                'service_id' => $request->service_id,
-                'dc_type' => 1,
-                'dc_remark' => '',
-                'dc_amount' => $request->amount,
-                'issue_date' => NOW(),
-                'dc_status' => 1,
-            ]);
+            $dc = ServiceDc::where('service_id',$request->service_id)->first();
+            if(empty($dc)){
+                $dc = ServiceDc::create([
+                    'service_id' => $request->service_id,
+                    'dc_type' => 1,
+                    'dc_remark' => '',
+                    'dc_amount' => $request->amount,
+                    'issue_date' => NOW(),
+                    'dc_status' => 1,
+                ]);
+            } else {
+                $dc->amount = $dc->amount + $request->amount;
+                $dc->save();
+            }
+            
             if ($dc->id > 0) {
                 $create = ServiceDcProduct::create([
                     'dc_id' => $dc->id,

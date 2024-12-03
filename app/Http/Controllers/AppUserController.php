@@ -300,7 +300,6 @@ class AppUserController extends Controller
                 $request->all(),
                 [
                     'Product_ID' => "required",
-                    'CNRT_ID' => 'required'
                 ]
             );
 
@@ -359,33 +358,35 @@ class AppUserController extends Controller
     }
     public function GetAllProductListApp(Request $request)
     {
-        $products = array();
+        $productAll = array();
         try {
             $products = Product::where("Status", 1)->get();
             foreach ($products as $product) {
                 $product->title = $product->Product_Name;
                 $product->id = $product->Product_ID;
                 $product->price = $product->Product_Price;
+                array_push($productAll,$product);
             }
-            return response()->json(["success" => true, "message" => "", "product" => $products]);
+            return response()->json(["success" => true, "message" => "", "product" => $productAll]);
         } catch (Illuminate\Database\QueryException $ex) {
-            return response()->json(["success" => false, "message" => $ex->errorInfo, "product" => $products]);
+            return response()->json(["success" => false, "message" => $ex->errorInfo, "product" => $productAll]);
         }
 
     }
     public function GetAllProductListByTypeApp(Request $request)
     {
-        $products = array();
+        $productAll = array();
         try {
             $products = Product::where("Status", 1)->where("Product_Type",$request->type_id)->get();
             foreach ($products as $product) {
                 $product->title = $product->Product_Name;
                 $product->id = $product->Product_ID;
                 $product->price = $product->Product_Price;
+                array_push($productAll,$product);
             }
-            return response()->json(["success" => true, "message" => "", "product" => $products]);
+            return response()->json(["success" => true, "message" => "", "product" => $productAll]);
         } catch (Illuminate\Database\QueryException $ex) {
-            return response()->json(["success" => false, "message" => $ex->errorInfo, "product" => $products]);
+            return response()->json(["success" => false, "message" => $ex->errorInfo, "product" => $productAll]);
         }
 
     }

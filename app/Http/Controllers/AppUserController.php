@@ -309,7 +309,7 @@ class AppUserController extends Controller
             }
 
             $Product_ID = $request->Product_ID;
-            $accessory =ProductSerialNumber::join("products","products.id", "product_serial_numbers.product_id")
+            $accessory =ProductSerialNumber::join("products","products.Product_ID", "product_serial_numbers.product_id")
                 ->where("product_serial_numbers.product_id", $Product_ID)->get();
             $accessory->title = "Select Serial No.";
             $accessory->value = 0;

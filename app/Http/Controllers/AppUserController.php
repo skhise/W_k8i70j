@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Client;
 use App\Models\Employee;
 use App\Models\LocationHistory;
+use App\Models\ProductSerialNumber;
 use App\Models\ProductType;
 use Exception;
 use Illuminate\Http\Request;
@@ -308,17 +309,12 @@ class AppUserController extends Controller
             }
 
             $Product_ID = $request->Product_ID;
-            $Contract_ID = $request->CNRT_ID;
-            $accessory = ContractBaseAccessory::join("product_accessory", "product_accessory.PA_ID", "contract_base_accessory.accessoryId")
-                ->where("contract_base_accessory.productId", $Product_ID)
-                ->where("contract_base_accessory.contractId", $Contract_ID)->get();
-            $accessory->title = "Select Accessory";
+            $accessory =ProductSerialNumber::join("products","products.id", "product_serial_numbers.product_id")
+                ->where("product_serial_numbers.product_id", $Product_ID)->get();
+            $accessory->title = "Select Serial No.";
             $accessory->value = 0;
             foreach ($accessory as $acc) {
-                $acc->title = $acc->PA_Name;
-                $acc->id = $acc->PA_ID;
-                $acc->totalQty = $acc->totalQty;
-                $acc->price = $acc->price;
+                $acc->title = $acc->sr_number;
 
             }
             return response()->json(["success" => true, "message" => "", "accessory" => $accessory]);

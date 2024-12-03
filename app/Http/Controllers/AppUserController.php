@@ -373,11 +373,11 @@ class AppUserController extends Controller
         }
 
     }
-    public function f(Request $request)
+    public function GetAllProductListByTypeApp(Request $request)
     {
         $products = array();
         try {
-            $products = Product::where("Status", 1)->where("Product_Type",operator: $request->type_id)->get();
+            $products = Product::where("Status", 1)->where("Product_Type",$request->type_id)->get();
             foreach ($products as $product) {
                 $product->title = $product->Product_Name;
                 $product->id = $product->Product_ID;

@@ -265,7 +265,7 @@ class AppUserController extends Controller
                     'dc_status' => 1,
                 ]);
             } else {
-                $dc->amount = $dc->amount + $request->amount;
+                $dc->dc_amount = $dc->dc_amount + $request->amount;
                 $dc->save();
             }
             

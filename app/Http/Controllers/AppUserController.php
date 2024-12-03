@@ -7,6 +7,9 @@ use App\Models\Employee;
 use App\Models\LocationHistory;
 use App\Models\ProductSerialNumber;
 use App\Models\ProductType;
+use App\Models\ServiceDc;
+use App\Models\ServiceDcProduct;
+use DB;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -233,7 +236,55 @@ class AppUserController extends Controller
 
         }
     }
-    public function AddServiceCallAccessoryApp(Request $request)
+    public function AddServiceCallAccessoryApp(Request $request){
+
+        try{
+            $validator = Validator::make(
+                $request->all(),
+                [
+                    'product_id' => 'required',
+                    'serial_no' => 'required',
+                    'amount' => 'required',
+                    'note' => 'required',
+                    'service_id' => 'required',
+                ]
+            );
+            if ($validator->fails()) {
+                return response()->json(["success" => false, "message" => "Product information missing.", "validation_error" => $validator->errors()]);
+            }
+            DB::beginTransaction();
+            $dc = ServiceDc::create([
+                'service_id' => $request->service_id,
+                'dc_type' => 1,
+                'dc_remark' => '',
+                'dc_amount' => $request->amount,
+                'issue_date' => NOW(),
+                'dc_status' => 1,
+            ]);
+            if ($dc->id > 0) {
+                $create = ServiceDcProduct::create([
+                    'dc_id' => $dc->id,
+                    'product_id' => $request->product_id,
+                    'serial_no' => $request->serial_no,
+                    'amount' => $request->amount,
+                    'description' => $request->description,
+                ]);
+                if ($create) {
+                    DB::commit();
+                    return response()->json(["status" => true, 'message' => 'Saved successfully']);
+                } else {
+                    DB::rollBack();
+                    return response()->json(["status" => false, 'message' => 'Something went wrong, try again.']);
+                }
+            } else {
+                return response()->json(["status" => false, 'message' => 'Something went wrong, try again.']);
+            }
+        }catch(Exception $exp){
+            return response()->json(["status" => false, 'message' => 'Something went wrong, try again.']);
+        }
+        
+    }
+    public function AddServiceCallAccessoryAppOld(Request $request)
     {
 
         $validator = Validator::make(

@@ -7,13 +7,13 @@
         }
     </style>
     <div class="main-content">
-        <section class="section">
+        <section class="section m-2">
             <div class="row ">
                 <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                    <div class="card">
+                    <a class="card card-hover" href="{{ route('clients') }}">
                         <div class="card-statistic-4">
                             <div class="align-items-center justify-content-between">
-                                <div class="row ">
+                                <div class="row">
                                     <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pr-0 pt-3">
                                         <div class="card-content">
                                             <h5 class="font-15">Customers</h5>
@@ -30,10 +30,10 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
                 <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                    <div class="card">
+                    <a class="card card-hover" href="{{ route('contracts') }}">
                         <div class="card-statistic-4">
                             <div class="align-items-center justify-content-between">
                                 <div class="row ">
@@ -53,10 +53,10 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
                 <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                    <div class="card">
+                    <a class="card card-hover" href="{{ route('services') }}">
                         <div class="card-statistic-4">
                             <div class="align-items-center justify-content-between">
                                 <div class="row ">
@@ -77,10 +77,10 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
                 <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                    <div class="card">
+                    <a class="card card-hover" href="{{ route('employees') }}">
                         <div class="card-statistic-4">
                             <div class="align-items-center justify-content-between">
                                 <div class="row ">
@@ -100,7 +100,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
             </div>
             <div class="row">
@@ -142,7 +142,7 @@
                         <div class="card">
                             <div class="card-header">
                                 <h4>Last Updates</h4>
-                                <div class="card-header-form">
+                                <!-- <div class="card-header-form">
                                     <form>
                                         <div class="input-group">
                                             <input type="text" class="form-control" placeholder="Search">
@@ -151,7 +151,7 @@
                                             </div>
                                         </div>
                                     </form>
-                                </div>
+                                </div> -->
                             </div>
                             <div class="card-body p-0">
                                 <div class="table-responsive">

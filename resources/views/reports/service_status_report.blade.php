@@ -4,7 +4,7 @@
             <div class="section-body">
                 <div class="card">
                     <div class="card-header">
-                        <h4>Service Ticket Report</h4>
+                        <h4>Service Status Report</h4>
                     </div>
                     <div class="card-body">
                         <div class="form-horizontal">
@@ -94,21 +94,17 @@
                                                 <th>Issue Type </th>
                                                 <th>Issue Description </th>
                                                 <th>Contact Person</th>
-                                                <th>Reported At</th>
-                                                <th>Response Time (Hours) </th>
-                                                <th>Action Taken By Engineer </th>
                                                 <th>Status </th>
                                                 <th>Engineer</th>
                                                 <th>Resolved At </th>
                                                 <th>Closed At </th>
-                                                <th>Age(Hours) </th>
                                                 <th>Expenses </th>
                                                 <th>Customer Charges </th>
                                                 <th>Remark</th>
                                             </tr>
                                         </thead>
                                         <tbody id="contractReportList">
-                                            @include('reports.str_pagination')
+                                            @include('reports.strs_pagination')
                                         </tbody>
                                     </table>
                                 </div>
@@ -133,7 +129,7 @@
                 if (cust_id != "" && status != "") {
                     $.ajax({
                         type: "GET",
-                        url: "service-ticket-report-data",
+                        url: "service-status-report-data",
                         data: {
                             status: status,
                             customer: cust_id,

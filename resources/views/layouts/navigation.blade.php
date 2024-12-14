@@ -172,7 +172,12 @@
                 <ul class="dropdown-menu">
                     <li class="{{ Request::is('reports/contract-report') ? 'active' : '' }}"><a
                             class="nav-link active" href="{{ route('contract-report') }}">Contract Reports</a></li>
-                    <li class="{{ Request::is('reports/service-ticket-report') ? 'active' : '' }}"><a
+                    <li class="{{ Request::is(patterns: 'reports/contract-due-report') ? 'active' : '' }}"><a
+                            class="nav-link active" href="{{ route('contract-due-report') }}">Contract Due Reports</a></li>
+                    <li class="{{ Request::is('reports/service-status-report') ? 'active' : '' }}"><a
+                            class="nav-link" href="{{ route('service-status-report') }}">Service Status Reports</a></li>
+                  
+                            <li class="{{ Request::is('reports/service-ticket-report') ? 'active' : '' }}"><a
                             class="nav-link" href="{{ route('service-ticket-report') }}">Service Reports</a></li>
                     <li class="{{ Request::is('reports/engineer-report') ? 'active' : '' }}"><a class="nav-link"
                             href="{{ route('engineer-report') }}">Engineer Reports</a></li>

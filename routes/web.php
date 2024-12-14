@@ -59,8 +59,15 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
         Route::get('/reports/dc-report', [ReportController::class, 'dc_index'])->name('dc-report');
         Route::get('/reports/quotation-report', [ReportController::class, 'quotation_index'])->name('quotation-report');
 
+        Route::get('/reports/contract-due-report', [ReportController::class, 'crd_index'])->name('contract-due-report');
+        Route::get('/reports/contract-due-report-data', [ReportController::class, 'crd_data'])->name('contract-due-report-data');
+        
+
         Route::get('/reports/service-ticket-report', [ReportController::class, 'str_index'])->name('service-ticket-report');
         Route::get('/reports/service-ticket-report-data', [ReportController::class, 'GetServiceCallReport'])->name('service-ticket-report-data');
+        
+        Route::get('/reports/service-status-report', [ReportController::class, 'strs_index'])->name('service-status-report');
+        Route::get('/reports/service-status-report-data', [ReportController::class, 'GetServiceCallReportStatus'])->name('service-status-report-data');
         
         Route::get('/reports/engineer-report', [ReportController::class, 'etr_index'])->name('engineer-report');
         
@@ -211,6 +218,7 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
         Route::get('/quotmanagements/{quotation}/view', [QuotationController::class, 'View'])->name('quotmanagements.view');
         Route::get('/quotmanagements/{quotation}/delete', [QuotationController::class, 'delete'])->name('quotmanagements.delete');
         Route::get('/quotmanagements/{quotation}/print', [QuotationController::class, 'Print'])->name('quotmanagements.print');
+        Route::get('/quotmanagements/{quotation}/status-update/{quotationstatus}', action: [QuotationController::class, 'StatusUpdate'])->name('quotmanagements.status-update');
         Route::get('/quotmanagements/{quotation_product}/delete_qp', [QuotationController::class, 'DeleteQP'])->name('quotmanagements.delete_qp');
 
     });

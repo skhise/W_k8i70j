@@ -229,13 +229,17 @@ class DashboardController extends Controller
         $data = array();
         $status = ServiceStatus::where(['flag' => 1])->orderBy("sort", "ASC")->get();
         foreach ($status as $s) {
+            
             $count = Service::where("service_status", $s->Status_Id)->count();
             $d = [
                 "name" => $s->Status_Name,
                 "value" => $count,
                 "color" => $s->status_color
             ];
-            array_push($data, $d);
+            if($s->Status_Id !=5){
+                array_push($data, $d);    
+            }
+            
         }
 
         return $data;

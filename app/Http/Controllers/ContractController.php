@@ -715,6 +715,7 @@ class ContractController extends Controller
             return response()->json(['success' => false, 'message' => 'All * marked fields required']);
         }
         $size = 0;
+        // dd($contract_service);
         foreach ($contract_service as $cs) {
             $size++;
             $iscp = ContractScheduleService::create([
@@ -732,8 +733,9 @@ class ContractController extends Controller
             ]);
             if (!empty($cs['service_product'])) {
                 $product = ContractUnderProduct::where("id", $cs['service_product'])->where("contractId", $contractID)->first();
-                $service = $product->no_of_service + 1;
-                $product->update(['no_of_service' => $service]);
+                // dd($product);
+                $product->no_of_service + 1;
+                $product->save();
             }
 
         }
@@ -1171,7 +1173,7 @@ class ContractController extends Controller
             'checklists' => $contract->checklist,
             'renewals' => $contract->renewals,
             'productOption' => $productOptions,
-            'products' => ContractUnderProduct::where("contractId", $contract->CNRT_ID)->get(),
+            'products' => $products,
             'services' => $services
 
         ]);

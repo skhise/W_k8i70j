@@ -89,7 +89,11 @@
             -webkit-animation-timing-function: ease-in-out;
             -webkit-animation-direction: alternate;
         }
-        
+        .card-hover:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+        }
         @-webkit-keyframes blinker {
             from {
                 opacity: 1.0;

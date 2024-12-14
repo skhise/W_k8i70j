@@ -9,7 +9,6 @@
                     <tr>
                         <th>Sr. No.</th>
                         <th>Name</th>
-                        <th>Serial No.</th>
                         <th>Type</th>
                         <th>Amount</th>
                         <th>Description</th>
@@ -30,9 +29,6 @@
                             </td>
                             <td>
                                 {{ $product->Product_Name }}
-                            </td>
-                            <td>
-                                {{ $product->sr_number }}
                             </td>
                             <td>
                                 {{ $product->type_name }}

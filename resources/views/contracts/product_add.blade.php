@@ -83,7 +83,7 @@
                                 <div class="col-md-6 floating-label">
                                     <input class="form-control text-box single-line" id="branch" name="branch"
                                         placeholder="" type="text" value="" />
-                                    <label for="first">Location</label>
+                                    <label for="first">Branch / Location</label>
                                 </div>
                                 <div class="col-md-6 floating-label">
                                     <input class="form-control text-box single-line" id="service_period"

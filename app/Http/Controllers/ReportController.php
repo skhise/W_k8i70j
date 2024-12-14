@@ -254,24 +254,41 @@ class ReportController extends Controller
             ]
         );
     }
-    public function cr_data(Request $request)
+    public function crd_index(Request $request)
+    {
+        $clients = Client::all();
+        $status = ContractStatus::all();
+        return view(
+            'reports.contract_due',
+            [
+                "clients" => $clients,
+                "status" => $status,
+                "customer" => "",
+                "contracts" => array(),
+                "sstatus" => ""
+            ]
+        );
+    }
+    public function crd_data(Request $request)
     {
         $contracts = null;
         try {
-            $customer = $request->customer;
-            // dd($customer);
-            $status = $request->status;
-            $sstatus = $status;
+            $date_range = $request->duein;
+            $today = date("Y-m-d");
+            $fromdate  = date("Y-m-d");
+            $todate= date('Y-m-d', strtotime($fromdate . '+' . $date_range . ' days'));
+            if ($date_range == 0) {
+                $fromdate = $todate;
+            }
+        //   dd($fromdate."---".$todate);
             $contracts = Contract::join("master_contract_type", "master_contract_type.id", "contracts.CNRT_Type")
                 ->join("master_site_type", "master_site_type.id", "contracts.CNRT_SiteType")
                 ->join("master_contract_status", "master_contract_status.id", "contracts.CNRT_Status")
                 ->leftJoin("clients", "clients.CST_ID", "contracts.CNRT_CustomerID")
                 ->leftJoin("master_site_area", "master_site_area.id", "contracts.CNRT_Site")
-                ->when($customer != 0, function ($query) use ($customer) {
-                    $query->where("CNRT_CustomerID", $customer);
-                })
-                ->when($status != 0 && $status != "", function ($query) use ($status) {
-                    $query->where("CNRT_Status", $status);
+                ->when($date_range != "" && $date_range != -1, function ($query) use ($todate, $fromdate) {
+                    return $query->whereBetween(DB::raw('DATE_FORMAT(contracts.CNRT_EndDate, "%Y-%m-%d")'), [$fromdate, $todate]);
+    
                 })
                 ->orderBy('contracts.updated_at', "DESC")
                 ->paginate(10);
@@ -284,11 +301,11 @@ class ReportController extends Controller
 
         $status = $this->status;
         if ($request->ajax()) {
-            return view('reports.cr_pagination', compact('contracts', 'status'));
+            return view('reports.crd_pagination', compact('contracts', 'status'));
         }
         $clients = Client::all();
         $status = ContractStatus::all();
-        return view('reports.contract', compact('contracts', 'status', "clients", "customer", "sstatus"));
+        return view('reports.contract_due', compact('contracts', 'status', "clients", "customer", "sstatus"));
     }
 
     public function sr_export(Request $request)
@@ -360,6 +377,24 @@ class ReportController extends Controller
         $service_types = ServiceType::all();
         return view(
             'reports.service_report',
+            [
+                "clients" => $clients,
+                "status" => $status,
+                "customer" => "",
+                "service_types" => $service_types,
+                "service_type" => "",
+                "services" => array(),
+                "sstatus" => ""
+            ]
+        );
+    }
+    public function strs_index(Request $request)
+    {
+        $clients = Client::all();
+        $status = ServiceStatus::all();
+        $service_types = ServiceType::all();
+        return view(
+            'reports.service_status_report',
             [
                 "clients" => $clients,
                 "status" => $status,
@@ -463,7 +498,7 @@ class ReportController extends Controller
                 $query->where("services.customer_id", $customer_id);
             })
             ->when($todate != "" && $fromdate != "", function ($query) use ($todate, $fromdate) {
-                $query->whereBetween(DB::raw('DATE_FORMAT(services.service_date, "%Y-%m-%d")'), [$todate, $fromdate]);
+                $query->whereBetween(DB::raw('DATE_FORMAT(services.service_date, "%Y-%m-%d")'), [$fromdate,$todate]);
             })
             ->when($issueType != "", function ($query) use ($issueType) {
                 return $query->where('services.issue_type', $issueType);
@@ -475,7 +510,7 @@ class ReportController extends Controller
                 return $query->where('services.contract_id', 0);
             })
             ->when(($contract != 0 && $contract != ""), function ($query) use ($contract) {
-                return $query->where('services.contract_id', ">", 1);
+                return $query->where('services.contract_id',"!=", 0);
             })
             ->when($empId != "", function ($query) use ($empId) {
                 return $query->where('services.assigned_to', $empId);
@@ -516,8 +551,22 @@ class ReportController extends Controller
     {
 
 
-        $todate = $request->todate;
-        $fromdate = $request->fromdate;
+        $date_range = $request->dayFilter;
+        $today = date("Y-m-d");
+        $todate = date("Y-m-d");
+        $fromdate = date('Y-m-d', strtotime($todate . '-' . $date_range . ' days'));
+        if ($date_range == 0) {
+            $fromdate = $todate;
+        }
+        if ($date_range == 2) {
+            $todate = date('Y-m-d', strtotime($today . '-1 days'));
+            $fromdate = date('Y-m-d', strtotime($today . '-1 days'));
+        }
+        if($date_range == -1){
+            $todate = "";
+            $fromdate="";
+        }
+        // dd($todate."--".$fromdate);
         $customer_id = $request->cust_id;
         $employees = Employee::orderby("EMP_ID", 'ASC')->get();
 
@@ -837,6 +886,81 @@ class ReportController extends Controller
         }
         return view(
             'reports.service_report',
+            [
+                "clients" => $clients,
+                "status" => $status,
+                "customer" => $customerId,
+                "date_range" => $date_range,
+                "service_types" => $service_types,
+                "service_type" => $service_type,
+                "contracts" => array(),
+                "services" => $services,
+                "sstatus" => $request->status,
+            ]
+        );
+    }
+    public function GetServiceCallReportStatus(Request $request)
+    {
+
+        $customerId = $request->customer;
+        $service_type = $request->service_type;
+        $type = $request->type;
+        $status = $request->status;
+        $date_range = $request->date_range;
+        $today = date("Y-m-d");
+        $todate = date("Y-m-d");
+        $fromdate = date('Y-m-d', strtotime($todate . '-' . $date_range . ' days'));
+        if ($date_range == 0) {
+            $fromdate = $todate;
+        }
+        if ($date_range == 1) {
+            $todate = date('Y-m-d', strtotime($today . '-1 days'));
+            $fromdate = date('Y-m-d', strtotime($today . '-1 days'));
+        }
+
+        $services = array();
+        $services = Service::select("*", "services.id as service_id","contract_under_product.*")
+            ->join("master_service_status", "master_service_status.Status_Id", "services.service_status")
+            ->join("master_service_priority", "master_service_priority.id", "services.service_priority")
+            ->join("master_issue_type", "master_issue_type.id", "services.issue_type")
+            ->join("master_service_type", "master_service_type.id", "services.service_type")
+            ->join("clients", "clients.CST_ID", "services.customer_id")
+            ->leftJoin("contracts", "contracts.CNRT_ID", "services.contract_id")
+            ->leftJoin("contract_under_product", "contract_under_product.id", "services.product_id")
+            ->leftJoin("employees", "employees.EMP_ID", "services.assigned_to")
+            ->when($customerId != 0, function ($query) use ($customerId) {
+                return $query->where('clients.CST_ID', $customerId);
+            })
+            ->when($service_type != 0, function ($query) use ($service_type) {
+                return $query->where('services.service_type', $service_type);
+            })
+            ->when($type != "", function ($query) use ($type) {
+                if($type == 0){
+                    return $query->where('services.contract_id', 0);
+                } else {
+                    return $query->where('services.contract_id','>=', $type);
+                }
+                
+            })
+            ->when($status != 0, function ($query) use ($status) {
+                return $query->where('services.service_status', $status);
+            })
+            ->when($date_range != "" && $date_range != -1, function ($query) use ($todate, $fromdate) {
+                return $query->whereBetween(DB::raw('DATE_FORMAT(services.service_date, "%Y-%m-%d")'), [$fromdate, $todate]);
+
+            })
+
+            ->orderby("services.updated_at", "DESC")
+            ->paginate(10);
+
+        $clients = Client::all();
+        $status = ServiceStatus::all();
+        $service_types = ServiceType::all();
+        if ($request->ajax()) {
+            return view('reports.strs_pagination', compact('services', 'status'));
+        }
+        return view(
+            'reports.service_status_report',
             [
                 "clients" => $clients,
                 "status" => $status,

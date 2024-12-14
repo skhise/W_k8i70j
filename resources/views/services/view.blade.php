@@ -318,9 +318,26 @@
                                                                     {{ $service->product_description  ?? "" }}
                                                                 </div>
                                                             </div>
+                                                            <div class="row">
+                                                                <div class="col-md-3">
+                                                                    <span style="float:right ;font-weight:bold">
+                                                                        Branch / Location</span>
+                                                                </div>
+                                                                <div class="col-md-9">
+                                                                    {{ $service->branch  ?? "" }}
+                                                                </div>
+                                                            </div>
                                                             <hr />
                                                         @endif
                                                         @if ($service->product_id != 0)
+                                                        <div class="row">
+                                                                <div class="col-md-3">
+                                                                    <span style="float:right ;font-weight:bold">
+                                                                    Tag/Sr. Number</span>
+                                                                </div>
+                                                                <div class="col-md-9">{{ $product->nrnumber ?? ""}}
+                                                                </div>
+                                                            </div>
                                                             <div class="row">
                                                                 <div class="col-md-3">
                                                                     <span style="float:right ;font-weight:bold">
@@ -343,6 +360,15 @@
                                                                 </div>
                                                                 <div class="col-md-9">
                                                                     {{ $product->product_description ?? "" }}
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-3">
+                                                                    <span style="float:right ;font-weight:bold">
+                                                                        Branch / Location</span>
+                                                                </div>
+                                                                <div class="col-md-9">
+                                                                    {{ $product->branch  ?? "" }}
                                                                 </div>
                                                             </div>
                                                         @endif

@@ -25,8 +25,9 @@ class QuotationController extends Controller
     public function index(Request $request)
     {
 
-        $service_quots = Quotation::select(["quotation_type.*", "clients.*", "quotation.id as dcp_id", "quotation.*"])
+        $service_quots = Quotation::select(["master_quotation_status.*","quotation_type.*", "clients.*", "quotation.id as dcp_id", "quotation.*"])
             ->leftJoin("quotation_type", "quotation_type.id", "quotation.quot_type")
+            ->leftJoin("master_quotation_status", "master_quotation_status.id", "quotation.quot_status")
             ->leftJoin("clients", "clients.CST_ID", "quotation.customer_id")
             ->when(isset($request->customer_id), function ($query) use ($request) {
                 $query->where("quotation.customer_id", $request->customer_id);
@@ -40,7 +41,7 @@ class QuotationController extends Controller
             ->filter($request->only('search'))
             ->paginate(10)
             ->withQueryString();
-        // dd($dc_products);
+        // dd($service_quots);
         $quotationType = QuotationType::all();
         $quotationStatus = QuotationStatus::all();
         return view(
@@ -71,6 +72,7 @@ class QuotationController extends Controller
         }
         return view("quotmanagement.create", [
             'dctype' => QuotationType::all(),
+            'qStatus' => QuotationStatus::all(),
             'productType' => $product_types,
             'clients' => Client::all(),
         ]);
@@ -94,6 +96,16 @@ class QuotationController extends Controller
 
         return view('quotmanagement.print', compact('quotation', 'products', 'date'));
     }
+    public function StatusUpdate(Quotation $quotation,QuotationStatus $quotationstatus, Request $request)
+    {
+        try{
+            $quotation->quot_status = $quotationstatus->id;
+            $quotation->save();
+            return true;
+        }catch(Exception $exp){
+            return false;
+        }
+    }
     public function view(Quotation $quotation, Request $request)
     {
         $quotation_products = QuotationProduct::select("master_product_type.*", "quotation_product.id as sdp", "quotation_product.*", "products.*")
@@ -110,7 +122,8 @@ class QuotationController extends Controller
         return view("quotmanagement.view", [
             "quotation" => $quotation_details,
             "products" => $quotation_products,
-            'flag' => $request->flag ?? 0
+            'flag' => $request->flag ?? 0,
+            'qStatus' => QuotationStatus::all(),
         ]);
     }
     public function delete(Quotation $quotation)
@@ -148,7 +161,7 @@ class QuotationController extends Controller
             $request->all(),
             [
                 'issue_date' => 'required',
-                'quot_type' => 'required',
+                'quot_status' => 'required',
                 'customer_id' => 'required',
                 'product_id.*' => 'required',
                 'amount.*' => 'required',
@@ -167,7 +180,7 @@ class QuotationController extends Controller
             'quot_remark' => $request->quot_remark,
             'quot_amount' => array_sum(array_column($data, "amount")),
             'issue_date' => date('Y-m-d', strtotime($request->issue_date)),
-            'quot_status' => 2,
+            'quot_status' => $request->quot_status,
         ]);
         if ($dc->id > 0) {
             foreach ($data as $key => $name) {

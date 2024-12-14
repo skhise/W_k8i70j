@@ -37,7 +37,7 @@
                                                             @endforeach
                                                         </select>
                                                     </div>
-                                                    <div class="col-md-3">
+                                                    <!-- <div class="col-md-3">
                                                         <label>Type<span class="error">*</span></label>
                                                         <select id="quotbyType" name="quotbyType"
                                                             class="required form-control">
@@ -45,6 +45,17 @@
                                                             @foreach ($dctype as $quot_type)
                                                                 <option value="{{ $quot_type->id }}">
                                                                     {{ $quot_type->quot_type_name }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div> -->
+                                                    <div class="col-md-2">
+                                                        <label>Status<span class="error">*</span></label>
+                                                        <select id="quotStatus" name="quotStatus"
+                                                            class="required form-control">
+                                                            <option value="">Select Status</option>
+                                                            @foreach ($qStatus as $status)
+                                                                <option value="{{ $status->id }}">
+                                                                    {{ $status->status_name }}</option>
                                                             @endforeach
                                                         </select>
                                                     </div>
@@ -130,7 +141,6 @@
                                                 </tr>
                                                 <tr>
                                                     <th>Date</th>
-                                                    <th>Type</th>
                                                     <th>Product Type</th>
                                                     <th>Product</th>
                                                     <th>Amount</th>
@@ -160,7 +170,7 @@
                 var issue_date = $("#standby_date").val();
                 var quot_remark = $("#quot_remark").val();
                 var customer_id = $("#customer_id option:selected").val();
-                var quot_type = $("#quotbyType option:selected").val();
+                var status = $("#quotStatus option:selected").val();
                 // Iterate over each row in the table body
                 $('#myTable tbody tr').each(function() {
                     var rowObj = {};
@@ -184,7 +194,7 @@
                         data: {
                             customer_id: customer_id,
                             issue_date: issue_date,
-                            quot_type: quot_type,
+                            quot_status: status,
                             quot_remark: quot_remark,
                             data: rowData,
                             "_token": "{{ csrf_token() }}",
@@ -281,7 +291,6 @@
                         var newRow = document.createElement("tr");
                         newRow.innerHTML = `
                 <td data-key="issue_date" data-value="${standby_date}">${standby_date}</td>
-                <td data-key="type"  data-value="${standbyType}">${standbyType_text}</td>
                 <td data-key="product_type" data-value="${product_type}">${product_type_text}</td>
                 <td data-key="product_id" data-value="${standby_product}">${standby_product_text}</td>
                 <td data-key="amount" data-value="${product_amount}">${product_amount}</td>

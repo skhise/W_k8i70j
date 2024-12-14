@@ -104,9 +104,9 @@
                                                                     style="float:right ;font-weight:bold">Status</span>
                                                             </div>
                                                             <div class="col-md-9">
-                                                                <p class="text-muted">{!! $contract->CST_Status != 0 ? $status[$contract->CNRT_Status] : 'NA' !!}</p>
-
-                                                            </div>
+                                                            <span class="text-white badge badge-shadow {{ $contract['status_color'] ?? 'bg-light' }}">
+                                                            {{ $contract['contract_status_name'] }}</span>
+                                                                                                                          </div>
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-3"><span

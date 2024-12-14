@@ -25,15 +25,15 @@
                                         </select>
                                     </div>
                                     <div class="col-lg-2">
-                                        <select class="form-control select2" id="date-range">
+                                    <select class="form-control select2" id="date-range">
                                             <option value="">Date Range</option>
-                                            <option value="1">Any</option>
-                                            <option value="2">Today</option>
-                                            <option value="3">Yesterday</option>
-                                            <option value="5">Last 7 Days</option>
-                                            <option value="6">Last 30 Days</option>
-                                            <option value="7">Last 60 Days</option>
-                                            <option value="8">Last 180 Days</option>
+                                            <option value="-1">Any</option>
+                                            <option value="0">Today</option>
+                                            <option value="1">Yesterday</option>
+                                            <option value="7">Last 7 Days</option>
+                                            <option value="30">Last 30 Days</option>
+                                            <option value="60">Last 60 Days</option>
+                                            <option value="180">Last 180 Days</option>
 
                                         </select>
                                     </div>
@@ -335,9 +335,9 @@
                             var obj = data.serviceType;
                             var objd = data.serviceTypeData;
                             var stausCount = data.countArray;
-                            var pending = parseInt(stausCount.New)+stausCount.Pending + parseInt(stausCount.Open);
+                            var pending = parseInt(stausCount.Assigned) + parseInt(stausCount.New)+stausCount.Pending + parseInt(stausCount.Open);
                             var complete = parseInt(stausCount.Resolved) + parseInt(stausCount.Closed);
-                            var total = parseInt(stausCount.New) + parseInt(stausCount.Open) + parseInt(stausCount.Resolved)+ parseInt(stausCount.Closed);
+                            var total = parseInt(stausCount.Assigned) + parseInt(stausCount.New) + parseInt(stausCount.Open) + parseInt(stausCount.Resolved)+ parseInt(stausCount.Closed);
                             $("#pending_call").html(pending);
                             $("#total_call").html(total);
                             $("#complete_call").html(complete);
@@ -425,14 +425,14 @@
                 }
 
             });
-            $(document).on("change", "#date-range", function(e) {
-                e.preventDefault();
-                if ($(this).val() == 0 && $(this).val() != "") {
-                    $(".date-range").removeClass("hide");
-                } else {
-                    $(".date-range").addClass("hide");
-                }
-            });
+            // $(document).on("change", "#date-range", function(e) {
+            //     e.preventDefault();
+            //     if ($(this).val() == 0 && $(this).val() != "") {
+            //         $(".date-range").removeClass("hide");
+            //     } else {
+            //         $(".date-range").addClass("hide");
+            //     }
+            // });
         </script>
     @stop
 </x-app-layout>

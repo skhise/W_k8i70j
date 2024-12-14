@@ -4,38 +4,24 @@
             <div class="section-body">
                 <div class="card">
                     <div class="card-header">
-                        <h4>Contract Report</h4>
+                        <h4>Contract Due Report</h4>
                     </div>
                     <div class="card-body">
                         <div class="form-horizontal">
                             <div class="row">
-                                <div class="col-lg-4">
-                                    <select name="client" id="client" class="form-control select2">
-                                        <option value="">Select Customer</option>
-                                        <option value="0" {{ $customer == 0 ? 'selected' : '' }}>All
-                                        </option>
-                                        @foreach ($clients as $client)
-                                            <option value="{{ $client->CST_ID }}"
-                                                {{ $client->CST_ID == $customer ? 'selected' : '' }}>
-                                                {{ $client->CST_Name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
+                                
                                 <div class="col-lg-2">
+                                    <select class="form-control select2" id="duein-range">
+                                            <option value="">Due In</option>
+                                            <option value="0">Today</option>
+                                            <option value="7">In 7 Days</option>
+                                            <option value="30">in 30 Days</option>
+                                            <option value="60">In 60 Days</option>
+                                            <option value="90">In 90 Days</option>
 
+                                        </select>
 
-                                    <select name="report_contract_status" id="report_contract_status"
-                                        class="form-control select2">
-                                        <option value="">Select Status</option>
-                                        <option value="0" {{ $sstatus == 0 ? 'selected' : '' }}>All
-                                        </option>
-                                        @foreach ($status as $status)
-                                            <option value="{{ $status->id }}"
-                                                {{ $status->id == $sstatus ? 'selected' : '' }}>
-                                                {{ $status->contract_status_name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
+                                    
                                 </div>
                                 <div class="col-lg-4 d-flex">
                                     <button class="btn btn-primary ml-2 btn-fetch-report">Generate</button>
@@ -78,19 +64,16 @@
     @section('script')
         <script>
             $(document).on("click", ".btn-reset", function() {
-                window.location.replace("contract-report");
+                window.location.replace("contract-due-report");
             });
             $(document).on("click", ".btn-fetch-report", function() {
-                var cust_id = $("#client option:selected").val();
-                var cust_Name = $("#client option:selected").text();
-                var status = $("#report_contract_status option:selected").val();
-                if (cust_id != "" && status != "") {
+                var duein = $("#duein-range option:selected").val();
+                if (duein != "") {
                     $.ajax({
                         type: "GET",
-                        url: "contract-report-data",
+                        url: "contract-due-report-data",
                         data: {
-                            status: status,
-                            customer: cust_id
+                            duein: duein,
                         },
                         beforeSend: function() {
                             $(".loader").show();

@@ -97,11 +97,11 @@ fas fa-plus-square"></i>
                                         <thead>
                                             <tr>
                                                 <th>Sr. No.</th>
+                                                <th>Date</th>
                                                 <th>Client Name</th>
-                                                <th>QTY</th>
+                                                <th>Total QTY</th>
                                                 <th>Total Amount</th>
-                                                <th>Issue Date</th>
-                                                <th>Type</th>
+                                                <th>Status</th>
                                                 <th>Actions</th>
                                             </tr>
                                         </thead>
@@ -116,11 +116,11 @@ fas fa-plus-square"></i>
                                             @foreach ($service_quots as $index => $dcp)
                                                 <tr>
                                                     <td>{{ $index + 1 }}</td>
+                                                    <td>{{ date('d-M-Y', strtotime($dcp['issue_date'])) }}</td>
                                                     <td>{{ $dcp['CST_Name'] }}</td>
                                                     <td>{{ $dcp->totalProduct($dcp['dcp_id']) }}</td>
                                                     <td>{{ $dcp->totalAmount($dcp['dcp_id']) }}</td>
-                                                    <td>{{ date('d-M-Y', strtotime($dcp['issue_date'])) }}</td>
-                                                    <td>{{ $dcp['quot_type_name'] }}</td>
+                                                    <td>{{ $dcp['status_name'] }}</td>
                                                     <td>
                                                         <div class="d-flex">
                                                             <a class="delete-btn action-btn btn btn-sm btn-danger"

@@ -272,7 +272,7 @@ class AppUserController extends Controller
                 $create = ServiceDcProduct::create([
                     'dc_id' => $dc->id,
                     'product_id' => $request->product_id,
-                    'serial_no' => $request->serial_no,
+                    'serial_no' => $request->serial_no ?? "",
                     'amount' => $request->amount,
                     'description' => $request->description,
                 ]);
@@ -993,16 +993,15 @@ class AppUserController extends Controller
     {
 
         $serviceId = $id;
-        $serviceAcc = ServiceAccessory::join("product_accessory", "product_accessory.PA_ID", "service_accessory.accessory_id")
-            ->where("service_accessory.service_id", $serviceId)->get();
-        foreach ($serviceAcc as $sc) {
-            if ($sc->isContracted == 1) {
-                $sc->isContractedName = "Contracted";
-            } else {
-                $sc->isContractedName = "Non-Contracted";
-            }
-        }
-        return $serviceAcc;
+        $dc_products = ServiceDcProduct::select("product_serial_numbers.*", "master_product_type.*", "service_dc_product.id as sdp", "service_dc_product.*", "products.*")
+            ->join("products", "products.Product_ID", "service_dc_product.product_id")
+            ->leftJoin("master_product_type", "master_product_type.id", "products.Product_Type")
+            ->join("services", "services.id", "service_dc.service_id")
+            ->leftJoin("product_serial_numbers", "product_serial_numbers.id", "service_dc_product.serial_no")
+            ->where("service_dc.service_id", $id)->get();
+        
+           
+        return $dc_products;
 
     }
 

@@ -250,7 +250,7 @@ class AppUserController extends Controller
                 ]
             );
             if ($validator->fails()) {
-                return response()->json(["success" => false, "message" => "Product information missing.", "validation_error" => $validator->errors()]);
+                return response()->json(["success" => false, "message" => "service information missing", "validation_error" => $validator->errors()]);
             }
 
             DB::beginTransaction();

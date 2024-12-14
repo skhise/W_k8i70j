@@ -243,7 +243,6 @@ class AppUserController extends Controller
                 $request->all(),
                 [
                     'product_id' => 'required',
-                    'serial_no' => 'required',
                     'amount' => 'required',
                     'note' => 'required',
                     'service_id' => 'required',

@@ -993,11 +993,10 @@ class AppUserController extends Controller
     {
 
         $serviceId = $id;
-        $dc_products = ServiceDcProduct::select("product_serial_numbers.*", "master_product_type.*", "service_dc_product.id as sdp", "service_dc_product.*", "products.*")
+        $dc_products = ServiceDcProduct::select("service_dc_product.*","products.*", "master_product_type.*", "service_dc_product.id as sdp", "service_dc_product.*", "products.*")
             ->join("products", "products.Product_ID", "service_dc_product.product_id")
             ->leftJoin("master_product_type", "master_product_type.id", "products.Product_Type")
             ->join("services", "services.id", "service_dc.service_id")
-            ->leftJoin("product_serial_numbers", "product_serial_numbers.id", "service_dc_product.serial_no")
             ->where("service_dc.service_id", $id)->get();
         
            

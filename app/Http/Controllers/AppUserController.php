@@ -64,13 +64,16 @@ class AppUserController extends Controller
     {
         try {
             User::where("id", $request->User_ID)->update(['isOnline' => 1]);
-            LocationHistory::create([
-                'User_ID' => $request->User_ID,
-                'last_long' => $request->last_long,
-                'last_lang' => $request->last_lang,
-                'full_address' => "",
-                'area_code' => "",
-            ]);
+            if(isset($request->last_long) && $request->last_long !=null){
+                LocationHistory::create([
+                    'User_ID' => $request->User_ID,
+                    'last_long' => $request->last_long,
+                    'last_lang' => $request->last_lang,
+                    'full_address' => "",
+                    'area_code' => "",
+                ]);
+            }
+         
             return "updated";
         } catch (Exception $e) {
             report($e);

@@ -256,6 +256,11 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
     Route::get('employees/{employee}/edit', [EmployeeController::class, 'edit'])
         ->name('employees.edit')
         ->middleware('auth');
+    Route::get('employees/location', [EmployeeController::class, 'location'])
+        ->name('location');
+    Route::get('employees/getlocation/{userId}', [EmployeeController::class, 'getlocation'])
+        ->name('getlocation')
+        ->middleware('auth');
     Route::middleware('auth')->group(function () {
         Route::post('/employees/{employee}', [EmployeeController::class, 'update'])->name('employees.update');
         Route::get('/employees/{employee}/delete', [EmployeeController::class, 'deleteEmp'])->name('employees.delete');

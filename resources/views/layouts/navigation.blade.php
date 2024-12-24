@@ -133,6 +133,10 @@
                 <a href="{{ route('employees') }}" class="nav-link"><i
                         data-feather="users"></i><span>Employees</span></a>
             </li>
+            <li class="dropdown {{ Request::is('location') || Request::is('employees/location') ? 'active' : '' }}">
+                <a href="{{ route('location') }}" class="nav-link"><i
+                        data-feather="map"></i><span>Location</span></a>
+            </li>
             <li class="{{ Request::is('clients') || Request::is('clients/*') ? 'active' : '' }}">
                 <a class="nav-link" href="{{ route('clients') }}"><i data-feather="user-plus"></i> Clients</a>
             </li>

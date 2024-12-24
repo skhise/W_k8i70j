@@ -20,3 +20,6 @@ yarn-error.log
 /.zip
 *.zip
 .gitignore
+composer.json
+composer.lock.json
+*.json

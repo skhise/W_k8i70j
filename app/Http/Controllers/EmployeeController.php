@@ -6,6 +6,7 @@ use App\Models\AccessMaster;
 use App\Models\Client;
 use App\Models\Designation;
 use App\Models\Generate;
+use App\Models\LocationHistory;
 use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -178,6 +179,26 @@ class EmployeeController extends Controller
             'designations' => Designation::all(),
             'employee' => $employee,
         ]);
+    }
+    public function location(Request $request)
+    {
+        // dd($contract->CNRT_EndDate);
+        $employees = Employee::where(['Access_Role'=>4])->get();
+        return view('employees.location', [
+            'employees'=>$employees
+        ]);
+    }
+    public function getLocation($userId){
+
+        try{
+            $location = LocationHistory::where('User_ID', $userId)->orderBy('id', 'desc')->first();
+            return response()->json(["status" => true, "location" => $location]);
+        }catch(Exception $exp){
+            dd($exp->getMessage());
+            return response()->json(["status" => false, "message" => "something went wrong, try again."]);
+
+        }
+
     }
     public function update(Request $request, Employee $employee)
     {

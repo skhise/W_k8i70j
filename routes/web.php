@@ -253,15 +253,18 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
         Route::get('/products/{productSerialNumber}/sr/delete', [ProductController::class, 'DeleteProductSrNo'])->name("product_srno.delete");
         Route::post('/products/{product}/add-sn', [ProductController::class, 'AddProductSrNo'])->name("products.add-sn");
     });
-    Route::get('employees/{employee}/edit', [EmployeeController::class, 'edit'])
-        ->name('employees.edit')
-        ->middleware('auth');
-    Route::get('employees/location', [EmployeeController::class, 'location'])
+    
+   
+    Route::middleware('auth')->group(function () {
+        Route::get('employees/{employee}/edit', [EmployeeController::class, 'edit'])
+        ->name('employees.edit');
+        
+        Route::get('employees/location', [EmployeeController::class, 'location'])
         ->name('location');
     Route::get('employees/getlocation/{userId}', [EmployeeController::class, 'getlocation'])
-        ->name('getlocation')
-        ->middleware('auth');
-    Route::middleware('auth')->group(function () {
+        ->name('getlocation');
+    Route::get('employees/location-all', [EmployeeController::class, 'getLocationAll'])
+        ->name('location-all');
         Route::post('/employees/{employee}', [EmployeeController::class, 'update'])->name('employees.update');
         Route::get('/employees/{employee}/delete', [EmployeeController::class, 'deleteEmp'])->name('employees.delete');
         Route::post('/employees/{employee}/password', [EmployeeController::class, 'ResetPassword'])->name('employees.setpassword');

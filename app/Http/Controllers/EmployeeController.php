@@ -22,6 +22,7 @@ use App\Models\Service;
 use App\Http\Controllers\MailController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
 
 
 class EmployeeController extends Controller
@@ -191,8 +192,36 @@ class EmployeeController extends Controller
     public function getLocation($userId){
 
         try{
-            $location = LocationHistory::where('User_ID', $userId)->orderBy('id', 'desc')->first();
-            return response()->json(["status" => true, "location" => $location]);
+            $location = LocationHistory::where('User_ID',$userId)->orderBy('id', 'desc')->first();
+            if(!empty($location)){
+                return response()->json(["status" => true, "location" => $location,"datetime"=>$location->created_at->format('d-M-Y, H:i')]);
+               
+            }
+            return response()->json(["status" => true, "location" => null,"datetime"=>'']);
+       
+        }catch(Exception $exp){
+            return response()->json(["status" => false, "message" => "something went wrong, try again."]);
+
+        }
+
+    }
+    public function getLocationAll(){
+
+        try{
+            $employees = Employee::where(['Access_Role'=>4])->get();
+            $all_locations = [];
+            foreach($employees as $employee){
+
+                $location = LocationHistory::where('User_ID', $employee->EMP_ID)->orderBy('id', 'desc')->first();
+                $obj['name']=$employee->EMP_Name;
+                $obj['last_lang']=isset($location->last_lang) ? $location->last_lang : null;
+                $obj['last_long']=isset($location->last_long) ? $location->last_long : null;;
+                $obj['datetime']=isset($location->created_at) ? $location->created_at->format('d-M-Y, H:i') : '';
+
+                array_push($all_locations,$obj);
+            }
+            
+            return response()->json(["status" => true, "location" => $all_locations]);
         }catch(Exception $exp){
             dd($exp->getMessage());
             return response()->json(["status" => false, "message" => "something went wrong, try again."]);

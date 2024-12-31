@@ -54,6 +54,7 @@ Route::group(['namespace' => 'API', 'prefix' => 'v1', 'middleware' => ['cors', '
     Route::get("CloseCall", [AppUserController::class, "FinalTicketClose"]);
     Route::post('fcmtokenApp', [AppUserController::class, 'updateToken']);
     Route::get('markOnlineOffline', [AppUserController::class, 'markOnlineOffline']);
+    Route::get('GetProfile', [AppUserController::class, 'Profile']);
     /*end app controller*/
 
     Route::get('GetEngineerAttendance', [AttendanceController::class, 'GetEngineerAttendance']);

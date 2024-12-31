@@ -63,8 +63,9 @@ class AppUserController extends Controller
     public function markOnlineOffline(Request $request)
     {
         try {
+            
             User::where("id", $request->User_ID)->update(['isOnline' => 1]);
-            if(isset($request->last_long) && $request->last_long !=null){
+            if(isset($request->last_long) && $request->last_long !="undefined" && $request->last_long !=null){
                 LocationHistory::create([
                     'User_ID' => $request->User_ID,
                     'last_long' => $request->last_long,
@@ -192,7 +193,6 @@ class AppUserController extends Controller
 
 
     }
-
     public function UpdateProfile(Request $request)
     {
 
@@ -426,7 +426,7 @@ class AppUserController extends Controller
             }
             return response()->json(["success" => true, "message" => "", "product" => $productAll]);
         } catch (Illuminate\Database\QueryException $ex) {
-            return response()->json(["success" => false, "message" => $ex->errorInfo, "product" => $productAll]);
+            return response()->json(["success" => false, "message" => $ex->getMessage(), "product" => $productAll]);
         }
 
     }
@@ -443,7 +443,7 @@ class AppUserController extends Controller
             }
             return response()->json(["success" => true, "message" => "", "product" => $productAll]);
         } catch (Illuminate\Database\QueryException $ex) {
-            return response()->json(["success" => false, "message" => $ex->errorInfo, "product" => $productAll]);
+            return response()->json(["success" => false, "message" => $ex->getMessage(), "product" => $productAll]);
         }
 
     }
@@ -678,7 +678,7 @@ class AppUserController extends Controller
             }
             return response()->json(['success' => true, 'message' => "", "contracts" => $contracts]);
         } catch (Illuminate\Database\QueryException $ex) {
-            return response()->json(['success' => false, 'message' => $ex->errorInfo, "contracts" => $contracts]);
+            return response()->json(['success' => false, 'message' => $ex->getMessage(), "contracts" => $contracts]);
         }
     }
     function getProductName($id)
@@ -755,7 +755,7 @@ class AppUserController extends Controller
             }
 
         } catch (Illuminate\Database\QueryException $ex) {
-            return response()->json(['success' => false, 'message' => "Exception:" . $ex->errorInfo, "tickets" => []]);
+            return response()->json(['success' => false, 'message' => "Exception:" . $ex->getMessage(), "tickets" => []]);
         }
 
     }
@@ -889,6 +889,8 @@ class AppUserController extends Controller
                     'user_id' => "required",
                     'reason_id' => "required",
                     'action_description' => "required",
+                    'last_long'=>'required',
+                    'last_lang'=>'required'
                 ]
             );
 
@@ -901,6 +903,7 @@ class AppUserController extends Controller
             $actionId = $request->status_id;
             $note = $request->action_description;
             $serviceId = $request->service_id;
+            DB::beginTransaction();
 
             $create = ServiceHistory::create([
                 'service_id' => $serviceId,
@@ -917,9 +920,26 @@ class AppUserController extends Controller
                         'notification_flag' => 1
                     ]);
                 if ($update) {
-                    return response()->json(['success' => true, 'message' => 'action applied and status updated.']);
+                    try{
+                      $location =   LocationHistory::create([
+                            'User_ID' => $request->user_id,
+                            'last_long' => $request->last_long,
+                            'last_lang' => $request->last_lang,
+                            'full_address' => "",
+                            'area_code' => "",
+                        ]);
+                        if($location){
+                            DB::commit();
+                            return response()->json(['success' => true, 'message' => 'action applied and status updated.']);
+               
+
+                        }
+                    }catch(Exception $exp){
+                        DB::rollBack();
+                    }
+                    
                 } else {
-                    ServiceHistory::where('id', $create->id)->delete();
+                    DB::rollBack();
                     return response()->json(['success' => false, 'message' => 'action failed, try again!']);
                 }
 
@@ -927,7 +947,7 @@ class AppUserController extends Controller
                 return response()->json(['success' => false, 'message' => 'action failed, try again!']);
             }
 
-        } catch (Illuminate\Database\QueryException $ex) {
+        } catch (Exception $ex) {
             return response()->json(["success" => false, "message" => "action failed, try again!"]);
         }
 
@@ -996,12 +1016,13 @@ class AppUserController extends Controller
     {
 
         $serviceId = $id;
-        $dc_products = ServiceDcProduct::select("service_dc_product.*","products.*", "master_product_type.*", "service_dc_product.id as sdp", "service_dc_product.*", "products.*")
+        $dc_products = ServiceDcProduct::select("service_dc.*","service_dc_product.*","products.*", "master_product_type.*", "service_dc_product.id as sdp", "service_dc_product.*", "products.*")
             ->join("products", "products.Product_ID", "service_dc_product.product_id")
             ->leftJoin("master_product_type", "master_product_type.id", "products.Product_Type")
+            ->join("service_dc", "service_dc.id", "service_dc_product.dc_id")
             ->join("services", "services.id", "service_dc.service_id")
             ->where("service_dc.service_id", $id)->get();
-        
+        // dd($dc_products);
            
         return $dc_products;
 
@@ -1038,7 +1059,7 @@ class AppUserController extends Controller
             }
             return response()->json(['success' => true, 'message' => "", "tickets" => $services]);
         } catch (Exception $ex) {
-            return response()->json(['success' => false, 'message' => "Exception:" . $ex->errorInfo, "tickets" => []]);
+            return response()->json(['success' => false, 'message' => "Exception:" . $ex->getMessage(), "tickets" => []]);
         }
 
     }
@@ -1227,14 +1248,19 @@ class AppUserController extends Controller
             }
 
         } catch (Illuminate\Database\QueryException $ex) {
-            return response()->json(['success' => false, 'message' => "Exception:" . $ex->errorInfo]);
+            return response()->json(['success' => false, 'message' => "Exception:" . $ex->getMessage()]);
         }
     }
     public function Profile(Request $request)
     {
-        $id = $request->userId;
-        $user = User::where("id", $id)->first();
-        return [200, "user" => $user];
+        try{
+            $id = $request->userId;
+            $user = User::where("id", $id)->join("employees","employees.EMP_ID","users.id")->first();
+            return response()->json(['success' => true, "user"=>$user,'message' => "success"]);
+        }catch(Exception $exp){
+            return response()->json(['success' => false, 'message' => "Exception:" . $exp->getMessage()]);
+        }
+        
 
     }
 }

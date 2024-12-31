@@ -262,6 +262,8 @@ class EmployeeController extends Controller
                         "Access_Role" => $request->Access_Role
                     ]);
                     if ($employee_up) {
+                        $user_status->name =  $request->EMP_Name;
+                        $user_status->save();
                         $action = "Employee Updated, Name:" . $employee->EMP_Name . ",Email:" . $employee->EMP_Email;
                         $log = App(\App\Http\Controllers\LogController::class);
                         $log->SystemLog(null, $action);

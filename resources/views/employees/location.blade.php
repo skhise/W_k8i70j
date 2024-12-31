@@ -248,7 +248,7 @@
         $(document).on('click', ".fetch_location", function () {
                 getLocation();
         });
-        getLocation();
+        
         function showError(message) {
             Swal.fire({
                 title: 'Error!',
@@ -259,6 +259,9 @@
                 cancelButtonColor: '#3085d6',
             });
         }  
+        $(document).ready(function () {
+            getLocation();
+        });
     </script>
     @stop
 </x-app-layout>

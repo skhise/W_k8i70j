@@ -107,6 +107,7 @@ class ReportController extends Controller
             ->paginate(10);
         } catch (Exception $exp) {
         }
+
         if ($request->ajax()) {
             return view('reports.attendance.atten_pagination', compact('attendance', 'date_range'));
         }
@@ -304,6 +305,42 @@ class ReportController extends Controller
                 "sstatus" => ""
             ]
         );
+    }
+    public function cr_data(Request $request)
+    {
+        $contracts = null;
+        try {
+            $customer = $request->customer;
+            // dd($customer);
+            $status = $request->status;
+            $sstatus = $status;
+            $contracts = Contract::join("master_contract_type", "master_contract_type.id", "contracts.CNRT_Type")
+                ->join("master_site_type", "master_site_type.id", "contracts.CNRT_SiteType")
+                ->join("master_contract_status", "master_contract_status.id", "contracts.CNRT_Status")
+                ->leftJoin("clients", "clients.CST_ID", "contracts.CNRT_CustomerID")
+                ->leftJoin("master_site_area", "master_site_area.id", "contracts.CNRT_Site")
+                ->when($customer != 0, function ($query) use ($customer) {
+                    $query->where("CNRT_CustomerID", $customer);
+                })
+                ->when($status != 0 && $status != "", function ($query) use ($status) {
+                    $query->where("CNRT_Status", $status);
+                })
+                ->orderBy('contracts.updated_at', "DESC")
+                ->paginate(10);
+            // ->toSql();
+            // echo $contracts;
+            // die;
+        } catch (Exception $exp) {
+
+        }
+
+        $status = $this->status;
+        if ($request->ajax()) {
+            return view('reports.cr_pagination', compact('contracts', 'status'));
+        }
+        $clients = Client::all();
+        $status = ContractStatus::all();
+        return view('reports.contract', compact('contracts', 'status', "clients", "customer", "sstatus"));
     }
     public function crd_index(Request $request)
     {

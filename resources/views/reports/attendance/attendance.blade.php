@@ -13,6 +13,7 @@
                                 <div class="col-lg-3">
                                         <select id="employee" class="form-control select2">
                                             <option value="">Select Engineer</option>
+                                            <option value="">All</option>
                                             @foreach ($employees as $employee)
                                                 <option value="{{ $employee->EMP_ID }}"
                                                     {{ $employee->EMP_ID == $selected_employee ? 'selected' : '' }}>

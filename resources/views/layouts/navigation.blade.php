@@ -192,6 +192,8 @@
                             href="{{ route('quotation-report') }}">Quotation Report</a></li>
                     <li class="{{ Request::is('reports/logs') ? 'active' : '' }}"><a
                             class="nav-link" href="{{ route('logs') }}">Logs</a></li>
+                    <li class="{{ Request::is('reports/attendance') ? 'active' : '' }}"><a
+                            class="nav-link" href="{{ route('attendance') }}">Attendance</a></li>
                 </ul>
             </li>
             <li class="dropdown {{ Request::is('analysis/*') || Request::is('analysis') ? 'active' : '' }}">

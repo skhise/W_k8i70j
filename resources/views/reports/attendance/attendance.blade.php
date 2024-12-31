@@ -4,12 +4,22 @@
             <div class="section-body">
                 <div class="card">
                     <div class="card-header">
-                        <h4>System Logs</h4>
+                        <h4>Attendance Report</h4>
                     </div>
                     <div class="card-body">
                         <div class="form-horizontal">
                             <div class="form-group">
                                 <div class="row">
+                                <div class="col-lg-3">
+                                        <select id="employee" class="form-control select2">
+                                            <option value="">Select Engineer</option>
+                                            @foreach ($employees as $employee)
+                                                <option value="{{ $employee->EMP_ID }}"
+                                                    {{ $employee->EMP_ID == $selected_employee ? 'selected' : '' }}>
+                                                    {{ $employee->EMP_Name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                     <div class="col-lg-2">
                                         <select class="form-control select2" id="date-range">
                                             <option value="">Date Range</option>
@@ -31,16 +41,17 @@
                                 <hr />
                                 <div class="clearfix mb-3"></div>
                                 <div class="table-responsive">
-                                    <table class="table table-striped" id="contract-report">
+                                    <table class="table table-striped" id="attendance-report">
                                         <thead>
                                             <tr>
-                                                <th>User </th>
-                                                <th>Description </th>
-                                                <th>DateTime </th>
+                                                <th>Name </th>
+                                                <th>Date </th>
+                                                <th>In Time </th>
+                                                <th>Out Time </th>
                                             </tr>
                                         </thead>
                                         <tbody id="logsList">
-                                            @include('reports.log_pagination')
+                                            @include('reports.attendance.atten_pagination')
                                         </tbody>
                                     </table>
                                 </div>
@@ -57,11 +68,13 @@
             });
             $(document).on("click", ".btn-fetch-report", function() {
                 var date_range = $("#date-range option:selected").val();
+                var user_id = $("#employee option:selected").val();
                 $.ajax({
                         type: "GET",
-                        url: "logs_data",
+                        url: "atte_data",
                         data: {
                             date_range: date_range,
+                            user_id:user_id,
                         },
                         beforeSend: function() {
                             $(".loader").show();

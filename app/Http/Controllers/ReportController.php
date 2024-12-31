@@ -6,6 +6,7 @@ use App\Exports\ContractExport;
 use App\Exports\ServiceExport;
 use App\Exports\SweviceExport;
 use App\Exports\UsersExport;
+use App\Models\Attendance;
 use App\Models\Client;
 use App\Models\ContractScheduleService;
 use App\Models\ContractStatus;
@@ -61,6 +62,56 @@ class ReportController extends Controller
         "4" => '<div class="badge badge-danger badge-shadow">Deactivated</div>',
     ];
 
+    function Attendance(Request $request){
+
+        $todate = date("Y-m-d");
+        $fromdate = $todate;
+
+        $attendance = Attendance::select(["users.*", "attendance.*"])
+        ->join("users", "users.id", "attendance.User_ID")
+        ->whereBetween(DB::raw('DATE_FORMAT(attendance.created_at, "%Y-%m-%d")'), [$fromdate, $todate])
+        ->orderBy('attendance.id', 'desc')
+        ->paginate(10);
+        $employee = Employee::where(["EMP_Status"=>1,"Access_Role"=>4,'deleted_at'=>null])->get();
+        return view("reports.attendance.attendance", [
+            "employees"=>$employee,
+            "selected_employee"=>0,
+            "attendance" => $attendance,
+        ]);
+    }
+    public function Atte_Data(Request $request)
+    {
+        $attendance = null;
+        $date_range = $request->date_range;
+        $user_id = $request->user_id;
+        $today = date("Y-m-d");
+        $todate = date("Y-m-d");
+        $fromdate = date('Y-m-d', strtotime($todate . '-' . $date_range . ' days'));
+        $date_range = $date_range == "" ? 0 : $date_range;
+        if ($date_range == 0) {
+            $fromdate = $todate;
+        }
+        if ($date_range == 1) {
+            $todate = date('Y-m-d', strtotime($today . '-1 days'));
+            $fromdate = date('Y-m-d', strtotime($today . '-1 days'));
+        }
+       
+        try {
+            $attendance = Attendance::select(["users.*", "attendance.*"])
+            ->join("users", "users.id", "attendance.User_ID")
+            ->whereBetween(DB::raw('DATE_FORMAT(attendance.created_at, "%Y-%m-%d")'), [$fromdate, $todate])
+            ->when($user_id!="", function ($query) use ($user_id) {
+                $query->where("attendance.User_ID", $user_id);
+            })
+            ->orderBy('attendance.id', 'desc')
+            ->paginate(10);
+        } catch (Exception $exp) {
+        }
+        if ($request->ajax()) {
+            return view('reports.attendance.atten_pagination', compact('attendance', 'date_range'));
+        }
+        return view('reports.attendance.attendance', compact('attendance'));
+    }
     function Logs(Request $request){
 
         $todate = date("Y-m-d");

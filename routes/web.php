@@ -82,6 +82,9 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
         
         Route::get('/reports/logs', [ReportController::class, 'Logs'])->name('logs');
         Route::get('/reports/logs_data', [ReportController::class, 'Logs_Data'])->name('logs_data');
+
+        Route::get('/reports/attendance', [ReportController::class, 'Attendance'])->name('attendance');
+        Route::get('/reports/atte_data', [ReportController::class, 'Atte_Data'])->name('atte_data');
     });
 
     

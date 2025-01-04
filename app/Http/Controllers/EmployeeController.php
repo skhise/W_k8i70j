@@ -139,7 +139,7 @@ class EmployeeController extends Controller
         if ($request->ajax()) {
             return view('reports.location.location_pagination', compact('location', 'date_range'));
         }
-        return view('reports.location.attendance', compact('location'));
+        return view('reports.location.location', compact('location'));
     }
 
     public function DeleteUser($id)

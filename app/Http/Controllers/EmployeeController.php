@@ -117,6 +117,7 @@ class EmployeeController extends Controller
         $fromdate = date('Y-m-d', strtotime($todate . '-' . $date_range . ' days'));
         $date_range = $date_range == "" ? 0 : $date_range;
         $employee = Employee::where(["EMP_Status" => 1, "Access_Role" => 4, 'deleted_at' => null])->get();
+        $selected_employee = $user_id;
         if ($date_range == 0) {
             $fromdate = $todate;
         }

@@ -904,49 +904,53 @@ class AppUserController extends Controller
             $note = $request->action_description;
             $serviceId = $request->service_id;
             DB::beginTransaction();
-
-            $create = ServiceHistory::create([
-                'service_id' => $serviceId,
-                'status_id' => $actionId,
-                'user_id' => $engineerId,
-                'reason_id' => $reasonId,
-                'action_description' => $note,
-            ]);
-            if ($create) {
-                $update = Service::where("id", $serviceId)
-                    ->update([
-                        'service_status' => $actionId,
-                        'assigned_to' => $actionId == 8 ? 0 : $engineerId,
-                        'notification_flag' => 1
-                    ]);
-                if ($update) {
-                    try{
-                      $location =   LocationHistory::create([
-                            'User_ID' => $request->user_id,
-                            'last_long' => $request->last_long,
-                            'last_lang' => $request->last_lang,
-                            'full_address' => "",
-                            'area_code' => "",
+            if($request->last_long != "undefined" && $request->last_lang != "undefined"){
+                $create = ServiceHistory::create([
+                    'service_id' => $serviceId,
+                    'status_id' => $actionId,
+                    'user_id' => $engineerId,
+                    'reason_id' => $reasonId,
+                    'action_description' => $note,
+                ]);
+                if ($create) {
+                    $update = Service::where("id", $serviceId)
+                        ->update([
+                            'service_status' => $actionId,
+                            'assigned_to' => $actionId == 8 ? 0 : $engineerId,
+                            'notification_flag' => 1
                         ]);
-                        if($location){
-                            DB::commit();
-                            return response()->json(['success' => true, 'message' => 'action applied and status updated.']);
-               
-
+                    if ($update) {
+                        try{
+                          $location =   LocationHistory::create([
+                                'User_ID' => $request->user_id,
+                                'last_long' => $request->last_long,
+                                'last_lang' => $request->last_lang,
+                                'full_address' => "",
+                                'area_code' => "",
+                            ]);
+                            if($location){
+                                DB::commit();
+                                return response()->json(['success' => true, 'message' => 'action applied and status updated.']);
+                   
+    
+                            }
+                        }catch(Exception $exp){
+                            DB::rollBack();
+                            return response()->json(['success' => false, 'message' => 'action failed, try again!'.$exp->getMessage()]);
                         }
-                    }catch(Exception $exp){
+                        
+                    } else {
                         DB::rollBack();
-                        return response()->json(['success' => false, 'message' => 'action failed, try again!'.$exp->getMessage()]);
+                        return response()->json(['success' => false, 'message' => 'action failed, try again!']);
                     }
-                    
+    
                 } else {
-                    DB::rollBack();
                     return response()->json(['success' => false, 'message' => 'action failed, try again!']);
                 }
-
             } else {
-                return response()->json(['success' => false, 'message' => 'action failed, try again!']);
+                return response()->json(["success" => false, "message" => "action failed, try again!"]);
             }
+           
 
         } catch (Exception $ex) {
             return response()->json(["success" => false, "message" => "action failed, try again!"]);

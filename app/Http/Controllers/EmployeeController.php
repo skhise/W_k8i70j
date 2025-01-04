@@ -116,7 +116,7 @@ class EmployeeController extends Controller
         $todate = date("Y-m-d");
         $fromdate = date('Y-m-d', strtotime($todate . '-' . $date_range . ' days'));
         $date_range = $date_range == "" ? 0 : $date_range;
-        $employee = Employee::where(["EMP_Status" => 1, "Access_Role" => 4, 'deleted_at' => null])->get();
+        $employees = Employee::where(["EMP_Status" => 1, "Access_Role" => 4, 'deleted_at' => null])->get();
         $selected_employee = $user_id;
         if ($date_range == 0) {
             $fromdate = $todate;
@@ -141,7 +141,7 @@ class EmployeeController extends Controller
         if ($request->ajax()) {
             return view('reports.location.location_pagination', compact('location', 'date_range'));
         }
-        return view('reports.location.location', compact('location','selected_employee','employee'));
+        return view('reports.location.location', compact('location','selected_employee','employees'));
     }
 
     public function DeleteUser($id)

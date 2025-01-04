@@ -936,6 +936,7 @@ class AppUserController extends Controller
                         }
                     }catch(Exception $exp){
                         DB::rollBack();
+                        return response()->json(['success' => false, 'message' => 'action failed, try again!'.$exp->getMessage()]);
                     }
                     
                 } else {

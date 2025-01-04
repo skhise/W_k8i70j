@@ -294,7 +294,7 @@ class AttendanceController extends Controller
                 $attendance = Attendance::where("User_ID",$request->User_ID)
                         ->where("Att_Date",Carbon::parse($request->Att_Date)->format("Y-m-d"))->update([
                     'Att_Out'=>Carbon::Now(),//Carbon::parse($request->Att_Out)->format("Y-m-d h:i:s"),
-                    'Att_Out_Location'=>$request->Att_Out_Location,
+                    'Att_Out_Location'=>$request->Att_In_Location.",".$request->Att_Out_Location,
                 ]);
                 if($attendance){
                     return response()->json(['success' => true, 'message'=> 'Punch Marked',]); 
@@ -307,7 +307,7 @@ class AttendanceController extends Controller
                     'User_ID'=>$request->User_ID,
                     'Att_Date'=>Carbon::parse($request->Att_Date)->format("Y-m-d"),
                     'Att_In'=>Carbon::Now(), //Carbon::parse($request->Att_In)->format("Y-m-d h:i:s"),
-                    'Att_In_Location'=>$request->Att_In_Location,
+                    'Att_In_Location'=>$request->Att_In_Location.",".$request->Att_Out_Location,
                     'Att_Out'=>null,
                     'Att_Out_Location'=>null,
                 ]);

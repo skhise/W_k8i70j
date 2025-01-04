@@ -6,17 +6,33 @@
         }
 
         .custom-popup {
-            display: none;
             position: absolute;
-            background-color: rgba(0, 0, 0, 0.8);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border: 1px solid #ccc;
+            padding: 20px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            display: none; /* Initially hidden */
+            z-index: 1000;
+            }
+
+            .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: red;
             color: white;
-            padding: 10px;
-            border-radius: 5px;
-            font-size: 14px;
-            max-width: 200px;
-            z-index: 999;
-        }
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            }
+
     </style>
+    @php
+        $api_key = env('OPENCAGE_API_KEY');
+    @endphp
     <div class="main-content">
         <section class="section">
             <div class="section-body">
@@ -28,7 +44,7 @@
                             </div>
                             <div class="card-body">
                                 <div class="row">
-                                    <div class="col-lg-12">
+                                    <div class="col-lg-4">
                                         <div class="form-group">
                                             <label>Select Employee</label>
                                             <div class="d-flex">
@@ -49,7 +65,10 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-12">
-                                        <div id="popup" class="custom-popup"></div> <!-- Custom Popup -->
+                                    <div id="popup" class="custom-popup">
+                                    <button class="close-btn" onclick="closePopup()">x</button>
+                                    <div id="popupText"></div>
+                                    </div>
 
                                         <div id="map">
 
@@ -90,16 +109,17 @@
             // Add marker at the center location
 
             // Reverse geocode to get the address
-            geocodeLatLng(center.lat, center.lng,"","");
+            geocodeLatLng("", "","","");
 
 
         }
         function showPopup(event, position, address,name,datetime) {
             const popup = document.getElementById('popup');
             var details = "<b>Name:</b>"+name+"<br/><b>Date:</b>"+datetime+"<br/>"+address;
-            popup.innerHTML = details; // Update with dynamic data or custom message
+            // popup.innerHTML = details; // Update with dynamic data or custom message
             popup.style.display = 'block';
-
+            const popupText = document.getElementById('popupText');
+            popupText.innerHTML = details;
             // Convert the marker's LatLng to pixel coordinates on the map
             const projection = map.getProjection();
             const point = projection.fromLatLngToPoint(position);
@@ -113,7 +133,12 @@
             console.log('Mouse Position X:', mousePosX, 'Mouse Position Y:', mousePosY);
 
         }
-
+      
+            // Function to close the popup
+            function closePopup() {
+            const popup = document.getElementById('popup');
+            popup.style.display = 'none';
+            }
         // Hide the popup when mouse leaves the marker
         function hidePopup() {
             const popup = document.getElementById('popup');
@@ -140,7 +165,7 @@
                         });
 
                         google.maps.event.addListener(marker, 'mouseout', function () {
-                            hidePopup();
+                            // hidePopup();
                         });
 
                     }
@@ -148,7 +173,7 @@
             });
         }
     </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCuvDryGW3Khf9LjIpbxNc5tSv4jf3AjM0
+    <script src="https://maps.googleapis.com/maps/api/js?key={{$api_key}}
     &callback=initMap&libraries=places" async defer></script>
 
     <script>
@@ -170,7 +195,7 @@
 
             // Reinitialize the map
             map = new google.maps.Map(document.getElementById('map'), {
-                zoom: 10,
+                zoom: 20,
                 center: center,
             });
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AccessMaster;
+use App\Models\Attendance;
 use App\Models\Client;
 use App\Models\Designation;
 use App\Models\Generate;
@@ -88,6 +89,59 @@ class EmployeeController extends Controller
 
 
     }
+    function locationReport(Request $request)
+    {
+
+        $todate = date("Y-m-d");
+        $fromdate = $todate;
+
+        $location = LocationHistory::select(["users.*", "employee_location_history.*"])
+            ->join("users", "users.id", "employee_location_history.User_ID")
+            ->whereBetween(DB::raw('DATE_FORMAT(employee_location_history.created_at, "%Y-%m-%d")'), [$fromdate, $todate])
+            ->orderBy('employee_location_history.id', 'desc')
+            ->paginate(10);
+        $employee = Employee::where(["EMP_Status" => 1, "Access_Role" => 4, 'deleted_at' => null])->get();
+        return view("reports.location.location", [
+            "employees" => $employee,
+            "selected_employee" => 0,
+            "location" => $location,
+        ]);
+    }
+    public function Location_Data(Request $request)
+    {
+        $location = null;
+        $date_range = $request->date_range;
+        $user_id = $request->user_id;
+        $today = date("Y-m-d");
+        $todate = date("Y-m-d");
+        $fromdate = date('Y-m-d', strtotime($todate . '-' . $date_range . ' days'));
+        $date_range = $date_range == "" ? 0 : $date_range;
+        if ($date_range == 0) {
+            $fromdate = $todate;
+        }
+        if ($date_range == 1) {
+            $todate = date('Y-m-d', strtotime($today . '-1 days'));
+            $fromdate = date('Y-m-d', strtotime($today . '-1 days'));
+        }
+
+        try {
+            $location = LocationHistory::select(["users.*", "employee_location_history.*"])
+                ->join("users", "users.id", "employee_location_history.User_ID")
+                ->whereBetween(DB::raw('DATE_FORMAT(employee_location_history.created_at, "%Y-%m-%d")'), [$fromdate, $todate])
+                ->when($user_id != "", function ($query) use ($user_id) {
+                    $query->where("employee_location_history.User_ID", $user_id);
+                })
+                ->orderBy('employee_location_history.id', 'desc')
+                ->paginate(10);
+        } catch (Exception $exp) {
+        }
+        // dd($location);
+        if ($request->ajax()) {
+            return view('reports.location.location_pagination', compact('location', 'date_range'));
+        }
+        return view('reports.location.attendance', compact('location'));
+    }
+
     public function DeleteUser($id)
     {
         $isDelete = User::find($id)->delete();
@@ -102,7 +156,7 @@ class EmployeeController extends Controller
         // dd($request->status);
         $user = User::where("id", $request->userId);
         if ($user) {
-            $employee = Employee::where(["EMP_ID"=>$request->userId])->update(['EMP_Status' => $request->status]);
+            $employee = Employee::where(["EMP_ID" => $request->userId])->update(['EMP_Status' => $request->status]);
             $user->update(['status' => $request->status]);
             return true;
         } else {
@@ -146,14 +200,14 @@ class EmployeeController extends Controller
             'filter_status' => $request->filter_status ?? '',
             'filter_role' => $request->filter_role ?? '',
             "status" => $this->status,
-            'roles' => AccessMaster::where('use_status',1)->get(),
+            'roles' => AccessMaster::where('use_status', 1)->get(),
             'search' => $request->search ?? '',
             'employees' => Employee::join("master_designation", "master_designation.id", "employees.EMP_Designation")
                 ->join("users", "users.id", "employees.EMP_ID")
                 ->leftJoin("master_role_access", "master_role_access.id", "employees.Access_Role")
                 ->where("EMP_Status", 1)
                 ->orderBy("employees.EMP_ID", "DESC")
-                ->filter($request->only('search', 'trashed', 'search_field', 'filter_status','filter_role'))
+                ->filter($request->only('search', 'trashed', 'search_field', 'filter_status', 'filter_role'))
                 ->paginate(10)
                 ->withQueryString()
         ]);
@@ -176,7 +230,7 @@ class EmployeeController extends Controller
         // dd($contract->CNRT_EndDate);
         return view('employees.create', [
             'update' => true,
-            'roles' => AccessMaster::where('use_status',1)->get(),
+            'roles' => AccessMaster::where('use_status', 1)->get(),
             'designations' => Designation::all(),
             'employee' => $employee,
         ]);
@@ -184,45 +238,48 @@ class EmployeeController extends Controller
     public function location(Request $request)
     {
         // dd($contract->CNRT_EndDate);
-        $employees = Employee::where(['Access_Role'=>4])->get();
+        $employees = Employee::where(['Access_Role' => 4])->get();
         return view('employees.location', [
-            'employees'=>$employees
+            'employees' => $employees
         ]);
     }
-    public function getLocation($userId){
+    public function getLocation($userId)
+    {
 
-        try{
-            $location = LocationHistory::where('User_ID',$userId)->orderBy('id', 'desc')->first();
-            if(!empty($location)){
-                return response()->json(["status" => true, "location" => $location,"datetime"=>$location->created_at->format('d-M-Y, H:i')]);
-               
+        try {
+            $location = LocationHistory::where('User_ID', $userId)->orderBy('id', 'desc')->first();
+            if (!empty($location)) {
+                return response()->json(["status" => true, "location" => $location, "datetime" => $location->created_at->format('d-M-Y, H:i')]);
+
             }
-            return response()->json(["status" => true, "location" => null,"datetime"=>'']);
-       
-        }catch(Exception $exp){
+            return response()->json(["status" => true, "location" => null, "datetime" => '']);
+
+        } catch (Exception $exp) {
             return response()->json(["status" => false, "message" => "something went wrong, try again."]);
 
         }
 
     }
-    public function getLocationAll(){
+    public function getLocationAll()
+    {
 
-        try{
-            $employees = Employee::where(['Access_Role'=>4])->get();
+        try {
+            $employees = Employee::where(['Access_Role' => 4])->get();
             $all_locations = [];
-            foreach($employees as $employee){
+            foreach ($employees as $employee) {
 
                 $location = LocationHistory::where('User_ID', $employee->EMP_ID)->orderBy('id', 'desc')->first();
-                $obj['name']=$employee->EMP_Name;
-                $obj['last_lang']=isset($location->last_lang) ? $location->last_lang : null;
-                $obj['last_long']=isset($location->last_long) ? $location->last_long : null;;
-                $obj['datetime']=isset($location->created_at) ? $location->created_at->format('d-M-Y, H:i') : '';
+                $obj['name'] = $employee->EMP_Name;
+                $obj['last_lang'] = isset($location->last_lang) ? $location->last_lang : null;
+                $obj['last_long'] = isset($location->last_long) ? $location->last_long : null;
+                ;
+                $obj['datetime'] = isset($location->created_at) ? $location->created_at->format('d-M-Y, H:i') : '';
 
-                array_push($all_locations,$obj);
+                array_push($all_locations, $obj);
             }
-            
+
             return response()->json(["status" => true, "location" => $all_locations]);
-        }catch(Exception $exp){
+        } catch (Exception $exp) {
             dd($exp->getMessage());
             return response()->json(["status" => false, "message" => "something went wrong, try again."]);
 
@@ -262,7 +319,7 @@ class EmployeeController extends Controller
                         "Access_Role" => $request->Access_Role
                     ]);
                     if ($employee_up) {
-                        $user_status->name =  $request->EMP_Name;
+                        $user_status->name = $request->EMP_Name;
                         $user_status->save();
                         $action = "Employee Updated, Name:" . $employee->EMP_Name . ",Email:" . $employee->EMP_Email;
                         $log = App(\App\Http\Controllers\LogController::class);
@@ -300,10 +357,10 @@ class EmployeeController extends Controller
     {
 
 
-        
+
         return view('employees.create', [
             'update' => false,
-            'roles' => AccessMaster::where('use_status',1)->get(),
+            'roles' => AccessMaster::where('use_status', 1)->get(),
             'designations' => Designation::all(),
             'employee' => new Employee(),
         ]);

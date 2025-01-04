@@ -61,16 +61,16 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
 
         Route::get('/reports/contract-due-report', [ReportController::class, 'crd_index'])->name('contract-due-report');
         Route::get('/reports/contract-due-report-data', [ReportController::class, 'crd_data'])->name('contract-due-report-data');
-        
+
 
         Route::get('/reports/service-ticket-report', [ReportController::class, 'str_index'])->name('service-ticket-report');
         Route::get('/reports/service-ticket-report-data', [ReportController::class, 'GetServiceCallReport'])->name('service-ticket-report-data');
-        
+
         Route::get('/reports/service-status-report', [ReportController::class, 'strs_index'])->name('service-status-report');
         Route::get('/reports/service-status-report-data', [ReportController::class, 'GetServiceCallReportStatus'])->name('service-status-report-data');
-        
+
         Route::get('/reports/engineer-report', [ReportController::class, 'etr_index'])->name('engineer-report');
-        
+
         Route::get('/reports/engineer-ticket-report-data', [ReportController::class, 'GetEngineerCallReport'])->name('engineer-ticket-report-data');
 
         Route::get('/analysis/contract-service-report-data', [ReportController::class, 'csr_data'])->name('contract-service-report-data');
@@ -79,15 +79,15 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
 
         Route::get('/analysis/engineer-service-analysis', [ReportController::class, 'easr_index'])->name('engineer-service-analysis');
         Route::get('/analysis/GetEngineerAnalysisReport', [ReportController::class, 'GetEngineerAnalysisReport'])->name('GetEngineerAnalysisReport');
-        
+
         Route::get('/reports/logs', [ReportController::class, 'Logs'])->name('logs');
         Route::get('/reports/logs_data', [ReportController::class, 'Logs_Data'])->name('logs_data');
 
-        Route::get('/reports/attendance', [ReportController::class, 'Attendance'])->name('attendance');
-        Route::get('/reports/atte_data', [ReportController::class, 'Atte_Data'])->name('atte_data');
+        Route::get('/attendance', [ReportController::class, 'Attendance'])->name('attendance');
+        Route::get('/atte_data', [ReportController::class, 'Atte_Data'])->name('atte_data');
     });
 
-    
+
     /*Clients Route*/
     Route::middleware('auth')->group(function () {
         Route::get('/clients', [ClientController::class, 'index'])->name('clients');
@@ -228,20 +228,20 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
     Route::middleware('auth')->group(function () {
         Route::get('/employees', [EmployeeController::class, 'index'])->name('employees');
         Route::get('employee/{employee}/view', [EmployeeController::class, 'view'])
-        ->name('employees.view');
+            ->name('employees.view');
         Route::post('employees.status_change', [EmployeeController::class, 'StatusChange'])
-        ->name('employees.status_change');
+            ->name('employees.status_change');
 
     });
     ;
 
-    Route::middleware(['auth','validate'])->group(function () {
-       
+    Route::middleware(['auth', 'validate'])->group(function () {
+
         Route::post('employees.store', [EmployeeController::class, 'store'])
-        ->name('employees.store');
+            ->name('employees.store');
         Route::get('/employee/create', [EmployeeController::class, 'create'])
-        ->name('employees.create');
-       
+            ->name('employees.create');
+
     });
     Route::middleware('auth')->group(function () {
         Route::get('/products', [ProductController::class, 'index'])->name("products");
@@ -256,18 +256,23 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
         Route::get('/products/{productSerialNumber}/sr/delete', [ProductController::class, 'DeleteProductSrNo'])->name("product_srno.delete");
         Route::post('/products/{product}/add-sn', [ProductController::class, 'AddProductSrNo'])->name("products.add-sn");
     });
-    
-   
+
+
     Route::middleware('auth')->group(function () {
         Route::get('employees/{employee}/edit', [EmployeeController::class, 'edit'])
-        ->name('employees.edit');
-        
-        Route::get('employees/location', [EmployeeController::class, 'location'])
-        ->name('location');
-    Route::get('employees/getlocation/{userId}', [EmployeeController::class, 'getlocation'])
-        ->name('getlocation');
-    Route::get('employees/location-all', [EmployeeController::class, 'getLocationAll'])
-        ->name('location-all');
+            ->name('employees.edit');
+
+        Route::get('location', [EmployeeController::class, 'location'])
+            ->name('location');
+        Route::get('location-report', [EmployeeController::class, 'locationReport'])
+            ->name('location-report');
+        Route::get('location-data', [EmployeeController::class, 'Location_Data'])
+            ->name('location-data');
+        Route::get('getlocation/{userId}', [EmployeeController::class, 'getlocation'])
+            ->name('getlocation');
+        Route::get('location-all', [EmployeeController::class, 'getLocationAll'])
+            ->name('location-all');
+
         Route::post('/employees/{employee}', [EmployeeController::class, 'update'])->name('employees.update');
         Route::get('/employees/{employee}/delete', [EmployeeController::class, 'deleteEmp'])->name('employees.delete');
         Route::post('/employees/{employee}/password', [EmployeeController::class, 'ResetPassword'])->name('employees.setpassword');

@@ -37,4 +37,6 @@ return [
         'drive_scope' => 'https://www.googleapis.com/auth/drive',
         'refresh_token' => env('GOOGLE_REFRESH_TOKEN'),
     ],
+    'database_api_key'=>env('OPENCAGE_API_KEY')
 ];
+

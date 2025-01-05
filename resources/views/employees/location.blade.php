@@ -31,7 +31,7 @@
 
     </style>
     @php
-        $api_key = env('OPENCAGE_API_KEY');
+        $api_key = config('services.database_api_key');
     @endphp
     <div class="main-content">
         <section class="section">

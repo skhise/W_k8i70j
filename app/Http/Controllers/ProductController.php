@@ -409,10 +409,10 @@ class ProductController extends Controller
         );
 
         if ($validator->fails()) {
-            return back()
-                ->withInput()
-                ->withErrors($validator->messages());
-            // return response()->json(["success" => false, "message" => "all * marked fields required.", "validation_error" => $validator->errors()]);
+            // return back()
+            //     ->withInput()
+            //     ->withErrors($validator->messages());
+            return response()->json(["success" => false, "message" => "all * marked fields required.", "validation_error" => $validator->errors()]);
         }
         $product = Product::where("Product_ID", $product->Product_ID)->update([
             'Product_Name' => $request->Product_Name,
@@ -421,13 +421,13 @@ class ProductController extends Controller
             'Product_Type' => $request->Product_Type
         ]);
         if ($product) {
-            return Redirect("products")->with("success", "Product Updated!");
-            // return response()->json(["success" => true, "message" => "Product Updated."]);
+            // return back()->with("success", "Product Updated!");
+            return response()->json(["success" => true, "message" => "Product Updated."]);
         } else {
-            return back()
-                ->withInput()
-                ->withErrors("Action failed, Try again.");
-            // return response()->json(["success" => false, "message" => "Action failed, Try again."]);
+            // return back()
+            //     ->withInput()
+            //     ->withErrors("Action failed, Try again.");
+            return response()->json(["success" => false, "message" => "Action failed, Try again."]);
         }
     }
     public function upload(Request $request, Product $product)

@@ -173,7 +173,7 @@
                                                 <input type="button" id="btnAddProduct"
                                                     value="{{$update ? 'Update' : 'Save'}}" class="btn btn-primary">
                                                 <a type="button" class="btn btn-danger"
-                                                    href="{{route('clients')}}">Back</a>
+                                                    href="{{route('products')}}">Back</a>
                                             </div>
                                         </div>
                     </form> 

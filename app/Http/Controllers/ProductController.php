@@ -412,6 +412,8 @@ class ProductController extends Controller
             // return back()
             //     ->withInput()
             //     ->withErrors($validator->messages());
+            Session::flash("error", "all * marked fields required.");
+
             return response()->json(["success" => false, "message" => "all * marked fields required.", "validation_error" => $validator->errors()]);
         }
         $product = Product::where("Product_ID", $product->Product_ID)->update([
@@ -422,11 +424,13 @@ class ProductController extends Controller
         ]);
         if ($product) {
             // return back()->with("success", "Product Updated!");
+            Session::flash("success", "Product Updated.");
             return response()->json(["success" => true, "message" => "Product Updated."]);
         } else {
             // return back()
             //     ->withInput()
             //     ->withErrors("Action failed, Try again.");
+            Session::flash("error", "Action failed, Try again.");
             return response()->json(["success" => false, "message" => "Action failed, Try again."]);
         }
     }

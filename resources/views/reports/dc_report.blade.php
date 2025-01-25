@@ -49,7 +49,7 @@
                                                     <div class="d-flex mt-4">
                                                         <button class="action-btn onchange btn btn-primary"
                                                             type="button">Generate</button>
-                                                        <button class="action-btn btn-light export-to-excel btn"
+                                                        <button class="action-btn btn-light btn-dc-export btn"
                                                             type="button">Export</button>
                                                     </div>
 
@@ -113,6 +113,55 @@
     </div>
     @section('script')
         <script>
+            $(document).on("click", ".btn-dc-export", function() {
+                var cust_id = $("#customer_id option:selected").val();
+                var cust_Name = $("#customer_id option:selected").text();
+                var type = $("#type option:selected").val();
+                $.ajax({
+                        type: "GET",
+                        url: "dec-report-export",
+                        data: {
+                            customer: cust_id,
+                            type:type
+                        },
+                        beforeSend: function() {
+                            $(".loader").show();
+                        },
+                        success: function(result, status, xhr) {
+                            console.log(result);
+                            $(".loader").hide();
+                            var disposition = xhr.getResponseHeader('content-disposition');
+                            var matches = /"([^"]*)"/.exec(disposition);
+                            var timestamp = new Date().toISOString().replace(/[:\-T]/g, '').slice(0, 15);
+
+                            var filename = (matches != null && matches[1] ? matches[1] : `dc_report_${timestamp}.csv`);
+
+                            // The actual download
+                            var blob = new Blob([result], {
+                                type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                            });
+                            var link = document.createElement('a');
+                            link.href = window.URL.createObjectURL(blob);
+                            link.download = filename;
+
+                            document.body.appendChild(link);
+
+                            link.click();
+                            document.body.removeChild(link);
+                        },
+                        error: function(error) {
+                            $(".loader").hide();
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'Something went wrong, try again',
+                                dangerMode: true,
+                                icon: 'warning',
+                                confirmButtonColor: '#d33',
+                                cancelButtonColor: '#3085d6',
+                            });
+                        }
+                    });
+            });
             $(".onchange").on("click", function() {
                 $("#dc_filter")[0].submit();
             });

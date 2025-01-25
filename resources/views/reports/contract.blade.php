@@ -144,7 +144,9 @@
                             $(".loader").hide();
                             var disposition = xhr.getResponseHeader('content-disposition');
                             var matches = /"([^"]*)"/.exec(disposition);
-                            var filename = (matches != null && matches[1] ? matches[1] : 'salary.csv');
+                            var timestamp = new Date().toISOString().replace(/[:\-T]/g, '').slice(0, 15);
+
+                            var filename = (matches != null && matches[1] ? matches[1] : `contract_report_${timestamp}.csv`);
 
                             // The actual download
                             var blob = new Blob([result], {

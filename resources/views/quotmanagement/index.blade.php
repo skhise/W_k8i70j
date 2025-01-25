@@ -21,6 +21,7 @@ fas fa-plus-square"></i>
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-lg-12">
+                                        <button type="submit" class="btn-quot-export btn btn-info ml-2 p-2">Export</button>
                                         <form action="{{ route('quotmanagements') }}" id="quotation_filter">
                                             <input type="hidden" name="search_field" value="{{ $search_field }}"
                                                 id="search_field" />
@@ -55,7 +56,7 @@ fas fa-plus-square"></i>
                                                             </select>
                                                             <br />
                                                             <select class="mt-2 select2 filter_values"
-                                                                name="quot_status" id="quot_status">
+                                                                name="quot_type" id="quot_type">
                                                                 <option value="">Quotation Type</option>
                                                                 @foreach ($quotationType as $qtype)
                                                                     <option value="{{ $qtype->CST_ID }}"
@@ -146,6 +147,57 @@ fas fa-plus-square"></i>
     </div>
     @section('script')
         <script>
+            $(document).on("click", ".btn-quot-export", function() {
+                var cust_id = $("#customer_id option:selected").val();
+                var cust_Name = $("#customer_id option:selected").text();
+                var status = $("#quot_status option:selected").val();
+                var quot_type = $("#quot_type option:selected").val();
+                $.ajax({
+                        type: "GET",
+                        url: "reports/quot-report-export",
+                        data: {
+                            status: status,
+                            customer: cust_id,
+                            quot_type:quot_type
+                        },
+                        beforeSend: function() {
+                            $(".loader").show();
+                        },
+                        success: function(result, status, xhr) {
+                            console.log(result);
+                            $(".loader").hide();
+                            var disposition = xhr.getResponseHeader('content-disposition');
+                            var matches = /"([^"]*)"/.exec(disposition);
+                            var timestamp = new Date().toISOString().replace(/[:\-T]/g, '').slice(0, 15);
+
+                            var filename = (matches != null && matches[1] ? matches[1] : `quot_report_${timestamp}.csv`);
+
+                            // The actual download
+                            var blob = new Blob([result], {
+                                type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                            });
+                            var link = document.createElement('a');
+                            link.href = window.URL.createObjectURL(blob);
+                            link.download = filename;
+
+                            document.body.appendChild(link);
+
+                            link.click();
+                            document.body.removeChild(link);
+                        },
+                        error: function(error) {
+                            $(".loader").hide();
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'Something went wrong, try again',
+                                dangerMode: true,
+                                icon: 'warning',
+                                confirmButtonColor: '#d33',
+                                cancelButtonColor: '#3085d6',
+                            });
+                        }
+                    });
+            });
             $(".filter_values").on("change", function() {
                 $("#quotation_filter")[0].submit();
             });

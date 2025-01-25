@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Exports\ContractExport;
+use App\Exports\DcExport;
+use App\Exports\QuotExport;
 use App\Exports\ServiceExport;
 use App\Exports\SweviceExport;
 use App\Exports\UsersExport;
@@ -182,6 +184,37 @@ class ReportController extends Controller
             'type' => DcType::all()
         ]);
     }
+    function dc_export(Request $request)
+    {
+        $dc_products = ServiceDc::select(["contracts.*","dc_type.*", "clients.*", "services.*", "service_dc.id as dcp_id", "service_dc.*"])
+            ->join("services", "services.id", "service_dc.service_id")
+            ->leftJoin("dc_type", "dc_type.id", "service_dc.dc_type")
+            ->leftJoin("clients", "clients.CST_ID", "services.customer_id")
+            ->leftJoin("contracts", "contracts.CNRT_ID", "services.contract_id")
+            ->when(isset($request->customer_id), function ($query) use ($request) {
+                $query->where("services.customer_id", $request->customer_id);
+            })
+            ->when(isset($request->type), function ($query) use ($request) {
+                $query->where("service_dc.dc_type", $request->type);
+            })
+            ->paginate(10)
+            ->withQueryString();
+            $items = $dc_products->map(function ($quot) {
+                return [
+                    'client_name' => $quot->CST_Name, // Replace with actual field or accessor
+                    'contract_no' => $quot->CNRT_Number, // Replace with actual field or accessor
+                    'service_no' => $quot->service_no, // Replace with actual field or accessor
+                    'total_qty' => $quot->totalProduct($quot->dcp_id), // Custom accessor or method
+                    'total_amount' => $quot->dc_amount, // Custom accessor or method
+                    'issue_date' => $quot->issue_date, // Custom accessor or method
+                    'type' => $quot->dc_type_name, // Example field
+                ];
+            })->toArray();
+
+        $fileName = 'report_file' . time() . '.csv';
+
+        return Excel::download(new DcExport($items), $fileName)->deleteFileAfterSend(true);
+    }
     function quotation_index(Request $request)
     {
         $service_quots = Quotation::select(["master_quotation_status.*", "master_quotation_type.*", "clients.*", "quotation.id as dcp_id", "quotation.*"])
@@ -229,7 +262,7 @@ class ReportController extends Controller
             ->when($status != 0 && $status != "", function ($query) use ($status) {
                 $query->where("CNRT_Status", $status);
             })
-            ->orderBy('contracts.updated_at', "DESC")->get(['CNRT_Number', "contract_type_name", "CST_Name", "SiteAreaName", "CNRT_Charges", "CNRT_Charges_Paid", "CNRT_Charges_Pending", "CNRT_StartDate", "CNRT_EndDate", "contract_status_name"]);
+            ->orderBy('contracts.updated_at', "DESC")->get(['CNRT_Number', "contract_type_name", "CST_Name","CNRT_RefNumber", "SiteAreaName", "CNRT_Charges", "CNRT_Charges_Paid", "CNRT_Charges_Pending", "CNRT_StartDate", "CNRT_EndDate", "contract_status_name"]);
         $items[] = $contracts;
 
         $fileName = 'report_file' . time() . '.csv';

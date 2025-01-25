@@ -7,7 +7,7 @@ use Maatwebsite\Excel\Concerns\FromQuery;
 use App\Models\Contract;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class ContractExport implements FromArray, WithHeadings
+class DcExport implements FromArray, WithHeadings
 {
     use Exportable;
 
@@ -18,17 +18,13 @@ class ContractExport implements FromArray, WithHeadings
     public function headings(): array
     {
         return [
-            "Contract No.",
-            "Contract Type",
-            "Customer Name",
-            'Ref. Name',
-            "Site",
-            "AMC Charges",
-            "Payment Received",
-            "Payment Pending",
-            "Start Date",
-            "Expiry Date",
-            "Status"
+            "Client Name",
+            'Contract No.',
+            'Service No.',
+            'Total QTY',
+            "Total Amount",
+            "Issue Date",
+            "Type"
 
         ];
     }

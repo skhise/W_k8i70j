@@ -53,12 +53,12 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
         Route::get('/reports/contract-report-export', [ReportController::class, 'cr_export'])->name('contract-report-export');
         Route::get('/reports/service-report-export', [ReportController::class, 'sr_export'])->name('service-report-export');
         Route::get('/reports/engineer-report-export', [ReportController::class, 'engineer_export'])->name('engineer-report-export');
-        Route::get('/reports/quot-report-export', [ReportController::class, 'quot_export'])->name('quot-report-export');
-        Route::get('/reports/dec-report-export', [ReportController::class, 'dc_export'])->name('dc-report-export');
+         Route::get('/reports/dec-report-export', [ReportController::class, 'dc_export'])->name('dc-report-export');
         Route::get('/analysis/contract-service-report', [ReportController::class, 'csr_index'])->name('contract-service-report');
         Route::get('/reports/dc-report', [ReportController::class, 'dc_index'])->name('dc-report');
         Route::get('/reports/quotation-report', [ReportController::class, 'quotation_index'])->name('quotation-report');
-
+        Route::get('/reports/quot-report-export', [QuotationController::class, 'quot_export'])->name('quot-report-export');
+       
         Route::get('/reports/contract-due-report', [ReportController::class, 'crd_index'])->name('contract-due-report');
         Route::get('/reports/contract-due-report-data', [ReportController::class, 'crd_data'])->name('contract-due-report-data');
 

@@ -127,7 +127,59 @@
         </section>
     </div>
     @section('script')
+    
         <script>
+            $(document).on("click", ".export-to-excel", function() {
+                var cust_id = $("#customer_id option:selected").val();
+                var cust_Name = $("#customer_id option:selected").text();
+                var status = $("#status option:selected").val();
+                var quot_type = $("#type option:selected").val();
+                $.ajax({
+                        type: "GET",
+                        url: "quot-report-export",
+                        data: {
+                            status: status,
+                            customer: cust_id,
+                            quot_type:quot_type
+                        },
+                        beforeSend: function() {
+                            $(".loader").show();
+                        },
+                        success: function(result, status, xhr) {
+                            console.log(result);
+                            $(".loader").hide();
+                            var disposition = xhr.getResponseHeader('content-disposition');
+                            var matches = /"([^"]*)"/.exec(disposition);
+                            var timestamp = new Date().toISOString().replace(/[:\-T]/g, '').slice(0, 15);
+
+                            var filename = (matches != null && matches[1] ? matches[1] : `quot_report_${timestamp}.csv`);
+
+                            // The actual download
+                            var blob = new Blob([result], {
+                                type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                            });
+                            var link = document.createElement('a');
+                            link.href = window.URL.createObjectURL(blob);
+                            link.download = filename;
+
+                            document.body.appendChild(link);
+
+                            link.click();
+                            document.body.removeChild(link);
+                        },
+                        error: function(error) {
+                            $(".loader").hide();
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'Something went wrong, try again',
+                                dangerMode: true,
+                                icon: 'warning',
+                                confirmButtonColor: '#d33',
+                                cancelButtonColor: '#3085d6',
+                            });
+                        }
+                    });
+            });
             $(".onchange").on("click", function() {
                 $("#quotation_filter")[0].submit();
             });

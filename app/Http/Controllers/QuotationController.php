@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Exports\QuotExport;
 use App\Http\Controllers\Controller;
 use App\Models\Client;
 use App\Models\DcType;
@@ -11,7 +12,7 @@ use App\Models\QuotationProduct;
 use App\Models\QuotationStatus;
 use App\Models\QuotationType;
 use Illuminate\Support\Facades\Auth;
-
+use Maatwebsite\Excel\Facades\Excel;
 use App\Models\ServiceQuotation;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -61,6 +62,38 @@ class QuotationController extends Controller
             ]
         );
     }
+    public function quot_export(Request $request)
+    {
+
+        $service_quots = Quotation::select(["master_quotation_status.*","quotation_type.*", "clients.*", "quotation.id as dcp_id", "quotation.*"])
+            ->leftJoin("quotation_type", "quotation_type.id", "quotation.quot_type")
+            ->leftJoin("master_quotation_status", "master_quotation_status.id", "quotation.quot_status")
+            ->leftJoin("clients", "clients.CST_ID", "quotation.customer_id")
+            ->when(isset($request->customer_id), callback: function ($query) use ($request) {
+                $query->where("quotation.customer_id", $request->customer_id);
+            })
+            ->when(isset($request->quot_type), function ($query) use ($request) {
+                $query->where("quotation.quot_type", $request->quot_type);
+            })
+            ->when(isset($request->quot_status), function ($query) use ($request) {
+                $query->where("quotation.quot_status", $request->quot_status);
+            })->get();
+            $items = $service_quots->map(function ($quot) {
+                return [
+                    'date' => $quot->created_at->format('Y-m-d'), // Example field
+                    'client_name' => $quot->CST_Name, // Replace with actual field or accessor
+                    'total_qty' => $quot->totalProduct($quot->dcp_id), // Custom accessor or method
+                    'total_amount' => $quot->totalAmount($quot->dcp_id), // Custom accessor or method
+                    'status' => $quot->status_name, // Example field
+                ];
+            })->toArray();
+
+        $fileName = 'report_file' . time() . '.csv';
+
+        return Excel::download(new QuotExport($items), $fileName)->deleteFileAfterSend(true);
+        
+    }
+
     public function create(Request $request)
     {
         $product_types = ProductType::all();

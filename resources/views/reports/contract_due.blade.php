@@ -108,16 +108,14 @@
                 }
             });
             $(document).on("click", ".btn-export-report", function() {
-                var cust_id = $("#client option:selected").val();
-                var cust_Name = $("#client option:selected").text();
-                var status = $("#report_contract_status option:selected").val();
+                var duein = $("#duein-range option:selected").val();
+
                 if (cust_id != "" && status != "") {
                     $.ajax({
                         type: "GET",
-                        url: "contract-report-export",
+                        url: "contract-due-report-export",
                         data: {
-                            status: status,
-                            customer: cust_id
+                             duein: duein,
                         },
                         beforeSend: function() {
                             $(".loader").show();

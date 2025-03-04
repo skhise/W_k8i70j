@@ -16,6 +16,7 @@ class ServiceHistory extends Model
         'user_id',
         'sub_status_id',
         'action_description',
+        'created_at',
     ];
 
     public function service()

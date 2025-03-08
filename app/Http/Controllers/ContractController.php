@@ -1086,8 +1086,22 @@ class ContractController extends Controller
             ->where("CNRT_Status", $status)->count();
         return $contrcats;
     }
+    public function ChangeContractStatus(){
+        $contrcats = Contract::leftJoin("master_contract_type", "master_contract_type.id", "contracts.CNRT_Type")
+        ->leftJoin("master_site_type", "master_site_type.id", "contracts.CNRT_SiteType")
+        ->leftJoin("master_contract_status", "master_contract_status.id", "contracts.CNRT_Status")
+        ->leftJoin("clients", "clients.CST_ID", "contracts.CNRT_CustomerID")
+        ->leftJoin("master_site_area", "master_site_area.id", "contracts.CNRT_Site")
+        ->orderBy('contracts.updated_at', "DESC")
+        ->where("CNRT_Status", "!=", 0)
+        ->get();
+        foreach($contrcats as $contrcat){
+            $this->UpdateContractStatus($contrcat->CNRT_EndDate, $contrcat->CNRT_ID);
+        } 
+    }
     public function index(Request $request)
     {
+        $this->ChangeContractStatus();
         $filter_site_type = $request->filter_site_type ?? "";
         $filter_status_type = $request->filter_status_type ?? "";
         $filter_contract_type = $request->filter_contract_type ?? "";
@@ -1114,7 +1128,7 @@ class ContractController extends Controller
         $expired = $this->contract_status_count(3);
         $renewal = $this->contract_status_count(2);
         $active = $this->contract_status_count(1);
-
+           
         return view("contracts.index", [
             'filters' => $request->all('search', 'trashed', 'search_field', 'filter_status'),
             'search_field' => $request->search_field ?? '',
@@ -1336,12 +1350,14 @@ class ContractController extends Controller
     {
 
         try {
+           
             $today = date('Y-m-d H:i:s');
             $account_setting = Account_Setting::where("id", 1)->first();
             $renewalAlertDays = $account_setting->renewal_days;
             $from_date = Carbon::parse(date('Y-m-d', strtotime($EndDate)));
             $through_date = Carbon::parse(date('Y-m-d', strtotime($today)));
             $days_difference = $through_date->diffInDays($from_date);
+           
             if ($from_date <= $through_date) {
                 Contract::where("CNRT_ID", $ContractId)->update(['CNRT_Status' => 3]);
             } else if ($days_difference <= $renewalAlertDays) {

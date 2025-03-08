@@ -60,7 +60,7 @@
                                                     <select
                                                         class="form-control text-box single-line @error('Product_Type') is-invalid @enderror"
                                                         name="Product_Type" id="Product_Type">
-                                                        <option "">Select Type</option>
+                                                        <option value="">Select Type</option>
                                                         @foreach($product_types as $product_type)
                                                         <option value="{{$product_type->id}}" {{$product_type->id ==
         old('Product_Type') ? 'selected' :
@@ -96,30 +96,7 @@
 
                                             </div>
                                         </div>
-
-                                        @if(!$update)
-                                        <div class="form-group">
-                                            <div class="row">
-                                                <div class="col-md-2">
-                                                    <span style="float:right ;font-weight:bold">Product Image</span>
-                                                </div>
-                                                <div class="col-md-4 floating-label">
-                                                    <input
-                                                        class="form-control text-box single-line @error('Image_Path') is-invalid @enderror"
-                                                        data-val="true" id="Image_Path" name="Image_Path" placeholder=""
-                                                        required="required" type="file"
-                                                        accept="image/png, image/jpeg,, image/jpg"
-                                                        value="{{old('Image_Path') ?? $product->Image_Path}}" />
-                                                    @if($errors->has('Image_Path'))
-                                                    <span class="text-danger field-validation-valid"
-                                                        data-valmsg-for="Image_Path" data-valmsg-replace="true">{{
-            $errors->first('Image_Path') }}</span>
-
-                                                    @endif
-                                                </div>
-                                            </div>
-                                        </div>
-                                        @endif
+                                        
                                         <div class="form-group">
                                             <div class="row">
                                                 <div class="col-md-2">

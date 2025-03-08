@@ -152,12 +152,10 @@ class ClientController extends Controller
             [
                 "CST_Name" => "required",
                 "CCP_Mobile" => "required",
-                "CCP_Email" => "required",
             ],
             [
                 'CST_Name.required' => 'Contact person name required!',
                 'CCP_Mobile.required' => 'Contact person mobile required!',
-                'CCP_Email.required' => 'Contact email required!',
 
             ]
         );

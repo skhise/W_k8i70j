@@ -36,7 +36,7 @@
                             @foreach ($products as $index => $product)
                                 <tr>
                                     <td>
-                                        {{ $index + 1 }}
+                                        {{ $index + 2 }}
                                     </td>
                                     <td>
                                         {{ $product->product_name }}

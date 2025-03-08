@@ -88,8 +88,8 @@ $prefixs=[
                                                                     </p>
                                                                     <hr>
                                                                     <strong><i
-                                                                            class="fa fa-map-marker margin-r-5"></i>&nbsp;&nbsp;Projekt
-                                                                        Typ</strong>
+                                                                            class="fa fa-map-marker margin-r-5"></i>&nbsp;&nbsp;Project
+                                                                        Type</strong>
                                                                     <p class="text-muted">{{$type}}</p>
                                                                     <hr>
                                                                     <strong>

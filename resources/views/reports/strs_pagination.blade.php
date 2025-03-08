@@ -11,7 +11,6 @@
             <td>{{ $service->contract_id == 0 ? 'Non-Contracted' : 'Contracted' }}</td>
             <td>{{ $service->CNRT_Number }}</td>
             <td>{{ $service->CST_Name }}</td>
-              <td>{{ $service->nrnumber ??  $service->product_sn }} / {{$service->product_name }}</td>
             <td>{{ $service->type_name }}</td>
             <td>{{ $service->issue_name }}</td>
             <td>{{ $service->service_note }}</td>

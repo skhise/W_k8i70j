@@ -95,7 +95,7 @@ fas fa-plus-square"></i>
                                                     <a href="{{route('client.edit', $client['id'])}}"
                                                         class="action-btn btn btn-sm btn-primary"><i
                                                             class="far fa-edit"></i></a>
-                                                    <a href="{{route('client.delete', $client['id'])}}" class="delete-btn action-btn btn btn-sm btn-danger"><i
+                                                    <a href="{{route('client.delete', parameters: $client['id'])}}" class="delete-btn action-btn btn btn-sm btn-danger"><i
                                                                                     class="fa fa-trash"></i></a>    
                                                     </div>
                                                    

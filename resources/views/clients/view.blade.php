@@ -8,6 +8,7 @@ $status = [
     "5" => '<div class="badge badge-warning badge-shadow">Archiv</div>',
 ];
 $add_cp_url = "{{route('clients.view',$client->id)}}";
+$dele_cp_url = route('client.delete',$client);
 ?>
 
 <x-app-layout>
@@ -19,6 +20,12 @@ $add_cp_url = "{{route('clients.view',$client->id)}}";
                         <div class="card">
                             <div class="card-header">
                                 <h4>Client Details</h4>
+                                  
+                                <div class="card-header-action">
+                                <a href="{{$dele_cp_url}}" parent="/clients" class="delete-btn action-btn btn btn-sm btn-danger">
+    <i class="fa fa-trash"></i> Delete
+</a>
+                                </div>
                             </div>
                             <div class="card-body">
                                 <ul class="nav nav-tabs" id="myTab2" role="tablist">

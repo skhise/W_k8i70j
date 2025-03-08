@@ -123,7 +123,7 @@
                                                         id="CCP_Email" name="CCP_Email" placeholder=""
                                                         type="text"
                                                         value="{{ $client->CCP_Email ?? old('CCP_Email') }}" />
-                                                    <label>Email <span class="text-danger">*</span></label>
+                                                    <label>Email
                                                     <span class="text-danger field-validation-valid"
                                                         data-valmsg-for="CCP_Email" data-valmsg-replace="true"></span>
                                                     @if ($errors->has('CCP_Email'))

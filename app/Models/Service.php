@@ -90,6 +90,20 @@ class Service extends Model
       $timeline = $timeline == "" ? "NA" : $timeline;
       return $timeline;
    }
+   public function timelineNH()
+   {
+      $history = ServiceHistory::where("service_id", $this->service_id)->get();
+      $timeline = "";
+      if (!empty($history)) {
+         foreach ($history as $action) {
+
+            $action_name = ServiceStatus::where("Status_Id", $action->status_id)->first()['Status_Name'] ?? "";
+            $timeline .= "DateTime:" . date('d-M-Y h:i:s', strtotime($action->created_at)) . " Action:" . $action_name . " Note:" . $action->action_description;
+         }
+      }
+      $timeline = $timeline == "" ? "NA" : $timeline;
+      return $timeline;
+   }
    public function accessory()
    {
       return $this->hasMany(ServiceAccessory::class);

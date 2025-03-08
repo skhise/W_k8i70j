@@ -478,6 +478,108 @@ class ReportController extends Controller
     public function sr_export(Request $request)
     {
         try{
+        
+            $customer = $request->customer;
+            $status = $request->status;
+            $type = $request->type;
+            $daterange = $request->daterange;
+            $customerId = $request->customer;
+            $service_type = $request->service_type;
+            $status = $request->status;
+            $date_range = $request->date_range;
+            $today = date("Y-m-d");
+            $todate = date("Y-m-d");
+            $fromdate = date('Y-m-d', strtotime($todate . '-' . $date_range . ' days'));
+            if ($date_range == 0) {
+                $fromdate = $todate;
+            }
+            if ($date_range == 1) {
+                $todate = date('Y-m-d', strtotime($today . '-1 days'));
+                $fromdate = date('Y-m-d', strtotime($today . '-1 days'));
+            }
+    
+            $services = Service::select(["*","services.id as service_id"])->join("master_service_status", "master_service_status.Status_Id", "services.service_status")
+                ->join("master_service_priority", "master_service_priority.id", "services.service_priority")
+                ->join("master_issue_type", "master_issue_type.id", "services.issue_type")
+                ->join("master_service_type", "master_service_type.id", "services.service_type")
+                ->join("clients", "clients.CST_ID", "services.customer_id")
+                ->leftJoin("contracts", "contracts.CNRT_ID", "services.contract_id")
+                ->leftJoin("employees", "employees.EMP_ID", "services.assigned_to")
+                ->when($customerId != 0, function ($query) use ($customerId) {
+                    return $query->where('clients.CST_ID', $customerId);
+                })
+                ->when($service_type != 0, function ($query) use ($service_type) {
+                    return $query->where('services.service_type', $service_type);
+                })
+                ->when($type != "", function ($query) use ($type) {
+                    if ($type == 0) {
+                        return $query->where('services.contract_id', 0);
+                    } else {
+                        return $query->where('services.contract_id', '>=', $type);
+                    }
+    
+                })
+                ->when($status != 0, function ($query) use ($status) {
+                    return $query->where('services.service_status', $status);
+                })
+                ->when($date_range != "" && $date_range != -1, function ($query) use ($todate, $fromdate) {
+                    return $query->whereBetween(DB::raw('DATE_FORMAT(services.service_date, "%Y-%m-%d")'), [$fromdate, $todate]);
+    
+                })
+                ->orderby("services.updated_at", "DESC")->get();
+                
+               
+            $services->map(function ($service) {
+
+                    $servicehistory = ServiceHistory::join("master_service_status", "master_service_status.Status_Id", "=", "service_action_history.status_id")
+                    ->where("service_id", $service->service_id)
+                    ->orderBy("service_action_history.id", "DESC")
+                    ->limit(1)
+                    ->first();
+                   
+                    $sn = $service->nrnumber ??  $service->product_sn;
+                    $pname = $service->product_name;
+                    $pfn = $sn != "" ? $sn."/".$pname : $pname;
+                    $service->serviceno = $service->service_no;
+                    $service->CNRTType = $service->contract_id >= 1 ? 'Contracted' : 'Non-Contracted';
+                    $service->CNRTNumber = $service->CNRT_Number;
+                    $service->CSTName = $service->CST_Name;
+                    $service->typename = $service->type_name;
+                    $service->product = $pfn;
+                    $service->servicenote = $service->service_note;
+                    $service->responsetime = $servicehistory->created_at ?? "";
+                    $service->problemreported_by_engineer = $servicehistory->action_description ?? "";
+                    $service->actiontakenbyengineer = $service->timelineNH();
+                    $service->StatusName = $service->Status_Name;
+                    $service->contactperson = $service->contact_person;
+                    $service->EMPName = $service->EMP_Name;
+                    $service->resolveddatetime = $service->resolved_datetime;
+                    $service->createddiffhours = $service->created_at ? now()->diffInHours($service->created_at) : null;
+                    $service->closedat = $service->closed_at;
+                    $service->createdat = $service->created_at;
+                    $service->expenses1 = $service->expenses;
+                    $service->charges2 = $service->charges;
+                    $service->closenote = $service->close_note;
+                    return $service;
+            });    
+
+            $items[] = $services->toArray();
+            // dd($items);
+            $fileName = 'report_file' . time() . '.csv';
+    
+            return Excel::download(new ServiceExport($items), $fileName)->deleteFileAfterSend(true);
+          
+        } catch(Exception $exception){
+            echo "".$exception->getMessage();
+            return false;
+        }
+          // return Excel::download(new ContractExport($items), $fileName, null, [\Maatwebsite\Excel\Excel::XLSX]);
+
+        // return response()->json(["file" => $file, "filename" => $fileName]);
+    }
+    public function srs_export(Request $request)
+    {
+        try{
             $customer = $request->customer;
             $status = $request->status;
             $type = $request->type;
@@ -535,15 +637,20 @@ class ReportController extends Controller
                     ->orderBy("service_action_history.id", "DESC")
                     ->limit(1)
                     ->first();
+                    $sn = $service->nrnumber ??  $service->product_sn;
+                    $pname = $service->product_name;
+                    $pfn = $sn != "" ? $sn."/".$pname : $pname;
                     $service->serviceno = $service->service_no;
                     $service->CNRTType = $service->contract_id >= 1 ? 'Contracted' : 'Non-Contracted';
                     $service->CNRTNumber = $service->CNRT_Number;
                     $service->CSTName = $service->CST_Name;
                     $service->typename = $service->type_name;
+                    $service->issuename = $service->issue_name;
+                    $service->product = $pfn;
                     $service->servicenote = $service->service_note;
                     $service->responsetime = $servicehistory->created_at ?? "";
                     $service->problemreported_by_engineer = $servicehistory->action_description ?? "";
-                    $service->actiontakenbyengineer = $service->Status_Name;
+                    $service->actiontakenbyengineer = $service->timeline();
                     $service->StatusName = $service->Status_Name;
                     $service->EMPName = $service->EMP_Name;
                     $service->resolveddatetime = $service->resolved_datetime;

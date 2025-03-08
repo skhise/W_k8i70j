@@ -17,7 +17,10 @@
             <td>{{ $contract->CNRT_Charges_Pending }}</td>
             <td>{{ date('d-M-Y', strtotime($contract->CNRT_StartDate)) }}</td>
             <td>{{ date('d-M-Y', strtotime($contract->CNRT_EndDate)) }}</td>
-            <td>{!! $status[$contract->CNRT_Status] !!}</td>
+            <td><span
+                                                            class="text-white badge badge-shadow {{ $contract['status_color'] ?? 'bg-light' }}">
+                                                            {{ $contract['contract_status_name'] }}</span></td>
+
             <td><a href="{{ route('contract-report-summary', $contract['CNRT_ID']) }}" class="btn btn-primary"><i
                         class="far fa-eye"></i></a></td>
         </tr>

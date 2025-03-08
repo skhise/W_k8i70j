@@ -96,7 +96,7 @@
                                                                 {{ $product->Product_Description }}
                                                             </div>
                                                         </div>
-                                                        <div class="row">
+                                                        <!-- <div class="row">
                                                             <div class="col-md-3">
                                                                 <span style="float:right ;font-weight:bold;">
                                                                     Product Image
@@ -122,7 +122,7 @@
 
                                                             </div>
 
-                                                        </div>
+                                                        </div> -->
                                                     </div>
                                                     <hr />
                                                 </div>

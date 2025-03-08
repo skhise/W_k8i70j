@@ -316,6 +316,13 @@
             // Add event listener to delete buttons
             event.preventDefault(); // Prevent default action
             var url = $(this).attr('href'); // Get the delete URL from the button
+            var parent_url = $(this).attr('parent'); // Get the delete URL from the button
+            var parent_url = $(this).attr('parent');
+
+            if (typeof parent_url !== 'undefined' && parent_url !== null) {
+                url = parent_url
+            }
+
             Swal.fire({
                 title: 'Are you sure?',
                 text: 'You will not be able to recover this data!',

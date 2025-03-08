@@ -89,7 +89,6 @@
                                                 <th>Type </th>
                                                 <th>Contract No.</th>
                                                 <th class="table-width-20">Customer Name</th>
-                                                <th class="table-width-20">Product</th>
                                                 <th>Service Type </th>
                                                 <th>Issue Type </th>
                                                 <th>Issue Description </th>
@@ -180,7 +179,7 @@
                 if (cust_id != "" && status != "") {
                     $.ajax({
                         type: "GET",
-                        url: "service-report-export",
+                        url: "service-status-report-export",
                         data: {
                             status: status,
                             customer: cust_id,

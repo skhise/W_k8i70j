@@ -1163,6 +1163,7 @@ class ContractController extends Controller
             ->leftJoin("master_service_type", "master_service_type.id", "contract_schedule_service.serviceType")
             ->leftJoin("master_service_status", "master_service_status.Status_Id", "contract_schedule_service.Schedule_Status")->get();
         // dd($contract_obj);
+        $addedproducts = ContractUnderProduct::join("master_product_type","master_product_type.id","contract_under_product.product_type")->where("contractId", $contract->CNRT_ID)->get();
         return view('contracts.view', [
             'contract' => $contract_obj,
             'project_count' => 0,
@@ -1173,7 +1174,7 @@ class ContractController extends Controller
             'checklists' => $contract->checklist,
             'renewals' => $contract->renewals,
             'productOption' => $productOptions,
-            'products' => $products,
+            'products' => $addedproducts,
             'services' => $services
 
         ]);

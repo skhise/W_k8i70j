@@ -6,12 +6,17 @@
     <title>Quotation</title>
     <style>
         body { font-family: Arial, sans-serif; }
-        .container { width: 80%; margin: auto; border: 1px solid #000; padding: 10px; }
+        .container {margin: auto; border: 1px solid #000; padding: 10px; }
         .header { text-align: center; font-weight: bold; font-size: 18px; }
         .company-details, .customer-details, .table-section, .footer { width: 100%; border-collapse: collapse; }
         .company-details td, .customer-details td, .table-section th, .table-section td { border: 1px solid black; padding: 5px; }
         .footer { margin-top: 20px; }
         .footer td { padding: 10px; border: 1px solid black; }
+        strong {
+            font-size: 14px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+             font-weight: 500;
+        }
     </style>
 </head>
 <body>

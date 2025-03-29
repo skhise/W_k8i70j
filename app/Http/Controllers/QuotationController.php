@@ -148,7 +148,7 @@ class QuotationController extends Controller
             ->get();
 
         $quotation_details = Quotation::select("clients.*", "quotation.*", "master_quotation_type.*", "quotation.id as dcp_id", "master_quotation_status.*")->join("master_quotation_status", "master_quotation_status.id", "quotation.quot_status")
-            ->join("master_quotation_type", "master_quotation_type.id", "quotation.quot_type")
+            ->leftJoin("master_quotation_type", "master_quotation_type.id", "quotation.quot_type")
             ->join("clients", "clients.CST_ID", "quotation.customer_id")
             ->where("quotation.id", $quotation->id)
             ->first();

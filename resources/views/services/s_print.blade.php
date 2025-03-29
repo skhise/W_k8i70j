@@ -38,6 +38,8 @@
         .table-section td {
             border: 1px solid black;
             padding: 5px;
+            text-align: left;
+            font-weight: 500;
         }
         .table-section,th{
             text-align: left;
@@ -55,6 +57,18 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
              font-weight: 500;
         }
+        @media print {
+            @page {
+                size: A4;
+                margin: 5mm;
+                /* Set custom margin */
+            }
+
+            body {
+                margin: 0;
+                /* Ensure no extra margins from the body */
+            }
+        }
     </style>
 </head>
 
@@ -63,40 +77,48 @@
         <div class="header">Field Service Report</div>
         <table class="company-details">
             <tr>
-                <td>
+                <td style="width:50%">
                     <strong>{{$service->CST_Name}}</strong><br>
                     {{ $service->CST_OfficeAddress }}<br>
                 </td>
-                <td>
-                    <strong>Ticket No.:</strong>{{ $service->service_no }}<br>
-                    <strong>Date:</strong>{{ $service->created_at }}<br>
-                    <strong>Service Type:</strong>{{ $service->type_name }}<br>
-                    <strong>Issue Type:</strong>{{ $service->issue_name }}</br>
+                <td style="width:50%">
+                    <strong>Ticket No.:&nbsp;&nbsp;</strong>{{ $service->service_no }}<br>
+                    <strong>Date:&nbsp;&nbsp;</strong>{{ $service->created_at }}<br>
+                    <strong>Service Type:&nbsp;&nbsp;</strong>{{ $service->type_name }}<br>
                     <strong>Contract
-                        Type:</strong>{{ $service->contract_id == 0 ? 'Non-Contracted' : $contract->contract_type_name }}
+                        Type:&nbsp;&nbsp;</strong>{{ $service->contract_id == 0 ? 'Non-Contracted' : $contract->contract_type_name }}
                     <br>
-                    <strong>Contract No.:</strong>{{ $contract->CNRT_Number ?? 'NA' }}
+                    <strong>Contract No.:&nbsp;&nbsp;</strong>{{ $contract->CNRT_Number ?? 'NA' }}
 
 
                 </td>
             </tr>
             <tr>
                 <td><strong>Contact Details</strong><br>
-                    <strong>Contact Person: </strong>{{ $service->contact_person }}<br>
-                    <strong>Phone: </strong>{{ $service->contact_number1 }}<br>
+                    <strong>Contact Person:&nbsp;&nbsp; </strong>{{ $service->contact_person }}<br>
+                    <strong>Phone: &nbsp;&nbsp;</strong>{{ $service->contact_number1 }}<br>
                     <p>{{ $service->site_address }}</p>
                 </td>
                 <td><strong>Ticket Details</strong><br>
-                    <strong>Ticket Staus:</strong>{{ $service->Status_Name }}<br>
-                    <strong>Date/Time:&nbsp;</strong>{{ $service->updated_at }}<br>
-                    <strong>Assigned:&nbsp;</strong>{{ $service->EMP_Name }}
+                    <strong>Ticket Staus:&nbsp;&nbsp;</strong>{{ $service->Status_Name }}<br>
+                    <strong>Date/Time:&nbsp;&nbsp;</strong>{{ $service->updated_at }}<br>
+                    <strong>Assigned:&nbsp;&nbsp;</strong>{{ $service->EMP_Name }}
                 </td>
             </tr>
         </table>
 
-        <table class="customer-details">
-            
-        </table>
+                
+        <p><strong>Issue Type:&nbsp;&nbsp;</strong>{{ $service->issue_name }}</p>
+        <p><strong>Description of Issue:&nbsp;&nbsp;</strong> {{$service->service_note}}</p>
+
+        <p><strong>Resolution:&nbsp;</strong><br><br>
+        
+            Note:&nbsp;&nbsp;{{ $service->close_note }}<br><br>
+            Closed By:&nbsp;&nbsp;  {{ $service->ClosedBy }}<br><br>
+            Date & Time:&nbsp;&nbsp; {{ $service->closed_at }}<br><br>
+        </p>
+
+        <p><strong>Customer Remark:</strong> </p>
         <br>
         <table class="table-section">
             <tr>
@@ -129,21 +151,11 @@
         </table>
 
 
-        <p><strong>Description of Issue:</strong> {{$service->service_note}}</p>
-
-        <p><strong>Resolution:</strong><br>
-            Closed By:  {{ $service->ClosedBy }}<br>
-            Date & Time: {{ $service->closed_at }}<br>
-            Note: {{ $service->close_note }}
-        </p>
-
-        <p><strong>Customer Remark:</strong> </p>
-
         <table class="footer">
             <tr>
-                <td><strong>Customer's Seal and Signature
+                <td style="width:50%"><strong>Customer's Seal and Signature
                         Customer Name & Mobile No.</strong></td>
-                <td><strong>Authorized Signatory</strong></td>
+                <td style="width:50%"><strong>Authorized Signatory</strong></td>
             </tr>
             <tr>
                 <td><br><br>{{$service->CST_Name}} & {{$service->CCP_Mobile}}</td>

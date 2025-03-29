@@ -97,7 +97,7 @@
                                                             autocomplete="off">
                                                     </div>
                                                     <div class="col-lg-3">
-                                                        <label>Note</label>
+                                                        <label>Description</label>
                                                         <textarea rows="1" id="other_details" name="other_details" value="" class="form-control"></textarea>
                                                     </div>
                                                     <div class="col-lg-1">
@@ -144,7 +144,7 @@
                                                     <th>Product Type</th>
                                                     <th>Product</th>
                                                     <th>Amount</th>
-                                                    <th>Details</th>
+                                                    <th>Description</th>
                                                     <th>Action</th>
                                                 </tr>
                                             </thead>

@@ -260,6 +260,8 @@ class ServiceController extends Controller
             ->leftJoin("product_serial_numbers", "product_serial_numbers.id", "service_dc_product.serial_no")
             ->get();
 
+        
+
         $serviceDc = ServiceDc::select("clients.*", "services.*", "dc_type.*", "service_dc.id as dcp_id", "master_dc_status.*")->join("master_dc_status", "master_dc_status.id", "service_dc.dc_status")
             ->join("dc_type", "dc_type.id", "service_dc.dc_type")
             ->join("services", "services.id", "service_dc.service_id")
@@ -1373,7 +1375,17 @@ class ServiceController extends Controller
             ->leftJoin("dc_type", "dc_type.id", "service_dc.dc_type")
             ->leftJoin("clients", "clients.CST_ID", "services.customer_id")
             ->where("service_dc.service_id", $service->id)->get();
-        // dd($dc_products);
+
+        $DCProducts = ServiceDcProduct::select("product_serial_numbers.*", "master_product_type.*", "service_dc_product.id as sdp", "service_dc_product.*", "products.*")
+        
+            ->join("products", "products.Product_ID", "service_dc_product.product_id")
+            ->join("service_dc", "service_dc.id", "service_dc_product.dc_id")
+            ->leftJoin("master_product_type", "master_product_type.id", "products.Product_Type")
+            ->leftJoin("product_serial_numbers", "product_serial_numbers.id", "service_dc_product.serial_no")
+            ->where(['service_dc.service_id' => $service->id])
+            ->get();
+
+        // dd($DCProducts);
         return view("services.s_print", [
             "product" => $product,
             "service" => $services,
@@ -1383,6 +1395,7 @@ class ServiceController extends Controller
             'timeline' => $timeline,
             "employee_options" => $employee_options,
             'status_options' => $status_options,
+            "DCProducts"=>$DCProducts,
         ]);
     }
     public function view(Request $request, Service $service)

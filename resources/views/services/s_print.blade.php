@@ -11,7 +11,7 @@
         }
 
         .container {
-            width: 80%;
+            /* width: 100%; */
             margin: auto;
             border: 1px solid #000;
             padding: 10px;
@@ -31,6 +31,7 @@
             border-collapse: collapse;
         }
 
+
         .company-details td,
         .customer-details td,
         .table-section th,
@@ -38,7 +39,9 @@
             border: 1px solid black;
             padding: 5px;
         }
-
+        .table-section,th{
+            text-align: left;
+        }
         .footer {
             margin-top: 20px;
         }
@@ -46,6 +49,11 @@
         .footer td {
             padding: 10px;
             border: 1px solid black;
+        }
+        strong {
+            font-size: 14px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+             font-weight: 500;
         }
     </style>
 </head>
@@ -72,9 +80,6 @@
 
                 </td>
             </tr>
-        </table>
-
-        <table class="customer-details">
             <tr>
                 <td><strong>Contact Details</strong><br>
                     <strong>Contact Person: </strong>{{ $service->contact_person }}<br>
@@ -88,42 +93,49 @@
                 </td>
             </tr>
         </table>
+
+        <table class="customer-details">
+            
+        </table>
         <br>
         <table class="table-section">
             <tr>
-                <td><strong>DC Product Information</strong></td>
+                <td><strong>Utilized Product</strong></td>
             </tr>
         </table>
         <table class="table-section">
             <tr>
-                <th>Sr. No.</th>
-                <th>Service. No.</th>
-                <th>Client Name</th>
-                <th>Issue Date</th>
-                <th>Type</th>
+            <th>Sr. No.</th>
+                    <th>Name</th>
+                    <th>Srial No.</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Amount</th>
             </tr>
-            @if ($dc_products->count() == 0)
-                <tr style="border-top: 1px solid black;">
-                    <td colspan="5" class="text-center" style="text-align:center;">No
-                        products
-                        added yet.</td>
-                </tr>
-            @endif
-            @foreach ($dc_products as $index => $dcp)
-                <tr style="border-top: 1px solid black;">
-                    <td>{{ $index + 1 }}</td>
-                    <td>{{ $dcp['service_no'] }}</td>
-                    <td>{{ $dcp['CST_Name'] }}</td>
-                    <td>{{ date('d-M-Y', strtotime($dcp['issue_date'])) }}</td>
-                    <td>{{ $dcp['dc_type_name'] }}</td>
-                </tr>
-            @endforeach
+            @foreach ($DCProducts as $index => $product)
+                    <tr>
+                        <td>{{ $index + 1 }}</td>
+                        <td>{{ $product['Product_Name'] }}</td>
+                        <td>{{ $product['sr_number'] }}</td>
+                        <td>{{ $product['type_name'] }}</td>
+                        <td>{{ $product['description'] }}</td>
+                        <td>{{ $product['amount'] }}</td>
+                    </tr>
+                @endforeach
+                <tr>
+                <td colspan="5" style="text-align: right;"><strong>Total:</strong></td>
+                <td>{{ number_format($DCProducts->sum(function ($product) {return $product['amount'];}),2) }}</td>
+            </tr>
         </table>
 
 
         <p><strong>Description of Issue:</strong> {{$service->service_note}}</p>
 
-        <p><strong>Resolution:</strong></p>
+        <p><strong>Resolution:</strong><br>
+            Closed By:  {{ $service->ClosedBy }}<br>
+            Date & Time: {{ $service->closed_at }}<br>
+            Note: {{ $service->close_note }}
+        </p>
 
         <p><strong>Customer Remark:</strong> </p>
 

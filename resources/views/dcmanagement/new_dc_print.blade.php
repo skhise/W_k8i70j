@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quotation</title>
+    <title>DC Summary</title>
     <style>
         body { font-family: Arial, sans-serif; }
         .container { width: 80%; margin: auto; border: 1px solid #000; padding: 10px; }
@@ -16,22 +16,21 @@
 </head>
 <body>
     <div class="container">
-        <div class="header">Quotation</div>
+        <div class="header">DC Summary</div>
         <table class="company-details">
             <tr>
                 <td>
-                    <strong>{{$quotation['CST_Name']}}.</strong><br>
-                    {{$quotation['CST_OfficeAddress']}}.<br>
-                    PH. No. {{$quotation['CCP_Mobile']}}<br>
-                    Email. {{$quotation['CCP_Email']}}<br>
+                    <strong>{{$serviceDc['CST_Name']}}.</strong><br>
+                    {{$serviceDc['CST_OfficeAddress']}}.<br>
+                    PH. No. {{$serviceDc['CCP_Mobile']}}<br>
+                    Email. {{$serviceDc['CCP_Email']}}<br>
                     GSTIN/UIN:  | PAN: 
                 </td>
                 <td>
-                    <strong>Quotation No:</strong> 000{{$quotation->dcp_id}}<br>
+                    <strong>DC No:</strong> {{$serviceDc->dcp_id}}<br>
                     <strong>Date:</strong> {{$date}}<br>
-                    <strong>Ticket No:</strong> {{ $quotation->service_no }}<br>
-                    <strong>Type:</strong> {{ $quotation->quot_type_name }}<br>
-                    <strong>Status:</strong>{{ $quotation->status_name }}
+                    <strong>Ticket No:</strong> {{ $serviceDc->service_no }}<br>
+                    <strong>Type:</strong> {{ $serviceDc->dc_type_name }}
                 </td>
             </tr>
         </table>
@@ -62,10 +61,8 @@
                 <td>{{ number_format($products->sum(function ($product) {return $product['amount'];}),2) }}</td>
             </tr>
         </table>
-        <br>    
-        <p><strong>Remark:</strong> {{ empty($quotation->Product_Description) ? 'NA' : $quotation->Product_Description }}</p>
-        <br>
-        <br>
+
+        <p><strong>Remark:</strong> {{ empty($serviceDc->Product_Description) ? 'NA' : $serviceDc->Product_Description }}</p>
         <table class="footer">
             <tr>
                 <td><strong>Customer's Received Signature</strong></td>

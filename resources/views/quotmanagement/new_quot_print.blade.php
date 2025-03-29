@@ -62,10 +62,8 @@
                 <td>{{ number_format($products->sum(function ($product) {return $product['amount'];}),2) }}</td>
             </tr>
         </table>
-        <br>    
+
         <p><strong>Remark:</strong> {{ empty($quotation->Product_Description) ? 'NA' : $quotation->Product_Description }}</p>
-        <br>
-        <br>
         <table class="footer">
             <tr>
                 <td><strong>Customer's Received Signature</strong></td>

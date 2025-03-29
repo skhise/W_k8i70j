@@ -20,7 +20,7 @@
             <td>{{ $service->EMP_Name }}</td>
             <td>{{ $service->resolved_datetime != null ? date('d-M-Y H:i', strtotime($service->resolved_datetime)) : 'NA' }}
             </td>
-            <td>{{ $service->resolved_datetime != null ? date('d-M-Y H:i', strtotime($service->closed_at)) : 'NA' }}
+            <td>{{ $service->closed_at != null ? date('d-M-Y H:i', strtotime($service->closed_at)) : 'NA' }}
             </td>
             <td>{{$service->expenses}}</td>
             <td>{{$service->charges}}</td>

@@ -267,7 +267,7 @@ class ServiceController extends Controller
             ->first();
         $date = date('Y-m-d');
 
-        return view('dcmanagement.print', compact('serviceDc', 'products', 'date'));
+        return view('dcmanagement.new_dc_print', compact('serviceDc', 'products', 'date'));
     }
 
    public function DcView(ServiceDc $serviceDc, Request $request)
@@ -971,6 +971,8 @@ class ServiceController extends Controller
     }
     public function service_status_count($staus, $fromdate, $todate)
     {
+        // if($staus == 5) dd($fromdate."----".$todate);
+
         $count = Service::select("*", "services.id as service_id")
             ->join("master_service_status", "master_service_status.Status_Id", "services.service_status")
             ->join("master_service_priority", "master_service_priority.id", "services.service_priority")
@@ -981,7 +983,7 @@ class ServiceController extends Controller
             ->when(Auth::user()->role == 3, function ($query) {
                 $query->where('assigned_to', Auth::user()->id);
             })
-            ->whereBetween(DB::raw('DATE_FORMAT(services.service_date, "%Y-%m-%d")'), [$fromdate, $todate])
+            ->whereBetween(DB::raw('DATE_FORMAT(services.updated_at, "%Y-%m-%d")'), [$fromdate, $todate])
             ->where('services.service_status', $staus)->count();
         return $count;
     }
@@ -1372,7 +1374,7 @@ class ServiceController extends Controller
             ->leftJoin("clients", "clients.CST_ID", "services.customer_id")
             ->where("service_dc.service_id", $service->id)->get();
         // dd($dc_products);
-        return view("services.print", [
+        return view("services.s_print", [
             "product" => $product,
             "service" => $services,
             "service_id" => $service->id,

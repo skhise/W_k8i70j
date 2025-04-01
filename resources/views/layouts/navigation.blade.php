@@ -153,12 +153,12 @@
                 <a href="{{ route('dcmanagements') }}" class="nav-link"><i data-feather="file"></i><span>DC
                         Management</span></a>
             </li>
-            <li
+            <!-- <li
                 class="dropdown {{ Request::is('quotmanagements') || Request::is('quotmanagements/*') ? 'active' : '' }}">
                 <a href="{{ route('quotmanagements') }}" class="nav-link"><i
                         data-feather="file-text"></i><span>Quotation
                         Management</span></a>
-            </li>
+            </li> -->
 
             <li class="dropdown {{ Request::is('products/*') || Request::is('products') ? 'active' : '' }}">
                 <a href="{{ route('products') }}" class="nav-link"><i data-feather="box"></i><span>Products</span></a>
@@ -199,8 +199,8 @@
 
                     <li class="{{ Request::is('reports/dc-report') ? 'active' : '' }}"><a class="nav-link"
                             href="{{ route('dc-report') }}">Dc Report</a></li>
-                    <li class="{{ Request::is('reports/quotation-report') ? 'active' : '' }}"><a class="nav-link"
-                            href="{{ route('quotation-report') }}">Quotation Report</a></li>
+                    <!-- <li class="{{ Request::is('reports/quotation-report') ? 'active' : '' }}"><a class="nav-link"
+                            href="{{ route('quotation-report') }}">Quotation Report</a></li> -->
                     <li class="{{ Request::is('reports/logs') ? 'active' : '' }}"><a class="nav-link"
                             href="{{ route('logs') }}">Logs</a></li>
 

@@ -1402,7 +1402,7 @@ class ReportController extends Controller
         $status = ServiceStatus::all();
         $service_types = ServiceType::all();
         if ($request->ajax()) {
-            return view('reports.str_pagination', compact('services', 'status'));
+            return view('reports.etr_pagination', compact('services', 'status'));
         }
         return view(
             'reports.service_report',

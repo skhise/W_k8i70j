@@ -240,12 +240,12 @@
                                                     @endforeach
                                                 </select>
                                             </div>
-                                            <div class="col-md-3 floating-label">
+                                            <div class="col-md-3 floating-label required">
                                                 <input class="form-control text-box single-line"
                                                     id="CNRT_CustomerEmail" name="CNRT_CustomerEmail" placeholder=""
                                                     type="text"
                                                     value="{{ $contract->CNRT_CustomerEmail ?? old('CNRT_CustomerEmail') }}" />
-                                                <label for="first">Contact Email</label>
+                                                <label for="first" class="control-label">Contact Email</label>
                                                 <span class="text-danger field-validation-valid"
                                                     data-valmsg-for="CNRT_CustomerEmail"
                                                     data-valmsg-replace="true"></span>

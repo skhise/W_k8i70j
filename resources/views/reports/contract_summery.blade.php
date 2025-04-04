@@ -1,4 +1,18 @@
 <x-app-layout>
+    <style>
+         @media print {
+            @page {
+                size: A4;
+                margin: 5mm;
+                /* Set custom margin */
+            }
+
+            #summary_div_print  {
+                margin: 0;
+                /* Ensure no extra margins from the body */
+            }
+        }
+    </style>
     <div class="main-content">
         <section class="section">
             <div class="section-body">
@@ -13,6 +27,7 @@
                                 </div>
                             </div>
                             <div class="card-body" id="summary_div_print">
+                                <h4 class="card-title">Contract Summary</h4>
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="card card-success">
@@ -27,93 +42,93 @@
                                                         
                                                         <div class="row">
                                                             <div class="col-md-3"><span
-                                                                    style="float:right ;font-weight:bold">Client
+                                                                    style="font-weight:bold">Client
                                                                     Name</span></div>
                                                             <div class="col-md-9">
-                                                                <h6>{{ $contract->CST_Name }}
+                                                                <h6 style="float:right;">{{ $contract->CST_Name }}
                                                                 </h6>
 
                                                             </div>
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-3">
-                                                                <span style="float:right ;font-weight:bold">
+                                                                <span style="font-weight:bold">
                                                                     Contract No.</span>
                                                             </div>
-                                                            <div class="col-md-8">{{ $contract->CNRT_Number }}</div>
+                                                            <div class="col-md-8" ><span style="float:right;">{{ $contract->CNRT_Number }}</span></div>
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-3">
-                                                                <span style="float:right ;font-weight:bold">Contrcat
+                                                                <span style="font-weight:bold">Contrcat
                                                                     Type</span>
                                                             </div>
                                                             <div class="col-md-3">
-                                                                {{ $contract->contract_type_name }}</div>
+                                                               <span  style="float:right;"> {{ $contract->contract_type_name }}</span></div>
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-3">
-                                                                <span style="float:right ;font-weight:bold">
+                                                                <span style="font-weight:bold">
                                                                     Site Type
                                                                 </span>
                                                             </div>
-                                                            <div class="col-md-3">{{ $contract->site_type_name }}
+                                                            <div class="col-md-3"><span  style="float:right;">{{ $contract->site_type_name }}</span>
                                                             </div>
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-3">
-                                                                <span style="float:right ;font-weight:bold">
+                                                                <span style="font-weight:bold">
                                                                     Start Date
                                                                 </span>
                                                             </div>
                                                             <div class="col-md-3">
-                                                                {{ date('d-M-Y', strtotime($contract->CNRT_StartDate)) ?? 'NA' }}
-                                                            </div>
+                                                              <span style="float:right;">  {{ date('d-M-Y', strtotime($contract->CNRT_StartDate)) ?? 'NA' }}
+                                                              </span></div>
                                                             <div class="col-md-3">
-                                                                <span style="float:right ;font-weight:bold">
+                                                                <span style="font-weight:bold">
                                                                     End Date
                                                                 </span>
                                                             </div>
                                                             <div class="col-md-3">
-                                                                {{ date('d-M-Y', strtotime($contract->CNRT_EndDate)) ?? 'NA' }}
-                                                            </div>
+                                                               <span style="float:right;"> {{ date('d-M-Y', strtotime($contract->CNRT_EndDate)) ?? 'NA' }}
+                                                               </span></div>
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-3">
-                                                                <span style="float:right ;font-weight:bold">Contract
+                                                                <span style="font-weight:bold">Contract
                                                                     Cost</span>
                                                             </div>
-                                                            <div class="col-md-2 " style="float:left ;font-weight:bold">
-                                                                {{ $contract->CNRT_Charges }}</div>
+                                                            <div class="col-md-2 " style="font-weight:bold;">
+                                                                <span style="float:right;">{{ $contract->CNRT_Charges }}</span></div>
                                                             <div class="col-md-1">
-                                                                <span style="float:right ;font-weight:bold">Paid</span>
+                                                                <span style="font-weight:bold">Paid</span>
                                                             </div>
                                                             <div class="col-md-2" style="float:left ;font-weight:bold">
-                                                                {{ $contract->CNRT_Charges_Paid }}</div>
+                                                            <span style="float:right;">{{ $contract->CNRT_Charges_Paid }}</span></div>
                                                             <div class="col-md-2">
                                                                 <span
-                                                                    style="float:right ;font-weight:bold">Pending</span>
+                                                                    style="font-weight:bold">Pending</span>
                                                             </div>
-                                                            <div class="col-md-2" style="float:left ;font-weight:bold">
-                                                                {{ $contract->CNRT_Charges_Paid }}</div>
+                                                            <div class="col-md-2" style="font-weight:bold">
+                                                            <span style="float:right;"> {{ $contract->CNRT_Charges_Paid }}</span></div>
                                                         </div>
                                                         
                                                     </div>
                                                     <div class="col-lg-6">
                                                     <div class="row">
                                                             <div class="col-md-3"><span
-                                                                    style="float:right ;font-weight:bold">Status</span>
+                                                                    style="font-weight:bold">Status</span>
                                                             </div>
                                                             <div class="col-md-9">
-                                                            <span class="text-white badge badge-shadow {{ $contract['status_color'] ?? 'bg-light' }}">
+                                                            <span style="float:right;" class="text-white badge badge-shadow {{ $contract['status_color'] ?? 'bg-light' }}">
                                                             {{ $contract['contract_status_name'] }}</span>
                                                                                                                           </div>
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-3"><span
-                                                                    style="float:right ;font-weight:bold">Contract
+                                                                    style="font-weight:bold">Contract
                                                                     Type</span></div>
                                                             <div class="col-md-9">
-                                                                <h6>
+                                                                <h6 style="float:right;">
                                                                     {{ $contract->contract_type_name }}
                                                                 </h6>
 
@@ -121,10 +136,10 @@
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-3"><span
-                                                                    style="float:right ;font-weight:bold">Total
+                                                                    style="font-weight:bold">Total
                                                                     Service</span></div>
                                                             <div class="col-md-9">
-                                                                <h6>
+                                                                <h6 style="float:right;">
                                                                     {{ $contract->Total_Services ?? 0 }}
                                                                 </h6>
 
@@ -132,10 +147,10 @@
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-3"><span
-                                                                    style="float:right ;font-weight:bold">Website</span>
+                                                                    style="font-weight:bold">Website</span>
                                                             </div>
                                                             <div class="col-md-9">
-                                                                <h6 > {{ $contract->CST_Website }}
+                                                                <h6 style="float:right;"> {{ $contract->CST_Website }}
                                                                 </h6>
 
                                                             </div>
@@ -149,39 +164,36 @@
                                                     <div class="col-lg-6">
                                                         <h6 class="">Contact Information</h6>
                                                     </div>
-                                                    <div class="col-lg-6">
-                                                        <h6 class="">Other Information</h6>
-                                                    </div>
                                                 </div>
                                                 <hr />
                                                 <div class="row">
                                                     <div class="col-lg-6">
                                                         <div class="row">
                                                             <div class="col-md-3">
-                                                                <span style="float:right ;font-weight:bold">Contact
+                                                                <span style="font-weight:bold">Contact
                                                                     Person
                                                                 </span>
                                                             </div>
-                                                            <div class="col-md-9">{{ $contract->CCP_Name ?? '' }}
-                                                            </div>
+                                                            <div class="col-md-9"><span style="float:right ;">{{ $contract->CCP_Name ?? '' }}
+                                                            </span> </div>
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-3">
-                                                                <span style="float:right ;font-weight:bold">Mobile
+                                                                <span style="font-weight:bold">Mobile
                                                                     Number
                                                                 </span>
                                                             </div>
-                                                            <div class="col-md-9">{{ $contract->CCP_Mobile ?? '' }}
-                                                            </div>
+                                                            <div class="col-md-9"><span style="float:right ;">{{ $contract->CCP_Mobile ?? '' }}
+                                                            </span></div>
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-3">
-                                                                <span style="float:right ;font-weight:bold">Alternate
+                                                                <span style="font-weight:bold">Alternate
                                                                     Number
                                                                 </span>
                                                             </div>
-                                                            <div class="col-md-9">{{ $contract->CCP_Phone1 ?? '' }}
-                                                            </div>
+                                                            <div class="col-md-9"><span style="float:right ;">{{ $contract->CCP_Phone1 ?? '' }}
+                                                            </span></div>
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-3">
@@ -189,41 +201,29 @@
                                                                     Email
                                                                 </span>
                                                             </div>
-                                                            <div class="col-md-9">{{ $contract->CCP_Email ?? '' }}
-                                                            </div>
+                                                            <div class="col-md-9"><span style="float:right ;">{{ $contract->CCP_Email ?? '' }}
+                                                            </span></div>
                                                         </div>
                                                     </div>
                                                      <div class="col-lg-6">
                                                         <div class="row">
                                                             <div class="col-md-4">
-                                                                <span style="float:right ;font-weight:bold">Google
-                                                                    Location Link
-                                                                </span>
-                                                            </div>
-                                                            <div class="col-md-8"><a
-                                                                    href="{{ $contract->CNRT_SiteLocation ?? '#' }}"
-                                                                    target="_blank"><i class="fa fa-map-marker"
-                                                                        aria-hidden="true"></i>
-                                                                </a></div>
-                                                        </div>
-                                                        <div class="row">
-                                                            <div class="col-md-4">
-                                                                <span style="float:right ;font-weight:bold">Site
+                                                                <span style="font-weight:bold">Site
                                                                     Location
                                                                 </span>
                                                             </div>
                                                             <div class="col-md-8">
-                                                                {{ $contract->SiteAreaName ?? 'NA' }}
+                                                            <span style="float:right ;">{{ $contract->SiteAreaName ?? 'NA' }}</span>
                                                             </div>
 
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-4">
-                                                                <span style="float:right ;font-weight:bold">Address
+                                                                <span style="font-weight:bold">Address
                                                                 </span>
                                                             </div>
                                                             <div class="col-md-8">
-                                                                {{ $contract->CNRT_OfficeAddress ?? 'NA' }}
+                                                            <span style="float:right ;">{{ $contract->CNRT_OfficeAddress ?? 'NA' }}</span>
                                                             </div>
 
                                                         </div>
@@ -236,23 +236,24 @@
                                                             <h6 class="">Note</h6>
                                                         </div>
                                                         <div class="col-lg-6">
-                                                            <h6 class="">Term &
-                                                                        Condition</h6>
-                                                        </div>
+                                                        <span style="float: right;">  {{ $contract->CNRT_Note != null ? $contract->CNRT_Note : 'NA' }}
+                                                           </span> </div>
+                                                        
                                                        
                                                     </div>
                                                 <hr />
                                                         <div class="row">
                                                         <div class="col-lg-6">
-                                                                 {{ $contract->CNRT_Note != null ? $contract->CNRT_Note : 'NA' }}
-                                                            </div>
+                                                            <h6 class="">Term &
+                                                                        Condition</h6>
+                                                        </div>
                                                             <div class="col-lg-6">
-                                                                {{ $contract->CNRT_TNC != null ? $contract->CNRT_TNC : 'NA' }}
-                                                            </div>
+                                                               <span style="float: right;"> {{ $contract->CNRT_TNC != null ? $contract->CNRT_TNC : 'NA' }}
+                                                            </span></div>
                                                             
                                                         </div>
                                                         <hr/>
-                                                        <div>
+                                                        <div style="page-break-before: always;">
                                                             <h6>Contract Product</h6>
                                                         </div>
                                                         

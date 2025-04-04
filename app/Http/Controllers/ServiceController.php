@@ -1366,7 +1366,7 @@ class ServiceController extends Controller
             if ($services->assigned_to == $employee->EMP_ID) {
                 $selected = "selected";
             }
-            $employee_options .= "<option value=" . $employee->EMP_ID . " " . $selected . ">" . $employee->EMP_Name . "</option>";
+            $employee_options .= "<option value=" . $employee->EMP_ID . " " . $selected . ">" . $employee->EMP_Name . " (".$employee->access_role_name.") </option>";
         }   
         // dd($status_options);
 
@@ -1440,14 +1440,14 @@ class ServiceController extends Controller
                 $status_options .= "<option data-sub_status='" . $sub_status . "' value=" . $st->Status_Id . " " . $selected . ">" . $st->Status_Name . "</option>";
             }
         }
-        $employees = Employee::where(["EMP_Status"=>1,"Access_Role"=>4,'deleted_at'=>null])->get();
+        $employees = Employee::where(["EMP_Status"=>1,"Access_Role"=>4,'deleted_at'=>null])->join("master_role_access","master_role_access.id","employees.Access_Role")->get();
         $employee_options = "<option value=''>Select Employee</option>";
         foreach ($employees as $employee) {
             $selected = "";
             if ($services->assigned_to == $employee->EMP_ID) {
                 $selected = "selected";
             }
-            $employee_options .= "<option value=" . $employee->EMP_ID . " " . $selected . ">" . $employee->EMP_Name . "</option>";
+            $employee_options .= "<option value=" . $employee->EMP_ID . " " . $selected . ">" . $employee->EMP_Name ."  (".$employee->access_role_name.")</option>";
         }
         // dd($status_options);
 

@@ -1358,6 +1358,7 @@ class ReportController extends Controller
     {
 
         $engineerId = $request->employee;
+        $customerId = $request->customerId ?? 0;
         $service_type = $request->service_type;
         $status = $request->status;
         $date_range = $request->date_range;

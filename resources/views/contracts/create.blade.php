@@ -385,7 +385,7 @@
                                             <button type="submit" id="btnAddClient ml-2"
                                                 class="btn btn-primary">{{ $update ? 'Update' : 'Save' }}</button>
                                             <a type="button" class="btn btn-danger mr-2"
-                                                href="{{ route('clients') }}">Back</a>
+                                                href="{{ route('contracts') }}">Back</a>
                                         </div>
                                     </div>
                             </div>

@@ -21,6 +21,7 @@
                                                         data-val-required="The Customer Name field is required."
                                                         id="customer_id" name="customer_id" placeholder=""
                                                         required="required" type="text">
+                                                        <option value="-1">Select</option>
                                                         <option value="">All</option>
                                                         @foreach ($clients as $client)
                                                             <option value="{{ $client->CST_ID }}"
@@ -36,6 +37,7 @@
                                                         class="select2 form-control text-box single-line @error('customer_id') is-invalid @enderror"
                                                         data-val="true" id="type" name="type" placeholder=""
                                                         required="required">
+                                                        <option value="-1">Select</option>
                                                         <option value="">All
                                                         </option>
                                                         @foreach ($type as $tp)

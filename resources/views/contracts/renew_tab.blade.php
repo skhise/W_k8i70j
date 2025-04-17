@@ -10,6 +10,7 @@
                         <thead>
                             <tr>
                                 <th>Sr. No.</th>
+                                <th>Created On</th>
                                 <th>Start Date</th>
                                 <th>Expiry Date</th>
                                 <th>Cost</th>
@@ -27,6 +28,8 @@
                                 <tr>
                                     <td>
                                         {{ $index + 1 }}
+                                    </td>
+                                    <td>{{ $renewal['created_at'] != '' ? date('d-M-Y', strtotime($renewal['created_at'])) : 'NA' }}
                                     </td>
                                     <td>{{ $renewal['new_start_date'] != '' ? date('d-M-Y', strtotime($renewal['new_start_date'])) : 'NA' }}
                                     </td>

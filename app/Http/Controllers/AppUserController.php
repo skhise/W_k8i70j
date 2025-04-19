@@ -1126,6 +1126,7 @@ class AppUserController extends Controller
                 ->orderByDesc("services.updated_at")
                 ->get(["employees.*", "services.id as service_id", "master_service_status.*", "master_service_priority.*", "services.*", "contracts.*", "clients.*", "master_issue_type.*", "master_service_type.*"]);
             foreach ($services as $service) {
+                $service->updatedAt = Carbon::parse($service->updated_at)->format("d-M-Y H:s a");
                 $service->serviceDate = Carbon::parse($service->service_date)->format("d-M-Y");
                 $service->serviceTime = Carbon::parse($service->service_date)->format("d-M-Y H:s a");
                 $service->accessory = $this->GetServiceAccessory($service->service_id);

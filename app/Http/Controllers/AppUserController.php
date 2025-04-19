@@ -818,7 +818,7 @@ class AppUserController extends Controller
             }
             $id = $request->id;
             $userId = $request->userId;
-            $service = Service::select("*", "services.id as service_id")
+            $service = Service::select("*", "services.id as service_id","services.updated_at as updatedAt")
                 ->join("master_service_status", "master_service_status.Status_Id", "services.service_status")
                 ->join("master_service_priority", "master_service_priority.id", "services.service_priority")
                 ->join("master_issue_type", "master_issue_type.id", "services.issue_type")
@@ -828,7 +828,7 @@ class AppUserController extends Controller
                 ->leftJoin("users", "users.id", "services.assigned_to")
                 ->where("services.assigned_to", $userId)
                 ->where("services.id", $id)
-                ->first(["services.updated_at as updatedAt","master_site_area.*", "customer_sites.*", "services.id as service_id", "master_service_status.*", "master_service_priority.*", "services.*", "contracts.*", "clients.*", "master_issue_type.*", "master_service_type.*"]);
+                ->first(["master_site_area.*", "customer_sites.*", "services.id as service_id", "master_service_status.*", "master_service_priority.*", "services.*", "contracts.*", "clients.*", "master_issue_type.*", "master_service_type.*"]);
 
 
             // $service->status=$this->GetStatusList();  

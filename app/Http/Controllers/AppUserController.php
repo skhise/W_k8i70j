@@ -836,6 +836,7 @@ class AppUserController extends Controller
                 $service->serviceDate = Carbon::parse($service->service_date)->format("d-M-Y");
                 $service->reason = $this->GetReasonList();
                 $service->accessory = $this->GetServiceAccessory($service->service_id);
+                $service->updatedAt = date('d-M-Y H:s a', strtotime($service->updatedAt));
             }
 
 

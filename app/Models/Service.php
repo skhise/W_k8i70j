@@ -1,6 +1,7 @@
 <?php
 namespace App\Models;
 
+use Carbon\Carbon;
 use DateTime;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -74,7 +75,8 @@ class Service extends Model
    public function lastaction()
    {
       $history = ServiceHistory::where("service_id", $this->service_id)->orderByDesc("id")->first();
-      return date("d-M-Y H:i", strtotime($history->created_at)) ?? date("d-M-Y H:i");
+      return date("d-M-Y H:i", strtotime($history->created_at)) ?? 'NA';
+   //   return Carbon::parse($this->updated_at)->format("d-M-Y H:i");
    }
    public function timeline()
    {
@@ -84,7 +86,7 @@ class Service extends Model
          foreach ($history as $action) {
 
             $action_name = ServiceStatus::where("Status_Id", $action->status_id)->first()['Status_Name'] ?? "";
-            $timeline .= "<span>DateTime:" . date('d-M-Y h:i:s', strtotime($action->created_at)) . "</span><br/><span>Action:" . $action_name . "</span><br/><span>Note:" . $action->action_description . "</span>";
+            $timeline .= "<span>DateTime:" . date('d-M-Y H:i', strtotime($action->created_at)) . "</span><br/><span>Action:" . $action_name . "</span><br/><span>Note:" . $action->action_description . "</span>";
          }
       }
       $timeline = $timeline == "" ? "NA" : $timeline;

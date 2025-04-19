@@ -1412,7 +1412,8 @@ class ServiceController extends Controller
             ->leftJoin("master_site_area", "master_site_area.id", "services.areaId")
             ->join("clients", "clients.CST_ID", "services.customer_id")
             ->leftJoin("employees", "employees.Emp_ID", "services.assigned_to")
-            ->where('services.id', $service->id)->first();
+            ->where('services.id', $service->id)->first(columns: ['*','services.updated_at as updatedAt']);
+            $services->updatedAt = date('d-M-Y H:s a', strtotime($services->updatedAt));
 
         $product = ContractUnderProduct::where('contract_under_product.id', $service->product_id)->leftJoin("master_product_type", "master_product_type.id", "contract_under_product.product_type")->first();
         $contract = Contract::leftJoin("master_contract_type", "master_contract_type.id", "contracts.CNRT_Type")
@@ -1453,7 +1454,7 @@ class ServiceController extends Controller
             }
             $employee_options .= "<option value=" . $employee->EMP_ID . " " . $selected . ">" . $employee->EMP_Name ."  (".$employee->designation_name.")</option>";
         }
-        // dd($status_options);
+        // dd($services->lastaction());
 
         $dc_products = ServiceDc::select(["dc_type.*", "clients.*", "services.*", "service_dc.id as dcp_id", "service_dc.*"])
             ->join("services", "services.id", "service_dc.service_id")

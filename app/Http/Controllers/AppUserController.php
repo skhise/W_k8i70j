@@ -1123,6 +1123,7 @@ class AppUserController extends Controller
                 ->when($ticket_status != 0, function ($query) use ($ticket_status) {
                     $query->where("service_status", $ticket_status);
                 })
+                ->orderByDesc("services.updated_at")
                 ->get(["employees.*", "services.id as service_id", "master_service_status.*", "master_service_priority.*", "services.*", "contracts.*", "clients.*", "master_issue_type.*", "master_service_type.*"]);
             foreach ($services as $service) {
                 $service->serviceDate = Carbon::parse($service->service_date)->format("d-M-Y");

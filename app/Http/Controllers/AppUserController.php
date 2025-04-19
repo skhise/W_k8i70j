@@ -888,7 +888,6 @@ class AppUserController extends Controller
                     "status_id" => "required",
                     'user_id' => "required",
                     'reason_id' => "required",
-                    'action_description' => "required",
                     'last_long'=>'required',
                     'last_lang'=>'required'
                 ]

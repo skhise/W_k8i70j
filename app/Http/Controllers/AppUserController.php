@@ -1124,9 +1124,9 @@ class AppUserController extends Controller
                     $query->where("service_status", $ticket_status);
                 })
                 ->orderByDesc("services.updated_at")
-                ->get(["employees.*", "services.id as service_id", "master_service_status.*", "master_service_priority.*", "services.*", "contracts.*", "clients.*", "master_issue_type.*", "master_service_type.*"]);
+                ->get(["services.updated_at as updatedAt","employees.*", "services.id as service_id", "master_service_status.*", "master_service_priority.*", "services.*", "contracts.*", "clients.*", "master_issue_type.*", "master_service_type.*"]);
             foreach ($services as $service) {
-                $service->updatedAt = date('d-M-Y H:s a', strtotime($service->created_at));
+                $service->updatedAt = date('d-M-Y H:s a', strtotime($service->updatedAt));
                 $service->serviceDate = Carbon::parse($service->service_date)->format("d-M-Y");
                 $service->serviceTime = Carbon::parse($service->service_date)->format("d-M-Y H:s a");
                 $service->accessory = $this->GetServiceAccessory($service->service_id);

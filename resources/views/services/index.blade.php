@@ -142,6 +142,7 @@ fas fa-plus-square"></i>
                                             <th class="table-width-20">Customer Name</th>
                                             <th>Issue Type</th>
                                             <th>Last Updated</th>
+                                            <th>Assigned To</th>
                                             <th>Status</th>
                                             <th>Action</th>
                                         </tr>
@@ -174,6 +175,9 @@ fas fa-plus-square"></i>
                                                 <td>{{ $service['issue_name'] }}</td>
                                                 <td>
                                                     {{ $service['last_updated'] != null ? date('d-M-Y h:i', strtotime($service['last_updated'])) : 'NA' }}
+                                                </td>
+                                                <td>
+                                                    {{ $service['name'] }}
                                                 </td>
                                                 <td>
                                                     <span

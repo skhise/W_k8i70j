@@ -13,18 +13,19 @@
                                         <button class="btn btn-info  ml-2" id="btn-accept-call">Accept</button>
                                         <button class="btn btn-danger  mr-2 ml-2" id="btn-reject-call">Reject</button>
                                     @endif
+                                    @if (auth()->user()->role == 1)
+                                        <button type="button" class="btn btn-info mr-2" data-toggle="modal"
+                                            data-target=".bd-RefServiceAssign-modal-lg">Assign</button>
+                                    @endif
                                     @if(($service->Status_Id != 6 && $service->assigned_to == auth()->user()->id) || auth()->user()->role == 1)
                                         <input type="button" id="btn_service_add ml-2" value="Action"
                                             class="btn btn-primary" data-toggle="modal"
                                             data-target=".bd-RefServiceStatus-modal-lg" />
                                     @endif
-                                    @if (auth()->user()->role == 1)
-                                        <button type="button" class="btn btn-info ml-2" data-toggle="modal"
-                                            data-target=".bd-RefServiceAssign-modal-lg">Assign</button>
-                                    @endif
+                                    
 
                                     <a class="btn ml-2 btn-info" target="_blank"
-                                        href="{{ route('services.print', $service_id) }}">Print</a>
+                                        href="{{ route('services.print', $service_id) }}">Field Report</a>
                                     <a class="btn btn-danger ml-2" href="{{ route('services') }}">Back</a>
                                     @if (auth()->user()->role == 1)
 

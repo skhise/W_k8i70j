@@ -450,6 +450,25 @@ class MasterController extends Controller
             }
         }
     }
+
+    public function sbs_delete(Request $request)
+    {
+        $id = $request->id ?? 0;
+        $res['message'] = 'action failed, try again';
+        $res['code'] = 400;
+        try {
+            $delete = ServiceSubStatus::where('Sub_Status_Id', $id)->delete();
+            if ($delete) {
+                $res['message'] = 'Deleted';
+                $res['code'] = 200;
+            }
+        } catch (Exception $ex) {
+            // return $ex->getMessage();
+            $res['message'] = 'action failed, try again' . $ex->getMessage();
+            $res['code'] = 400;
+        }
+        return json_encode($res);
+    }
     public function UploadImage($request)
     {
         $imagesName = "";
@@ -753,10 +772,162 @@ class MasterController extends Controller
                     return response()->json(["success" => false, "message" => "action failed, try again.", "validation_error" => $validator->errors()]);
                 }
             } else {
-                return response()->json(["success" => false, "message" => "duplicate area name.", "validation_error" => $validator->errors()]);
+                return response()->json(["success" => false, "message" => "duplicate service type name.", "validation_error" => $validator->errors()]);
             }
         }
     }
+
+    public function issue_index(Request $request)
+    {
+        $area = array();
+        try {
+            $issue_type = IssueType::paginate(10)
+                ->withQueryString();
+
+        } catch (Exception $ex) {
+            // return $ex->errorInfo;
+        }
+        return view("masters.issue_type.index", ["IssueType" => $issue_type]);
+    }
+    public function issue_delete(Request $request)
+    {
+        $id = $request->id ?? 0;
+        $res['message'] = 'action failed, try again';
+        $res['code'] = 400;
+        try {
+            $delete = IssueType::where('id', $id)->delete();
+            if ($delete) {
+                $res['message'] = 'Deleted';
+                $res['code'] = 200;
+            }
+        } catch (Exception $ex) {
+            // return $ex->getMessage();
+            $res['message'] = 'action failed, try again' . $ex->getMessage();
+            $res['code'] = 400;
+        }
+        return json_encode($res);
+    }
+    public function issue_saveupdate(Request $request)
+    {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                "id" => "required",
+                "name" => "required",
+                "flag" => "required",
+            ]
+        );
+        if ($validator->fails()) {
+            return response()->json(["success" => false, "message" => "data missing, try again.", "validation_error" => $validator->errors()]);
+        }
+        if ($request->flag == 1) {
+            $checkName = IssueType::where('issue_name', $request->name)
+                ->where('id', "!=", $request->id)->get();
+            if ($checkName->count() > 0) {
+                return response()->json(["success" => false, "message" => "duplicate issue type name.", "validation_error" => $validator->errors()]);
+            } else {
+                $update = IssueType::where('id', $request->id)->update([
+                    'issue_name' => $request->name
+                ]);
+                if ($update) {
+                    return response()->json(["success" => true, "message" => "Issue type updated.", "validation_error" => $validator->errors()]);
+                } else {
+                    return response()->json(["success" => false, "message" => "action failed, try again.", "validation_error" => $validator->errors()]);
+                }
+            }
+
+        } else {
+            $checkName = IssueType::where('issue_name', $request->name)->get();
+            if ($checkName->count() == 0) {
+                $create = IssueType::create([
+                    'issue_name' => $request->name
+                ]);
+                if ($create) {
+                    return response()->json(["success" => true, "message" => "Created", "validation_error" => $validator->errors()]);
+                } else {
+                    return response()->json(["success" => false, "message" => "action failed, try again.", "validation_error" => $validator->errors()]);
+                }
+            } else {
+                return response()->json(["success" => false, "message" => "duplicate issue type name.", "validation_error" => $validator->errors()]);
+            }
+        }
+    }
+    public function designation_index(Request $request)
+    {
+        $area = array();
+        try {
+            $designations = Designation::paginate(10)
+                ->withQueryString();
+
+        } catch (Exception $ex) {
+            // return $ex->errorInfo;
+        }
+        return view("masters.designations.index", ["designations" => $designations]);
+    }
+    public function designation_delete(Request $request)
+    {
+        $id = $request->id ?? 0;
+        $res['message'] = 'action failed, try again';
+        $res['code'] = 400;
+        try {
+            $delete = Designation::where('id', $id)->delete();
+            if ($delete) {
+                $res['message'] = 'Deleted';
+                $res['code'] = 200;
+            }
+        } catch (Exception $ex) {
+            // return $ex->getMessage();
+            $res['message'] = 'action failed, try again' . $ex->getMessage();
+            $res['code'] = 400;
+        }
+        return json_encode($res);
+    }
+    public function designation_saveupdate(Request $request)
+    {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                "id" => "required",
+                "name" => "required",
+                "flag" => "required",
+            ]
+        );
+        if ($validator->fails()) {
+            return response()->json(["success" => false, "message" => "data missing, try again.", "validation_error" => $validator->errors()]);
+        }
+        if ($request->flag == 1) {
+            $checkName = Designation::where('designation_name', $request->name)
+                ->where('id', "!=", $request->id)->get();
+            if ($checkName->count() > 0) {
+                return response()->json(["success" => false, "message" => "duplicate designation name.", "validation_error" => $validator->errors()]);
+            } else {
+                $update = Designation::where('id', $request->id)->update([
+                    'designation_name' => $request->name
+                ]);
+                if ($update) {
+                    return response()->json(["success" => true, "message" => "Designation updated.", "validation_error" => $validator->errors()]);
+                } else {
+                    return response()->json(["success" => false, "message" => "action failed, try again.", "validation_error" => $validator->errors()]);
+                }
+            }
+
+        } else {
+            $checkName = Designation::where('designation_name', $request->name)->get();
+            if ($checkName->count() == 0) {
+                $create = Designation::create([
+                    'designation_name' => $request->name
+                ]);
+                if ($create) {
+                    return response()->json(["success" => true, "message" => "Created", "validation_error" => $validator->errors()]);
+                } else {
+                    return response()->json(["success" => false, "message" => "action failed, try again.", "validation_error" => $validator->errors()]);
+                }
+            } else {
+                return response()->json(["success" => false, "message" => "duplicate designation name.", "validation_error" => $validator->errors()]);
+            }
+        }
+    }
+
     public function SiteArea(Request $request)
     {
         $validator = Validator::make(

@@ -1419,12 +1419,13 @@ class ServiceController extends Controller
             ->leftJoin("master_site_type", "master_site_type.id", "contracts.CNRT_SiteType")
             ->leftJoin("master_site_area", "master_site_area.id", "contracts.CNRT_Site")
             ->where("CNRT_ID", $service->contract_id)->first();
+
         $timeline = ServiceHistory::leftJoin("master_service_status", "master_service_status.Status_Id", "service_action_history.status_id")
             ->leftJoin("master_service_sub_status", "master_service_sub_status.Sub_Status_Id", "service_action_history.sub_status_id")
           
             ->where("service_id", $service->id)
             ->orderBy("service_action_history.id", "DESC")
-            ->get();
+            ->get(["service_action_history.*","service_action_history.created_at as actionDateTime","master_service_sub_status.*","master_service_status.*"]);
         $status_options = "<option value=''>Select Status</option>";
         $status = ServiceStatus::where("flag", 1)->get();
         foreach ($status as $st) {
@@ -1440,14 +1441,17 @@ class ServiceController extends Controller
                 $status_options .= "<option data-sub_status='" . $sub_status . "' value=" . $st->Status_Id . " " . $selected . ">" . $st->Status_Name . "</option>";
             }
         }
-        $employees = Employee::where(["EMP_Status"=>1,"Access_Role"=>4,'deleted_at'=>null])->join("master_role_access","master_role_access.id","employees.Access_Role")->get();
+        $employees = Employee::where(["EMP_Status"=>1,"Access_Role"=>4,'deleted_at'=>null])
+        ->join("master_role_access","master_role_access.id","employees.Access_Role")
+        ->join("master_designation","master_designation.id","employees.EMP_Designation")
+        ->get();
         $employee_options = "<option value=''>Select Employee</option>";
         foreach ($employees as $employee) {
             $selected = "";
             if ($services->assigned_to == $employee->EMP_ID) {
                 $selected = "selected";
             }
-            $employee_options .= "<option value=" . $employee->EMP_ID . " " . $selected . ">" . $employee->EMP_Name ."  (".$employee->access_role_name.")</option>";
+            $employee_options .= "<option value=" . $employee->EMP_ID . " " . $selected . ">" . $employee->EMP_Name ."  (".$employee->designation_name.")</option>";
         }
         // dd($status_options);
 

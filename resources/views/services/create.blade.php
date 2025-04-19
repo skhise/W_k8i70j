@@ -375,7 +375,7 @@
                                                 <input class="form-control text-box single-line" id="contact_person"
                                                     name="contact_person" placeholder="" type="text"
                                                     value="{{ $service->contact_person ?? old('contact_person') }}" />
-                                                <label for="first">Contact Name</label>
+                                                <label for="first">Contact Name <span class="text-danger">*</span></label>
                                                 <span class="text-danger field-validation-valid"
                                                     data-valmsg-for="contact_person"
                                                     data-valmsg-replace="true"></span>

@@ -48,7 +48,9 @@
                                                 <th>Name </th>
                                                 <th>Date </th>
                                                 <th>In Time </th>
+                                                <th>In Location </th>
                                                 <th>Out Time </th>
+                                                <th>Out Location </th>
                                             </tr>
                                         </thead>
                                         <tbody id="logsList">

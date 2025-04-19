@@ -28,6 +28,7 @@ Route::group(['namespace' => 'API', 'prefix' => 'v1', 'middleware' => ['cors', '
     Route::get("GetServiceTicketById", [AppUserController::class, "GetServiceTicketById"]);
     Route::get("engineerDashboard", [AppUserController::class, "EngineerDashboard"]);
     Route::get("ApplyServiceAction", [AppUserController::class, "ApplyServiceAction"]);
+    Route::get("ApplyRejectAction", [AppUserController::class, "ApplyRejectAction"]);
     Route::get("GetStatusListApp", [AppUserController::class, "GetStatusList"]);
     Route::get("GetReasonList", [AppUserController::class, "GetReasonList"]);
     Route::get("GetServiceHistoryApp", [AppUserController::class, "GetServiceHistory"]);

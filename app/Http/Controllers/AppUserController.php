@@ -957,6 +957,79 @@ class AppUserController extends Controller
         }
 
     }
+    public function ApplyRejectAction(Request $request)
+    {
+
+        try {
+            $validator = Validator::make(
+                $request->all(),
+                [
+                    "service_id" => "required",
+                    "status_id" => "required",
+                    'user_id' => "required",
+                    'reason_id' => "required",
+                    'action_description' => "required",
+                ]
+            );
+
+            if ($validator->fails()) {
+                return response()->json(["success" => false, "message" => "all fields required.", "validation_error" => $validator->errors()]);
+            }
+            $engineerId = $request->user_id;
+            $reasonId = $request->reason_id;
+            $actionId = $request->status_id;
+            $note = $request->action_description;
+            $serviceId = $request->service_id;
+            DB::beginTransaction();
+            $create = ServiceHistory::create([
+                'service_id' => $serviceId,
+                'status_id' => $actionId,
+                'user_id' => $engineerId,
+                'reason_id' => $reasonId,
+                'action_description' => $note,
+            ]);
+            if ($create) {
+                $update = Service::where("id", $serviceId)
+                    ->update([
+                        'service_status' => $actionId,
+                        'assigned_to' => $actionId == 8 ? 0 : $engineerId,
+                        'notification_flag' => 1
+                    ]);
+                if ($update) {
+                    try{
+                      $location =   LocationHistory::create([
+                            'User_ID' => $request->user_id,
+                            'last_long' => $request->last_long,
+                            'last_lang' => $request->last_lang,
+                            'full_address' => "",
+                            'area_code' => "",
+                        ]);
+                        if($location){
+                            DB::commit();
+                            return response()->json(['success' => true, 'message' => 'action applied and status updated.']);
+               
+
+                        }
+                    }catch(Exception $exp){
+                        DB::rollBack();
+                        return response()->json(['success' => false, 'message' => 'action failed, try again!'.$exp->getMessage()]);
+                    }
+                    
+                } else {
+                    DB::rollBack();
+                    return response()->json(['success' => false, 'message' => 'action failed, try again!']);
+                }
+
+            } else {
+                return response()->json(['success' => false, 'message' => 'action failed, try again!']);
+            }
+           
+
+        } catch (Exception $ex) {
+            return response()->json(["success" => false, "message" => "action failed, try again!"]);
+        }
+
+    }
     public function FinalTicketClose(Request $request)
     {
 

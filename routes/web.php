@@ -211,6 +211,16 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
         Route::post('/masters/service-type', [MasterController::class, 'sts_saveupdate'])->name('masters.service-type-store');
         Route::delete('/masters/service-type', [MasterController::class, 'sts_delete'])->name('masters.service-type-delete');
     });
+    Route::middleware('auth')->group(function () {
+        Route::get('/masters/issue-type', [MasterController::class, 'issue_index'])->name('masters.issue-type');
+        Route::post('/masters/issue-type', [MasterController::class, 'issue_saveupdate'])->name('masters.issue-type-store');
+        Route::delete('/masters/issue-type', [MasterController::class, 'issue_delete'])->name('masters.issue-type-delete');
+    });
+    Route::middleware('auth')->group(function () {
+        Route::get('/masters/designation', [MasterController::class, 'designation_index'])->name('masters.designation');
+        Route::post('/masters/designation', [MasterController::class, 'designation_saveupdate'])->name('masters.designation-store');
+        Route::delete('/masters/designation', [MasterController::class, 'designation_delete'])->name('masters.designation-delete');
+    });
     /*end master routes*/
 
     Route::middleware('auth')->group(function () {

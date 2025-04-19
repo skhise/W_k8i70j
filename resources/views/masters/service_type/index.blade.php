@@ -33,11 +33,17 @@
                                                 <td>{{$index+1}}</td>
                                                 <td>{{$servicetype['type_name']}}</td>
                                                 <td>
-                                                    
+                                                    <div class="d-flex float-right">
                                                     <button data-name="{{$servicetype['type_name']}}"
                                                         data-id="{{$servicetype['id']}}"
                                                         class="btn-edit btn btn-primary btn-sm btn-icon mr-2"><i
                                                             class="far fa-edit"></i></button>
+                                                    <button data-name="{{$servicetype['type_name']}}"
+                                                        data-id="{{$servicetype['id']}}"
+                                                        class="btn-delete btn btn-danger btn-sm btn-icon mr-2"><i
+                                                            class="fa fa-trash"></i></button>
+                                                    </div>
+                                                            
 
 
                                                 </td>

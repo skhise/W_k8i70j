@@ -10,7 +10,9 @@
             <td>{{ $atten->name }}</td>
             <td>{{ $atten->Att_Date != null ? date('d-M-Y', strtotime($atten->Att_Date)) : 'NA' }}</td>
             <td>{{ $atten->Att_In != null ? date('h:i:s a', strtotime($atten->Att_In)) : 'NA' }}</td>
+            <td>{{ $atten->Att_In_Location != null ? date('h:i:s a', strtotime($atten->Att_In_Location)) : 'NA' }}</td>
             <td>{{ $atten->Att_Out != null ? date('h:i:s a', strtotime($atten->Att_Out)) : 'NA' }}</td>
+            <td>{{ $atten->Att_Out_Location != null ? date('h:i:s a', strtotime($atten->Att_Out_Location)) : 'NA' }}</td>
         </tr>
     @endforeach
     <tr>

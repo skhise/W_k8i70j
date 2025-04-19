@@ -80,7 +80,7 @@
                                                                 ID
                                                             </strong>
                                                             <p class="text-muted">
-                                                                {{ $employee->EMP_ID }}
+                                                                {{ $employee->EMP_Code }}
                                                             </p>
                                                             <hr>
                                                             <strong>
@@ -90,6 +90,15 @@
                                                             </strong>
                                                             <p class="text-muted">
                                                                 {{ $employee->access_role_name }}
+                                                            </p>
+                                                            <hr>
+                                                            <strong>
+                                                                <i
+                                                                    class="fa fa-book margin-r-5"></i>&nbsp;&nbsp;Employee
+                                                                Designation
+                                                            </strong>
+                                                            <p class="text-muted">
+                                                                {{ $employee->designation_name }}
                                                             </p>
                                                             <hr>
                                                             <strong>

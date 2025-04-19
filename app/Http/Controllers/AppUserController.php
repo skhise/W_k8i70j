@@ -855,7 +855,7 @@ class AppUserController extends Controller
     public function GetStatusList()
     {
 
-        $status = ServiceStatus::where("flag", 1)->whereNotIn("Status_Id", [1,6])->get();
+        $status = ServiceStatus::where("flag", 1)->whereNotIn("Status_Id", [1,6,5])->get();
         return $status;
 
     }

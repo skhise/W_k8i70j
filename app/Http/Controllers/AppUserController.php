@@ -947,7 +947,7 @@ class AppUserController extends Controller
                     return response()->json(['success' => false, 'message' => 'Unable to store action, try again.']);
                 }
             } else {
-                return response()->json(["success" => false, "message" => "action failed, try again, Uable to get location.s!"]);
+                return response()->json(["success" => false, "message" => "action failed, try again, Uable to get location!"]);
             }
            
 

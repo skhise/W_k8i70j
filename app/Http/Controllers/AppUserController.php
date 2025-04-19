@@ -828,7 +828,7 @@ class AppUserController extends Controller
                 ->leftJoin("users", "users.id", "services.assigned_to")
                 ->where("services.assigned_to", $userId)
                 ->where("services.id", $id)
-                ->first(["master_site_area.*", "customer_sites.*", "services.id as service_id", "master_service_status.*", "master_service_priority.*", "services.*", "contracts.*", "clients.*", "master_issue_type.*", "master_service_type.*"]);
+                ->first(["services.updated_at as updatedAt","master_site_area.*", "customer_sites.*", "services.id as service_id", "master_service_status.*", "master_service_priority.*", "services.*", "contracts.*", "clients.*", "master_issue_type.*", "master_service_type.*"]);
 
 
             // $service->status=$this->GetStatusList();  

@@ -889,8 +889,8 @@ class AppUserController extends Controller
                     "status_id" => "required",
                     'user_id' => "required",
                     'reason_id' => "required",
-                    'last_long'=>'required',
-                    'last_lang'=>'required'
+                    // 'last_long'=>'required',
+                    // 'last_lang'=>'required'
                 ]
             );
 
@@ -904,8 +904,7 @@ class AppUserController extends Controller
             $note = $request->action_description;
             $serviceId = $request->service_id;
             DB::beginTransaction();
-            if($request->last_long != "undefined" && $request->last_lang != "undefined"){
-                $create = ServiceHistory::create([
+            $create = ServiceHistory::create([
                     'service_id' => $serviceId,
                     'status_id' => $actionId,
                     'user_id' => $engineerId,
@@ -947,9 +946,11 @@ class AppUserController extends Controller
                 } else {
                     return response()->json(['success' => false, 'message' => 'Unable to store action, try again.']);
                 }
-            } else {
-                return response()->json(["success" => false, "message" => "action failed, try again, Uable to get location!"]);
-            }
+            // if($request->last_long != "undefined" && $request->last_lang != "undefined"){
+                
+            // } else {
+            //     return response()->json(["success" => false, "message" => "action failed, try again, Uable to get location!"]);
+            // }
            
 
         } catch (Exception $ex) {

@@ -896,7 +896,7 @@ class AppUserController extends Controller
 
             if ($validator->fails()) {
                 return response()->json(["success" => false, "message" => "all fields required.", "validation_error" => $validator->errors()]);
-                exit;
+                // exit;
             }
             $engineerId = $request->user_id;
             $reasonId = $request->reason_id;

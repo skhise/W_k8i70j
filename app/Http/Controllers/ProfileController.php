@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Generate;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Models\ProfileSetup;
 use Illuminate\Http\Request;
@@ -20,6 +21,10 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
         $profile = ProfileSetup::where(['id'=>1])->first();
+        if(Auth::user()->role == 3){
+            $profile = User::where(column: ['id'=>$user->id])->first();
+        }
+        
         $generate = Generate::find(1);
        
         $users = Crypt::decrypt($generate->product_key);

@@ -113,12 +113,33 @@ class DashboardController extends Controller
             ]);
         }
         if (Auth::user()->role == 3) {
+             $new_ticket = 0;
+        $open_ticket = 0;
+        $pending_ticket = 0;
+        $resovled_ticket = 0;
+        $closed_ticket = 0;
+        try {
+            $userId = Auth::user()->id;
+
+            $new_ticket = Service::where("service_status", "6")->where("assigned_to", $userId)->get()->count();
+            $open_ticket = Service::where("service_status", "2")->where("assigned_to", $userId)->get()->count();
+            $pending_ticket = Service::where("service_status", "3")->where("assigned_to", $userId)->get()->count();
+            $resolved_ticket = Service::where("service_status", "4")->where("assigned_to", $userId)->get()->count();
+            $closed_ticket = Service::where("service_status", "5")->where("assigned_to", $userId)->get()->count();
+
+        } catch (Illuminate\Database\QueryException $ex) {
+        }
             return view("dashboard_emp", [
                 "dashboard" => json_decode($dashboard),
                 "contractdonut" => $contractdonut,
                 "schedulecount" => $schedulecount,
                 "services" => $services,
                 "servicesdata" => $servicesdata,
+                'new_ticket'=>$new_ticket,
+                'open_ticket'=>$open_ticket,
+                'pending_ticket'=>$pending_ticket,
+                'resolved_ticket'=>$resolved_ticket,
+                'closed_ticket'=>$closed_ticket,
             ]);
         }
 

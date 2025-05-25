@@ -1029,6 +1029,15 @@ class ServiceController extends Controller
             ->when($filter_status_type, function ($query) use($filter_status_type) {
                 $query->where('service_status', $filter_status_type);
             })
+            ->when($filter_status_type, function ($query) use($filter_status_type) {
+                $query->where('service_status', $filter_status_type);
+            })
+            ->when(Auth::user()->role == 3, function ($query) use($request) {
+                if($request->search_field == "Assigned"){
+                    $query->where('assigned_to', Auth::user()->id);
+                }
+                
+            })
             ->when($filter_type !='', function ($query) use($filter_type) {
                 if($filter_type == 0){
                     
@@ -1049,7 +1058,8 @@ class ServiceController extends Controller
         $resolved = $this->service_status_count(4, $fromdate, $todate);
         $closed = $this->service_status_count(5, $fromdate, $todate);
         $assigned = $this->service_status_count(6, $fromdate, $todate);
-        return view(
+         if (Auth::user()->role == 1) {
+            return view(
             'services.index',
             [
                 'filters' => $request->all('search', 'trashed', 'search_field', 'filter_status'),
@@ -1073,6 +1083,36 @@ class ServiceController extends Controller
                 'service_status'=>ServiceStatus::all()
             ]
         );
+        }
+        if (Auth::user()->role == 3) {
+            
+       
+           return view(
+            'services.index_eng',
+            [
+                'filters' => $request->all('search', 'trashed', 'search_field', 'filter_status'),
+                'search_field' => $request->search_field ?? '',
+                'filter_status' => $request->filter_status ?? '',
+                'search' => $request->search ?? '',
+                'services' => $services,
+                'dayFilter' => $dayFilter,
+                'filter_type'=>$filter_type,
+                'filter_service_type'=>$filter_service_type,
+                'filter_issue_type'=>$filter_issue_type,
+                'filter_status_type'=>$filter_status_type,
+                'new' => $new,
+                'issue_type'=>IssueType::all(),
+                'open' => $open,
+                'pending' => $pending,
+                'resolved' => $resolved,
+                'closed' => $closed,
+                'assigned' => $assigned,
+                'service_types'=>ServiceType::all(),
+                'service_status'=>ServiceStatus::all()
+            ]
+        );
+        }
+        
 
 
     }

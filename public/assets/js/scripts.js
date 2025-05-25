@@ -163,33 +163,34 @@ $(function () {
         $activeAnchors.addClass("toggled");
         $activeAnchors.next().show();
     });
+    $(document)
+        .off("click", "[data-toggle='sidebar']")
+        .on("click", "[data-toggle='sidebar']", function () {
+            var body = $("body"),
+                w = $(window);
 
-    $("[data-toggle='sidebar']").click(function () {
-        var body = $("body"),
-            w = $(window);
+            if (w.outerWidth() <= 1024) {
+                body.removeClass("search-show search-gone");
+                if (body.hasClass("sidebar-gone")) {
+                    body.removeClass("sidebar-gone");
+                    body.addClass("sidebar-show");
+                } else {
+                    body.addClass("sidebar-gone");
+                    body.removeClass("sidebar-show");
+                }
 
-        if (w.outerWidth() <= 1024) {
-            body.removeClass("search-show search-gone");
-            if (body.hasClass("sidebar-gone")) {
-                body.removeClass("sidebar-gone");
-                body.addClass("sidebar-show");
+                update_sidebar_nicescroll();
             } else {
-                body.addClass("sidebar-gone");
-                body.removeClass("sidebar-show");
+                body.removeClass("search-show search-gone");
+                if (body.hasClass("sidebar-mini")) {
+                    toggle_sidebar_mini(false);
+                } else {
+                    toggle_sidebar_mini(true);
+                }
             }
 
-            update_sidebar_nicescroll();
-        } else {
-            body.removeClass("search-show search-gone");
-            if (body.hasClass("sidebar-mini")) {
-                toggle_sidebar_mini(false);
-            } else {
-                toggle_sidebar_mini(true);
-            }
-        }
-
-        return false;
-    });
+            return false;
+        });
 
     var toggleLayout = function () {
         var w = $(window),

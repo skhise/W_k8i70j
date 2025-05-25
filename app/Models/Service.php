@@ -3,6 +3,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use DateTime;
+use Google\Service\CloudControlsPartnerService\Console;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\ServiceHistory;
@@ -68,15 +69,16 @@ class Service extends Model
    {
       return $this->hasMany(ServiceHistory::class);
    }
-   public function lastactiondetails(){
-      $history = ServiceHistory::join("master_service_sub_status","master_service_sub_status.Sub_Status_Id","service_action_history.sub_status_id")->where("service_id", $this->service_id)->orderByDesc("id")->first();
+   public function lastactiondetails()
+   {
+      $history = ServiceHistory::join("master_service_sub_status", "master_service_sub_status.Sub_Status_Id", "service_action_history.sub_status_id")->where("service_id", $this->service_id)->orderByDesc("id")->first();
       return $history->Sub_Status_Name ?? "";
    }
    public function lastaction()
    {
       $history = ServiceHistory::where("service_id", $this->service_id)->orderByDesc("id")->first();
       return date("d-M-Y H:i", strtotime($history->created_at)) ?? 'NA';
-   //   return Carbon::parse($this->updated_at)->format("d-M-Y H:i");
+      //   return Carbon::parse($this->updated_at)->format("d-M-Y H:i");
    }
    public function timeline()
    {
@@ -130,27 +132,36 @@ class Service extends Model
          // do the rest of the cleanup...
       });
    }
-   public function scopeFilter($query, array $filters)
-   {
+public function scopeFilter($query, array $filters)
+{
+    $query->when($filters['search_field'] ?? null, function ($query, $search) {
+        $query->where(function ($query) use ($search) {
+            $query->orWhere('service_no', 'like', '%' . $search . '%');
 
-      $query->when($filters['search'] ?? null, function ($query, $search) use ($filters) {
+            $statusMap = [
+                'open' => 2,
+                'pending' => 3,
+                'resolved' => 4,
+                'closed' => 5,
+                'assigned' => 6,
+            ];
 
-         $search_field = $filters['search_field'] ?? '';
-         if (empty ($search_field)) {
-            $query->where(function ($query) use ($search) {
-               $query->orWhere('service_no', 'like', '%' . $search . '%')
-                  ->orWhere('clients.CST_Name', 'like', '%' . $search . '%');
-            });
+            $statusCode = $statusMap[trim(strtolower($search))] ?? null;
 
-         }
-      })->when($filters['trashed'] ?? null, function ($query, $trashed) {
-         if ($trashed === 'with') {
+            if ($statusCode !== null) {
+                $query->orWhere('service_status', $statusCode);
+            }
+        });
+    });
+
+    $query->when($filters['trashed'] ?? null, function ($query, $trashed) {
+        if ($trashed === 'with') {
             $query->withTrashed();
-         } elseif ($trashed === 'only') {
+        } elseif ($trashed === 'only') {
             $query->onlyTrashed();
-         }
-      })->when($filters['filter_status'] ?? null, function ($query, $search) {
-         $query->where('service_status', 'like', '%' . $search . '%');
-      });
-   }
+        }
+    });
+}
+
+
 }

@@ -6521,7 +6521,7 @@ body.sidebar-gone .main-sidebar {
     height: 100%;
     z-index: 9999;
     background: url("../img/loading.gif") 50% 50% no-repeat #f9f9f9;
-    opacity: 0.5;
+    opacity: 0.9;
 }
 
 .user-img-radious-style {

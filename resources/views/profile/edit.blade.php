@@ -142,26 +142,32 @@
                                                     <hr/>
                                                     </div>
                                                 </div>
+                                              @if ($user->role != 3)
                                                 <div class="row">
                                                     <div class="form-group col-md-4 col-12">
                                                         <label for="wp_user_name">WhatsApp Username</label>
-                                                        <input class="form-control" name="wp_user_name" id="wp_user_name" value="{{old('wp_user_name', $profile->wp_user_name)}}">
+                                                        <input class="form-control" name="wp_user_name" id="wp_user_name" value="{{ old('wp_user_name', $profile->wp_user_name) }}">
                                                     </div>
                                                     <div class="form-group col-md-8 col-12">
                                                         <label for="wp_api_key">WhatsApp Api Key</label>
-                                                        <input class="form-control" name="wp_api_key" id="wp_api_key" value="{{old('wp_api_key', $profile->wp_api_key)}}">
+                                                        <input class="form-control" name="wp_api_key" id="wp_api_key" value="{{ old('wp_api_key', $profile->wp_api_key) }}">
                                                     </div>
                                                 </div>
+
                                                 <div class="row">
                                                     <div class="col-lg-12">
-                                                    <hr/>
+                                                        <hr/>
                                                     </div>
                                                 </div>
+
                                                 <div class="row">
                                                     <div class="form-group col-md-4 col-12">
                                                         <button class="btn-save btn btn-primary float-left">Save</button>
                                                     </div>
                                                 </div>
+                                            @endif
+
+                                                
 
                                             </div>
                                         </form>

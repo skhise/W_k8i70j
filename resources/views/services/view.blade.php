@@ -162,7 +162,7 @@
                                                                 <hr />
                                                                 <div class="row">
                                                                     <div class="col-md-3">
-                                                                        <span style="float:right ;font-weight:bold">
+                                                                        <span style="font-weight:bold">
                                                                             Client Name</span>
                                                                     </div>
                                                                     <div class="col-md-9">{{ $service->CST_Name }}
@@ -170,7 +170,7 @@
                                                                 </div>
                                                                 <div class="row">
                                                                     <div class="col-md-3">
-                                                                        <span style="float:right ;font-weight:bold">
+                                                                        <span style="font-weight:bold">
                                                                             Contract Number</span>
                                                                     </div>
                                                                     <div class="col-md-9">{{ $contract->CNRT_Number ?? "" }}
@@ -179,7 +179,7 @@
                                                                 <div class="row">
                                                                     <div class="col-md-3">
                                                                         <span
-                                                                            style="float:right ;font-weight:bold">Contrcat
+                                                                            style="font-weight:bold">Contrcat
                                                                             Type</span>
                                                                     </div>
                                                                     <div class="col-md-3">
@@ -187,7 +187,7 @@
                                                                 </div>
                                                                 <div class="row">
                                                                     <div class="col-md-3">
-                                                                        <span style="float:right ;font-weight:bold">
+                                                                        <span style="font-weight:bold">
                                                                             Site Type
                                                                         </span>
                                                                     </div>
@@ -197,7 +197,7 @@
                                                                 </div>
                                                                 <div class="row">
                                                                     <div class="col-md-3">
-                                                                        <span style="float:right ;font-weight:bold">
+                                                                        <span style="font-weight:bold">
                                                                             Service Category
                                                                         </span>
                                                                     </div>
@@ -207,7 +207,7 @@
                                                                 </div>
                                                                 <div class="row">
                                                                     <div class="col-md-3">
-                                                                        <span style="float:right ;font-weight:bold">
+                                                                        <span style="font-weight:bold">
                                                                             Start Date
                                                                         </span>
                                                                     </div>
@@ -215,7 +215,7 @@
                                                                         {{ isset($contract->CNRT_StartDate) ? date('d-M-Y', strtotime($contract->CNRT_StartDate)) : 'NA' }}
                                                                     </div>
                                                                     <div class="col-md-2">
-                                                                        <span style="float:right ;font-weight:bold">
+                                                                        <span style="font-weight:bold">
                                                                             Expriy Date
                                                                         </span>
                                                                     </div>
@@ -226,25 +226,25 @@
                                                                 <div class="row">
                                                                     <div class="col-md-3">
                                                                         <span
-                                                                            style="float:right ;font-weight:bold">Contract
+                                                                            style="font-weight:bold">Contract
                                                                             Cost</span>
                                                                     </div>
                                                                     <div class="col-md-2 "
-                                                                        style="float:left ;font-weight:bold">
+                                                                        style="font-weight:bold">
                                                                         {{ $contract->CNRT_Charges ?? "0" }}</div>
                                                                     <div class="col-md-1">
                                                                         <span
-                                                                            style="float:right ;font-weight:bold">Paid</span>
+                                                                            style="font-weight:bold">Paid</span>
                                                                     </div>
                                                                     <div class="col-md-2"
                                                                         style="float:left ;font-weight:bold">
                                                                         {{ $contract->CNRT_Charges_Paid ?? "0" }}</div>
                                                                     <div class="col-md-2">
                                                                         <span
-                                                                            style="float:right ;font-weight:bold">Pending</span>
+                                                                            style="font-weight:bold">Pending</span>
                                                                     </div>
                                                                     <div class="col-md-2"
-                                                                        style="float:left ;font-weight:bold">
+                                                                        style="font-weight:bold">
                                                                         {{ $contract->CNRT_Charges_Paid ?? "0" }}</div>
                                                                 </div>
 
@@ -258,21 +258,21 @@
                                                         <hr />
                                                         <div class="row">
                                                             <div class="col-md-3">
-                                                                <span style="float:right ;font-weight:bold">
+                                                                <span style="font-weight:bold">
                                                                     Contact Person</span>
                                                             </div>
                                                             <div class="col-md-9">{{ $service->contact_person ?? "" }}</div>
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-3">
-                                                                <span style="float:right ;font-weight:bold">
+                                                                <span style="font-weight:bold">
                                                                     Email</span>
                                                             </div>
                                                             <div class="col-md-9">{{ $service->contact_email ?? "" }}</div>
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-3">
-                                                                <span style="float:right ;font-weight:bold">
+                                                                <span style="font-weight:bold">
                                                                     Phone Numbers</span>
                                                             </div>
                                                             <div class="col-md-3">{{ $service->contact_number1 ?? "" }}
@@ -288,7 +288,7 @@
                                                         @if ($service->product_id == 0)
                                                             <div class="row">
                                                                 <div class="col-md-3">
-                                                                    <span style="float:right ;font-weight:bold">
+                                                                    <span style="font-weight:bold">
                                                                         Serial Number</span>
                                                                 </div>
                                                                 <div class="col-md-9">{{ $service->nrnumber ?? $service->product_sn  }}
@@ -296,7 +296,7 @@
                                                             </div>
                                                             <div class="row">
                                                                 <div class="col-md-3">
-                                                                    <span style="float:right ;font-weight:bold">
+                                                                    <span style="font-weight:bold">
                                                                         Name</span>
                                                                 </div>
                                                                 <div class="col-md-9">{{ $service->product_name ?? "" }}
@@ -304,7 +304,7 @@
                                                             </div>
                                                             <div class="row">
                                                                 <div class="col-md-3">
-                                                                    <span style="float:right ;font-weight:bold">
+                                                                    <span style="font-weight:bold">
                                                                         Type</span>
                                                                 </div>
                                                                 <div class="col-md-3">{{ $service->product_type ?? ""}}
@@ -312,7 +312,7 @@
                                                             </div>
                                                             <div class="row">
                                                                 <div class="col-md-3">
-                                                                    <span style="float:right ;font-weight:bold">
+                                                                    <span style="font-weight:bold">
                                                                         Description</span>
                                                                 </div>
                                                                 <div class="col-md-9">
@@ -321,7 +321,7 @@
                                                             </div>
                                                             <div class="row">
                                                                 <div class="col-md-3">
-                                                                    <span style="float:right ;font-weight:bold">
+                                                                    <span style="font-weight:bold">
                                                                         Branch / Location</span>
                                                                 </div>
                                                                 <div class="col-md-9">
@@ -333,7 +333,7 @@
                                                         @if ($service->product_id != 0)
                                                         <div class="row">
                                                                 <div class="col-md-3">
-                                                                    <span style="float:right ;font-weight:bold">
+                                                                    <span style="font-weight:bold">
                                                                     Tag/Sr. Number</span>
                                                                 </div>
                                                                 <div class="col-md-9">{{ $product->nrnumber ?? ""}}
@@ -341,7 +341,7 @@
                                                             </div>
                                                             <div class="row">
                                                                 <div class="col-md-3">
-                                                                    <span style="float:right ;font-weight:bold">
+                                                                    <span style="font-weight:bold">
                                                                         Name</span>
                                                                 </div>
                                                                 <div class="col-md-9">{{ $product->product_name ?? ""}}
@@ -349,14 +349,14 @@
                                                             </div>
                                                             <div class="row">
                                                                 <div class="col-md-3">
-                                                                    <span style="float:right ;font-weight:bold">
+                                                                    <span style="font-weight:bold">
                                                                         Type</span>
                                                                 </div>
                                                                 <div class="col-md-3">{{ $product->type_name ?? "" }}</div>
                                                             </div>
                                                             <div class="row">
                                                                 <div class="col-md-3">
-                                                                    <span style="float:right ;font-weight:bold">
+                                                                    <span style="font-weight:bold">
                                                                         Description</span>
                                                                 </div>
                                                                 <div class="col-md-9">
@@ -365,7 +365,7 @@
                                                             </div>
                                                             <div class="row">
                                                                 <div class="col-md-3">
-                                                                    <span style="float:right ;font-weight:bold">
+                                                                    <span style="font-weight:bold">
                                                                         Branch / Location</span>
                                                                 </div>
                                                                 <div class="col-md-9">
@@ -376,7 +376,7 @@
                                                         <hr />
                                                          <div class="row">
                                                                 <div class="col-md-3">
-                                                                    <span style="float:right ;font-weight:bold">
+                                                                    <span style="font-weight:bold">
                                                                         Service Type</span>
                                                                 </div>
                                                                 <div class="col-md-9">
@@ -385,7 +385,7 @@
                                                             </div>
                                                          <div class="row">
                                                                 <div class="col-md-3">
-                                                                    <span style="float:right ;font-weight:bold">
+                                                                    <span style="font-weight:bold">
                                                                         Issue Type</span>
                                                                 </div>
                                                                 <div class="col-md-9">
@@ -394,7 +394,7 @@
                                                             </div>
                                                                <div class="row">
                                                             <div class="col-md-3">
-                                                                <span style="float:right ;font-weight:bold">Issue
+                                                                <span style="font-weight:bold">Issue
                                                                     Description</span>
                                                             </div>
                                                             <div class="col-md-6">
@@ -408,7 +408,7 @@
                                                         <hr />
                                                         <div class="row">
                                                             <div class="col-md-3">
-                                                                <span style="float:right ;font-weight:bold">Google
+                                                                <span style="font-weight:bold">Google
                                                                     Location Link
                                                                 </span>
                                                             </div>
@@ -422,7 +422,7 @@
                                                                 @endif
                                                             </div>
                                                             <div class="col-md-2">
-                                                                <span style="float:right ;font-weight:bold">Site
+                                                                <span style="font-weight:bold">Site
                                                                     Area</span>
                                                             </div>
                                                             <div class="col-md-4">
@@ -430,7 +430,7 @@
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-3">
-                                                                <span style="float:right ;font-weight:bold">Address
+                                                                <span style="font-weight:bold">Address
                                                                 </span>
                                                             </div>
                                                             <div class="col-md-3">
@@ -447,7 +447,7 @@
                                                             <hr />
                                                             <div class="row">
                                                                 <div class="col-md-3">
-                                                                    <span style="float:right ;font-weight:bold">
+                                                                    <span style="font-weight:bold">
                                                                         Charges
                                                                     </span>
                                                                 </div>
@@ -456,7 +456,7 @@
                                                                 </div>
                                                                 <div class="col-md-2">
                                                                     <span
-                                                                        style="float:right ;font-weight:bold">Expenses</span>
+                                                                        style="font-weight:bold">Expenses</span>
                                                                 </div>
                                                                 <div class="col-md-4">
                                                                     {{ $service->expenses ?? '0' }}
@@ -464,7 +464,7 @@
                                                             </div>
                                                             <div class="row">
                                                                 <div class="col-md-3">
-                                                                    <span style="float:right ;font-weight:bold">Note
+                                                                    <span style="font-weight:bold">Note
                                                                     </span>
                                                                 </div>
                                                                 <div class="col-md-3">
@@ -491,7 +491,7 @@
                                                             <div class="activity-icon bg-primary text-white">
                                                                 <i class="fas fa-clock" style="font-size: 16px;"></i>
                                                             </div>
-                                                            <div class="activity-detail" style="width:50%;">
+                                                            <div class="activity-detail">
                                                                 <div class="mb-2">
                                                                     <a class="text-white" href="#"><span
                                                                             class="badge badge-shadow {{ $time_line['status_color'] ?? 'bg-primary' }}">

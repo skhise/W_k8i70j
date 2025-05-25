@@ -124,7 +124,7 @@
 
 </head>
 
-<body>
+<body  id="main-body" class="sidebar-gone">
     <div class="loader"></div>
     <div id="app">
         <div class="main-wrapper main-wrapper-1">
@@ -298,6 +298,9 @@
     <!-- <script src="{{ asset('bundles/apexcharts/apexcharts.min.js') }}"></script> -->
 
     <script>
+        if (window.innerWidth <= 768) { // Adjust breakpoint as needed
+            $("main-body").addClass("sidebar-mini");
+        }
         var csrfToken = $('meta[name="csrf-token"]').attr('content');
 
         $.ajaxSetup({

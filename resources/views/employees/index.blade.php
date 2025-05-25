@@ -87,7 +87,7 @@
                                                 <td>{{$index+1}}</td>
                                                 <td>{{$employee['EMP_Name']}}</td>
                                                 <td>{{$employee['EMP_MobileNumber']}}</td>
-                                                <td>{{$employee['EMP_Email']}}</td>
+                                                <td>{{$employee['email']}}</td>
                                                 <td>{{$employee['access_role_name']}}</td>
                                                 <td> {!! $status[$employee['status']] !!}</td>
                                                 <td>

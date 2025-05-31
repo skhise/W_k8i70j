@@ -30,7 +30,7 @@
                                 {{-- Mobile View --}}
                                 <div class="d-block" style="max-height: 600px; overflow-y: auto;">
                                     @forelse ($services as $service)
-                                        <div class="card mb-3 shadow-sm border rounded px-3 py-3">
+                                            <div class="card mb-3 shadow-sm border rounded px-3 py-3">
                                             <div class="d-flex justify-content-between align-items-center">
                                                 {{-- Left side: Icon + Content --}}
                                                 <div class="d-flex align-items-start  align-items-center">
@@ -39,22 +39,26 @@
                                                     </div>
                                                     <div>
                                                         <h6 class="mb-1 font-weight-bold">{{ $service['service_no'] }}</h6>
+                                                        
                                                         <div class="small">
-                                                            <span
-                                                                class="text-muted font-weight-bold">{{ $service['Status_Name'] }}</span>,
-                                                            <span>Active Period {{ $service['active_days'] ?? 'NA' }}
-                                                                Days</span>
+{{ $service['CST_Name'] }}
+                                                            
                                                         </div>
                                                         <div class="text-muted small mt-1">
                                                             <i class="far fa-calendar-alt"></i>
                                                             {{ $service['service_date'] ? date('d M Y', strtotime($service['service_date'])) : 'NA' }}
-                                                            {{ $service['service_time'] ? date('h:i A', strtotime($service['service_time'])) : '' }}
+                                                            
                                                         </div>
                                                     </div>
                                                 </div>
 
                                                 {{-- Right side: View Button --}}
                                                 <div class="d-flex align-items-center">
+                                                    <span
+                                                                class="font-weight-bold {{ $service['status_color'] }} text-white p-1 rounded">{{ $service['Status_Name'] }}</span>
+                                                </div>
+                                                <div class="d-flex align-items-center">
+                                                    
                                                     <a href="{{ route('services.view', $service['service_id']) }}"
                                                         class="btn btn-outline-primary d-flex align-items-center justify-content-center"
                                                         title="View">

@@ -48,7 +48,7 @@
                 <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12 mb-3">
                 <a href="{{ route('services') }}?search_field=Open" style="text-decoration: none;">
 
-                    <div class="card text-white bg-info">
+                    <div class="card text-white bg-success">
                         <div class="card-body d-flex align-items-center justify-content-between">
                             <div class="card-content">
                                 <h5 class="font-15">Open Tickets</h5>
@@ -64,7 +64,7 @@
                 <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 col-12 mb-3">
                 <a href="{{ route('services') }}?search_field=Pending" style="text-decoration: none;">
 
-                    <div class="card text-white bg-info">
+                    <div class="card text-white bg-warning">
                         <div class="card-body d-flex align-items-center justify-content-between">
                             <div class="card-content">
                                 <h5 class="font-15">Pending Tickets</h5>

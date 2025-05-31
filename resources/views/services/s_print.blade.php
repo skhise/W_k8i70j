@@ -164,5 +164,13 @@
         </table>
     </div>
 </body>
+<script>
+        window.onload = function() {
+            window.print();
+        };
+        window.onafterprint = function () {
+            window.close();
+        };
+    </script>
 
 </html>

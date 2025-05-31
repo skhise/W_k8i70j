@@ -134,34 +134,48 @@ class Service extends Model
    }
 public function scopeFilter($query, array $filters)
 {
-    $query->when($filters['search_field'] ?? null, function ($query, $search) {
-        $query->where(function ($query) use ($search) {
-            $query->orWhere('service_no', 'like', '%' . $search . '%');
+    // Combine both search inputs if needed, or prefer one
+    $search = $filters['search_field'] ?? $filters['search'] ?? null;
 
-            $statusMap = [
-                'open' => 2,
-                'pending' => 3,
-                'resolved' => 4,
-                'closed' => 5,
-                'assigned' => 6,
-            ];
+    // Map for status keywords
+    $statusMap = [
+        'open'     => 2,
+        'pending'  => 3,
+        'resolved' => 4,
+        'closed'   => 5,
+        'assigned' => 6,
+    ];
 
-            $statusCode = $statusMap[trim(strtolower($search))] ?? null;
+    // Apply search filter
+    if ($search) {
+        $normalizedSearch = trim(strtolower($search));
+        $statusCode = $statusMap[$normalizedSearch] ?? null;
 
-            if ($statusCode !== null) {
-                $query->orWhere('service_status', $statusCode);
+        $query->where(function ($q) use ($search, $statusCode) {
+            $q->where('service_no', 'like', '%' . $search . '%')
+            ->orWhere('clients.CST_Name', 'like', '%' . $search . '%');
+
+            if (!is_null($statusCode)) {
+                $q->orWhere('service_status', $statusCode);
             }
         });
-    });
+    }
 
-    $query->when($filters['trashed'] ?? null, function ($query, $trashed) {
-        if ($trashed === 'with') {
+    // Status filtering (exact match or partial match if needed)
+    if (!empty($filters['filter_status'])) {
+        $query->where('service_status', 'like', '%' . $filters['filter_status'] . '%');
+    }
+
+    // Trashed filter
+    if (!empty($filters['trashed'])) {
+        if ($filters['trashed'] === 'with') {
             $query->withTrashed();
-        } elseif ($trashed === 'only') {
+        } elseif ($filters['trashed'] === 'only') {
             $query->onlyTrashed();
         }
-    });
+    }
 }
+
 
 
 }

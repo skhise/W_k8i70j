@@ -210,23 +210,29 @@
             padding: 10px;
         }
     </style>
-
-    <script>
+    @section('script')
+        <script>
         $(document).ready(function() {
+
+             $(document).on('change', '#search', function() {
+                $("#search_form_all")[0].submit();
+            })
             $('.btn-status-filter').on('click', function() {
                 var key = $(this).data('key');
                 $('#filter_status').val(key);
                 $('#search_form_all').submit();
             });
 
-            $('.filter-remove').on('click', function() {
-                // Clear all filter inputs and reload the page to reset filters
-                window.location.href = "{{ route('services') }}";
-            });
+           $('.filter-remove').on('click', function (e) {
+            e.preventDefault(); // Prevent default behavior if it's a link or button
+            window.location.href = "{{ route('services') }}";
+        });
 
             $('.filter-dropdown').on('click', function() {
                 $(this).siblings('.edit-filter-modal').toggleClass('hidden');
             });
         });
     </script>
+    
+    @endsection
 </x-app-layout>

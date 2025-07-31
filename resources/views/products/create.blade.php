@@ -9,7 +9,7 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header">
-                                <h4>{{ $update ? 'Update Product' : 'Add Product'}}</h4>
+                                <h4>{{ $update ? 'Update Product / Spare' : 'Add Product / Spare'}}</h4>
                             </div>
                             <div class="card-body">
                                 <form id="form_cp" method="post" enctype="multipart/form-data"

@@ -161,7 +161,7 @@
             </li> -->
 
             <li class="dropdown {{ Request::is('products/*') || Request::is('products') ? 'active' : '' }}">
-                <a href="{{ route('products') }}" class="nav-link"><i data-feather="box"></i><span>Products</span></a>
+                <a href="{{ route('products') }}" class="nav-link"><i data-feather="box"></i><span>Products / Spares</span></a>
             </li>
             <li class="dropdown {{ Request::is('location-report') || Request::is('attendance') || Request::is('location') ? 'active' : '' }}">
                 <a href="#"

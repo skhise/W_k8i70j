@@ -6,12 +6,12 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header">
-                                <h4>Products</h4>
+                                <h4>Products / Spares</h4>
                                 <div class="card-header-action">
                                     <a href="{{route('products.create')}}" class="btn btn-icon icon-left btn-primary"><i
                                             class="
                                         fas fa-plus-square"></i>
-                                        Add Product</a>
+                                        Add Product / Spare</a>
 
                                 </div>
                             </div>
@@ -56,7 +56,7 @@
                                                     #
                                                 </th>
                                                 <th>Name</th>
-                                                <th>Product Type</th>
+                                                <th>Product/Spare Type</th>
                                                 <th>Description</th>
                                                 <th>Action</th>
                                             </tr>
@@ -64,7 +64,7 @@
                                         <tbody>
                                             @if(count($products) == 0)
                                             <tr class="text-center">
-                                                <td colspan="6">No products added yet.</td>
+                                                <td colspan="6">No products / spares added yet.</td>
                                             </tr>
                                             @else
                                             @foreach($products as $index => $product)

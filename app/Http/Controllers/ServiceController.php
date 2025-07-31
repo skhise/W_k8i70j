@@ -1442,7 +1442,11 @@ class ServiceController extends Controller
     {
         // dd(config('app.timezone'));
         if (Auth::user()->role == 1) {
-            Service::where('services.id', $service->id)->update(["notification_flag" => 0]);
+            if($service->notification_flag == 1){
+                $service->notification_flag = 0;
+                $service->save();
+            }
+            
         }
         $services = Service::select("*", "services.id as service_id")
             ->join("master_service_status", "master_service_status.Status_Id", "services.service_status")

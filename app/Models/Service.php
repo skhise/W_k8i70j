@@ -113,6 +113,10 @@ class Service extends Model
       return $this->hasMany(ServiceAccessory::class);
 
    }
+   public function customer()
+   {
+      return $this->belongsTo(Customer::class, 'customer_id', 'CST_ID');
+   }
    public function contractscheduleservice()
    {
       return $this->belongsTo(ContractScheduleService::class, "Service_Call_Id", "id");

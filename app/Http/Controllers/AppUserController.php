@@ -1344,4 +1344,62 @@ class AppUserController extends Controller
         
 
     }
+
+    public function GetRecentActivity(Request $request)
+    {
+        try {
+            $userId = $request->userId;
+            
+            if (!$userId) {
+                return response()->json([
+                    'success' => false, 
+                    'message' => 'User ID is required'
+                ]);
+            }
+
+            // Get the most recent service assigned to the user with notification_flag = 1
+            $recentActivity = Service::where('assigned_to', $userId)
+                ->where('notification_flag', 1)
+                ->orderBy('updated_at', 'desc')
+                ->first();
+
+            if (!$recentActivity) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'No recent activity found',
+                    'recentActivity' => null
+                ]);
+            }
+
+            // Get service status name
+            $statusName = ServiceStatus::where('Status_Id', $recentActivity->service_status)->first();
+            
+            // Format the response
+            $activityData = [
+                'service_id' => $recentActivity->service_id,
+                'service_no' => $recentActivity->service_no,
+                'service_date' => $recentActivity->service_date,
+                'customer_name' => $recentActivity->customer->CST_Name ?? 'N/A',
+                'service_type' => $recentActivity->service_type,
+                'service_status' => $recentActivity->service_status,
+                'status_name' => $statusName->Status_Name ?? 'N/A',
+                'assigned_to' => $recentActivity->assigned_to,
+                'notification_flag' => $recentActivity->notification_flag,
+                'updated_at' => $recentActivity->updated_at,
+                'created_at' => $recentActivity->created_at
+            ];
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Recent activity retrieved successfully',
+                'recentActivity' => $activityData
+            ]);
+
+        } catch (Exception $exp) {
+            return response()->json([
+                'success' => false, 
+                'message' => "Exception: " . $exp->getMessage()
+            ]);
+        }
+    }
 }

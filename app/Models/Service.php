@@ -115,7 +115,7 @@ class Service extends Model
    }
    public function customer()
    {
-      return $this->belongsTo(Customer::class, 'customer_id', 'CST_ID');
+      return $this->belongsTo(Client::class, 'customer_id', 'CST_ID');
    }
    public function contractscheduleservice()
    {

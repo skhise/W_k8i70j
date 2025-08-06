@@ -16,7 +16,6 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\DateTime;
 use App\Models\User;
-use App\Models\Customer;
 use App\Models\Service;
 use App\Models\ServiceAccessory;
 use App\Models\ServiceHistory;
@@ -1249,7 +1248,7 @@ class AppUserController extends Controller
     {
 
         $code = "";
-        $last = Customer::latest()->first();
+        $last = Client::latest()->first();
         if (is_null($last)) {
             $code = "CST001";
         } else {
@@ -1285,7 +1284,7 @@ class AppUserController extends Controller
         }
         try {
             $uniqId = $this->GetCustomerCode();
-            $iscustomer = Customer::where("CST_Code", $uniqId)->first();
+            $iscustomer = Client::where("CST_Code", $uniqId)->first();
             if (is_null($iscustomer)) {
                 $isUser = User::where("email", $request->email)->first();
                 if (is_null($isUser)) {
@@ -1298,7 +1297,7 @@ class AppUserController extends Controller
                     ]);
                     $userId = $user->id;
                     if ($userId > 0) {
-                        $customer = Customer::create([
+                        $customer = Client::create([
                             'CST_ID' => $userId,
                             'CST_Code' => $uniqId,
                             'CST_Name' => $request->name,

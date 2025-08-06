@@ -57,6 +57,7 @@ Route::group(['namespace' => 'API', 'prefix' => 'v1', 'middleware' => ['cors', '
     Route::get('markOnlineOffline', [AppUserController::class, 'markOnlineOffline']);
     Route::get('GetProfile', [AppUserController::class, 'Profile']);
     Route::get('GetRecentActivity', [AppUserController::class, 'GetRecentActivity']);
+    Route::post('test-push-notification', [AppUserController::class, 'testPushNotification']);
     /*end app controller*/
 
     Route::get('GetEngineerAttendance', [AttendanceController::class, 'GetEngineerAttendance']);

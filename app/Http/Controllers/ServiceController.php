@@ -51,6 +51,7 @@ use Notification;
 use Exception;
 use App\Notifications\SendPushNotification;
 use App\Services\MessageService;
+use App\Services\PushNotificationService;
 
 
 class ServiceController extends Controller
@@ -599,6 +600,19 @@ class ServiceController extends Controller
                     if ($request->EngineerId != "" && $request->EngineerId > 0) {
                         $note = "ticket assigned to engineer.";
                         $isOk = $this->AddServiceHistoryM($service->id, 2, $userId, 1, $note);
+                        
+                        // Send push notification to assigned engineer
+                        try {
+                            $pushNotificationService = new PushNotificationService();
+                            $pushNotificationService->sendServiceAssignmentNotification(
+                                $request->EngineerId,
+                                $service->service_no,
+                                $Customer->CST_Name,
+                                date('d-m-Y', strtotime($Call_Date))
+                            );
+                        } catch (Exception $e) {
+                            \Log::error('Error sending push notification in AddServiceCallManage: ' . $e->getMessage());
+                        }
                     }
                     if ($isOk > 0) {
                         $isupdate = ContractScheduleModel::where("id", $scheduleServiceId)
@@ -886,10 +900,10 @@ class ServiceController extends Controller
 
     public function AssignEngineer(Request $request)
     {
-
         $engineerId = $request->employee_id;
         $serviceId = $request->service_id_assign;
         $userId = Auth::user()->id;
+        
         $isAssigned = Service::where("id", $serviceId)
             ->update(['assigned_to' => $engineerId, 'service_status' => 6]);
 
@@ -901,16 +915,32 @@ class ServiceController extends Controller
                 'sub_status_id' => 0,
                 'action_description' => "Ticket Assigned to Engineer",
             ]);
+            
             try {
+                // Get service details for notification
+                $service = Service::join("master_issue_type", "master_issue_type.id", "services.issue_type")
+                    ->join("master_service_type", "master_service_type.id", "services.service_type")
+                    ->join("clients", "clients.CST_ID", "services.customer_id")
+                    ->where("services.id", $serviceId)
+                    ->first();
+
+                if ($service) {
+                    // Send push notification
+                    $pushNotificationService = new PushNotificationService();
+                    $pushNotificationService->sendServiceAssignmentNotification(
+                        $engineerId,
+                        $service->service_no,
+                        $service->CST_Name,
+                        date('d-m-Y', strtotime($service->service_date))
+                    );
+                }
+
+                // Send email notification (existing code)
                 $subject = "Service Assigned to Engineer";
                 $mailsetting = MailSetting::where("id", 1)->first();
                 $accountsetting = Account_Setting::where("id", 1)->first();
+                
                 if ($mailsetting->call_forward_mail_allowed) {
-                    $service = Service::join("master_issue_type", "master_issue_type.id", "services.issue_type")
-                        ->join("master_service_type", "master_service_type.id", "services.service_type")
-                        ->where("services.id", $serviceId)
-                        ->first();
-
                     $Customer = $this->GetCustomerId($service->customer_id);
                     $body = "Dear " . $Customer['name'] . ",<br/><br/>";
                     $body .= $mailsetting->call_forward_template . "<br/><br/>";
@@ -919,22 +949,21 @@ class ServiceController extends Controller
                     $body .= "Service Date : " . date('d-m-Y', strtotime($service->service_date)) . "<br/>";
                     $body .= "Service Type : " . $service->type_name . "<br/>";
                     $body .= "Issue Type : " . $service->issue_name . "<br/>";
-
                     $body .= $service->service_note . "<br/>";
                     $body .= "<br/><br/>" . $accountsetting->mail_signature;
+                    
                     $mail = new MailController;
                     $mail->SendMail($Customer['CCP_Email'], $subject, $body);
-                    $this->SendNotification($engineerId);
                 }
+                
             } catch (Exception $e) {
-
+                \Log::error('Error in AssignEngineer: ' . $e->getMessage());
             }
 
             return response()->json(['success' => true, 'message' => 'engineer assigned.']);
         } else {
             return response()->json(['success' => false, 'message' => 'action failed, try again']);
         }
-
     }
     public function GetCustomerId($CustomerId)
     {

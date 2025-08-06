@@ -18,6 +18,7 @@ class SendPushNotification extends Notification
     use Queueable;
     protected $title;
     protected $message;
+    protected $data;
     
 
     /**
@@ -25,10 +26,11 @@ class SendPushNotification extends Notification
      *
      * @return void
      */
-    public function __construct($title,$message)
+    public function __construct($title, $message, $data = [])
     {
         $this->title = $title;
         $this->message = $message;
+        $this->data = $data;
         
     }
 
@@ -52,20 +54,28 @@ class SendPushNotification extends Notification
     public function toFcm($notifiable)
     {
         try{
-            return FcmMessage::create()
-            //->setData(['data1' => 'value', 'data2' => 'value2'])
-            ->setNotification(\NotificationChannels\Fcm\Resources\Notification::create()
-                ->setTitle($this->title)
-                ->setBody($this->message)
+            $fcmMessage = FcmMessage::create()
+                ->setNotification(\NotificationChannels\Fcm\Resources\Notification::create()
+                    ->setTitle($this->title)
+                    ->setBody($this->message)
                 )
-            ->setAndroid(
-                AndroidConfig::create()
-                    ->setFcmOptions(AndroidFcmOptions::create()->setAnalyticsLabel('analytics'))
-                    ->setNotification(AndroidNotification::create()->setColor('#0A0A0A'))
-            )->setApns(
-                ApnsConfig::create()
-                    ->setFcmOptions(ApnsFcmOptions::create()->setAnalyticsLabel('analytics_ios')));
+                ->setAndroid(
+                    AndroidConfig::create()
+                        ->setFcmOptions(AndroidFcmOptions::create()->setAnalyticsLabel('analytics'))
+                        ->setNotification(AndroidNotification::create()->setColor('#0288d1'))
+                )->setApns(
+                    ApnsConfig::create()
+                        ->setFcmOptions(ApnsFcmOptions::create()->setAnalyticsLabel('analytics_ios'))
+                );
+
+            // Add data payload if provided
+            if (!empty($this->data)) {
+                $fcmMessage->setData($this->data);
+            }
+
+            return $fcmMessage;
         }catch(Exception $e){
+            \Log::error('FCM notification error: ' . $e->getMessage());
             return null;
         }
       
@@ -81,9 +91,12 @@ class SendPushNotification extends Notification
     public function toArray($notifiable)
     {
         return [
-            //
+            'title' => $this->title,
+            'message' => $this->message,
+            'data' => $this->data,
         ];
     }
+    
     public function fcmProject($notifiable, $message)
     {
         // $message is what is returned by `toFcm`

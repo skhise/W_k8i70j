@@ -33,6 +33,7 @@ use App\Models\NewInquiry;
 use App\Models\ServiceRequest;
 use App\Models\Account_Setting;
 use App\Models\ContractBaseAccessory;
+use App\Services\PushNotificationService;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 
@@ -919,7 +920,18 @@ class AppUserController extends Controller
                         ]);
                     if ($update) {
                         try{
-                          $location =   LocationHistory::create([
+                            // Send push notification for status update
+                            $service = Service::where('id', $serviceId)->first();
+                            if ($service) {
+                                $pushNotificationService = new PushNotificationService();
+                                $pushNotificationService->sendServiceStatusUpdateNotification(
+                                    $engineerId,
+                                    $service->service_no,
+                                    $this->getStatusName($actionId)
+                                );
+                            }
+                            
+                            $location = LocationHistory::create([
                                 'User_ID' => $request->user_id,
                                 'last_long' => $request->last_long,
                                 'last_lang' => $request->last_lang,
@@ -929,8 +941,6 @@ class AppUserController extends Controller
                             if($location){
                                 DB::commit();
                                 return response()->json(['success' => true, 'message' => 'action applied and status updated.']);
-                   
-    
                             }
                         }catch(Exception $exp){
                             DB::rollBack();
@@ -1398,6 +1408,79 @@ class AppUserController extends Controller
             return response()->json([
                 'success' => false, 
                 'message' => "Exception: " . $exp->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Get status name by status ID
+     *
+     * @param int $statusId
+     * @return string
+     */
+    private function getStatusName($statusId)
+    {
+        $statusMap = [
+            1 => 'New',
+            2 => 'Open',
+            3 => 'Pending',
+            4 => 'Resolved',
+            5 => 'Closed',
+            6 => 'Assigned',
+            7 => 'In Progress',
+            8 => 'Unassigned'
+        ];
+
+        return $statusMap[$statusId] ?? 'Unknown';
+    }
+
+    /**
+     * Test push notification functionality
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function testPushNotification(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'user_id' => 'required|integer|exists:users,id',
+                'title' => 'required|string|max:255',
+                'message' => 'required|string|max:500'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ]);
+            }
+
+            $pushNotificationService = new PushNotificationService();
+            $result = $pushNotificationService->sendPushNotification(
+                $request->user_id,
+                $request->title,
+                $request->message,
+                ['type' => 'test', 'timestamp' => now()->toISOString()]
+            );
+
+            if ($result) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Push notification sent successfully'
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to send push notification. Check if user has valid FCM token.'
+                ]);
+            }
+
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
             ]);
         }
     }

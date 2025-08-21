@@ -52,12 +52,48 @@ class AppUserController extends Controller
     public function updateToken(Request $request)
     {
         try {
+            $validator = Validator::make($request->all(), [
+                'UserId' => 'required|integer|exists:users,id',
+                'token' => 'required|string|min:100'
+            ]);
 
-            User::where("id", $request->UserId)->update(['fcm_token' => $request->token]);
-            return "updated";
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ]);
+            }
+
+            $userId = $request->UserId;
+            $fcmToken = $request->token;
+
+            // Update FCM token in database
+            $user = User::where('id', $userId)->first();
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User not found'
+                ]);
+            }
+
+            $user->update(['fcm_token' => $fcmToken]);
+
+            \Log::info("FCM token updated for user {$userId}: " . substr($fcmToken, 0, 20) . "...");
+
+            return response()->json([
+                'success' => true,
+                'message' => 'FCM token updated successfully',
+                'user_id' => $userId,
+                'token_updated' => true
+            ]);
+
         } catch (\Exception $e) {
-            report($e);
-            return "not updated";
+            \Log::error('Error updating FCM token: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update FCM token: ' . $e->getMessage()
+            ]);
         }
     }
     public function markOnlineOffline(Request $request)
@@ -590,8 +626,7 @@ class AppUserController extends Controller
                 'saltVisit' => $request->saltVisit,
                 'saltVisitDate' => $request->saltVisitDate != "" ? date('Y-m-d H:i:s', strtotime($request->saltVisitDate)) : null,
                 'filterVisit' => $request->filterVisit,
-                'filterVisitDate' => $request->filterVisitDate != "" ? date('Y-m-d H:i:s', strtotime($request->filterVisitDate)) : null,
-                'isSubmitted' => $request->isSubmitted
+                'filterVisitDate' => $request->filterVisitDate != "" ? date('Y-m-d H:i:s', strtotime($request->filterVisitDate)) : null
             ]);
             if ($report) {
                 return response()->json(["success" => true, "message" => "Field Report Saved"]);
@@ -868,7 +903,7 @@ class AppUserController extends Controller
             $history = ServiceHistory::leftJoin("master_service_status", "master_service_status.Status_Id", "service_action_history.status_id")
                 ->leftJoin("master_service_sub_status", "master_service_sub_status.Sub_Status_Id", "service_action_history.sub_status_id")
                 ->where("service_id", $serviceId)
-                ->orderBy('service_action_history.created_at', 'DESC')->get();
+                ->orderBy('service_action_history.id', 'DESC')->get();
             foreach ($history as $h) {
                 $h->historyDate = Carbon::parse($h->created_at)->format("d-M-y h:i:s");
             }
@@ -1476,6 +1511,113 @@ class AppUserController extends Controller
                     'message' => 'Failed to send push notification. Check if user has valid FCM token.'
                 ]);
             }
+
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Test FCM token functionality
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function testFCMToken(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'user_id' => 'required|integer|exists:users,id'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ]);
+            }
+
+            $userId = $request->user_id;
+            $user = User::where('id', $userId)->first();
+
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User not found'
+                ]);
+            }
+
+            $fcmToken = $user->fcm_token;
+            $hasToken = !empty($fcmToken);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'FCM token status retrieved successfully',
+                'user_id' => $userId,
+                'has_fcm_token' => $hasToken,
+                'fcm_token_preview' => $hasToken ? substr($fcmToken, 0, 20) . '...' : null,
+                'token_length' => $hasToken ? strlen($fcmToken) : 0
+            ]);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Get service type list
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function GetServiceTypeList()
+    {
+        try {
+            $serviceTypes = DB::table('service_types')
+                ->select('id', 'name', 'description')
+                ->where('status', 1)
+                ->orderBy('name', 'asc')
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Service types retrieved successfully',
+                'data' => $serviceTypes
+            ]);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Get issue type list
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function GetIssueTypeList()
+    {
+        try {
+            $issueTypes = DB::table('issue_types')
+                ->select('id', 'name', 'description')
+                ->where('status', 1)
+                ->orderBy('name', 'asc')
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Issue types retrieved successfully',
+                'data' => $issueTypes
+            ]);
 
         } catch (Exception $e) {
             return response()->json([

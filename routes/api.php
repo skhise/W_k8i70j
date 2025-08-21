@@ -31,6 +31,8 @@ Route::group(['namespace' => 'API', 'prefix' => 'v1', 'middleware' => ['cors', '
     Route::get("ApplyRejectAction", [AppUserController::class, "ApplyRejectAction"]);
     Route::get("GetStatusListApp", [AppUserController::class, "GetStatusList"]);
     Route::get("GetReasonList", [AppUserController::class, "GetReasonList"]);
+    Route::get('get_serviceType_list', [AppUserController::class, "GetServiceTypeList"]);
+    Route::get('get_issueType_list', [AppUserController::class, "GetIssueTypeList"]);
     Route::get("GetServiceHistoryApp", [AppUserController::class, "GetServiceHistory"]);
     Route::get("GetTicketListCustomer", [AppUserController::class, "GetTicketListCustomer"]);
     Route::get("GetContractListByCustomer", [AppUserController::class, "GetContractListByCustomer"]);
@@ -58,6 +60,16 @@ Route::group(['namespace' => 'API', 'prefix' => 'v1', 'middleware' => ['cors', '
     Route::get('GetProfile', [AppUserController::class, 'Profile']);
     Route::get('GetRecentActivity', [AppUserController::class, 'GetRecentActivity']);
     Route::post('test-push-notification', [AppUserController::class, 'testPushNotification']);
+    
+    // FCM Token test route
+    Route::post('test-fcm-token', [AppUserController::class, 'testFCMToken']);
+    
+    // Notification routes
+    Route::get('GetNotifications', [App\Http\Controllers\NotificationController::class, 'getNotifications']);
+    Route::get('GetNotificationCount', [App\Http\Controllers\NotificationController::class, 'getNotificationCount']);
+    Route::post('MarkNotificationAsRead', [App\Http\Controllers\NotificationController::class, 'markNotificationAsRead']);
+    Route::post('MarkAllNotificationsAsRead', [App\Http\Controllers\NotificationController::class, 'markAllNotificationsAsRead']);
+    
     /*end app controller*/
 
     Route::get('GetEngineerAttendance', [AttendanceController::class, 'GetEngineerAttendance']);

@@ -894,7 +894,7 @@ class AppUserController extends Controller
         $status = ServiceStatus::where("flag", 1)->whereNotIn("Status_Id", [1,6,5])->get();
         return $status;
 
-    } 
+    }
     public function GetServiceHistory(Request $request)
     {
         $history = array();
@@ -903,7 +903,11 @@ class AppUserController extends Controller
             $history = ServiceHistory::leftJoin("master_service_status", "master_service_status.Status_Id", "service_action_history.status_id")
                 ->leftJoin("master_service_sub_status", "master_service_sub_status.Sub_Status_Id", "service_action_history.sub_status_id")
                 ->where("service_id", $serviceId)
+                ->select("service_action_history.*", "service_action_history.created_at as historyDate", "master_service_status.Status_Name", "master_service_sub_status.Sub_Status_Name")
                 ->orderBy('service_action_history.id', 'DESC')->get();
+            foreach ($history as $h) {
+                $h->historyDate = Carbon::parse($h->historyDate)->format("d-M-y h:i:s");
+            }
         } catch (Exception $ex) {
             return response()->json(["success" => false, "history" => []]);
         }

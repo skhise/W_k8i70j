@@ -756,6 +756,7 @@
                             $('#contact_number2').val(contract.CNRT_Phone2);
                             $('#contact_email').val(contract.CNRT_CustomerEmail);
                             $('#site_address').val(contract.CNRT_OfficeAddress);
+                            $('#site_google_link').val(contract.CNRT_SiteLocation);
                             $('#product_id').html('');
                             var products = obj.products ?? [];
                             var options = '<option value="0">Select product</option>';

@@ -147,7 +147,7 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
         Route::post('/contracts/{contract}/update_product', [ContractController::class, 'UpdateContractProduct'])->name('contracts.update_product');
         Route::get('/contracts/customer_contract', [ContractController::class, 'GetContractByCustId'])->name('contracts.customer_contract');
         Route::get('/contracts/contract_by_id', [ContractController::class, 'GetContractById'])->name('contracts.contract_by_id');
-        Route::get('/contracts/{contractUnderProduct}/delete', [ContractController::class, 'DeleteContractProduct'])->name('contract_product.delete');
+        Route::get('/contracts/puc/{contractUnderProduct}/delete', [ContractController::class, 'DeleteContractProduct'])->name('contract_product.delete');
         Route::post('/contracts/checklist/{contract}/store', [ContractController::class, 'checklistStore'])->name('checklist.store');
         Route::get('/contracts/checklist/{checklist}/delete', [ContractController::class, 'checklistdelete'])->name('checklist.delete');
         Route::post('/contracts/service/{contract}/store', [ContractController::class, 'serviceStore'])->name('contract_service.store');

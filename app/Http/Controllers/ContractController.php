@@ -658,7 +658,6 @@ class ContractController extends Controller
 
             ]
         );
-
         if ($validator->fails()) {
             return response()->json(["success" => false, "message" => "all * marked fields required.", "validation_error" => $validator->errors()]);
         }
@@ -1171,13 +1170,36 @@ class ContractController extends Controller
         foreach ($products as $product) {
             $productOptions .= '<option value="' . $product->id . '">' . $product->nrnumber . '/' . $product->product_name . '</option>';
         }
-        $services = ContractScheduleService::select("master_service_status.*", "contract_under_product.*", "contract_schedule_service.id as cupId", "contract_schedule_service.*", "master_issue_type.*", "master_service_type.*")->where("contract_schedule_service.contractId", $contract->CNRT_ID)
-            ->leftJoin("master_issue_type", "master_issue_type.id", "contract_schedule_service.issueType")
-            ->leftJoin("contract_under_product", "contract_under_product.id", "contract_schedule_service.product_Id")
-            ->leftJoin("master_service_type", "master_service_type.id", "contract_schedule_service.serviceType")
-            ->leftJoin("master_service_status", "master_service_status.Status_Id", "contract_schedule_service.Schedule_Status")->get();
+       $services = ContractScheduleService::select(
+        "master_service_status.*",
+        "contract_under_product.*",
+        "contract_schedule_service.id as cupId",
+        "contract_schedule_service.*",
+        "master_issue_type.*",
+        "master_service_type.*"
+    )
+    ->where("contract_schedule_service.contractId", $contract->CNRT_ID)
+    ->where(function($query) {
+        $query->where("contract_schedule_service.Service_Call_Id", 0)
+              ->orWhereExists(function($sub) {
+                  $sub->select(DB::raw(1))
+                      ->from("services")
+                      ->whereRaw("services.id = contract_schedule_service.Service_Call_Id")
+                      ->whereNull("services.deleted_at");
+              });
+    })
+    ->leftJoin("master_issue_type", "master_issue_type.id", "contract_schedule_service.issueType")
+    ->leftJoin("contract_under_product", "contract_under_product.id", "contract_schedule_service.product_Id")
+    ->leftJoin("master_service_type", "master_service_type.id", "contract_schedule_service.serviceType")
+    ->leftJoin("master_service_status", "master_service_status.Status_Id", "contract_schedule_service.Schedule_Status")
+    ->get();
+
+
         // dd($contract_obj);
-        $addedproducts = ContractUnderProduct::join("master_product_type","master_product_type.id","contract_under_product.product_type")->where("contractId", $contract->CNRT_ID)->get();
+        $addedproducts = ContractUnderProduct::join("master_product_type", "master_product_type.id", "contract_under_product.product_type")
+                        ->where("contractId", $contract->CNRT_ID)
+                        ->select("contract_under_product.id as cup_id", "master_product_type.*", "contract_under_product.*")
+                        ->get();
         return view('contracts.view', [
             'contract' => $contract_obj,
             'project_count' => 0,

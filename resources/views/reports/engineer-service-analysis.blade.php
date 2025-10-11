@@ -345,9 +345,9 @@
                             var obj = data.employee;
                             var objd = data.employeeData;
                             var stausCount = data.countArray;
-                            var pending = parseInt(stausCount.Assigned) + parseInt(stausCount.New)+stausCount.Pending + parseInt(stausCount.Open);
+                            var pending = parseInt(stausCount.Assigned) + parseInt(stausCount.New) + parseInt(stausCount.Pending) + parseInt(stausCount.Open);
                             var complete = parseInt(stausCount.Resolved) + parseInt(stausCount.Closed);
-                            var total = parseInt(stausCount.Assigned) + parseInt(stausCount.New) + parseInt(stausCount.Open) + parseInt(stausCount.Resolved)+ parseInt(stausCount.Closed);
+                            var total = parseInt(stausCount.Pending)+parseInt(stausCount.Assigned) + parseInt(stausCount.New) + parseInt(stausCount.Open) + parseInt(stausCount.Resolved)+ parseInt(stausCount.Closed);
                             $("#pending_call").html(pending);
                             $("#total_call").html(total);
                             $("#complete_call").html(complete);

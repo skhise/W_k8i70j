@@ -22,6 +22,7 @@ class DcController extends Controller
             ->when($filter_type !="", function ($query) use($filter_type) {
                 $query->where('dc_type', $filter_type);
             })
+            ->orderBy('service_dc.id', 'desc')
             ->paginate(10)
             ->withQueryString();
         // dd($dc_products);

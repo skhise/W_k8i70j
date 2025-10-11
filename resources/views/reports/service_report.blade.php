@@ -4,7 +4,7 @@
             <div class="section-body">
                 <div class="card">
                     <div class="card-header">
-                        <h4>Service Ticket Report</h4>
+                        <h4>Service Summary Report</h4>
                     </div>
                     <div class="card-body">
                         <div class="form-horizontal">

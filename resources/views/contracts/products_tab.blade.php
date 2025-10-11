@@ -60,9 +60,8 @@
                                             data-cid="{{ $product['contactId'] }}"
                                             data-product_id="{{ $product['id'] }}"
                                             class="btn btn-icon btn-sm btn-primary"><i class="far fa-edit"></i></a>
-                                        <a type="submit" href="{{ route('contract_product.delete', $product['id']) }}"
-                                            class="delete-btn btn btn-sm btn-danger"><i class="fa fa-trash"></i></a<
-                                                /td>
+                                        <a type="submit" href="{{ route('contract_product.delete', $product['cup_id']) }}"
+                                            class="delete-btn btn btn-sm btn-danger"><i class="fa fa-trash"></i></a></td>
                                 </tr>
                             @endforeach
                         </tbody>

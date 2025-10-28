@@ -969,8 +969,8 @@ class AppUserController extends Controller
                             
                             $location = LocationHistory::create([
                                 'User_ID' => $request->user_id,
-                                'last_long' => $request->last_long,
-                                'last_lang' => $request->last_lang,
+                                'last_long' => $request->last_long ?? '',
+                                'last_lang' => $request->last_lang ?? '',
                                 'full_address' => "",
                                 'area_code' => "",
                             ]);

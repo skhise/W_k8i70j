@@ -44,7 +44,7 @@ class DashboardController extends Controller
         try {
             $customers = Client::all()->where("CST_Status", "1")->count();
             $contracts = Contract::all()->where("CNRT_Status", "!=", 0)->count();
-            $services = Service::all()->count();
+            $services = Service::all()->where("deleted_at","=",null)->count();
             if (Auth::user()->role == 3) {
                 $services = Service::where('assigned_to', Auth::user()->id)->count();
             }

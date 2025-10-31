@@ -67,13 +67,13 @@
                         <div class="form-group">
                             <div class="row">
                                 <div class="col-md-6 floating-label">
-                                    <textarea type="text" class="form-control text-box single-line" id="expenses"
-                                        name="expenses" placeholder=""></textarea>
+                                    <input type="number" class="form-control text-box single-line" id="expenses"
+                                        name="expenses" placeholder=""/>
                                     <label for="first">Your Expenses *</label>
                                 </div>
                                 <div class="col-md-6 floating-label">
-                                    <textarea type="text" class="form-control text-box single-line" id="charges"
-                                        name="charges" placeholder=""></textarea>
+                                    <input type="number" class="form-control text-box single-line" id="charges"
+                                        name="charges" placeholder=""/>
                                     <label for="first">Call Charges *</label>
                                 </div>
                             </div>

@@ -991,13 +991,6 @@ class AppUserController extends Controller
                 } else {
                     return response()->json(['success' => false, 'message' => 'Unable to store action, try again.']);
                 }
-            // if($request->last_long != "undefined" && $request->last_lang != "undefined"){
-                
-            // } else {
-            //     return response()->json(["success" => false, "message" => "action failed, try again, Uable to get location!"]);
-            // }
-           
-
         } catch (Exception $ex) {
             return response()->json(["success" => false, "message" => "action failed, try again!"]);
         }

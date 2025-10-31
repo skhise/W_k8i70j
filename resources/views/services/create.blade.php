@@ -533,7 +533,9 @@
                                                                 ? 'selected'
                                                                 : (old('service_priority') == $priority->id
                                                                     ? 'selected'
-                                                                    : '') }}>
+                                                                    : ($priority->priority_name == "Low"
+                                                                    ? 'selected'
+                                                                    : '')) }}>
                                                             {{ $priority->priority_name }}</option>
                                                     @endforeach
                                                 </select>

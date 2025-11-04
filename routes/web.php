@@ -36,7 +36,13 @@ Route::get('/generate', [ProfileController::class, 'master_setup'])->name('gener
 Route::middleware(['prevent-back-history', 'menu.permission'])->group(function () {
     Route::middleware('auth')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-        Route::get('/', [DashboardController::class, 'index']);
+        Route::get('/', function() {
+            // Redirect role 0 users to customers page
+            if (Auth::user()->role == 0) {
+                return redirect()->route('customers.index');
+            }
+            return redirect()->route('dashboard');
+        });
     });
 
     Route::middleware('auth')->group(function () {
@@ -89,6 +95,16 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
         Route::get('/atte_data', [ReportController::class, 'Atte_Data'])->name('atte_data');
     });
 
+
+    /*Customers Route (Super Admin)*/
+    Route::middleware('auth')->group(function () {
+        Route::get('/customers', [\App\Http\Controllers\CustomerController::class, 'index'])->name('customers.index');
+        Route::get('/customers/create', [\App\Http\Controllers\CustomerController::class, 'create'])->name('customers.create');
+        Route::post('/customers', [\App\Http\Controllers\CustomerController::class, 'store'])->name('customers.store');
+        Route::post('/customers/{id}/reset-password', [\App\Http\Controllers\CustomerController::class, 'resetPassword'])->name('customers.resetPassword');
+        Route::post('/customers/{id}/update-status', [\App\Http\Controllers\CustomerController::class, 'updateStatus'])->name('customers.updateStatus');
+        Route::delete('/customers/{id}', [\App\Http\Controllers\CustomerController::class, 'destroy'])->name('customers.destroy');
+    });
 
     /*Clients Route*/
     Route::middleware('auth')->group(function () {

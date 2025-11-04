@@ -52,38 +52,59 @@
     </div>
     @section('script')
         <script>
+            // Store current filter values
+            var currentFilters = {
+                date_range: ''
+            };
+
             $(document).on("click", ".btn-reset", function() {
                 window.location.reload();
             });
+
             $(document).on("click", ".btn-fetch-report", function() {
-                var date_range = $("#date-range option:selected").val();
-                $.ajax({
-                        type: "GET",
-                        url: "logs_data",
-                        data: {
-                            date_range: date_range,
-                        },
-                        beforeSend: function() {
-                            $(".loader").show();
-                        },
-                        success: function(html) {
-                            $("#logsList").empty();
-                            $("#logsList").append(html);
-                            $(".loader").hide();
-                        },
-                        error: function(error) {
-                            $(".loader").hide();
-                            Swal.fire({
-                                title: 'Error!',
-                                text: 'Something went wrong, try again',
-                                dangerMode: true,
-                                icon: 'warning',
-                                confirmButtonColor: '#d33',
-                                cancelButtonColor: '#3085d6',
-                            });
-                        }
-                    });
+                fetchLogs(1); // Fetch from page 1
             });
+
+            // Handle pagination link clicks
+            $(document).on("click", "#logsList .pagination a", function(e) {
+                e.preventDefault();
+                var page = $(this).attr('href').split('page=')[1];
+                if (page) {
+                    fetchLogs(page);
+                }
+            });
+
+            function fetchLogs(page) {
+                currentFilters.date_range = $("#date-range option:selected").val();
+                
+                $.ajax({
+                    type: "GET",
+                    url: "logs_data",
+                    data: {
+                        date_range: currentFilters.date_range,
+                        page: page
+                    },
+                    beforeSend: function() {
+                        $(".loader").show();
+                    },
+                    success: function(html) {
+                        $("#logsList").empty();
+                        $("#logsList").append(html);
+                        $(".loader").hide();
+                    },
+                    error: function(error) {
+                        $(".loader").hide();
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Something went wrong, try again',
+                            dangerMode: true,
+                            icon: 'warning',
+                            confirmButtonColor: '#d33',
+                            cancelButtonColor: '#3085d6',
+                        });
+                    }
+                });
+            }
         </script>
     @stop
 </x-app-layout>

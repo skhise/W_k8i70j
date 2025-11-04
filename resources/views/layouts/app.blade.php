@@ -131,7 +131,7 @@
             @if (auth()->user()->role == 3)
                 @include('layouts.navigation_emp')
             @endif
-            @if (auth()->user()->role == 1)
+            @if (auth()->user()->role == 1 || auth()->user()->role == 0)
                 @include('layouts.navigation')
             @endif
 

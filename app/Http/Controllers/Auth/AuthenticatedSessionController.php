@@ -29,6 +29,11 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        // Redirect role 0 users to customers page
+        if (Auth::user()->role == 0) {
+            return redirect()->intended(route('customers.index'));
+        }
+
         return redirect()->intended(RouteServiceProvider::HOME);
     }
 

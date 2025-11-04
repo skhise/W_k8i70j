@@ -20,6 +20,12 @@ class ProfileController extends Controller
     public function edit(Request $request)
     {
         $user = Auth::user();
+        
+        // For role 0 (Super Admin), show simplified profile
+        if(Auth::user()->role == 0) {
+            return view('profile.edit_super_admin', ["user" => $user]);
+        }
+        
         $profile = ProfileSetup::where(['id'=>1])->first();
         if(Auth::user()->role == 3){
             $profile = User::where(column: ['id'=>$user->id])->first();
@@ -50,15 +56,31 @@ class ProfileController extends Controller
 
     }
     public function change_password(Request $request) {
+        $request->validate([
+            'password' => 'required|min:6',
+        ]);
+        
         $user = Auth::user();
         $password = Hash::make($request->password);
         $user->password = $password;
         $changed = $user->save();
+        
         if ($changed) {
-            return response()->json(['success'=> true]);
+            // Log the password change
+            $action = "Password Changed for User: " . $user->email;
+            $log = app(\App\Http\Controllers\LogController::class);
+            $log->SystemLog($user->id, $action);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Password changed successfully.'
+            ]);
         }
-        return response()->json(['success'=> false]);
-
+        
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to change password. Please try again.'
+        ]);
     }
     public function master_setup(Request $request)
     {

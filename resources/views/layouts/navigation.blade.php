@@ -124,107 +124,123 @@
         </div>
         <ul class="sidebar-menu">
             <li class="menu-header">Main</li>
-            <li class="dropdown {{ Request::is('dashboard') ? 'active' : '' }}">
-                <a href="{{ route('dashboard') }}" class="nav-link"><i
-                        data-feather="grid"></i><span>Dashboard</span></a>
-            </li>
-            <li class="dropdown {{ Request::is('employees') || Request::is('employees/*') ? 'active' : '' }}">
-                <a href="{{ route('employees') }}" class="nav-link"><i
-                        data-feather="users"></i><span>Employees</span></a>
-            </li>
+            
+            @php
+                $userRole = Auth::user()->role ?? null;
+            @endphp
+            
+            @if($userRole === 0 || $userRole === '0')
+                {{-- Super Admin (role 0) - Only show Customers menu --}}
+                <li class="dropdown {{ Request::is('customers') || Request::is('customers/*') ? 'active' : '' }}">
+                    <a href="{{ route('customers.index') }}" class="nav-link"><i
+                            data-feather="user-check"></i><span>Customers</span></a>
+                </li>
+            @else
+                {{-- Other roles - Show all menus --}}
+                <li class="dropdown {{ Request::is('dashboard') ? 'active' : '' }}">
+                    <a href="{{ route('dashboard') }}" class="nav-link"><i
+                            data-feather="grid"></i><span>Dashboard</span></a>
+                </li>
+                <li class="dropdown {{ Request::is('employees') || Request::is('employees/*') ? 'active' : '' }}">
+                    <a href="{{ route('employees') }}" class="nav-link"><i
+                            data-feather="users"></i><span>Employees</span></a>
+                </li>
 
+                <li class="dropdown {{ Request::is('customers') || Request::is('customers/*') ? 'active' : '' }}">
+                    <a href="{{ route('customers.index') }}" class="nav-link"><i
+                            data-feather="user-check"></i><span>Customers</span></a>
+                </li>
 
-            <li class="{{ Request::is('clients') || Request::is('clients/*') ? 'active' : '' }}">
-                <a class="nav-link" href="{{ route('clients') }}"><i data-feather="user-plus"></i> Clients</a>
-            </li>
+                <li class="{{ Request::is('clients') || Request::is('clients/*') ? 'active' : '' }}">
+                    <a class="nav-link" href="{{ route('clients') }}"><i data-feather="user-plus"></i> Clients</a>
+                </li>
+                <li class="dropdown {{ Request::is('contracts/*') || Request::is('contracts') ? 'active' : '' }}">
+                    <a href="{{ route('contracts') }}" class="nav-link"><i data-feather="edit"></i><span>Contract</span></a>
+                </li>
+                <li class="dropdown {{ Request::is('services') || Request::is('services/*') ? 'active' : '' }}">
+                    <a href="{{ route('services') }}" class="nav-link"><i
+                            data-feather="bar-chart"></i><span>Services</span></a>
+                </li>
+                <li class="dropdown {{ Request::is('schedules') || Request::is('schedules/*') ? 'active' : '' }}">
+                    <a href="{{ route('schedules') }}" class="nav-link"><i data-feather="clock"></i><span>Schedules
+                            Services</span></a>
+                </li>
+                <li class="dropdown {{ Request::is('dcmanagements') || Request::is('dcmanagements/*') ? 'active' : '' }}">
+                    <a href="{{ route('dcmanagements') }}" class="nav-link"><i data-feather="file"></i><span>DC
+                            Management</span></a>
+                </li>
+                <!-- <li
+                    class="dropdown {{ Request::is('quotmanagements') || Request::is('quotmanagements/*') ? 'active' : '' }}">
+                    <a href="{{ route('quotmanagements') }}" class="nav-link"><i
+                            data-feather="file-text"></i><span>Quotation
+                            Management</span></a>
+                </li> -->
 
+                <li class="dropdown {{ Request::is('products/*') || Request::is('products') ? 'active' : '' }}">
+                    <a href="{{ route('products') }}" class="nav-link"><i data-feather="box"></i><span>Products / Spares</span></a>
+                </li>
+                <li class="dropdown {{ Request::is('location-report') || Request::is('attendance') || Request::is('location') ? 'active' : '' }}">
+                    <a href="#"
+                        class="menu-toggle nav-link has-dropdown {{ Request::is('location-report') || Request::is('attendance') || Request::is('location') ? 'toggled' : '' }}"><i
+                            data-feather="map"></i><span>Tracking</span></a>
+                    <ul class="dropdown-menu">
+                        <li class="dropdown {{ Request::is('location') || Request::is('location') ? 'active' : '' }}">
+                            <a href="{{ route('location') }}" class="nav-link"><span>Track Location</span></a>
+                        </li>
 
-            <li class="dropdown {{ Request::is('contracts/*') || Request::is('contracts') ? 'active' : '' }}">
-                <a href="{{ route('contracts') }}" class="nav-link"><i data-feather="edit"></i><span>Contract</span></a>
-            </li>
-            <li class="dropdown {{ Request::is('services') || Request::is('services/*') ? 'active' : '' }}">
-                <a href="{{ route('services') }}" class="nav-link"><i
-                        data-feather="bar-chart"></i><span>Services</span></a>
-            </li>
-            <li class="dropdown {{ Request::is('schedules') || Request::is('schedules/*') ? 'active' : '' }}">
-                <a href="{{ route('schedules') }}" class="nav-link"><i data-feather="clock"></i><span>Schedules
-                        Services</span></a>
-            </li>
-            <li class="dropdown {{ Request::is('dcmanagements') || Request::is('dcmanagements/*') ? 'active' : '' }}">
-                <a href="{{ route('dcmanagements') }}" class="nav-link"><i data-feather="file"></i><span>DC
-                        Management</span></a>
-            </li>
-            <!-- <li
-                class="dropdown {{ Request::is('quotmanagements') || Request::is('quotmanagements/*') ? 'active' : '' }}">
-                <a href="{{ route('quotmanagements') }}" class="nav-link"><i
-                        data-feather="file-text"></i><span>Quotation
-                        Management</span></a>
-            </li> -->
+                        <li class="{{ Request::is('location-report') ? 'active' : '' }}"><a class="nav-link"
+                                href="{{ route('location-report') }}">Location History</a></li>
 
-            <li class="dropdown {{ Request::is('products/*') || Request::is('products') ? 'active' : '' }}">
-                <a href="{{ route('products') }}" class="nav-link"><i data-feather="box"></i><span>Products / Spares</span></a>
-            </li>
-            <li class="dropdown {{ Request::is('location-report') || Request::is('attendance') || Request::is('location') ? 'active' : '' }}">
-                <a href="#"
-                    class="menu-toggle nav-link has-dropdown {{ Request::is('location-report') || Request::is('attendance') || Request::is('location') ? 'toggled' : '' }}"><i
-                        data-feather="map"></i><span>Tracking</span></a>
-                <ul class="dropdown-menu">
-                    <li class="dropdown {{ Request::is('location') || Request::is('location') ? 'active' : '' }}">
-                        <a href="{{ route('location') }}" class="nav-link"><span>Track Location</span></a>
-                    </li>
+                        <li class="{{ Request::is('attendance') ? 'active' : '' }}"><a class="nav-link"
+                                href="{{ route('attendance') }}">Attendance</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown {{ Request::is('reports/*') || Request::is('reports') ? 'active' : '' }}">
+                    <a href="#"
+                        class="menu-toggle nav-link has-dropdown {{ Request::is('reports/*') || Request::is('reports') ? 'toggled' : '' }}"><i
+                            data-feather="pie-chart"></i><span>System Reports</span></a>
+                    <ul class="dropdown-menu">
+                        <li class="{{ Request::is('reports/contract-report') ? 'active' : '' }}"><a class="nav-link active"
+                                href="{{ route('contract-report') }}">Contract Reports</a></li>
+                        <li class="{{ Request::is(patterns: 'reports/contract-due-report') ? 'active' : '' }}"><a
+                                class="nav-link active" href="{{ route('contract-due-report') }}">Contract Due Reports</a>
+                        </li>
+                        <li class="{{ Request::is('reports/service-status-report') ? 'active' : '' }}"><a class="nav-link"
+                                href="{{ route('service-status-report') }}">Service Status Reports</a></li>
 
-                    <li class="{{ Request::is('location-report') ? 'active' : '' }}"><a class="nav-link"
-                            href="{{ route('location-report') }}">Location History</a></li>
+                        <li class="{{ Request::is('reports/service-ticket-report') ? 'active' : '' }}"><a class="nav-link"
+                                href="{{ route('service-ticket-report') }}">Service Summary Report</a></li>
+                        <li class="{{ Request::is('reports/engineer-report') ? 'active' : '' }}"><a class="nav-link"
+                                href="{{ route('engineer-report') }}">Engineer Reports</a></li>
 
-                    <li class="{{ Request::is('attendance') ? 'active' : '' }}"><a class="nav-link"
-                            href="{{ route('attendance') }}">Attendance</a></li>
-                </ul>
-            </li>
-            <li class="dropdown {{ Request::is('reports/*') || Request::is('reports') ? 'active' : '' }}">
-                <a href="#"
-                    class="menu-toggle nav-link has-dropdown {{ Request::is('reports/*') || Request::is('reports') ? 'toggled' : '' }}"><i
-                        data-feather="pie-chart"></i><span>System Reports</span></a>
-                <ul class="dropdown-menu">
-                    <li class="{{ Request::is('reports/contract-report') ? 'active' : '' }}"><a class="nav-link active"
-                            href="{{ route('contract-report') }}">Contract Reports</a></li>
-                    <li class="{{ Request::is(patterns: 'reports/contract-due-report') ? 'active' : '' }}"><a
-                            class="nav-link active" href="{{ route('contract-due-report') }}">Contract Due Reports</a>
-                    </li>
-                    <li class="{{ Request::is('reports/service-status-report') ? 'active' : '' }}"><a class="nav-link"
-                            href="{{ route('service-status-report') }}">Service Status Reports</a></li>
+                        <li class="{{ Request::is('reports/dc-report') ? 'active' : '' }}"><a class="nav-link"
+                                href="{{ route('dc-report') }}">Dc Report</a></li>
+                        <!-- <li class="{{ Request::is('reports/quotation-report') ? 'active' : '' }}"><a class="nav-link"
+                                href="{{ route('quotation-report') }}">Quotation Report</a></li> -->
+                        <li class="{{ Request::is('reports/logs') ? 'active' : '' }}"><a class="nav-link"
+                                href="{{ route('logs') }}">Logs</a></li>
 
-                    <li class="{{ Request::is('reports/service-ticket-report') ? 'active' : '' }}"><a class="nav-link"
-                            href="{{ route('service-ticket-report') }}">Service Summary Report</a></li>
-                    <li class="{{ Request::is('reports/engineer-report') ? 'active' : '' }}"><a class="nav-link"
-                            href="{{ route('engineer-report') }}">Engineer Reports</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown {{ Request::is('analysis/*') || Request::is('analysis') ? 'active' : '' }}">
+                    <a href="#"
+                        class="menu-toggle nav-link has-dropdown {{ Request::is('reports/*') || Request::is('analysis') ? 'toggled' : '' }}"><i
+                            data-feather="bar-chart-2"></i><span>Analysis Reports</span></a>
+                    <ul class="dropdown-menu">
+                        <li class="{{ Request::is('analysis/engineer-service-analysis') ? 'active' : '' }}"><a
+                                class="nav-link" href="{{ route('engineer-service-analysis') }}">Engineer Analysis
+                                Report</a></li>
+                        <li class="{{ Request::is('analysis/contract-service-report') ? 'active' : '' }}"><a
+                                class="nav-link" href="{{ route('contract-service-report') }}">Service Analysis
+                                Report</a></li>
+                    </ul>
+                </li>
 
-                    <li class="{{ Request::is('reports/dc-report') ? 'active' : '' }}"><a class="nav-link"
-                            href="{{ route('dc-report') }}">Dc Report</a></li>
-                    <!-- <li class="{{ Request::is('reports/quotation-report') ? 'active' : '' }}"><a class="nav-link"
-                            href="{{ route('quotation-report') }}">Quotation Report</a></li> -->
-                    <li class="{{ Request::is('reports/logs') ? 'active' : '' }}"><a class="nav-link"
-                            href="{{ route('logs') }}">Logs</a></li>
-
-                </ul>
-            </li>
-            <li class="dropdown {{ Request::is('analysis/*') || Request::is('analysis') ? 'active' : '' }}">
-                <a href="#"
-                    class="menu-toggle nav-link has-dropdown {{ Request::is('reports/*') || Request::is('analysis') ? 'toggled' : '' }}"><i
-                        data-feather="bar-chart-2"></i><span>Analysis Reports</span></a>
-                <ul class="dropdown-menu">
-                    <li class="{{ Request::is('analysis/engineer-service-analysis') ? 'active' : '' }}"><a
-                            class="nav-link" href="{{ route('engineer-service-analysis') }}">Engineer Analysis
-                            Report</a></li>
-                    <li class="{{ Request::is('analysis/contract-service-report') ? 'active' : '' }}"><a
-                            class="nav-link" href="{{ route('contract-service-report') }}">Service Analysis
-                            Report</a></li>
-                </ul>
-            </li>
-
-            <li class="dropdown {{ Request::is('masters/*') || Request::is('masters') ? 'active' : '' }}">
-                <a href="{{ route('masters') }}" class="nav-link"><i data-feather="settings"></i><span>Master
-                        Settings</span></a>
-            </li>
+                <li class="dropdown {{ Request::is('masters/*') || Request::is('masters') ? 'active' : '' }}">
+                    <a href="{{ route('masters') }}" class="nav-link"><i data-feather="settings"></i><span>Master
+                            Settings</span></a>
+                </li>
+            @endif
         </ul>
     </aside>
 </div>

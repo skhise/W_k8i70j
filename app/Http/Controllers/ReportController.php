@@ -123,7 +123,13 @@ class ReportController extends Controller
         $todate = date("Y-m-d");
         $fromdate = $todate;
 
-        $systemlogs = SystemLog::select(["users.*", "systemlogs.*"])
+        $systemlogs = SystemLog::select([
+                'systemlogs.id',
+                'systemlogs.loginId',
+                'systemlogs.ActionDescription',
+                'systemlogs.created_at',
+                'users.name'
+            ])
             ->join("users", "users.id", "systemlogs.loginId")
             ->whereBetween(DB::raw('DATE_FORMAT(systemlogs.created_at, "%Y-%m-%d")'), [$fromdate, $todate])
             ->orderBy('systemlogs.id', 'desc')
@@ -149,7 +155,14 @@ class ReportController extends Controller
         }
 
         try {
-            $systemlogs = SystemLog::join("users", "users.id", "systemlogs.loginId")
+            $systemlogs = SystemLog::select([
+                    'systemlogs.id',
+                    'systemlogs.loginId',
+                    'systemlogs.ActionDescription',
+                    'systemlogs.created_at',
+                    'users.name'
+                ])
+                ->join("users", "users.id", "systemlogs.loginId")
                 ->when($date_range != "" && $date_range != -1, function ($query) use ($todate, $fromdate) {
                     return $query->whereBetween(DB::raw('DATE_FORMAT(systemlogs.created_at, "%Y-%m-%d")'), [$fromdate, $todate]);
 

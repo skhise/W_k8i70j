@@ -146,11 +146,6 @@
                             data-feather="users"></i><span>Employees</span></a>
                 </li>
 
-                <li class="dropdown {{ Request::is('customers') || Request::is('customers/*') ? 'active' : '' }}">
-                    <a href="{{ route('customers.index') }}" class="nav-link"><i
-                            data-feather="user-check"></i><span>Customers</span></a>
-                </li>
-
                 <li class="{{ Request::is('clients') || Request::is('clients/*') ? 'active' : '' }}">
                     <a class="nav-link" href="{{ route('clients') }}"><i data-feather="user-plus"></i> Clients</a>
                 </li>

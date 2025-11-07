@@ -22,19 +22,22 @@
                                             <input type="hidden" name="search_field" value="{{ $search_field }}" id="search_field" />
                                             <div class="buttons d-flex float-left">
                                                 <input type="hidden" value="{{ $filter_status }}" name="filter_status" id="filter_status" />
-                                                <button data-key="1" type="button" class="btn-status-filter btn btn-outline-primary {{ $filter_status == 1 ? ' active' : '' }}">
+                                                <button data-key="" type="button" class="btn-status-filter btn btn-outline-secondary mr-2 {{ $filter_status === null || $filter_status === '' ? ' active' : '' }}">
+                                                    All <span class="badge badge-secondary">{{ $new + $open + $assigned + $pending + $resolved + $closed }}</span>
+                                                </button>
+                                                <button data-key="1" type="button" class="btn-status-filter btn btn-outline-primary mr-2 {{ $filter_status == 1 ? ' active' : '' }}">
                                                     New <span class="badge badge-primary">{{ $new }}</span>
                                                 </button>
-                                                <button data-key="2" type="button" class="btn-status-filter btn btn-outline-success {{ $filter_status == 2 ? ' active' : '' }}">
+                                                <button data-key="2" type="button" class="btn-status-filter btn btn-outline-success mr-2 {{ $filter_status == 2 ? ' active' : '' }}">
                                                     Open <span class="badge badge-success">{{ $open }}</span>
                                                 </button>
-                                                <button data-key="6" type="button" class="btn-status-filter btn btn-outline-success {{ $filter_status == 6 ? ' active' : '' }}">
+                                                <button data-key="6" type="button" class="btn-status-filter btn btn-outline-success mr-2 {{ $filter_status == 6 ? ' active' : '' }}">
                                                     Assigned <span class="badge badge-success">{{ $assigned }}</span>
                                                 </button>
-                                                <button data-key="3" type="button" class="btn-status-filter btn btn-outline-warning {{ $filter_status == 3 ? ' active' : '' }}">
+                                                <button data-key="3" type="button" class="btn-status-filter btn btn-outline-warning mr-2 {{ $filter_status == 3 ? ' active' : '' }}">
                                                     Pending <span class="badge badge-warning">{{ $pending }}</span>
                                                 </button>
-                                                <button data-key="4" type="button" class="btn-status-filter btn btn-outline-success {{ $filter_status == 4 ? ' active' : '' }}">
+                                                <button data-key="4" type="button" class="btn-status-filter btn btn-outline-success mr-2 {{ $filter_status == 4 ? ' active' : '' }}">
                                                     Resolved <span class="badge badge-success">{{ $resolved }}</span>
                                                 </button>
                                                 <button data-key="5" type="button" class="btn-status-filter btn btn-outline-secondary {{ $filter_status == 5 ? ' active' : '' }}">
@@ -54,7 +57,8 @@
                                                 <div class="input-group ml-2">
                                                     <input type="text" class="form-control" value="{{ $search }}" id="search" name="search" placeholder="Search" />
                                                     <div class="input-group-append ml-2">
-                                                        <button class="btn btn-primary filter-dropdown" data-toggle="dropdown"><i class="fas fa-filter"></i></button>
+                                                        <button class="btn btn-primary mr-2" type="submit"><i class="fas fa-search fa-lg"></i></button>
+                                                        <button class="btn btn-primary filter-dropdown" data-toggle="dropdown"><i class="fas fa-filter fa-lg"></i></button>
                                                         <button class="filter-remove btn btn-danger ml-2"><i class="fa fa-times"></i></button>
                                                         <div class="edit-filter-modal dropdown-menu-right hidden">
                                                             <li class="dropdown-title">Filter By</li>
@@ -213,20 +217,16 @@
     @section('script')
         <script>
         $(document).ready(function() {
-
-             $(document).on('change', '#search', function() {
-                $("#search_form_all")[0].submit();
-            })
             $('.btn-status-filter').on('click', function() {
                 var key = $(this).data('key');
                 $('#filter_status').val(key);
                 $('#search_form_all').submit();
             });
 
-           $('.filter-remove').on('click', function (e) {
-            e.preventDefault(); // Prevent default behavior if it's a link or button
-            window.location.href = "{{ route('services') }}";
-        });
+            $('.filter-remove').on('click', function (e) {
+                e.preventDefault(); // Prevent default behavior if it's a link or button
+                window.location.href = "{{ route('services') }}";
+            });
 
             $('.filter-dropdown').on('click', function() {
                 $(this).siblings('.edit-filter-modal').toggleClass('hidden');

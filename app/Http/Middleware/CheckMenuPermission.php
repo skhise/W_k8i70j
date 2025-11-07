@@ -38,6 +38,11 @@ class CheckMenuPermission
             }
         }
 
+        // Prevent non-super-admin roles from accessing customer routes
+        if ($role != 0 && $currentRouteName && str_starts_with($currentRouteName, 'customers.')) {
+            abort(403);
+        }
+
         // Role 3 - Employee role restrictions
         if ($role == 3) {
             $allowedMenus = config("roles.$role");

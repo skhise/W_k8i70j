@@ -108,9 +108,6 @@
         $(document).on('change', '#dayFilter', function () {
             $("#search_form_all")[0].submit();
         });
-        $(document).on('change', '#search', function () {
-            $("#search_form_all")[0].submit();
-        });
         $(document).on('click', ".dropdown-item", function () {
             $(".dropdown-item").removeClass("active");
             var text = $(this).text();

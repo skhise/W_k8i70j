@@ -21,8 +21,9 @@
                                             <input type="text" class="form-control" value="{{$search}}" id="search"
                                                 name="search" placeholder="Search">
                                             <div class="input-group-append">
+                                                <button class="btn btn-primary mr-2" type="submit"><i class="fas fa-search fa-lg"></i></button>
                                                 <button class="btn btn-primary filter-dropdown"
-                                                    data-toggle="dropdown"><i class="fas fa-filter"></i></button>
+                                                    data-toggle="dropdown"><i class="fas fa-filter fa-lg"></i></button>
                                                  <button class="filter-remove_btn btn btn-danger ml-2">
                                                     <i class="fa fa-times"></i></button>
                                                 <div class="edit-filter-modal dropdown-menu-right hidden">
@@ -132,9 +133,6 @@
     @section('script')
 
         <script>
-            $(document).on('change', '#search', function() {
-                $("#search_form")[0].submit();
-            })
             $(document).on('click', ".dropdown-item", function() {
                 $(".dropdown-item").removeClass("active");
                 var text = $(this).text();

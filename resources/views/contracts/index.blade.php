@@ -28,12 +28,16 @@ fas fa-plus-square"></i>
                                             <input type="hidden" value="{{ $filter_status }}" name="filter_status"
                                                 id="filter_status" />
                                             <div class="buttons d-flex float-left">
+                                                <button data-key="" type="button"
+                                                    class="btn-status-filter btn btn-outline-secondary mr-2 {{ $filter_status === null || $filter_status === '' ? ' active' : '' }}">
+                                                    All <span class="badge badge-secondary">{{ $active + $renewal + $expired }}</span>
+                                                </button>
                                                 <button data-key ="1" type="button"
-                                                    class="btn-status-filter btn btn-outline-success {{ $filter_status == 1 ? ' active' : '' }}">
+                                                    class="btn-status-filter btn btn-outline-success mr-2 {{ $filter_status == 1 ? ' active' : '' }}">
                                                     Active <span class="badge badge-success">{{ $active }}</span>
                                                 </button>
                                                 <button data-key ="2" type="button"
-                                                    class="btn-status-filter btn btn-outline-warning {{ $filter_status == 2 ? ' active' : '' }}">
+                                                    class="btn-status-filter btn btn-outline-warning mr-2 {{ $filter_status == 2 ? ' active' : '' }}">
                                                     Upcoming Renewal <span
                                                         class="badge badge-warning">{{ $renewal }}</span>
                                                 </button>
@@ -48,9 +52,10 @@ fas fa-plus-square"></i>
                                                         value="{{ $search }}" id="search" name="search"
                                                         placeholder="Search">
                                                     <div class="input-group-append">
+                                                        <button class="btn btn-primary mr-2" type="submit"><i class="fas fa-search fa-lg"></i></button>
                                                         <button class="btn btn-primary filter-dropdown"
                                                             data-toggle="dropdown"><i
-                                                                class="fas fa-filter"></i></button>
+                                                                class="fas fa-filter fa-lg"></i></button>
                                                         <button class="filter-remove_btn btn btn-danger ml-2">
                                                                 <i class="fa fa-times"></i></button>
                                                         <div class="edit-filter-modal dropdown-menu-right hidden">
@@ -246,9 +251,6 @@ fas fa-plus-square"></i>
                 $("#filter_status").val($(this).data("key"));
                 $("#search_form")[0].submit();
             });
-            $(document).on('change', '#search', function() {
-                $("#search_form")[0].submit();
-            })
             $(document).on('click', ".dropdown-item", function() {
                 $(".dropdown-item").removeClass("active");
                 var text = $(this).text();

@@ -21,9 +21,10 @@
                                             <input type="text" class="form-control" value="{{$search}}" id="search"
                                                 name="search" placeholder="Search">
                                             <div class="input-group-append">
-                                                <button class="btn btn-primary" data-toggle="dropdown"
-                                                    class="btn btn-danger dropdown-toggle"><i
-                                                        class="fas fa-filter"></i></button>
+                                                <button class="btn btn-primary mr-2" type="submit"><i class="fas fa-search fa-lg"></i></button>
+                                                <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                                                    <i class="fas fa-filter fa-lg"></i>
+                                                </button>
                                                 <ul class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
                                                     <li class="dropdown-title">Search By</li>
                                                     <li><a href="#" data-field=""
@@ -101,9 +102,6 @@
     @section('script')
 
     <script>
-        $(document).on('change', '#search', function () {
-            $("#search_form")[0].submit();
-        })
         $(document).on('click', ".dropdown-item", function () {
             $(".dropdown-item").removeClass("active");
             var text = $(this).text();

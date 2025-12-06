@@ -98,7 +98,6 @@ class RepairInwardController extends Controller
             'status_id' => 'required|exists:master_repairstatus,id',
             'spare_type_id' => 'nullable|exists:master_product_type,id',
             'part_model_name' => 'nullable|string',
-            'alternate_sn' => 'nullable|string',
             'spare_description' => 'nullable|string',
             'product_remark' => 'nullable|string',
             'current_product_location' => 'nullable|string',

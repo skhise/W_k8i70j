@@ -111,7 +111,7 @@
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group">
-                                                        <label>Name Part/Model</label>
+                                                        <label>Spare / Model Name</label>
                                                         <input type="text" class="form-control" name="part_model_name" id="part_model_name" value="{{ old('part_model_name') }}" placeholder="Part/Model Name">
                                                     </div>
                                                 </div>
@@ -230,11 +230,11 @@
             const btnLoader = saveBtn.find('.btn-loader');
 
             // Client-side validation
-            if (!partModelName && !alternateSn) {
+            if (!partModelName) {
                 e.preventDefault();
                 Swal.fire({
                     title: 'Error!',
-                    text: 'Please enter at least Part/Model Name or Alternate S/N',
+                    text: 'Please enter at least Spare / Model Name',
                     icon: 'warning',
                     confirmButtonColor: '#d33',
                 });

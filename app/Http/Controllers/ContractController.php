@@ -124,11 +124,11 @@ class ContractController extends Controller
     }
     public function DeleteContract(Request $request, Contract $contract)
     {
-        $isService = $this->CheckIfServiceCall($contract->CNRT_ID);
-        if (!$isService) {
-            $isDelete = Contract::find($contract->CNRT_ID)->delete();
+        try {
+            // Use soft delete instead of hard delete
+            $isDelete = $contract->delete();
             if ($isDelete) {
-                $action = "Contract Delete, Contract Number:" . $contract->CNRT_Number;
+                $action = "Contract Deleted (Soft Delete), Contract Number:" . $contract->CNRT_Number;
                 $log = App(\App\Http\Controllers\LogController::class);
                 $log->SystemLog(Auth::user()->id, $action);
                 return redirect()->route('contracts')->with("success", "Contract Deleted!");
@@ -137,33 +137,16 @@ class ContractController extends Controller
                 $log->SystemLog(Auth::user()->id, "contract delete action failed");
                 return back()->withErrors("Action failed, try again.");
             }
-
-        } else {
-            try{
-                $update = Contract::where(["CNRT_ID"=>$contract->CNRT_ID])->update(['CNRT_Status' => 0]);
-                if ($update) {
-                    $action = "Contract marked as deleted, Contract Number:" . $contract->CNRT_Number;
-                    $log = App(\App\Http\Controllers\LogController::class);
-                    $log->SystemLog(Auth::user()->id, $action);
-                    return redirect()->route('contracts')->with("success", "Contract Deleted!");
-                } else {
-                    $log = App(\App\Http\Controllers\LogController::class);
-                    $log->SystemLog(Auth::user()->id, "contract delete action failed");
-                   return back()->withErrors("Action failed, try again.");
-                }
-            }catch(Exception $exp){
-                $log = App(\App\Http\Controllers\LogController::class);
-                $log->SystemLog(Auth::user()->id, "contract delete action failed");
-                return back()->withErrors($exp->getMessage());
-            }
-           
-            
+        } catch (Exception $exp) {
+            $log = App(\App\Http\Controllers\LogController::class);
+            $log->SystemLog(Auth::user()->id, "contract delete action failed");
+            return back()->withErrors($exp->getMessage());
         }
     }
     public function CheckIfServiceCall($id)
     {
         $count = Service::where("contract_id", $id)->count();
-        if ($count) {
+        if ($count>0) {
             return false;
         }
         return true;

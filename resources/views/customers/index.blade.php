@@ -69,6 +69,10 @@
                                                 <th>ID</th>
                                                 <th>Name</th>
                                                 <th>Email</th>
+                                                <th>Company Name</th>
+                                                <th>Clients Count</th>
+                                                <th>Employees Count</th>
+                                                <th>Allowed Users</th>
                                                 <th>Role</th>
                                                 <th>Created Date</th>
                                                 <th>Status</th>
@@ -81,6 +85,18 @@
                                                     <td>{{ $customer->id }}</td>
                                                     <td>{{ $customer->name }}</td>
                                                     <td>{{ $customer->email }}</td>
+                                                    <td>{{ $customer->company_name ?? '-' }}</td>
+                                                    <td>
+                                                        <span class="badge badge-primary">{{ $customer->client_count ?? 0 }}</span>
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge badge-primary">{{ $customer->employee_count ?? 0 }}</span>
+                                                    </td>
+                                                     <td>
+                                                        <span class="badge badge-primary">
+                                                            {{ $code }}
+                                                        </span>
+                                                    </td>
                                                     <td>
                                                         @if($customer->role == 1)
                                                             <span class="badge badge-danger">Admin</span>
@@ -117,23 +133,12 @@
                                                                     <i class="fas fa-check"></i>
                                                                 </button>
                                                             @endif
-
-                                                            <!-- Delete Button (only for admin users with role 1) -->
-                                                            @if($customer->role == 1)
-                                                                <form action="{{ route('customers.destroy', $customer->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this admin user?')">
-                                                                    @csrf
-                                                                    @method('DELETE')
-                                                                    <button type="submit" class="btn btn-danger btn-sm ml-1" title="Delete User">
-                                                                        <i class="fas fa-trash"></i>
-                                                                    </button>
-                                                                </form>
-                                                            @endif
                                                         </div>
                                                     </td>
                                                 </tr>
                                             @empty
                                                 <tr>
-                                                    <td colspan="7" class="text-center">No customers found.</td>
+                                                    <td colspan="9" class="text-center">No customers found.</td>
                                                 </tr>
                                             @endforelse
                                         </tbody>

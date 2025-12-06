@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ContractController;
 use App\Http\Controllers\DcController;
+use App\Http\Controllers\RepairInwardController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
@@ -90,6 +91,9 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
 
         Route::get('/reports/logs', [ReportController::class, 'Logs'])->name('logs');
         Route::get('/reports/logs_data', [ReportController::class, 'Logs_Data'])->name('logs_data');
+        Route::get('/reports/logs-export', [ReportController::class, 'logs_export'])->name('logs-export');
+        Route::get('/reports/inward-report', [ReportController::class, 'inward_report_index'])->name('inward-report');
+        Route::get('/reports/inward-report-export', [ReportController::class, 'inward_report_export'])->name('inward-report-export');
 
         Route::get('/attendance', [ReportController::class, 'Attendance'])->name('attendance');
         Route::get('/atte_data', [ReportController::class, 'Atte_Data'])->name('atte_data');
@@ -241,6 +245,12 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
 
     Route::middleware('auth')->group(function () {
         Route::get('/dcmanagements', [DcController::class, 'index'])->name('dcmanagements');
+    });
+    Route::middleware('auth')->group(function () {
+        // Define specific routes BEFORE resource route to avoid route conflicts
+        Route::get('/repairinwards/get-tickets', [RepairInwardController::class, 'getTicketsByCustomer'])->name('repairinwards.get-tickets');
+        Route::post('/repairinwards/{repairinward}/update-status', [RepairInwardController::class, 'updateStatus'])->name('repairinwards.update-status');
+        Route::resource('repairinwards', RepairInwardController::class);
     });
     Route::middleware('auth')->group(function () {
         Route::get('/quotmanagements', [QuotationController::class, 'index'])->name('quotmanagements');

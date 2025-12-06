@@ -4,9 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Client;
 use App\Models\User;
+use App\Models\ProfileSetup;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Crypt;
+use App\Models\Generate;
 
 class CustomerController extends Controller
 {
@@ -27,8 +31,13 @@ class CustomerController extends Controller
                 'users.email',
                 'users.role',
                 'users.status',
-                'users.created_at'
+                'users.created_at',
+                'profile_setup.comapny_name as company_name',
+                'profile_setup.wp_api_key as wp_api_key',
+                DB::raw('(SELECT COUNT(*) FROM clients) as client_count'),
+                DB::raw('(SELECT COUNT(*) FROM employees) as employee_count')
             ])
+            ->leftJoin('profile_setup', 'profile_setup.id', '=', 'users.id')
             // If logged-in user has role 0, only show users with role 1
             ->when(Auth::user()->role == 0, function ($query) {
                 return $query->where('users.role', 1);
@@ -36,7 +45,8 @@ class CustomerController extends Controller
             ->when($request->search, function ($query, $search) {
                 return $query->where(function ($q) use ($search) {
                     $q->where('users.name', 'like', '%' . $search . '%')
-                      ->orWhere('users.email', 'like', '%' . $search . '%');
+                      ->orWhere('users.email', 'like', '%' . $search . '%')
+                      ->orWhere('profile_setup.comapny_name', 'like', '%' . $search . '%');
                 });
             })
             ->when($request->filter_role, function ($query, $role) {
@@ -45,16 +55,20 @@ class CustomerController extends Controller
             ->when($request->filter_status, function ($query, $status) {
                 return $query->where('users.status', $status);
             })
+            ->groupBy('users.id', 'users.name', 'users.email', 'users.role', 'users.status', 'users.created_at', 'profile_setup.comapny_name','profile_setup.wp_api_key')
             ->orderBy('users.id', 'DESC')
             ->paginate(10)
             ->withQueryString();
-
+            $generate = Generate::find(1);
+        // Decrypt allowed_users for each customer
+        $code = Crypt::decrypt($generate->product_key);
         return view("customers.index", [
             'filters' => $request->all('search', 'filter_role', 'filter_status'),
             'search' => $request->search ?? '',
             'filter_role' => $request->filter_role ?? '',
             'filter_status' => $request->filter_status ?? '',
             'status' => $this->status,
+            'code' => $code,
             'customers' => $customers,
         ]);
     }
@@ -184,7 +198,7 @@ class CustomerController extends Controller
         try {
             $user = User::findOrFail($id);
             $email = $user->email;
-            
+            if(!$this->checkCustomerService($id)) return redirect()->back()->with('error', 'Customer has services. Please delete the services first.');
             $user->delete();
 
             $action = "User Deleted: " . $email . " by Super Admin";
@@ -195,6 +209,11 @@ class CustomerController extends Controller
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to delete customer. Please try again.');
         }
+    }
+    public function checkCustomerService($customer_id)  {
+        $count = Service::where('customer_id', $customer_id)->count();
+        if($count > 0) return false;
+        return true;
     }
 }
 

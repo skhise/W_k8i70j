@@ -4,7 +4,7 @@
             <div class="section-body">
                 <div class="card">
                     <div class="card-header">
-                        <h4>Engineer Ticket Report</h4>
+                        <h4>Engineer Service Reports</h4>
                     </div>
                     <div class="card-body">
                         <div class="form-horizontal">
@@ -23,7 +23,7 @@
                                     <div class="col-lg-2">
                                         <select id="report_service_status" class="form-control select2">
                                             <option value="">Select Status</option>
-                                            <option value="0" {{ $sstatus == 0 ? 'selected' : '' }}>All</option>
+                                            <option value="0" {{ $sstatus == 0 ? 'selected' : 'selected' }}>All</option>
                                             @foreach ($status as $status)
                                                 <option value="{{ $status->Status_Id }}"
                                                     {{ $status->Status_Id == $sstatus ? 'selected' : '' }}>
@@ -35,7 +35,7 @@
                                     <div class="col-lg-3">
                                         <select id="report_service_type" class="form-control select2">
                                             <option value="">Select Service Type</option>
-                                            <option value="0" {{ $service_type == 0 ? 'selected' : '' }}>All
+                                            <option value="0" {{ $service_type == 0 ? 'selected' : 'selected' }}>All
                                             </option>
                                             @foreach ($service_types as $servicetype)
                                                 <option value="{{ $servicetype->id }}"
@@ -51,7 +51,7 @@
                                             <option value="-1">Any</option>
                                             <option value="0">Today</option>
                                             <option value="1">Yesterday</option>
-                                            <option value="7">Last 7 Days</option>
+                                            <option value="7" selected>Last 7 Days</option>
                                             <option value="30">Last 30 Days</option>
                                             <option value="60">Last 60 Days</option>
                                             <option value="180">Last 180 Days</option>

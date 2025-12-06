@@ -3,6 +3,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\ContractBaseAccessory;
 use App\Models\ContractBaseProduct;
 use App\Models\Attachment;
@@ -10,7 +11,7 @@ use App\Models\ProductImage;
 
 class Contract extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $table = 'contracts';
     protected $fillable = [

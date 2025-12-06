@@ -119,7 +119,7 @@
     <aside id="sidebar-wrapper">
         <div class="sidebar-brand">
             <a href="index.html"> <img alt="image" src="{{ asset('img/logo.png') }}" class="header-logo" />
-                <span class="logo-name">{{ config('app.name', 'PMS') }}</span>
+                <span class="logo-name">{{ config('app.name', 'AMC') }}</span>
             </a>
         </div>
         <ul class="sidebar-menu">
@@ -135,6 +135,11 @@
                     <a href="{{ route('customers.index') }}" class="nav-link"><i
                             data-feather="user-check"></i><span>Customers</span></a>
                 </li>
+                <li class="dropdown {{ Request::is('generate') || Request::is('generate/*') ? 'active' : '' }}">
+                    <a href="{{ route('generate') }}" class="nav-link"><i
+                            data-feather="user-check"></i><span>Generate</span></a>
+                </li>
+                
             @else
                 {{-- Other roles - Show all menus --}}
                 <li class="dropdown {{ Request::is('dashboard') ? 'active' : '' }}">
@@ -163,6 +168,10 @@
                 <li class="dropdown {{ Request::is('dcmanagements') || Request::is('dcmanagements/*') ? 'active' : '' }}">
                     <a href="{{ route('dcmanagements') }}" class="nav-link"><i data-feather="file"></i><span>DC
                             Management</span></a>
+                </li>
+                <li class="dropdown {{ Request::is('repairinwards') || Request::is('repairinwards/*') ? 'active' : '' }}">
+                    <a href="{{ route('repairinwards.index') }}" class="nav-link"><i data-feather="file"></i><span>Repair Inward
+                            </span></a>
                 </li>
                 <!-- <li
                     class="dropdown {{ Request::is('quotmanagements') || Request::is('quotmanagements/*') ? 'active' : '' }}">
@@ -210,6 +219,8 @@
 
                         <li class="{{ Request::is('reports/dc-report') ? 'active' : '' }}"><a class="nav-link"
                                 href="{{ route('dc-report') }}">Dc Report</a></li>
+                        <li class="{{ Request::is('reports/inward-report') ? 'active' : '' }}"><a class="nav-link"
+                                href="{{ route('inward-report') }}">Repair Inward Report</a></li>
                         <!-- <li class="{{ Request::is('reports/quotation-report') ? 'active' : '' }}"><a class="nav-link"
                                 href="{{ route('quotation-report') }}">Quotation Report</a></li> -->
                         <li class="{{ Request::is('reports/logs') ? 'active' : '' }}"><a class="nav-link"

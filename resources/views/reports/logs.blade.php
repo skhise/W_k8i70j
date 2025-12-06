@@ -26,6 +26,7 @@
                                     <div class="col-lg-4 d-flex">
                                         <button class="btn btn-primary ml-2 btn-fetch-report">Fetch</button>
                                         <button class="btn btn-danger ml-2 btn-reset">Reset</button>
+                                        <button class="btn btn-light ml-2 btn-export-logs">Export</button>
                                     </div>
                                 </div>
                                 <hr />
@@ -105,6 +106,54 @@
                     }
                 });
             }
+
+            $(document).on("click", ".btn-export-logs", function() {
+                var date_range = $("#date-range option:selected").val();
+                
+                $.ajax({
+                    type: "GET",
+                    url: "logs-export",
+                    data: {
+                        date_range: date_range
+                    },
+                    xhrFields: {
+                        responseType: 'blob'
+                    },
+                    beforeSend: function() {
+                        $(".loader").show();
+                    },
+                    success: function(result, status, xhr) {
+                        $(".loader").hide();
+                        var disposition = xhr.getResponseHeader('content-disposition');
+                        var matches = /"([^"]*)"/.exec(disposition);
+                        var timestamp = new Date().toISOString().replace(/[:\-T]/g, '').slice(0, 15);
+                        var filename = (matches != null && matches[1] ? matches[1] : 'system_logs_' + timestamp + '.csv');
+
+                        // The actual download
+                        var blob = new Blob([result], {
+                            type: 'text/csv'
+                        });
+                        var link = document.createElement('a');
+                        link.href = window.URL.createObjectURL(blob);
+                        link.download = filename;
+
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    },
+                    error: function(error) {
+                        $(".loader").hide();
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Something went wrong, try again',
+                            dangerMode: true,
+                            icon: 'warning',
+                            confirmButtonColor: '#d33',
+                            cancelButtonColor: '#3085d6',
+                        });
+                    }
+                });
+            });
         </script>
     @stop
 </x-app-layout>

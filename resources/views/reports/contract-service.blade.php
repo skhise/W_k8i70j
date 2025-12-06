@@ -116,6 +116,29 @@
                                                                 <div
                                                                     class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pr-0 pt-3">
                                                                     <div class="card-content">
+                                                                        <h2 class="mb-3 font-18" id="inprogress_call">{{ 0 }}
+                                                                        </h2>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-xl-3 col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                                                <div class="card">
+                                                    <div class="card-statistic-4">
+                                                        <div class="align-items-center justify-content-between">
+                                                            <div class="row ">
+                                                                <div
+                                                                    class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pr-0 pt-3">
+                                                                    <div class="card-content">
+                                                                        <h5 class="font-15" >Pendings</h5>
+                                                                    </div>
+                                                                </div>
+                                                                <div
+                                                                    class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pr-0 pt-3">
+                                                                    <div class="card-content">
                                                                         <h2 class="mb-3 font-18" id="pending_call">{{ 0 }}
                                                                         </h2>
                                                                     </div>
@@ -335,10 +358,12 @@
                             var obj = data.serviceType;
                             var objd = data.serviceTypeData;
                             var stausCount = data.countArray;
-                            var pending = parseInt(stausCount.Assigned) + parseInt(stausCount.New)+stausCount.Pending + parseInt(stausCount.Open);
+                            var pending = stausCount.Pending;
+                            var inprogress = parseInt(stausCount.Assigned) + parseInt(stausCount.New)+ parseInt(stausCount.Open);
                             var complete = parseInt(stausCount.Resolved) + parseInt(stausCount.Closed);
                             var total = pending + complete;// parseInt(stausCount.Assigned) + parseInt(stausCount.New) + parseInt(stausCount.Open) + parseInt(stausCount.Resolved)+ parseInt(stausCount.Closed);
                             $("#pending_call").html(pending);
+                            $("#inprogress_call").html(inprogress);
                             $("#total_call").html(total);
                             $("#complete_call").html(complete);
 

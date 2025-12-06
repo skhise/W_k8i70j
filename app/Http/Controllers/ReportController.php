@@ -4,11 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Exports\ContractExport;
 use App\Exports\DcExport;
+use App\Exports\LogsExport;
 use App\Exports\QuotExport;
 use App\Exports\ServiceExport;
 use App\Exports\ServiceStatusExport;
 use App\Exports\SweviceExport;
 use App\Exports\UsersExport;
+use App\Exports\RepairInwardExport;
+use App\Models\RepairInward;
+use App\Models\RepairStatus;
 use App\Models\Attendance;
 use App\Models\Client;
 use App\Models\ContractScheduleService;
@@ -176,6 +180,57 @@ class ReportController extends Controller
         }
         return view('reports.logs', compact('systemlogs'));
     }
+    
+    public function logs_export(Request $request)
+    {
+        $systemlogs = null;
+        $date_range = $request->date_range;
+        $today = date("Y-m-d");
+        $todate = date("Y-m-d");
+        $fromdate = date('Y-m-d', strtotime($todate . '-' . $date_range . ' days'));
+        $date_range = $date_range == "" ? 0 : $date_range;
+        if ($date_range == 0) {
+            $fromdate = $todate;
+        }
+        if ($date_range == 1) {
+            $todate = date('Y-m-d', strtotime($today . '-1 days'));
+            $fromdate = date('Y-m-d', strtotime($today . '-1 days'));
+        }
+
+        try {
+            $systemlogs = SystemLog::select([
+                    'systemlogs.id',
+                    'systemlogs.loginId',
+                    'systemlogs.ActionDescription',
+                    'systemlogs.created_at',
+                    'users.name'
+                ])
+                ->join("users", "users.id", "systemlogs.loginId")
+                ->when($date_range != "" && $date_range != -1, function ($query) use ($todate, $fromdate) {
+                    return $query->whereBetween(DB::raw('DATE_FORMAT(systemlogs.created_at, "%Y-%m-%d")'), [$fromdate, $todate]);
+                })
+                ->orderBy('systemlogs.id', 'desc')
+                ->get();
+
+            $items = [];
+            foreach ($systemlogs as $log) {
+                $items[] = [
+                    $log->name ?? 'N/A',
+                    $log->ActionDescription ?? '',
+                    $log->created_at ? date('Y-m-d H:i:s', strtotime($log->created_at)) : ''
+                ];
+            }
+
+            $timestamp = date('Y-m-d_H-i-s');
+            $fileName = 'system_logs_' . $timestamp . '.csv';
+
+            return Excel::download(new LogsExport($items), $fileName)->deleteFileAfterSend(true);
+
+        } catch (Exception $exp) {
+            return back()->withErrors("Export failed: " . $exp->getMessage());
+        }
+    }
+    
     function dc_index(Request $request)
     {
         $dc_products = ServiceDc::select(["contracts.*", "dc_type.*", "clients.*", "services.*", "service_dc.id as dcp_id", "service_dc.*"])
@@ -1502,6 +1557,134 @@ class ReportController extends Controller
         return $services;
     }
 
+    public function inward_report_index(Request $request)
+    {
+        $customers = Client::where('CST_Status', 1)->orderBy('CST_Name', 'asc')->get();
+        $repairStatuses = RepairStatus::where('is_active', true)->get();
+        
+        // Apply filters if provided
+        if ($request->has('customer_id') || $request->has('date_range') || $request->has('status_id')) {
+            $query = RepairInward::select([
+                'repair_inwards.*',
+                'clients.CST_Name',
+                'clients.CST_ID'
+            ])
+            ->leftJoin('clients', 'clients.CST_ID', '=', 'repair_inwards.customer_id')
+            ->with(['repairStatus', 'spareType']);
+            // Filter by customer
+            if ($request->customer_id && $request->customer_id != '') {
+                $query->where('repair_inwards.customer_id', $request->customer_id);
+            }
+
+            // Filter by status
+            if ($request->status_id && $request->status_id != '') {
+                $query->where('repair_inwards.status_id', $request->status_id);
+            }
+
+            // Filter by date range
+            if ($request->date_range && $request->date_range != '' && $request->date_range != '-1') {
+                $dateRange = $request->date_range;
+                $today = date("Y-m-d");
+                $todate = date("Y-m-d");
+                $fromdate = date('Y-m-d', strtotime($todate . '-' . $dateRange . ' days'));
+                
+                if ($dateRange == 0) {
+                    $fromdate = $todate;
+                }
+                if ($dateRange == 1) {
+                    $todate = date('Y-m-d', strtotime($today . '-1 days'));
+                    $fromdate = date('Y-m-d', strtotime($today . '-1 days'));
+                }
+                
+                $query->whereBetween(DB::raw('DATE(repair_inwards.defective_date)'), [$fromdate, $todate]);
+            }
+            $repairInwards = $query->orderBy('repair_inwards.defective_date', 'desc')
+            ->orderBy('repair_inwards.id', 'desc')
+            ->paginate(50)
+            ->withQueryString();
+            return view('reports.inward-report', [
+                'customers' => $customers,
+                'repairStatuses' => $repairStatuses,
+                'repairInwards' => $repairInwards,
+            ]);
+        } 
+
+        return view('reports.inward-report', [
+            'customers' => $customers,
+            'repairStatuses' => $repairStatuses,
+        ]);
+       
+    }
+
+    public function inward_report_export(Request $request)
+    {
+        try {
+            $query = RepairInward::select([
+                    'repair_inwards.*',
+                    'clients.CST_Name',
+                    'clients.CST_ID'
+                ])
+                ->leftJoin('clients', 'clients.CST_ID', '=', 'repair_inwards.customer_id')
+                ->with(['repairStatus', 'spareType']);
+
+            // Filter by customer
+            if ($request->customer_id && $request->customer_id != '') {
+                $query->where('repair_inwards.customer_id', $request->customer_id);
+            }
+
+            // Filter by status
+            if ($request->status_id && $request->status_id != '') {
+                $query->where('repair_inwards.status_id', $request->status_id);
+            }
+
+            // Filter by date range
+            if ($request->date_range && $request->date_range != '' && $request->date_range != '-1') {
+                $dateRange = $request->date_range;
+                $today = date("Y-m-d");
+                $todate = date("Y-m-d");
+                $fromdate = date('Y-m-d', strtotime($todate . '-' . $dateRange . ' days'));
+                
+                if ($dateRange == 0) {
+                    $fromdate = $todate;
+                }
+                if ($dateRange == 1) {
+                    $todate = date('Y-m-d', strtotime($today . '-1 days'));
+                    $fromdate = date('Y-m-d', strtotime($today . '-1 days'));
+                }
+                
+                $query->whereBetween(DB::raw('DATE(repair_inwards.defective_date)'), [$fromdate, $todate]);
+            }
+
+            $repairInwards = $query->orderBy('repair_inwards.defective_date', 'desc')
+                ->orderBy('repair_inwards.id', 'desc')
+                ->get();
+
+            $items = [];
+            foreach ($repairInwards as $index => $inward) {
+                $items[] = [
+                    $index + 1,
+                    $inward->defective_no ?? '',
+                    $inward->defective_date ? date('d M Y', strtotime($inward->defective_date)) : '',
+                    $inward->CST_Name ?? 'N/A',
+                    $inward->ticket_no ?? 'N/A',
+                    $inward->repairStatus->status_name ?? 'N/A',
+                    $inward->spareType->type_name ?? 'N/A',
+                    $inward->part_model_name ?? 'N/A',
+                    $inward->spare_description ?? 'N/A',
+                    $inward->current_product_location ?? 'N/A',
+                    $inward->remark ?? 'N/A',
+                ];
+            }
+
+            $timestamp = date('Y-m-d_H-i-s');
+            $fileName = 'repair_inward_report_' . $timestamp . '.csv';
+
+            return Excel::download(new RepairInwardExport($items), $fileName)->deleteFileAfterSend(true);
+
+        } catch (Exception $exp) {
+            return back()->withErrors("Export failed: " . $exp->getMessage());
+        }
+    }
 
 }
 

@@ -1,6 +1,4 @@
-@php
-use App\Http\Controllers\LocationController;
-@endphp
+
 <x-app-layout>
     
     <div class="main-content">

@@ -1,3 +1,6 @@
+@php
+use App\Http\Controllers\LocationController;
+@endphp
 @if (count($attendance) == 0)
     <tr>
         <td colspan="5" class="text-center">

@@ -64,6 +64,14 @@ Route::group(['namespace' => 'API', 'prefix' => 'v1', 'middleware' => ['cors', '
     // FCM Token test route
     Route::post('test-fcm-token', [AppUserController::class, 'testFCMToken']);
     
+    // Service attachment routes
+    Route::post('uploadServiceAttachment', [AppUserController::class, 'uploadServiceAttachment']);
+    Route::get('getServiceAttachments', [AppUserController::class, 'getServiceAttachments']);
+    
+    // Google Drive credentials routes
+    Route::get('getGoogleDriveCredentials', [AppUserController::class, 'getGoogleDriveCredentials']);
+    Route::post('updateGoogleDriveCredentials', [AppUserController::class, 'updateGoogleDriveCredentials']);
+    
     // Notification routes
     Route::get('GetNotifications', [App\Http\Controllers\NotificationController::class, 'getNotifications']);
     Route::get('GetNotificationCount', [App\Http\Controllers\NotificationController::class, 'getNotificationCount']);

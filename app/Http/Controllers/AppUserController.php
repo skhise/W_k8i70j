@@ -34,6 +34,9 @@ use App\Models\ServiceRequest;
 use App\Models\Account_Setting;
 use App\Models\ContractBaseAccessory;
 use App\Services\PushNotificationService;
+use App\Services\GoogleDriveService;
+use App\Models\ServiceAttachment;
+use App\Models\ProfileSetup;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 
@@ -1618,6 +1621,299 @@ class AppUserController extends Controller
                 'success' => false,
                 'message' => 'Error: ' . $e->getMessage()
             ]);
+        }
+    }
+
+    /**
+     * Upload service attachment to Google Drive
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function uploadServiceAttachment(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'service_id' => 'required|integer|exists:services,id',
+                'file' => 'required|file|max:10240', // Max 10MB
+                'description' => 'nullable|string|max:500',
+                'user_id' => 'required|integer|exists:users,id',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            // Check if service exists
+            $service = Service::find($request->service_id);
+            if (!$service) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Service not found'
+                ], 404);
+            }
+
+            // Get uploaded file
+            $uploadedFile = $request->file('file');
+            if (!$uploadedFile->isValid()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid file upload'
+                ], 400);
+            }
+
+            // Get user's Google Drive credentials from ProfileSetup
+            $profileSetup = ProfileSetup::where('user_id', $request->user_id)->first();
+            
+            // Check if user has Google Drive credentials configured
+            if (!$profileSetup || !$profileSetup->google_client_id || !$profileSetup->google_client_secret || !$profileSetup->google_refresh_token) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Google Drive credentials not configured. Please configure them in your profile settings.'
+                ], 400);
+            }
+
+            // Generate unique file name with timestamp
+            $originalFileName = $uploadedFile->getClientOriginalName();
+            $fileExtension = $uploadedFile->getClientOriginalExtension();
+            $fileName = 'service_' . $request->service_id . '_' . time() . '_' . Str::random(8) . '.' . $fileExtension;
+
+            // Upload to Google Drive using user's credentials
+            $googleDriveService = new GoogleDriveService(
+                $profileSetup->google_client_id,
+                $profileSetup->google_client_secret,
+                $profileSetup->google_refresh_token
+            );
+            
+            // Use user's folder ID if configured, otherwise use root
+            $folderId = $profileSetup->google_drive_folder_id;
+            $driveResult = $googleDriveService->uploadFileFromRequest($uploadedFile, $folderId);
+
+            // Store reference in database
+            $attachment = ServiceAttachment::create([
+                'service_id' => $request->service_id,
+                'file_name' => $fileName,
+                'original_file_name' => $originalFileName,
+                'file_type' => $uploadedFile->getMimeType(),
+                'file_size' => $uploadedFile->getSize(),
+                'google_drive_file_id' => $driveResult['id'],
+                'google_drive_url' => $driveResult['webViewLink'] ?? $driveResult['webContentLink'] ?? null,
+                'description' => $request->description,
+                'uploaded_by' => $request->user_id,
+            ]);
+
+            \Log::info("Service attachment uploaded: Service ID {$request->service_id}, File ID {$driveResult['id']}");
+
+            return response()->json([
+                'success' => true,
+                'message' => 'File uploaded successfully to Google Drive',
+                'data' => [
+                    'attachment_id' => $attachment->id,
+                    'file_name' => $originalFileName,
+                    'file_size' => $attachment->file_size,
+                    'file_type' => $attachment->file_type,
+                    'google_drive_file_id' => $attachment->google_drive_file_id,
+                    'google_drive_url' => $attachment->google_drive_url,
+                    'uploaded_at' => $attachment->created_at->format('Y-m-d H:i:s'),
+                ]
+            ]);
+
+        } catch (Exception $e) {
+            \Log::error('Error uploading service attachment: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to upload file: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get service attachments list
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getServiceAttachments(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'service_id' => 'required|integer|exists:services,id',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $attachments = ServiceAttachment::where('service_id', $request->service_id)
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            $attachmentsData = $attachments->map(function ($attachment) {
+                return [
+                    'id' => $attachment->id,
+                    'file_name' => $attachment->original_file_name,
+                    'file_size' => $attachment->file_size,
+                    'file_type' => $attachment->file_type,
+                    'google_drive_file_id' => $attachment->google_drive_file_id,
+                    'google_drive_url' => $attachment->google_drive_url,
+                    'description' => $attachment->description,
+                    'uploaded_by' => $attachment->uploaded_by,
+                    'uploaded_at' => $attachment->created_at->format('Y-m-d H:i:s'),
+                ];
+            });
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Attachments retrieved successfully',
+                'data' => $attachmentsData
+            ]);
+
+        } catch (Exception $e) {
+            \Log::error('Error retrieving service attachments: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve attachments: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get Google Drive credentials from user profile
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getGoogleDriveCredentials(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'user_id' => 'required|integer|exists:users,id',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $profileSetup = ProfileSetup::where('user_id', $request->user_id)->first();
+
+            if (!$profileSetup) {
+                // Create a new profile setup record if it doesn't exist with default values
+                $user = User::find($request->user_id);
+                $profileSetup = ProfileSetup::create([
+                    'user_id' => $request->user_id,
+                    'comapny_name' => $user->name ?? 'User Profile',
+                    'address' => '',
+                    'contact_number' => '',
+                    'wp_api_key' => '',
+                    'wp_user_name' => '',
+                    'company_email' => $user->email ?? '',
+                    'u_token' => '',
+                ]);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Google Drive credentials retrieved successfully',
+                'data' => [
+                    'google_client_id' => $profileSetup->google_client_id ?? '',
+                    'google_client_secret' => $profileSetup->google_client_secret ? '***configured***' : '',
+                    'google_refresh_token' => $profileSetup->google_refresh_token ? '***configured***' : '',
+                    'google_drive_folder_id' => $profileSetup->google_drive_folder_id ?? '',
+                    'is_configured' => !empty($profileSetup->google_client_id) && 
+                                      !empty($profileSetup->google_client_secret) && 
+                                      !empty($profileSetup->google_refresh_token)
+                ]
+            ]);
+
+        } catch (Exception $e) {
+            \Log::error('Error retrieving Google Drive credentials: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve credentials: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Update Google Drive credentials in user profile
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateGoogleDriveCredentials(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'user_id' => 'required|integer|exists:users,id',
+                'google_client_id' => 'required|string',
+                'google_client_secret' => 'required|string',
+                'google_refresh_token' => 'required|string',
+                'google_drive_folder_id' => 'nullable|string',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            // Get or create profile setup
+            $profileSetup = ProfileSetup::where('user_id', $request->user_id)->first();
+
+            if (!$profileSetup) {
+                // Create with default values for required fields
+                $user = User::find($request->user_id);
+                $profileSetup = ProfileSetup::create([
+                    'user_id' => $request->user_id,
+                    'comapny_name' => $user->name ?? 'User Profile',
+                    'address' => '',
+                    'contact_number' => '',
+                    'wp_api_key' => '',
+                    'wp_user_name' => '',
+                    'company_email' => $user->email ?? '',
+                    'u_token' => '',
+                ]);
+            }
+
+            // Update Google Drive credentials
+            $profileSetup->google_client_id = $request->google_client_id;
+            $profileSetup->google_client_secret = $request->google_client_secret;
+            $profileSetup->google_refresh_token = $request->google_refresh_token;
+            $profileSetup->google_drive_folder_id = $request->google_drive_folder_id ?? null;
+            $profileSetup->save();
+
+            \Log::info("Google Drive credentials updated for user {$request->user_id}");
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Google Drive credentials updated successfully',
+                'data' => [
+                    'google_client_id' => $profileSetup->google_client_id,
+                    'google_drive_folder_id' => $profileSetup->google_drive_folder_id,
+                    'is_configured' => true
+                ]
+            ]);
+
+        } catch (Exception $e) {
+            \Log::error('Error updating Google Drive credentials: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update credentials: ' . $e->getMessage()
+            ], 500);
         }
     }
 }

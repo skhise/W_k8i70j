@@ -49,6 +49,7 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
     Route::middleware('auth')->group(function () {
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::post('/profile/google-drive', [ProfileController::class, 'updateGoogleDriveCredentials'])->name('profile.update-google-drive');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
         Route::get('/limit', [ProfileController::class, 'limit'])->name('limit');
         Route::post('/change-password', [ProfileController::class, 'change_password'])->name('profile.change-password');

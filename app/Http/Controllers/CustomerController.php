@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Crypt;
-use App\Models\Generate;
 
 class CustomerController extends Controller
 {
@@ -33,7 +32,7 @@ class CustomerController extends Controller
                 'users.status',
                 'users.created_at',
                 'profile_setup.comapny_name as company_name',
-                'profile_setup.wp_api_key as wp_api_key',
+                'profile_setup.wp_api_key as allowed_users',
                 DB::raw('(SELECT COUNT(*) FROM clients) as client_count'),
                 DB::raw('(SELECT COUNT(*) FROM employees) as employee_count')
             ])
@@ -59,16 +58,28 @@ class CustomerController extends Controller
             ->orderBy('users.id', 'DESC')
             ->paginate(10)
             ->withQueryString();
-            $generate = Generate::find(1);
+
         // Decrypt allowed_users for each customer
-        $code = Crypt::decrypt($generate->product_key);
+        $customers->getCollection()->transform(function ($customer) {
+            dd(Crypt::decrypt($customer->allowed_users));
+            if ($customer->allowed_users && !empty($customer->allowed_users)) {
+                try {
+                    $customer->allowed_users = Crypt::decrypt($customer->allowed_users);
+                } catch (\Exception $e) {
+                    $customer->allowed_users = 0;
+                }
+            } else {
+                $customer->allowed_users = 0;
+            }
+            return $customer;
+        });
+
         return view("customers.index", [
             'filters' => $request->all('search', 'filter_role', 'filter_status'),
             'search' => $request->search ?? '',
             'filter_role' => $request->filter_role ?? '',
             'filter_status' => $request->filter_status ?? '',
             'status' => $this->status,
-            'code' => $code,
             'customers' => $customers,
         ]);
     }

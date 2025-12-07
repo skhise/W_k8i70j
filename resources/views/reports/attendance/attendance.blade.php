@@ -1,4 +1,3 @@
-
 <x-app-layout>
     
     <div class="main-content">

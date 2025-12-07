@@ -92,10 +92,8 @@
                                                     <td>
                                                         <span class="badge badge-primary">{{ $customer->employee_count ?? 0 }}</span>
                                                     </td>
-                                                     <td>
-                                                        <span class="badge badge-primary">
-                                                            {{ $code }}
-                                                        </span>
+                                                    <td>
+                                                        <span class="badge badge-primary">{{ $customer->allowed_users ?? 0 }}</span>
                                                     </td>
                                                     <td>
                                                         @if($customer->role == 1)

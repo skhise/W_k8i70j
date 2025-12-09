@@ -1692,7 +1692,7 @@ class AppUserController extends Controller
             }
 
             // Get user's Google Drive credentials from ProfileSetup
-            $profileSetup = ProfileSetup::where('user_id', $request->user_id)->first();
+            $profileSetup = ProfileSetup::where('user_id', 1)->first();
             
             // Check if user has Google Drive credentials configured
             if (!$profileSetup || !$profileSetup->google_client_id || !$profileSetup->google_client_secret || !$profileSetup->google_refresh_token) {

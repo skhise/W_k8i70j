@@ -27,9 +27,35 @@ class GoogleDriveService
         $client = new Google_Client();
         $client->setClientId($this->clientId);
         $client->setClientSecret($this->clientSecret);
-        $client->setScopes([config('services.google.drive_scope')]);
+        
+        // Set the scope - default to drive scope if not configured
+        $scope = config('services.google.drive_scope', 'https://www.googleapis.com/auth/drive');
+        $client->setScopes([$scope]);
         $client->setAccessType('offline');
+        $client->setApprovalPrompt('force');
+        
+        // Set the refresh token
         $client->refreshToken($this->refreshToken);
+        
+        // Actually fetch a new access token using the refresh token
+        try {
+            $accessToken = $client->fetchAccessTokenWithRefreshToken($this->refreshToken);
+            
+            if (isset($accessToken['error'])) {
+                \Log::error('Google Drive token refresh failed', [
+                    'error' => $accessToken['error'],
+                    'error_description' => $accessToken['error_description'] ?? null,
+                ]);
+                throw new \Exception('Failed to refresh Google Drive access token: ' . ($accessToken['error_description'] ?? $accessToken['error']));
+            }
+            
+            // Set the access token on the client
+            $client->setAccessToken($accessToken);
+            
+        } catch (\Exception $e) {
+            \Log::error('Google Drive authentication error: ' . $e->getMessage());
+            throw new \Exception('Failed to authenticate with Google Drive: ' . $e->getMessage());
+        }
 
         $this->driveService = new Google_Service_Drive($client);
     }

@@ -1632,6 +1632,9 @@ class AppUserController extends Controller
      */
     public function uploadServiceAttachment(Request $request)
     {
+        // Log immediately to verify request reaches this method
+        \Log::info('uploadServiceAttachment method called - request received');
+        
         try {
             \Log::info('uploadServiceAttachment called', [
                 'method' => $request->method(),
@@ -1640,6 +1643,8 @@ class AppUserController extends Controller
                 'user_id' => $request->input('user_id'),
                 'all_inputs' => array_keys($request->all()),
                 'content_type' => $request->header('Content-Type'),
+                'authorization_header' => $request->header('Authorization') ? 'present' : 'missing',
+                'all_headers' => $request->headers->all(),
             ]);
 
             // Check if file is present

@@ -24,6 +24,21 @@ class GoogleDriveService
             throw new \Exception('Google Drive credentials are not configured. Please configure them in your profile settings.');
         }
 
+        // Log credential info (without exposing secrets)
+        \Log::info('Initializing Google Drive Service', [
+            'client_id_prefix' => substr($this->clientId, 0, 20) . '...',
+            'client_secret_length' => strlen($this->clientSecret),
+            'refresh_token_length' => strlen($this->refreshToken),
+            'refresh_token_prefix' => substr($this->refreshToken, 0, 20) . '...',
+        ]);
+
+        // Validate refresh token format (should start with '1//' or be a long string)
+        if (strlen($this->refreshToken) < 50) {
+            \Log::warning('Google Drive refresh token seems too short', [
+                'length' => strlen($this->refreshToken),
+            ]);
+        }
+
         $client = new Google_Client();
         $client->setClientId($this->clientId);
         $client->setClientSecret($this->clientSecret);
@@ -45,15 +60,37 @@ class GoogleDriveService
                 \Log::error('Google Drive token refresh failed', [
                     'error' => $accessToken['error'],
                     'error_description' => $accessToken['error_description'] ?? null,
+                    'client_id_prefix' => substr($this->clientId, 0, 20) . '...',
+                    'refresh_token_prefix' => substr($this->refreshToken, 0, 20) . '...',
                 ]);
-                throw new \Exception('Failed to refresh Google Drive access token: ' . ($accessToken['error_description'] ?? $accessToken['error']));
+                
+                // Provide more helpful error messages
+                $errorMsg = $accessToken['error_description'] ?? $accessToken['error'];
+                if ($accessToken['error'] === 'unauthorized_client') {
+                    $errorMsg = 'The refresh token does not match the client credentials. Please verify that the Client ID, Client Secret, and Refresh Token belong to the same Google Cloud project and OAuth application.';
+                } elseif ($accessToken['error'] === 'invalid_grant') {
+                    $errorMsg = 'The refresh token is invalid or has expired. Please generate a new refresh token.';
+                }
+                
+                throw new \Exception('Failed to refresh Google Drive access token: ' . $errorMsg);
             }
             
             // Set the access token on the client
             $client->setAccessToken($accessToken);
             
+            \Log::info('Google Drive authentication successful');
+            
+        } catch (\Google_Service_Exception $e) {
+            \Log::error('Google Drive API exception', [
+                'message' => $e->getMessage(),
+                'code' => $e->getCode(),
+            ]);
+            throw new \Exception('Failed to authenticate with Google Drive API: ' . $e->getMessage());
         } catch (\Exception $e) {
-            \Log::error('Google Drive authentication error: ' . $e->getMessage());
+            \Log::error('Google Drive authentication error', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
             throw new \Exception('Failed to authenticate with Google Drive: ' . $e->getMessage());
         }
 

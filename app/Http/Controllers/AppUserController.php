@@ -1700,12 +1700,30 @@ class AppUserController extends Controller
             $profileSetup = ProfileSetup::where('user_id', 1)->first(); // its always user id 1
             
             // Check if user has Google Drive credentials configured
-            if (!$profileSetup || !$profileSetup->google_client_id || !$profileSetup->google_client_secret || !$profileSetup->google_refresh_token) {
+            if (!$profileSetup) {
+                \Log::error('ProfileSetup not found for user_id 1');
                 return response()->json([
                     'success' => false,
                     'message' => 'Google Drive credentials not configured. Please configure them in your profile settings.'
                 ], 400);
             }
+            
+            if (!$profileSetup->google_client_id || !$profileSetup->google_client_secret || !$profileSetup->google_refresh_token) {
+                \Log::error('Google Drive credentials incomplete', [
+                    'has_client_id' => !empty($profileSetup->google_client_id),
+                    'has_client_secret' => !empty($profileSetup->google_client_secret),
+                    'has_refresh_token' => !empty($profileSetup->google_refresh_token),
+                ]);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Google Drive credentials not configured. Please configure them in your profile settings.'
+                ], 400);
+            }
+            
+            \Log::info('Using Google Drive credentials from ProfileSetup', [
+                'client_id_prefix' => substr($profileSetup->google_client_id, 0, 20) . '...',
+                'refresh_token_prefix' => substr($profileSetup->google_refresh_token, 0, 20) . '...',
+            ]);
 
             // Generate unique file name with timestamp
             $originalFileName = $uploadedFile->getClientOriginalName();
@@ -1957,6 +1975,109 @@ class AppUserController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to update credentials: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Test Google Drive authentication
+     * This endpoint tests if the Google Drive credentials are valid
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function testGoogleDriveAuth(Request $request)
+    {
+        try {
+            $userId = $request->input('user_id', 1); // Default to user_id 1
+            
+            \Log::info('Testing Google Drive authentication', ['user_id' => $userId]);
+
+            // Get user's Google Drive credentials from ProfileSetup
+            $profileSetup = ProfileSetup::where('user_id', $userId)->first();
+            
+            if (!$profileSetup) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'ProfileSetup not found for user_id: ' . $userId,
+                    'data' => [
+                        'user_id' => $userId,
+                        'has_credentials' => false,
+                    ]
+                ], 404);
+            }
+
+            // Check if credentials exist
+            $hasClientId = !empty($profileSetup->google_client_id);
+            $hasClientSecret = !empty($profileSetup->google_client_secret);
+            $hasRefreshToken = !empty($profileSetup->google_refresh_token);
+
+            if (!$hasClientId || !$hasClientSecret || !$hasRefreshToken) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Google Drive credentials are incomplete',
+                    'data' => [
+                        'user_id' => $userId,
+                        'has_client_id' => $hasClientId,
+                        'has_client_secret' => $hasClientSecret,
+                        'has_refresh_token' => $hasRefreshToken,
+                        'client_id_prefix' => $hasClientId ? substr($profileSetup->google_client_id, 0, 20) . '...' : null,
+                        'refresh_token_prefix' => $hasRefreshToken ? substr($profileSetup->google_refresh_token, 0, 20) . '...' : null,
+                    ]
+                ], 400);
+            }
+
+            // Try to initialize Google Drive Service (this will test authentication)
+            try {
+                $googleDriveService = new GoogleDriveService(
+                    $profileSetup->google_client_id,
+                    $profileSetup->google_client_secret,
+                    $profileSetup->google_refresh_token
+                );
+
+                // If we get here, authentication was successful
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Google Drive authentication successful!',
+                    'data' => [
+                        'user_id' => $userId,
+                        'has_credentials' => true,
+                        'client_id_prefix' => substr($profileSetup->google_client_id, 0, 20) . '...',
+                        'refresh_token_prefix' => substr($profileSetup->google_refresh_token, 0, 20) . '...',
+                        'has_folder_id' => !empty($profileSetup->google_drive_folder_id),
+                        'folder_id' => $profileSetup->google_drive_folder_id,
+                        'authentication_status' => 'success',
+                    ]
+                ]);
+
+            } catch (\Exception $e) {
+                \Log::error('Google Drive authentication test failed', [
+                    'user_id' => $userId,
+                    'error' => $e->getMessage(),
+                ]);
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Google Drive authentication failed: ' . $e->getMessage(),
+                    'data' => [
+                        'user_id' => $userId,
+                        'has_credentials' => true,
+                        'client_id_prefix' => substr($profileSetup->google_client_id, 0, 20) . '...',
+                        'refresh_token_prefix' => substr($profileSetup->google_refresh_token, 0, 20) . '...',
+                        'authentication_status' => 'failed',
+                        'error' => $e->getMessage(),
+                    ]
+                ], 400);
+            }
+
+        } catch (Exception $e) {
+            \Log::error('Error testing Google Drive authentication: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to test authentication: ' . $e->getMessage(),
+                'data' => [
+                    'error' => $e->getMessage(),
+                ]
             ], 500);
         }
     }

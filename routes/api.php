@@ -71,6 +71,7 @@ Route::group(['namespace' => 'API', 'prefix' => 'v1', 'middleware' => ['cors', '
     // Google Drive credentials routes
     Route::get('getGoogleDriveCredentials', [AppUserController::class, 'getGoogleDriveCredentials']);
     Route::post('updateGoogleDriveCredentials', [AppUserController::class, 'updateGoogleDriveCredentials']);
+    Route::get('testGoogleDriveAuth', [AppUserController::class, 'testGoogleDriveAuth']);
     
     // Notification routes
     Route::get('GetNotifications', [App\Http\Controllers\NotificationController::class, 'getNotifications']);

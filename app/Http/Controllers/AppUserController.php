@@ -1633,6 +1633,31 @@ class AppUserController extends Controller
     public function uploadServiceAttachment(Request $request)
     {
         try {
+            \Log::info('uploadServiceAttachment called', [
+                'method' => $request->method(),
+                'has_file' => $request->hasFile('file'),
+                'service_id' => $request->input('service_id'),
+                'user_id' => $request->input('user_id'),
+                'all_inputs' => array_keys($request->all()),
+                'content_type' => $request->header('Content-Type'),
+            ]);
+
+            // Check if file is present
+            if (!$request->hasFile('file')) {
+                \Log::error('No file in request', [
+                    'request_all' => $request->all(),
+                    'files' => $request->allFiles(),
+                ]);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No file uploaded. Please select a file.',
+                    'debug' => [
+                        'has_file' => $request->hasFile('file'),
+                        'files_count' => count($request->allFiles()),
+                    ]
+                ], 400);
+            }
+
             $validator = Validator::make($request->all(), [
                 'service_id' => 'required|integer|exists:services,id',
                 'file' => 'required|file|max:10240', // Max 10MB
@@ -1722,8 +1747,22 @@ class AppUserController extends Controller
                 ]
             ]);
 
-        } catch (Exception $e) {
-            \Log::error('Error uploading service attachment: ' . $e->getMessage());
+        } catch (\Google_Service_Exception $e) {
+            \Log::error('Google Drive API error uploading service attachment: ' . $e->getMessage(), [
+                'service_id' => $request->service_id ?? null,
+                'user_id' => $request->user_id ?? null,
+                'errors' => $e->getErrors() ?? []
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to upload file to Google Drive: ' . $e->getMessage()
+            ], 500);
+        } catch (\Exception $e) {
+            \Log::error('Error uploading service attachment: ' . $e->getMessage(), [
+                'service_id' => $request->service_id ?? null,
+                'user_id' => $request->user_id ?? null,
+                'trace' => $e->getTraceAsString()
+            ]);
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to upload file: ' . $e->getMessage()

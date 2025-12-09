@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class CORS
 {
@@ -11,28 +12,27 @@ class CORS
      * Handle an incoming request.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
-     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
+     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, Closure $next): Response
     {
-
-        // return $next($request);
-        header("Access-Control-Allow-Origin: *");
-
-        // ALLOW OPTIONS METHOD
-        $headers = [
-            'Access-Control-Allow-Methods'=> 'POST, GET, OPTIONS, PUT, DELETE',
-            'Access-Control-Allow-Headers'=> 'Content-Type, X-Auth-Token, Origin'
-        ];
-        if($request->getMethod() == "OPTIONS") {
-            // The client-side application can set only headers allowed in Access-Control-Allow-Headers
-            return Response::make('OK', 200, $headers);
+        // Handle OPTIONS preflight request
+        if ($request->getMethod() === "OPTIONS") {
+            return response('OK', 200)
+                ->header('Access-Control-Allow-Origin', '*')
+                ->header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS, PUT, DELETE, PATCH')
+                ->header('Access-Control-Allow-Headers', 'Content-Type, X-Auth-Token, Origin, Authorization, Accept, X-Requested-With')
+                ->header('Access-Control-Max-Age', '86400');
         }
 
+        // Process the request
         $response = $next($request);
-        foreach($headers as $key => $value)
-            $response->header($key, $value);
-        return $response;
+
+        // Add CORS headers to the response
+        return $response
+            ->header('Access-Control-Allow-Origin', '*')
+            ->header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS, PUT, DELETE, PATCH')
+            ->header('Access-Control-Allow-Headers', 'Content-Type, X-Auth-Token, Origin, Authorization, Accept, X-Requested-With');
     }
 }

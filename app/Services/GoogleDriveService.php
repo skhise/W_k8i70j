@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use Google_Client;
-use Google_Service_Drive;
+use Google\Client;
+use Google\Service\Drive;
 
 class GoogleDriveService
 {
@@ -39,77 +39,38 @@ class GoogleDriveService
             ]);
         }
 
-        $client = new Google_Client();
+        $client = new Client();
         $client->setClientId($this->clientId);
         $client->setClientSecret($this->clientSecret);
-        
-        // Set the scope - default to drive scope if not configured
-        $scope = config('services.google.drive_scope', 'https://www.googleapis.com/auth/drive');
-        $client->setScopes([$scope]);
-        $client->setAccessType('offline');
-        $client->setApprovalPrompt('force');
-        
-        // Set the refresh token
         $client->refreshToken($this->refreshToken);
         
         // Actually fetch a new access token using the refresh token
         try {
-            $accessToken = $client->fetchAccessTokenWithRefreshToken($this->refreshToken);
+            $this->driveService = new Drive($client);
             
-            if (isset($accessToken['error'])) {
-                \Log::error('Google Drive token refresh failed', [
-                    'error' => $accessToken['error'],
-                    'error_description' => $accessToken['error_description'] ?? null,
-                    'client_id_prefix' => substr($this->clientId, 0, 20) . '...',
-                    'refresh_token_prefix' => substr($this->refreshToken, 0, 20) . '...',
-                ]);
-                
-                // Provide more helpful error messages
-                $errorMsg = $accessToken['error_description'] ?? $accessToken['error'];
-                if ($accessToken['error'] === 'unauthorized_client') {
-                    $errorMsg = 'The refresh token does not match the client credentials. Please verify that the Client ID, Client Secret, and Refresh Token belong to the same Google Cloud project and OAuth application.';
-                } elseif ($accessToken['error'] === 'invalid_grant') {
-                    $errorMsg = 'The refresh token is invalid or has expired. Please generate a new refresh token.';
-                }
-                
-                throw new \Exception('Failed to refresh Google Drive access token: ' . $errorMsg);
-            }
-            
-            // Set the access token on the client
-            $client->setAccessToken($accessToken);
-            
-            \Log::info('Google Drive authentication successful');
-            
-        } catch (\Google_Service_Exception $e) {
-            \Log::error('Google Drive API exception', [
-                'message' => $e->getMessage(),
-                'code' => $e->getCode(),
-            ]);
-            throw new \Exception('Failed to authenticate with Google Drive API: ' . $e->getMessage());
-        } catch (\Exception $e) {
+        }  catch (\Exception $e) {
             \Log::error('Google Drive authentication error', [
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
             throw new \Exception('Failed to authenticate with Google Drive: ' . $e->getMessage());
         }
-
-        $this->driveService = new Google_Service_Drive($client);
     }
 
     public function uploadImage($filePath, $fileName)
     {
-        $fileMetadata = new \Google_Service_Drive_DriveFile([
+        $fileMetadata = new Drive\DriveFile([
             'name' => $fileName
         ]);
-        $content = file_get_contents($filePath);
-        $file = $this->driveService->files->create($fileMetadata, [
-            'data' => $content,
-            'mimeType' => 'image/jpeg',
-            'uploadType' => 'multipart',
-            'fields' => 'id'
-        ]);
-        return $file->id;
+        $driveFile = $service->files->create(
+            $fileMetadata,
+            [
+                'data' => file_get_contents($file),
+                'mimeType' => $file->getMimeType(),
+                'uploadType' => 'multipart'
+            ]
+        );
+        $driveFile->id;
     }
 
     /**
@@ -129,7 +90,7 @@ class GoogleDriveService
                 $mimeType = mime_content_type($filePath) ?: 'application/octet-stream';
             }
 
-            $fileMetadata = new \Google_Service_Drive_DriveFile([
+            $fileMetadata = new Drive\DriveFile([
                 'name' => $fileName
             ]);
 

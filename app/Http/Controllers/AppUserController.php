@@ -39,6 +39,8 @@ use App\Models\ServiceAttachment;
 use App\Models\ProfileSetup;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
+use Google\Client as GoogleClient;
+use Google\Service\Drive;
 
 
 class AppUserController extends Controller
@@ -1986,99 +1988,62 @@ class AppUserController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function testGoogleDriveAuth(Request $request)
-    {
-        try {
-            $userId = $request->input('user_id', 1); // Default to user_id 1
-            
-            \Log::info('Testing Google Drive authentication', ['user_id' => $userId]);
+    public function auth(Request $request)
+{
+    try {
+        $profileSetup = ProfileSetup::where('user_id', 1)->first();
 
-            // Get user's Google Drive credentials from ProfileSetup
-            $profileSetup = ProfileSetup::where('user_id', $userId)->first();
-            
-            if (!$profileSetup) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'ProfileSetup not found for user_id: ' . $userId,
-                    'data' => [
-                        'user_id' => $userId,
-                        'has_credentials' => false,
-                    ]
-                ], 404);
-            }
+        $client = new GoogleClient();
+        $client->setClientId($profileSetup->google_client_id);
+        $client->setClientSecret($profileSetup->google_client_secret);
+        $client->setRedirectUri('http://localhost:8000/api/v1/google/callback');
+        $client->setAccessType('offline');
+        $client->setApprovalPrompt('force');
+        $client->addScope(Drive::DRIVE);
 
-            // Check if credentials exist
-            $hasClientId = !empty($profileSetup->google_client_id);
-            $hasClientSecret = !empty($profileSetup->google_client_secret);
-            $hasRefreshToken = !empty($profileSetup->google_refresh_token);
+        return redirect()->away($client->createAuthUrl());
+       
+    } catch (Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to retrieve refresh token: ' . $e->getMessage(),
+        ], 200);
+    }
+}
 
-            if (!$hasClientId || !$hasClientSecret || !$hasRefreshToken) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Google Drive credentials are incomplete',
-                    'data' => [
-                        'user_id' => $userId,
-                        'has_client_id' => $hasClientId,
-                        'has_client_secret' => $hasClientSecret,
-                        'has_refresh_token' => $hasRefreshToken,
-                        'client_id_prefix' => $hasClientId ? substr($profileSetup->google_client_id, 0, 20) . '...' : null,
-                        'refresh_token_prefix' => $hasRefreshToken ? substr($profileSetup->google_refresh_token, 0, 20) . '...' : null,
-                    ]
-                ], 400);
-            }
 
-            // Try to initialize Google Drive Service (this will test authentication)
-            try {
-                $googleDriveService = new GoogleDriveService(
-                    $profileSetup->google_client_id,
-                    $profileSetup->google_client_secret,
-                    $profileSetup->google_refresh_token
-                );
+public function callback(Request $request)
+{
+    try {
+        $profileSetup = ProfileSetup::where('user_id', 1)->first();
 
-                // If we get here, authentication was successful
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Google Drive authentication successful!',
-                    'data' => [
-                        'user_id' => $userId,
-                        'has_credentials' => true,
-                        'client_id_prefix' => substr($profileSetup->google_client_id, 0, 20) . '...',
-                        'refresh_token_prefix' => substr($profileSetup->google_refresh_token, 0, 20) . '...',
-                        'has_folder_id' => !empty($profileSetup->google_drive_folder_id),
-                        'folder_id' => $profileSetup->google_drive_folder_id,
-                        'authentication_status' => 'success',
-                    ]
-                ]);
+        $client = new GoogleClient();
+        $client->setClientId($profileSetup->google_client_id);
+        $client->setClientSecret($profileSetup->google_client_secret);
 
-            } catch (\Exception $e) {
-                \Log::error('Google Drive authentication test failed', [
-                    'user_id' => $userId,
-                    'error' => $e->getMessage(),
-                ]);
+        // MUST be added BEFORE fetchAccessTokenWithAuthCode
+        $client->setRedirectUri('http://localhost:8000/api/v1/google/callback');
 
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Google Drive authentication failed: ' . $e->getMessage(),
-                    'data' => [
-                        'user_id' => $userId,
-                        'has_credentials' => true,
-                        'client_id_prefix' => substr($profileSetup->google_client_id, 0, 20) . '...',
-                        'refresh_token_prefix' => substr($profileSetup->google_refresh_token, 0, 20) . '...',
-                        'authentication_status' => 'failed',
-                        'error' => $e->getMessage(),
-                    ]
-                ], 400);
-            }
+        $client->addScope(Drive::DRIVE);
 
-        } catch (Exception $e) {
-            \Log::error('Error testing Google Drive authentication: ' . $e->getMessage());
+        if (!$request->has('code')) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to test authentication: ' . $e->getMessage(),
-                'data' => [
-                    'error' => $e->getMessage(),
-                ]
-            ], 500);
+                'message' => 'Authorization code missing',
+            ], 400);
         }
+
+        // works now because redirectUri is set
+        $token = $client->fetchAccessTokenWithAuthCode($request->code);
+
+        return response()->json($token);
+
+    } catch (Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to retrieve refresh token: ' . $e->getMessage(),
+        ], 200);
     }
+}
+
 }

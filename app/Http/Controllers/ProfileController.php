@@ -8,6 +8,9 @@ use App\Models\ProfileSetup;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Crypt;
+use Google\Client as GoogleClient;
+use Google\Service\Drive;
+use Exception;
 
 
 /* 
@@ -74,13 +77,23 @@ class ProfileController extends Controller
         $request->validate([
             'google_client_id' => 'required|string',
             'google_client_secret' => 'required|string',
-            'google_refresh_token' => 'required|string',
+            'google_refresh_token' => 'nullable|string',
             'google_drive_folder_id' => 'nullable|string',
         ]);
-
+        
         // Get or create user-specific profile setup
         $userProfileSetup = ProfileSetup::where('user_id', $user->id)->first();
         
+        // Check if refresh token is provided or already exists
+        $hasRefreshToken = !empty($request->google_refresh_token) || 
+                          ($userProfileSetup && !empty($userProfileSetup->google_refresh_token));
+        
+        if (!$hasRefreshToken) {
+            return redirect()->route('profile.edit', ['tab' => 'google-drive'])
+                ->with('error', 'Google Refresh Token is required. Please enter it manually or use the "Generate Refresh Token" button.');
+        }
+
+        // Get or create user-specific profile setup
         if (!$userProfileSetup) {
             // Create with default values for required fields
             $userProfileSetup = ProfileSetup::create([
@@ -97,7 +110,10 @@ class ProfileController extends Controller
 
         $userProfileSetup->google_client_id = $request->google_client_id;
         $userProfileSetup->google_client_secret = $request->google_client_secret;
-        $userProfileSetup->google_refresh_token = $request->google_refresh_token;
+        // Only update refresh token if provided, otherwise keep existing one
+        if (!empty($request->google_refresh_token)) {
+            $userProfileSetup->google_refresh_token = $request->google_refresh_token;
+        }
         $userProfileSetup->google_drive_folder_id = $request->google_drive_folder_id ?? null;
         
         $save = $userProfileSetup->save();
@@ -143,5 +159,92 @@ class ProfileController extends Controller
             $encrypted = Crypt::encrypt($request->number);
         }
         return view('setup.password-protected', ['encrypted' => $encrypted,"number"=>$request->number]);
+    }
+
+    /**
+     * Generate Google Refresh Token - Initiate OAuth flow
+     */
+    public function generateGoogleRefreshToken(Request $request)
+    {
+        try {
+            $user = Auth::user();
+            
+            // Get or create user-specific profile setup
+            $userProfileSetup = ProfileSetup::where('user_id', $user->id)->first();
+            
+            if (!$userProfileSetup || !$userProfileSetup->google_client_id || !$userProfileSetup->google_client_secret) {
+                return redirect()->route('profile.edit', ['tab' => 'google-drive'])
+                    ->with('error', 'Please enter your Google Client ID and Client Secret first before generating a refresh token.');
+            }
+
+            $client = new GoogleClient();
+            $client->setClientId($userProfileSetup->google_client_id);
+            $client->setClientSecret($userProfileSetup->google_client_secret);
+            $client->setRedirectUri(route('profile.google-auth-callback'));
+            $client->setAccessType('offline');
+            $client->setApprovalPrompt('force');
+            $client->addScope(Drive::DRIVE);
+
+            return redirect()->away($client->createAuthUrl());
+           
+        } catch (Exception $e) {
+            return redirect()->route('profile.edit', ['tab' => 'google-drive'])
+                ->with('error', 'Failed to initiate Google authentication: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Handle Google OAuth callback and save refresh token
+     */
+    public function googleAuthCallback(Request $request)
+    {
+        try {
+            $user = Auth::user();
+            
+            // Get user-specific profile setup
+            $userProfileSetup = ProfileSetup::where('user_id', $user->id)->first();
+            
+            if (!$userProfileSetup || !$userProfileSetup->google_client_id || !$userProfileSetup->google_client_secret) {
+                return redirect()->route('profile.edit', ['tab' => 'google-drive'])
+                    ->with('error', 'Google Drive credentials not found. Please configure Client ID and Client Secret first.');
+            }
+
+            $client = new GoogleClient();
+            $client->setClientId($userProfileSetup->google_client_id);
+            $client->setClientSecret($userProfileSetup->google_client_secret);
+            $client->setRedirectUri(route('profile.google-auth-callback'));
+            $client->addScope(Drive::DRIVE);
+
+            if (!$request->has('code')) {
+                return redirect()->route('profile.edit', ['tab' => 'google-drive'])
+                    ->with('error', 'Authorization code missing. Please try again.');
+            }
+
+            // Exchange authorization code for access token and refresh token
+            $token = $client->fetchAccessTokenWithAuthCode($request->code);
+
+            if (isset($token['error'])) {
+                return redirect()->route('profile.edit', ['tab' => 'google-drive'])
+                    ->with('error', 'Failed to get access token: ' . $token['error_description'] ?? $token['error']);
+            }
+
+            // Save the refresh token
+            if (isset($token['refresh_token'])) {
+                $userProfileSetup->google_refresh_token = $token['refresh_token'];
+                $userProfileSetup->save();
+                
+                return redirect()->route('profile.edit', ['tab' => 'google-drive'])
+                    ->with('success', 'Refresh token generated and saved successfully!');
+            } else {
+                // If refresh token is not provided, it might already exist
+                // In that case, we can still use the access token, but refresh token is preferred
+                return redirect()->route('profile.edit', ['tab' => 'google-drive'])
+                    ->with('error', 'Refresh token not provided. Please revoke access and try again, or make sure to select "offline" access.');
+            }
+
+        } catch (Exception $e) {
+            return redirect()->route('profile.edit', ['tab' => 'google-drive'])
+                ->with('error', 'Failed to retrieve refresh token: ' . $e->getMessage());
+        }
     }
 }

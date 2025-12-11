@@ -67,6 +67,7 @@ Route::group(['namespace' => 'API', 'prefix' => 'v1', 'middleware' => ['cors', '
     // Service attachment routes
     Route::post('uploadServiceAttachment', [AppUserController::class, 'uploadServiceAttachment']);
     Route::get('getServiceAttachments', [AppUserController::class, 'getServiceAttachments']);
+    Route::delete('deleteServiceAttachment', [AppUserController::class, 'deleteServiceAttachment']);
     
     // Google Drive credentials routes
     Route::get('getGoogleDriveCredentials', [AppUserController::class, 'getGoogleDriveCredentials']);

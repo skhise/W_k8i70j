@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Google\Client;
 use Google\Service\Drive;
+use Google\Service\Drive\Permission;
 
 class GoogleDriveService
 {
@@ -57,22 +58,6 @@ class GoogleDriveService
         }
     }
 
-    public function uploadImage($filePath, $fileName)
-    {
-        $fileMetadata = new Drive\DriveFile([
-            'name' => $fileName
-        ]);
-        $driveFile = $service->files->create(
-            $fileMetadata,
-            [
-                'data' => file_get_contents($file),
-                'mimeType' => $file->getMimeType(),
-                'uploadType' => 'multipart'
-            ]
-        );
-        $driveFile->id;
-    }
-
     /**
      * Upload a file to Google Drive
      *
@@ -106,7 +91,11 @@ class GoogleDriveService
                 'uploadType' => 'multipart',
                 'fields' => 'id, webViewLink, webContentLink'
             ]);
-
+            $permissions = new Permissions([
+                'type' => 'anyone',
+                'role' => 'reader'
+            ]);
+            $this->driveService->permissions->create($file->id, $permissions);
             return [
                 'id' => $file->id,
                 'webViewLink' => $file->webViewLink ?? null,
@@ -132,5 +121,24 @@ class GoogleDriveService
         $filePath = $uploadedFile->getRealPath();
 
         return $this->uploadFile($filePath, $fileName, $mimeType, $folderId);
+    }
+
+    /**
+     * Delete a file from Google Drive
+     *
+     * @param string $fileId Google Drive file ID
+     * @return bool Returns true on success
+     * @throws \Exception
+     */
+    public function deleteFile($fileId)
+    {
+        try {
+            $this->driveService->files->delete($fileId);
+            \Log::info("Google Drive file deleted successfully: {$fileId}");
+            return true;
+        } catch (\Exception $e) {
+            \Log::error('Google Drive delete error: ' . $e->getMessage());
+            throw new \Exception('Failed to delete file from Google Drive: ' . $e->getMessage());
+        }
     }
 }

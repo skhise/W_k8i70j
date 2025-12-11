@@ -238,9 +238,15 @@
                                                     <div class="form-group col-md-12">
                                                         <label for="google_refresh_token">Google Refresh Token <span class="text-danger">*</span></label>
                                                         <textarea class="form-control" name="google_refresh_token" id="google_refresh_token" 
-                                                            rows="3" placeholder="Enter your Google Refresh Token" required>{{ old('google_refresh_token', $userProfileSetup->google_refresh_token ?? '') }}</textarea>
+                                                            rows="3" placeholder="Enter your Google Refresh Token or click the button below to generate automatically">{{ old('google_refresh_token', $userProfileSetup->google_refresh_token ?? '') }}</textarea>
+                                                        <div class="mt-2">
+                                                            <a href="{{ route('profile.google-auth') }}" class="btn btn-primary btn-sm" id="btn-generate-refresh-token">
+                                                                <i class="fas fa-key"></i> Generate Refresh Token via Google OAuth
+                                                            </a>
+                                                        </div>
                                                         <small class="form-text text-muted">
-                                                            Generate this using OAuth 2.0 flow with Google Drive API scope
+                                                            <strong>Option 1:</strong> Click "Generate Refresh Token" to automatically generate via Google OAuth (recommended).<br>
+                                                            <strong>Option 2:</strong> Manually enter your refresh token in the field above.
                                                         </small>
                                                         @error('google_refresh_token')
                                                             <div class="text-danger">{{ $message }}</div>

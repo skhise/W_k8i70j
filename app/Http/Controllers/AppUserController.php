@@ -1850,6 +1850,109 @@ class AppUserController extends Controller
     }
 
     /**
+     * Delete service attachment from Google Drive and database
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function deleteServiceAttachment(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'attachment_id' => 'required|integer|exists:service_attachments,id',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            // Find the attachment
+            $attachment = ServiceAttachment::find($request->attachment_id);
+            if (!$attachment) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Attachment not found'
+                ], 404);
+            }
+
+            // Get user's Google Drive credentials from ProfileSetup
+            $profileSetup = ProfileSetup::where('user_id', 1)->first(); // its always user id 1
+            
+            if (!$profileSetup) {
+                \Log::error('ProfileSetup not found for user_id 1');
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Google Drive credentials not configured. Please configure them in your profile settings.'
+                ], 400);
+            }
+            
+            if (!$profileSetup->google_client_id || !$profileSetup->google_client_secret || !$profileSetup->google_refresh_token) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Google Drive credentials not configured. Please configure them in your profile settings.'
+                ], 400);
+            }
+
+            // Delete from Google Drive if file ID exists
+            if ($attachment->google_drive_file_id) {
+                try {
+                    $googleDriveService = new GoogleDriveService(
+                        $profileSetup->google_client_id,
+                        $profileSetup->google_client_secret,
+                        $profileSetup->google_refresh_token
+                    );
+                    
+                    $googleDriveService->deleteFile($attachment->google_drive_file_id);
+                    \Log::info("Google Drive file deleted: {$attachment->google_drive_file_id}");
+                } catch (\Exception $e) {
+                    \Log::error('Error deleting file from Google Drive: ' . $e->getMessage(), [
+                        'file_id' => $attachment->google_drive_file_id,
+                        'attachment_id' => $attachment->id,
+                    ]);
+                    // Continue with database deletion even if Google Drive deletion fails
+                    // This ensures the database stays in sync
+                }
+            }
+
+            // Delete from database
+            $attachment->delete();
+
+            \Log::info("Service attachment deleted: Attachment ID {$request->attachment_id}");
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Attachment deleted successfully',
+                'data' => [
+                    'attachment_id' => $request->attachment_id,
+                ]
+            ]);
+
+        } catch (\Google_Service_Exception $e) {
+            \Log::error('Google Drive API error deleting service attachment: ' . $e->getMessage(), [
+                'attachment_id' => $request->attachment_id ?? null,
+                'errors' => $e->getErrors() ?? []
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete file from Google Drive: ' . $e->getMessage()
+            ], 500);
+        } catch (Exception $e) {
+            \Log::error('Error deleting service attachment: ' . $e->getMessage(), [
+                'attachment_id' => $request->attachment_id ?? null,
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete attachment: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Get Google Drive credentials from user profile
      *
      * @param Request $request

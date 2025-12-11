@@ -91,7 +91,7 @@ class GoogleDriveService
                 'uploadType' => 'multipart',
                 'fields' => 'id, webViewLink, webContentLink'
             ]);
-            $permissions = new Permissions([
+            $permissions = new Permission([
                 'type' => 'anyone',
                 'role' => 'reader'
             ]);

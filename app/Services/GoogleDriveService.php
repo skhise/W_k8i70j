@@ -16,9 +16,9 @@ class GoogleDriveService
     public function __construct($clientId = null, $clientSecret = null, $refreshToken = null)
     {
         // Use provided credentials or fall back to config
-        $this->clientId = $clientId ?? config('services.google.client_id');
-        $this->clientSecret = $clientSecret ?? config('services.google.client_secret');
-        $this->refreshToken = $refreshToken ?? config('services.google.refresh_token');
+        $this->clientId = $clientId;
+        $this->clientSecret = $clientSecret;
+        $this->refreshToken = $refreshToken;
 
         // Validate that we have all required credentials
         if (empty($this->clientId) || empty($this->clientSecret) || empty($this->refreshToken)) {

@@ -909,6 +909,50 @@
             var attachmentsLoadedOnce = false;
             var attachmentsData = [];
 
+            function extractGoogleDriveFileId(url) {
+                if (!url) return null;
+                var match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+                if (match && match[1]) return match[1];
+                match = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+                if (match && match[1]) return match[1];
+                match = url.match(/\/uc\?id=([a-zA-Z0-9_-]+)/);
+                if (match && match[1]) return match[1];
+                return null;
+            }
+
+            function drivePreviewUrl(url) {
+                var fileId = extractGoogleDriveFileId(url);
+                if (!fileId) return url;
+                return 'https://drive.google.com/file/d/' + fileId + '/preview';
+            }
+
+            function driveImageViewUrl(url) {
+                var fileId = extractGoogleDriveFileId(url);
+                if (!fileId) return url;
+                return 'https://drive.google.com/uc?export=view&id=' + fileId;
+            }
+
+            function normalizeDriveUrl(url, isImage) {
+                if (!url) return '#';
+                if (url.indexOf('googleusercontent') !== -1) {
+                    // blob content blocks iframe; convert to preview
+                    return drivePreviewUrl(url);
+                }
+                if (url.indexOf('drive.google.com') !== -1) {
+                    return isImage ? driveImageViewUrl(url) : drivePreviewUrl(url);
+                }
+                return url;
+            }
+
+            function getAttachmentDisplayUrl(attachment, isImage) {
+            
+                var fileId = attachment.google_drive_file_id || extractGoogleDriveFileId(attachment.google_drive_url);
+                if (fileId) {
+                    return 'https://drive.google.com/file/d/' + fileId + '/preview';
+                }
+                return '#';
+            }
+
             function formatFileSize(sizeInBytes) {
                 if (!sizeInBytes || isNaN(sizeInBytes)) {
                     return "0";
@@ -924,9 +968,9 @@
                     '<td>' + formatFileSize(attachment.file_size) + '</td>' +
                     '<td>' + (attachment.uploaded_at || '') + '</td>' +
                     '<td>' +
-                    '<button class="btn btn-sm btn-primary mr-1 btn-view-attachment" data-index="' + index + '">View</button>' +
+                    '<div class="d-flex justify-content-center"><button class="btn btn-sm btn-primary mr-3 btn-view-attachment" data-index="' + index + '">View</button>' +
                     '<button class="btn btn-sm btn-danger btn-delete-attachment" data-id="' + attachment.id + '">Delete</button>' +
-                    '</td>' +
+                    ' </div> </td>' +
                     '</tr>';
             }
 
@@ -981,9 +1025,10 @@
                 }
                 var slides = '';
                 $.each(attachmentsData, function(index, attachment) {
-                    var viewUrl = attachment.google_drive_url ? attachment.google_drive_url : (attachment.google_drive_file_id ? 'https://drive.google.com/open?id=' + attachment.google_drive_file_id : '#');
                     var isImage = attachment.file_type && attachment.file_type.startsWith('image/');
-                    var content = isImage
+                    var viewUrl = getAttachmentDisplayUrl(attachment, isImage);
+                    var isDriveLink = viewUrl && (viewUrl.indexOf('drive.google.com') !== -1 || viewUrl.indexOf('googleusercontent') !== -1);
+                    var content = (isImage && !isDriveLink)
                         ? '<img src="' + viewUrl + '" class="img-fluid" alt="' + (attachment.file_name || 'Attachment') + '"/>'
                         : '<iframe src="' + viewUrl + '" class="w-100" style="height:500px;" frameborder="0"></iframe>';
                     slides += '<div class="carousel-item ' + (index === 0 ? 'active' : '') + '">' +
@@ -1009,6 +1054,8 @@
             $(document).on("click", ".btn-delete-attachment", function() {
                 var attachmentId = $(this).data('id');
                 var $row = $(this).closest('tr');
+                var deleteUrl = attachmentsDeleteUrl + '?attachment_id=' + attachmentId;
+                console.log("deleteUrl",deleteUrl);
                 Swal.fire({
                     title: 'Are you sure?',
                     text: 'This will delete the attachment from Google Drive and database.',
@@ -1019,11 +1066,8 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
-                            url: attachmentsDeleteUrl,
+                            url: deleteUrl,
                             type: "DELETE",
-                            data: {
-                                attachment_id: attachmentId
-                            },
                             headers: {
                                 'X-CSRF-TOKEN': "{{ csrf_token() }}"
                             },

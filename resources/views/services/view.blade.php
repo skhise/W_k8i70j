@@ -64,6 +64,7 @@
                                             href="#servicetimeline" role="tab" aria-controls="Servicetimeline-tab5"
                                             aria-selected="true">Timeline</a>
                                     </li>
+                                    
                                     @if (auth()->user()->role == 1)
                                         <li class="nav-item">
                                             <a class="nav-link" id="ServiceProductDC-tab5" data-toggle="tab"
@@ -72,7 +73,11 @@
                                                 DC</a>
                                         </li>
                                     @endif
-
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="ServiceAttachments-tab" data-toggle="tab"
+                                            href="#serviceattachments" role="tab" aria-controls="ServiceAttachments-tab"
+                                            aria-selected="true">Attachments</a>
+                                    </li>
 
                                 </ul>
                                 <div class="tab-content tab-bordered">
@@ -522,6 +527,38 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="tab-pane fade" role="tabpanel" id="serviceattachments">
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                                    <h5 class="mb-0">Attachments</h5>
+                                                </div>
+                                                <div id="attachments-panel">
+                                                    <div class="table-responsive">
+                                                        <table class="table table-bordered">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th style="width: 60px;">#</th>
+                                                                    <th>File Name</th>
+                                                                    <th style="width: 120px;">Type</th>
+                                                                    <th style="width: 120px;">Size (KB)</th>
+                                                                    <th style="width: 160px;">Uploaded At</th>
+                                                                    <th style="width: 150px;">Actions</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody id="attachments-table-body">
+                                                                <tr>
+                                                                    <td colspan="6" class="text-center text-muted">
+                                                                        Loading attachments...
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="tab-pane fade" role="tabpanel" id="serviceproductdc">
                                         @include('services.service_dcproduct_tab');
                                     </div>
@@ -835,6 +872,121 @@
 
             });
 
+
+            var attachmentsListUrl = "{{ url('api/v1/getServiceAttachments') }}";
+            var attachmentsDeleteUrl = "{{ url('api/v1/deleteServiceAttachment') }}";
+            var currentServiceId = "{{ $service_id }}";
+
+            function formatFileSize(sizeInBytes) {
+                if (!sizeInBytes || isNaN(sizeInBytes)) {
+                    return "0";
+                }
+                return (sizeInBytes / 1024).toFixed(1);
+            }
+
+            function buildAttachmentRow(attachment, index) {
+                var viewUrl = attachment.google_drive_url ? attachment.google_drive_url : (attachment.google_drive_file_id ? 'https://drive.google.com/open?id=' + attachment.google_drive_file_id : '#');
+                return '<tr data-attachment-id="' + attachment.id + '">' +
+                    '<td>' + (index + 1) + '</td>' +
+                    '<td>' + (attachment.file_name || '') + '</td>' +
+                    '<td>' + (attachment.file_type || '') + '</td>' +
+                    '<td>' + formatFileSize(attachment.file_size) + '</td>' +
+                    '<td>' + (attachment.uploaded_at || '') + '</td>' +
+                    '<td>' +
+                    '<a class="btn btn-sm btn-primary mr-1" target="_blank" href="' + viewUrl + '">View</a>' +
+                    '<button class="btn btn-sm btn-danger btn-delete-attachment" data-id="' + attachment.id + '">Delete</button>' +
+                    '</td>' +
+                    '</tr>';
+            }
+
+            var attachmentsLoadedOnce = false;
+
+            function loadServiceAttachments() {
+                $("#attachments-table-body").html('<tr><td colspan="6" class="text-center text-muted">Loading attachments...</td></tr>');
+                $.ajax({
+                    url: attachmentsListUrl,
+                    type: "GET",
+                    data: {
+                        service_id: currentServiceId
+                    },
+                    success: function(response) {
+                        var attachments = [];
+                        if (response && response.success) {
+                            attachments = response.data || response.attachments || [];
+                        } else if (Array.isArray(response)) {
+                            attachments = response;
+                        }
+
+                        if (!attachments || attachments.length === 0) {
+                            $("#attachments-table-body").html('<tr><td colspan="6" class="text-center text-muted">No attachments found.</td></tr>');
+                            return;
+                        }
+
+                        var rows = '';
+                        $.each(attachments, function(index, attachment) {
+                            rows += buildAttachmentRow(attachment, index);
+                        });
+                        $("#attachments-table-body").html(rows);
+                    },
+                    error: function() {
+                        $("#attachments-table-body").html('<tr><td colspan="6" class="text-center text-danger">Failed to load attachments.</td></tr>');
+                    }
+                });
+            }
+
+            $('a[data-toggle="tab"][href="#serviceattachments"]').on('shown.bs.tab', function() {
+                if (!attachmentsLoadedOnce) {
+                    attachmentsLoadedOnce = true;
+                    loadServiceAttachments();
+                }
+            });
+
+            $(document).on("click", ".btn-delete-attachment", function() {
+                var attachmentId = $(this).data('id');
+                var $row = $(this).closest('tr');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'This will delete the attachment from Google Drive and database.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes',
+                    cancelButtonText: 'No'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: attachmentsDeleteUrl,
+                            type: "DELETE",
+                            data: {
+                                attachment_id: attachmentId
+                            },
+                            headers: {
+                                'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                            },
+                            success: function(response) {
+                                if (response && response.success) {
+                                    $row.remove();
+                                    if ($("#attachments-table-body tr").length === 0) {
+                                        $("#attachments-table-body").html('<tr><td colspan="6" class="text-center text-muted">No attachments found.</td></tr>');
+                                    }
+                                } else {
+                                    Swal.fire({
+                                        title: 'Delete failed',
+                                        icon: 'warning',
+                                        text: (response && response.message) ? response.message : 'Unable to delete attachment.'
+                                    });
+                                }
+                            },
+                            error: function() {
+                                Swal.fire({
+                                    title: 'Delete failed',
+                                    icon: 'warning',
+                                    text: 'Unable to delete attachment.'
+                                });
+                            }
+                        });
+                    }
+                });
+            });
 
             function CancelModelBoxServiceAction() {
                 $("#btn_service_status_save").attr("disabled", false);

@@ -570,6 +570,36 @@
             </div>
         </section>
     </div>
+    {{-- Attachment viewer modal --}}
+    <div class="modal fade" id="attachmentsModal" tabindex="-1" role="dialog" aria-labelledby="attachmentsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="attachmentsModalLabel">Attachments</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="attachmentCarousel" class="carousel slide" data-interval="false" data-ride="carousel">
+                        <div class="carousel-inner" id="attachment-carousel-inner">
+                            <div class="carousel-item active text-center">
+                                <p class="text-muted mb-0">Loading...</p>
+                            </div>
+                        </div>
+                        <a class="carousel-control-prev" href="#attachmentCarousel" role="button" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="carousel-control-next" href="#attachmentCarousel" role="button" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     @include('services.service_action')
     @include('services.service_action_assign')
     @section('script')
@@ -876,6 +906,8 @@
             var attachmentsListUrl = "{{ url('api/v1/getServiceAttachments') }}";
             var attachmentsDeleteUrl = "{{ url('api/v1/deleteServiceAttachment') }}";
             var currentServiceId = "{{ $service_id }}";
+            var attachmentsLoadedOnce = false;
+            var attachmentsData = [];
 
             function formatFileSize(sizeInBytes) {
                 if (!sizeInBytes || isNaN(sizeInBytes)) {
@@ -885,7 +917,6 @@
             }
 
             function buildAttachmentRow(attachment, index) {
-                var viewUrl = attachment.google_drive_url ? attachment.google_drive_url : (attachment.google_drive_file_id ? 'https://drive.google.com/open?id=' + attachment.google_drive_file_id : '#');
                 return '<tr data-attachment-id="' + attachment.id + '">' +
                     '<td>' + (index + 1) + '</td>' +
                     '<td>' + (attachment.file_name || '') + '</td>' +
@@ -893,13 +924,11 @@
                     '<td>' + formatFileSize(attachment.file_size) + '</td>' +
                     '<td>' + (attachment.uploaded_at || '') + '</td>' +
                     '<td>' +
-                    '<a class="btn btn-sm btn-primary mr-1" target="_blank" href="' + viewUrl + '">View</a>' +
+                    '<button class="btn btn-sm btn-primary mr-1 btn-view-attachment" data-index="' + index + '">View</button>' +
                     '<button class="btn btn-sm btn-danger btn-delete-attachment" data-id="' + attachment.id + '">Delete</button>' +
                     '</td>' +
                     '</tr>';
             }
-
-            var attachmentsLoadedOnce = false;
 
             function loadServiceAttachments() {
                 $("#attachments-table-body").html('<tr><td colspan="6" class="text-center text-muted">Loading attachments...</td></tr>');
@@ -922,11 +951,14 @@
                             return;
                         }
 
+                        attachmentsData = attachments;
+
                         var rows = '';
                         $.each(attachments, function(index, attachment) {
                             rows += buildAttachmentRow(attachment, index);
                         });
                         $("#attachments-table-body").html(rows);
+                        buildAttachmentCarousel();
                     },
                     error: function() {
                         $("#attachments-table-body").html('<tr><td colspan="6" class="text-center text-danger">Failed to load attachments.</td></tr>');
@@ -939,6 +971,39 @@
                     attachmentsLoadedOnce = true;
                     loadServiceAttachments();
                 }
+            });
+
+            function buildAttachmentCarousel() {
+                var $container = $("#attachment-carousel-inner");
+                if (!attachmentsData || attachmentsData.length === 0) {
+                    $container.html('<div class="carousel-item active text-center"><p class="text-muted mb-0">No attachments found.</p></div>');
+                    return;
+                }
+                var slides = '';
+                $.each(attachmentsData, function(index, attachment) {
+                    var viewUrl = attachment.google_drive_url ? attachment.google_drive_url : (attachment.google_drive_file_id ? 'https://drive.google.com/open?id=' + attachment.google_drive_file_id : '#');
+                    var isImage = attachment.file_type && attachment.file_type.startsWith('image/');
+                    var content = isImage
+                        ? '<img src="' + viewUrl + '" class="img-fluid" alt="' + (attachment.file_name || 'Attachment') + '"/>'
+                        : '<iframe src="' + viewUrl + '" class="w-100" style="height:500px;" frameborder="0"></iframe>';
+                    slides += '<div class="carousel-item ' + (index === 0 ? 'active' : '') + '">' +
+                        '<div class="text-center">' +
+                        '<h6 class="mb-3">' + (attachment.file_name || '') + '</h6>' +
+                        content +
+                        '</div>' +
+                        '</div>';
+                });
+                $container.html(slides);
+            }
+
+            $(document).on("click", ".btn-view-attachment", function() {
+                var index = parseInt($(this).data('index')) || 0;
+                if (!attachmentsData || attachmentsData.length === 0) {
+                    return;
+                }
+                buildAttachmentCarousel();
+                $('#attachmentCarousel').carousel(index);
+                $('#attachmentsModal').modal('show');
             });
 
             $(document).on("click", ".btn-delete-attachment", function() {

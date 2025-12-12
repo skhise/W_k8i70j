@@ -10,7 +10,7 @@
                             </div>
                             <div class="card-body">
                                 <div class="form-horizontal">
-                                    <form action="dc-report" id="dc_filter">
+                                    <form action="dc-report-data" id="dc_filter">
                                         <div class="form-group">
                                             <div class="row mb-2">
                                                 <div class="col-md-3">
@@ -21,8 +21,8 @@
                                                         data-val-required="The Customer Name field is required."
                                                         id="customer_id" name="customer_id" placeholder=""
                                                         required="required" type="text">
-                                                        <option value="-1">Select</option>
-                                                        <option value="">All</option>
+                                                        <option value="">Select</option>
+                                                        <option value="0">All</option>
                                                         @foreach ($clients as $client)
                                                             <option value="{{ $client->CST_ID }}"
                                                                 {{ $customer_id == $client->CST_ID ? 'selected' : '' }}>
@@ -37,8 +37,8 @@
                                                         class="select2 form-control text-box single-line @error('customer_id') is-invalid @enderror"
                                                         data-val="true" id="type" name="type" placeholder=""
                                                         required="required">
-                                                        <option value="-1">Select</option>
-                                                        <option value="">All
+                                                        <option value="">Select</option>
+                                                        <option value="0">All
                                                         </option>
                                                         @foreach ($type as $tp)
                                                             <option value="{{ $tp->id }}"
@@ -49,7 +49,7 @@
                                                 </div>
                                                 <div class="col-md-3">
                                                     <div class="d-flex mt-4">
-                                                        <button class="action-btn onchange btn btn-primary"
+                                                        <button class="action-btn btn-fetch-report btn btn-primary"
                                                             type="button">Generate</button>
                                                         <button class="action-btn btn-light btn-dc-export btn"
                                                             type="button">Export</button>
@@ -75,33 +75,8 @@
                                                 <th>Actions</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
-                                            @if ($service_dcs->count() == 0)
-                                                <tr>
-                                                    <td colspan="8" class="text-center">No
-                                                        products
-                                                        added yet.</td>
-                                                </tr>
-                                            @endif
-                                            @foreach ($service_dcs as $index => $dcp)
-                                                <tr>
-                                                    <td>{{ $index + 1 }}</td>
-                                                    <td>{{ $dcp['CST_Name'] }}</td>
-                                                    <td>{{ $dcp['CNRT_Number'] }}</td>
-                                                    <td>{{ $dcp['service_no'] }}</td>
-                                                    <td>{{ $dcp->totalProduct($dcp['dcp_id']) }}</td>
-                                                    <td>{{ $dcp['dc_amount'] }}</td>
-                                                    <td>{{ date('d-M-Y', strtotime($dcp['issue_date'])) }}</td>
-                                                    <td>{{ $dcp['dc_type_name'] }}</td>
-                                                    <td>
-                                                        <div class="">
-                                                            <a class="action-btn btn btn-sm btn-primary"
-                                                                href="{{ route('services.dc_view', $dcp['dcp_id']) }}?flag=1"><i
-                                                                    class="fa fa-eye"></i></a>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
+                                        <tbody id="dcReportList">
+                                            @include('reports.dc_pagination')
                                         </tbody>
                                     </table>
                                 </div>
@@ -164,8 +139,49 @@
                         }
                     });
             });
-            $(".onchange").on("click", function() {
-                $("#dc_filter")[0].submit();
+           
+            $(document).on("click", ".btn-fetch-report", function() {
+                var cust_id = $("#customer_id option:selected").val();
+                var type = $("#type option:selected").val();
+                if (cust_id != "" && type != "") {
+                    $.ajax({
+                        type: "GET",
+                        url: "dc-report-data",
+                        data: {
+                            type: type,
+                            customer_id: cust_id
+                        },
+                        beforeSend: function() {
+                            $(".loader").show();
+                        },
+                        success: function(html) {
+                            $("#dcReportList").empty();
+                            $("#dcReportList").append(html);
+                            $(".loader").hide();
+                        },
+                        error: function(error) {
+                            $(".loader").hide();
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'Something went wrong, try again',
+                                dangerMode: true,
+                                icon: 'warning',
+                                confirmButtonColor: '#d33',
+                                cancelButtonColor: '#3085d6',
+                            });
+                        }
+                    });
+
+                } else {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Select filter values',
+                        dangerMode: true,
+                        icon: 'warning',
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                    });
+                }
             });
         </script>
     @stop

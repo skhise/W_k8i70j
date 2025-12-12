@@ -36,8 +36,8 @@
                                         </select>
                                     </div>
                                     <div class="col-lg-4 d-flex">
-                                        <button class="btn btn-primary ml-2 btn-fetch-report">Fetch</button>
-                                        <button class="btn btn-danger ml-2 btn-reset">Reset</button>
+                                        <button type="button" class="btn btn-primary ml-2 btn-fetch-report">Fetch</button>
+                                        <button type="button" class="btn btn-danger ml-2 btn-reset">Reset</button>
                                     </div>
                                 </div>
                                 <hr />
@@ -67,39 +67,63 @@
     </div>
     @section('script')
         <script>
+            function fetchAttendanceData(page = null) {
+                var date_range = $("#date-range option:selected").val();
+                var user_id = $("#employee option:selected").val();
+                var data = {
+                    date_range: date_range,
+                    user_id: user_id,
+                };
+                
+                if (page) {
+                    data.page = page;
+                }
+                
+                $.ajax({
+                    type: "GET",
+                    url: "attendance/atte_data",
+                    data: data,
+                    beforeSend: function() {
+                        $(".loader").show();
+                    },
+                    success: function(html) {
+                        $("#logsList").empty();
+                        $("#logsList").append(html);
+                        $(".loader").hide();
+                    },
+                    error: function(error) {
+                        $(".loader").hide();
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Something went wrong, try again',
+                            dangerMode: true,
+                            icon: 'warning',
+                            confirmButtonColor: '#d33',
+                            cancelButtonColor: '#3085d6',
+                        });
+                    }
+                });
+            }
+
             $(document).on("click", ".btn-reset", function() {
                 window.location.reload();
             });
-            $(document).on("click", ".btn-fetch-report", function() {
-                var date_range = $("#date-range option:selected").val();
-                var user_id = $("#employee option:selected").val();
-                $.ajax({
-                        type: "GET",
-                        url: "atte_data",
-                        data: {
-                            date_range: date_range,
-                            user_id:user_id,
-                        },
-                        beforeSend: function() {
-                            $(".loader").show();
-                        },
-                        success: function(html) {
-                            $("#logsList").empty();
-                            $("#logsList").append(html);
-                            $(".loader").hide();
-                        },
-                        error: function(error) {
-                            $(".loader").hide();
-                            Swal.fire({
-                                title: 'Error!',
-                                text: 'Something went wrong, try again',
-                                dangerMode: true,
-                                icon: 'warning',
-                                confirmButtonColor: '#d33',
-                                cancelButtonColor: '#3085d6',
-                            });
-                        }
-                    });
+            
+            $(document).on("click", ".btn-fetch-report", function(e) {
+                e.preventDefault();
+                fetchAttendanceData();
+            });
+            
+            // Handle pagination links
+            $(document).on("click", ".pagination a", function(e) {
+                e.preventDefault();
+                var url = $(this).attr('href');
+                if (url) {
+                    // Extract page number from URL
+                    var match = url.match(/page=(\d+)/);
+                    var page = match ? match[1] : null;
+                    fetchAttendanceData(page);
+                }
             });
         </script>
     @stop

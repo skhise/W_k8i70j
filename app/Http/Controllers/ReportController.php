@@ -103,23 +103,38 @@ class ReportController extends Controller
             $todate = date('Y-m-d', strtotime($today . '-1 days'));
             $fromdate = date('Y-m-d', strtotime($today . '-1 days'));
         }
-
+        $employee = Employee::where(["EMP_Status" => 1, "Access_Role" => 4, 'deleted_at' => null])->get();
         try {
             $attendance = Attendance::select(["users.*", "attendance.*"])
                 ->join("users", "users.id", "attendance.User_ID")
-                ->whereBetween(DB::raw('DATE_FORMAT(attendance.created_at, "%Y-%m-%d")'), [$fromdate, $todate])
+                ->when($date_range != "" && $date_range != -1, function ($query) use ($todate, $fromdate) {
+                    return $query->whereBetween(DB::raw('DATE_FORMAT(attendance.created_at, "%Y-%m-%d")'), [$fromdate, $todate]);
+                })
                 ->when($user_id != "", function ($query) use ($user_id) {
                     $query->where("attendance.User_ID", $user_id);
                 })
                 ->orderBy('attendance.id', 'desc')
-                ->paginate(10);
+                ->paginate(10)->withQueryString();
         } catch (Exception $exp) {
         }
 
         if ($request->ajax()) {
-            return view('reports.attendance.atten_pagination', compact('attendance', 'date_range'));
+            return view('reports.attendance.atten_pagination', 
+            [
+                'attendance' => $attendance,
+                'employees' => $employee,
+                'selected_employee' => $user_id,
+                'date_range' => $date_range
+            ]);
         }
-        return view('reports.attendance.attendance', compact('attendance'));
+
+        return view('reports.attendance.attendance', 
+        [
+            'attendance' => $attendance,
+            'employees' => $employee,
+            'selected_employee' => $user_id,
+            'date_range' => $date_range
+        ]);
     }
     function Logs(Request $request)
     {
@@ -233,26 +248,43 @@ class ReportController extends Controller
     
     function dc_index(Request $request)
     {
+        $dc_products = array();
+        
+        // dd($dc_products);
+        return view("reports.dc_report", [
+            "service_dcs" => array(),
+            'clients' => Client::all(),
+            'customer_id' => $request->customer_id ?? 0,
+            'dc_type' => $request->type ?? 0,
+            'type' => DcType::all()
+        ]);
+    }
+    function dc_report_data(Request $request)
+    {
+
+        
         $dc_products = ServiceDc::select(["contracts.*", "dc_type.*", "clients.*", "services.*", "service_dc.id as dcp_id", "service_dc.*"])
             ->join("services", "services.id", "service_dc.service_id")
             ->leftJoin("dc_type", "dc_type.id", "service_dc.dc_type")
             ->leftJoin("clients", "clients.CST_ID", "services.customer_id")
             ->leftJoin("contracts", "contracts.CNRT_ID", "services.contract_id")
-            ->when(isset($request->customer_id), function ($query) use ($request) {
-                $query->where("services.customer_id", $request->customer_id);
+            ->when($request->has('customer_id') && $request->customer_id != '', function ($query) use ($request) {
+                if($request->customer_id != 0){   
+                    $query->where("services.customer_id", $request->customer_id);
+                }
             })
-            ->when(isset($request->type), function ($query) use ($request) {
-                $query->where("service_dc.dc_type", $request->type);
+            ->when($request->has('type') && $request->type != '', function ($query) use ($request) {
+                if($request->type != 0){
+                    $query->where("service_dc.dc_type", $request->type);
+                }
             })
             ->paginate(10)
             ->withQueryString();
-        // dd($dc_products);
-        return view("reports.dc_report", [
+        if ($request->ajax()) {
+            return view('reports.dc_pagination', compact('dc_products'));
+        }
+        return view("reports.dc_pagination", [
             "service_dcs" => $dc_products,
-            'clients' => Client::all(),
-            'customer_id' => isset($request->customer_id) ? $request->customer_id : 0,
-            'dc_type' => isset($request->type) ? $request->type : 0,
-            'type' => DcType::all()
         ]);
     }
     function dc_export(Request $request)

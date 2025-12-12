@@ -11,8 +11,8 @@ use App\Http\Controllers\LocationController;
     @foreach ($attendance as $atten)
     @php
     
-        $loc_in =LocationController::getLocation($atten->Att_In_Location);
-        $loc_out =LocationController::getLocation($atten->Att_Out_Location);
+        $loc_in =LocationController::getLocation($atten->Att_In_Location) ?? "";
+        $loc_out =LocationController::getLocation($atten->Att_Out_Location) ?? "";
     @endphp
         <tr>
             <td>{{ $atten->name }}</td>

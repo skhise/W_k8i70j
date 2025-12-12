@@ -472,11 +472,11 @@
                                                 <select
                                                     class="form-control text-box single-line @error('service_type') is-invalid @enderror"
                                                     data-val="true"
-                                                    data-val-required="The issue type field is required."
+                                                    data-val-required="The service type field is required."
                                                     id="service_type" name="service_type" placeholder=""
                                                     required="required" type="text"
                                                     value="{{ $service->service_type ?? old('service_type') }}">
-                                                    <option value="">Select issue type</option>
+                                                    <option value="">Select Service type</option>
                                                     @foreach ($serviceType as $issuetype)
                                                         <option value="{{ $issuetype->id }}"
                                                             {{ $issuetype->id == $service->service_type

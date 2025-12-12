@@ -108,6 +108,7 @@
                                             <th>Type</th>
                                             <th>Date</th>
                                             <th class="table-width-20">Customer Name</th>
+                                            <th class="table-width-15">Service Type</th>
                                             <th>Issue Type</th>
                                             <th>Last Updated</th>
                                             <th>Assigned To</th>
@@ -132,6 +133,7 @@
                                                 <td>{{ $service['contract_id'] == 0 || empty($service['contract_id']) ? 'Non-Contracted' : 'Contracted' }}</td>
                                                 <td>{{ $service['service_date'] != '' ? date('d-M-Y', strtotime($service['service_date'])) : 'NA' }}</td>
                                                 <td>{{ $service['CST_Name'] }}</td>
+                                                <td>{{ $service['type_name'] }}</td>
                                                 <td>{{ $service['issue_name'] }}</td>
                                                 <td>{{ $service['last_updated'] != null ? date('d-M-Y h:i', strtotime($service['last_updated'])) : 'NA' }}</td>
                                                 <td>{{ $service['name'] }}</td>

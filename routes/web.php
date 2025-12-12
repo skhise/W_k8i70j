@@ -67,6 +67,7 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
          Route::get('/reports/dec-report-export', [ReportController::class, 'dc_export'])->name('dc-report-export');
         Route::get('/analysis/contract-service-report', [ReportController::class, 'csr_index'])->name('contract-service-report');
         Route::get('/reports/dc-report', [ReportController::class, 'dc_index'])->name('dc-report');
+        Route::get('/reports/dc-report-data', [ReportController::class, 'dc_report_data'])->name('dc-report-data');
         Route::get('/reports/quotation-report', [ReportController::class, 'quotation_index'])->name('quotation-report');
         Route::get('/reports/quot-report-export', [QuotationController::class, 'quot_export'])->name('quot-report-export');
        
@@ -99,7 +100,7 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
         Route::get('/reports/inward-report-export', [ReportController::class, 'inward_report_export'])->name('inward-report-export');
 
         Route::get('/attendance', [ReportController::class, 'Attendance'])->name('attendance');
-        Route::get('/atte_data', [ReportController::class, 'Atte_Data'])->name('atte_data');
+        Route::get('/attendance/atte_data', [ReportController::class, 'Atte_Data'])->name('atte_data');
     });
 
 

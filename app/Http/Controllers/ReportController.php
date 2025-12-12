@@ -281,10 +281,16 @@ class ReportController extends Controller
             ->paginate(10)
             ->withQueryString();
         if ($request->ajax()) {
-            return view('reports.dc_pagination', compact('dc_products'));
+            return view('reports.dc_pagination', [
+                "service_dcs" => $dc_products,
+            ]);
         }
-        return view("reports.dc_pagination", [
-            "service_dcs" => $dc_products,
+        return view("reports.dc_report", [
+            "service_dcs" => array(),
+            'clients' => Client::all(),
+            'customer_id' => $request->customer_id ?? 0,
+            'dc_type' => $request->type ?? 0,
+            'type' => DcType::all()
         ]);
     }
     function dc_export(Request $request)

@@ -140,39 +140,11 @@
                     });
             });
            
-            $(document).on("click", ".btn-fetch-report", function() {
+            function fetchDcData(page = null) {
                 var cust_id = $("#customer_id option:selected").val();
                 var type = $("#type option:selected").val();
-                if (cust_id != "" && type != "") {
-                    $.ajax({
-                        type: "GET",
-                        url: "dc-report-data",
-                        data: {
-                            type: type,
-                            customer_id: cust_id
-                        },
-                        beforeSend: function() {
-                            $(".loader").show();
-                        },
-                        success: function(html) {
-                            $("#dcReportList").empty();
-                            $("#dcReportList").append(html);
-                            $(".loader").hide();
-                        },
-                        error: function(error) {
-                            $(".loader").hide();
-                            Swal.fire({
-                                title: 'Error!',
-                                text: 'Something went wrong, try again',
-                                dangerMode: true,
-                                icon: 'warning',
-                                confirmButtonColor: '#d33',
-                                cancelButtonColor: '#3085d6',
-                            });
-                        }
-                    });
 
-                } else {
+                if (cust_id == "" || type == "") {
                     Swal.fire({
                         title: 'Error!',
                         text: 'Select filter values',
@@ -181,6 +153,56 @@
                         confirmButtonColor: '#d33',
                         cancelButtonColor: '#3085d6',
                     });
+                    return;
+                }
+
+                var data = {
+                    type: type,
+                    customer_id: cust_id,
+                };
+
+                if (page) {
+                    data.page = page;
+                }
+
+                $.ajax({
+                    type: "GET",
+                    url: "dc-report-data",
+                    data: data,
+                    beforeSend: function() {
+                        $(".loader").show();
+                    },
+                    success: function(html) {
+                        $("#dcReportList").empty();
+                        $("#dcReportList").append(html);
+                        $(".loader").hide();
+                    },
+                    error: function(error) {
+                        $(".loader").hide();
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Something went wrong, try again',
+                            dangerMode: true,
+                            icon: 'warning',
+                            confirmButtonColor: '#d33',
+                            cancelButtonColor: '#3085d6',
+                        });
+                    }
+                });
+            }
+
+            $(document).on("click", ".btn-fetch-report", function(e) {
+                e.preventDefault();
+                fetchDcData();
+            });
+
+            $(document).on("click", ".pagination a", function(e) {
+                e.preventDefault();
+                var url = $(this).attr('href');
+                if (url) {
+                    var match = url.match(/page=(\d+)/);
+                    var page = match ? match[1] : null;
+                    fetchDcData(page);
                 }
             });
         </script>

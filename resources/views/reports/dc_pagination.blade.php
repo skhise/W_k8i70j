@@ -1,12 +1,20 @@
 
-                                            @if (count($service_dcs) == 0)
+                                            @php
+                                                $service_dcs = $service_dcs ?? (isset($dc_products) ? $dc_products : []);
+                                                $hasRecords = false;
+                                                if (isset($service_dcs) && (is_array($service_dcs) || is_countable($service_dcs))) {
+                                                    $hasRecords = count($service_dcs) > 0;
+                                                }
+                                            @endphp
+                                            @unless ($hasRecords)
                                                 <tr>
-                                                    <td colspan="8" class="text-center">No
+                                                    <td colspan="9" class="text-center">No
                                                         products
                                                         added yet.</td>
                                                 </tr>
-                                            @endif
-                                            @foreach ($service_dcs as $index => $dcp)
+                                            @endunless
+                                            @if ($hasRecords)
+                                                @foreach ($service_dcs as $index => $dcp)
                                                 <tr>
                                                     <td>{{ $index + 1 }}</td>
                                                     <td>{{ $dcp['CST_Name'] }}</td>
@@ -24,5 +32,13 @@
                                                         </div>
                                                     </td>
                                                 </tr>
-                                            @endforeach
+                                                @endforeach
+                                                @if (method_exists($service_dcs, 'links'))
+                                                <tr>
+                                                    <td colspan="9" class="text-center">
+                                                        {{ $service_dcs->links() }}
+                                                    </td>
+                                                </tr>
+                                                @endif
+                                            @endif
                                         

@@ -369,7 +369,7 @@
                             var objd = data.employeeData;
                             var stausCount = data.countArray;
                             var pending = parseInt(stausCount.Pending);
-                            var inprogress = parseInt(stausCount.Assigned) + parseInt(stausCount.New) + parseInt(stausCount.Pending) + parseInt(stausCount.Open);
+                            var inprogress = parseInt(stausCount.Assigned) + parseInt(stausCount.New)  + parseInt(stausCount.Open);
                             var complete = parseInt(stausCount.Resolved) + parseInt(stausCount.Closed);
                             var total = parseInt(stausCount.Pending)+parseInt(stausCount.Assigned) + parseInt(stausCount.New) + parseInt(stausCount.Open) + parseInt(stausCount.Resolved)+ parseInt(stausCount.Closed);
                             $("#pending_call").html(pending);

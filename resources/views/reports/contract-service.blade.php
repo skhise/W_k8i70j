@@ -358,8 +358,9 @@
                             var obj = data.serviceType;
                             var objd = data.serviceTypeData;
                             var stausCount = data.countArray;
+                            console.log("stausCount",stausCount);
                             var pending = stausCount.Pending;
-                            var inprogress = parseInt(stausCount.Assigned) + parseInt(stausCount.New)+ parseInt(stausCount.Open);
+                            var inprogress = parseInt(stausCount.Assigned) + parseInt(stausCount.New) + parseInt(stausCount.Open);
                             var complete = parseInt(stausCount.Resolved) + parseInt(stausCount.Closed);
                             var total = pending + complete + inprogress;
                             $("#pending_call").html(pending);

@@ -63,7 +63,7 @@ class ScheduleController extends Controller
                 ->leftJoin("master_service_type", "master_service_type.id", "contract_schedule_service.serviceType")
                 ->leftJoin("master_issue_type", "master_issue_type.id", "contract_schedule_service.issueType")
                 ->where("Service_Call_Id", 0)
-                ->orderBy("Schedule_Date", "DESC")
+                ->orderBy("Schedule_Date", "ASC")
                 ->filter($request->only('search', 'trashed', 'search_field', 'filter_status'))
                 ->paginate(10)
                 ->withQueryString();

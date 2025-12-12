@@ -361,7 +361,7 @@
                             var pending = stausCount.Pending;
                             var inprogress = parseInt(stausCount.Assigned) + parseInt(stausCount.New)+ parseInt(stausCount.Open);
                             var complete = parseInt(stausCount.Resolved) + parseInt(stausCount.Closed);
-                            var total = pending + complete;// parseInt(stausCount.Assigned) + parseInt(stausCount.New) + parseInt(stausCount.Open) + parseInt(stausCount.Resolved)+ parseInt(stausCount.Closed);
+                            var total = pending + complete + inprogress;
                             $("#pending_call").html(pending);
                             $("#inprogress_call").html(inprogress);
                             $("#total_call").html(total);

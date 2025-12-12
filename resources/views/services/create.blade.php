@@ -124,10 +124,16 @@
 
                                                     <label style="left:15px;" for="product_sr_no">Product S/N
                                                         Number</label>
-                                                    <button type="button" class="btn btn-icon btn-danger"
+                                                        <div class="d-flex justify-content-center">
+                                                    <button type="button" class="btn btn-icon btn-info"
+                                                        id="refresh_product_sr_no"><i
+                                                            class="material-icons"
+                                                            style="top: 5px;position: relative;">search</i></button>
+                                                    <button type="button" class="btn btn-icon btn-danger ml-2"
                                                         onclick="javascript:window.location.reload()"><i
                                                             class="material-icons"
                                                             style="top: 5px;position: relative;">refresh</i></button>
+                                                        </div>
                                                 </div>
 
                                             </div>
@@ -607,7 +613,7 @@
     </section>
     @section('script')
         <script>
-            $(document).on('change', '#product_sr_no', function() {
+            $(document).on('click', '#refresh_product_sr_no', function() {
 
                 $('#contract_no').val('');
                 $('#contract_type').val('');
@@ -616,7 +622,8 @@
                 $('#CNRT_Charges').val('');
                 $('#CNRT_Charges_Pending').val('');
                 $('#product_id').html('');
-                var value = $(this).val();
+                var value = $("#product_sr_no").val();
+                if(value != ''){
                 $.ajax({
                     method: 'GET',
                     url: '/products/product_by_id',
@@ -667,8 +674,21 @@
                     error: function() {
                         $("#without_product_div").show();
                         alert('Something went wrong, try again');
+                        Swal.fire({
+                                    title: 'Action failed',
+                                    icon: 'warning',
+                                    text: 'Something went wrong, try again.'
+                                });
                     }
                 });
+            }else {
+                Swal.fire({
+                                    title: 'Action failed',
+                                    icon: 'warning',
+                                    text: 'Product S/N Number is required.'
+                                });
+            }
+
             });
             $(document).on("change", "#product_id", function() {
                 var value = $('#product_id option:selected').val();

@@ -737,7 +737,7 @@ class ContractController extends Controller
                 ->join("master_contract_status", "master_contract_status.id", "contracts.CNRT_Status")
                 ->leftJoin("customers", "customers.CST_ID", "contracts.CNRT_CustomerID")
                 ->where("CNRT_Status", "!=", 0)
-                ->orderBy('CNRT_ID', 'DESC')->get();
+                ->orderBy('contracts.created_at', 'DESC')->get();
             foreach ($contracts as $contract) {
                 $contract->Edit = "/contracts/edit?id=" . $contract->CNRT_ID;
                 $contract->View = "/contracts/view?CNRT_ID=" . $contract->CNRT_ID;
@@ -939,7 +939,6 @@ class ContractController extends Controller
     {
 
         $messages = array(
-            'nrnumber' => 'Serial number required',
             'nrnumber.*' => 'Serial number must be unique',
             'contractId' => 'Contract information required',
             'product_type' => 'Product type required',
@@ -948,8 +947,8 @@ class ContractController extends Controller
         $validator = Validator::make(
             $request->all(),
             [
-                "nrnumber" => "required|array",
-                'nrnumber.*' => 'distinct',
+                "nrnumber" => "nullable|array",
+                'nrnumber.*' => 'nullable|distinct',
                 'contractId' => "required",
                 'product_type' => "required",
                 'product_name' => "required",
@@ -959,54 +958,52 @@ class ContractController extends Controller
         if ($validator->fails()) {
             return response()->json(["success" => false, "message" => "all * marked fields required.", "validation_error" => $validator->errors()]);
         }
-        $nrnumber = $request->nrnumber;
-        $isOk = 0;
-
-        foreach ($nrnumber as $index => $sr) {
-            if ($sr == "") {
-                return response()->json(["success" => false, "index" => $index, "message" => "Serial number must be unique."]);
-            } else {
-                $is_unique = ContractUnderProduct::where(['nrnumber' => $sr])->get();
-                if (count($is_unique) > 0) {
-                    return response()->json(["success" => false, "index" => $index, "message" => "Serial number must be unique."]);
+        $nrnumber = $request->nrnumber ?? [];
+        
+        // Check for uniqueness only for non-empty serial numbers
+        if (!empty($nrnumber) && is_array($nrnumber)) {
+            foreach ($nrnumber as $index => $sr) {
+                if (!empty($sr) && $sr != "") {
+                    $is_unique = ContractUnderProduct::where(['nrnumber' => $sr])->get();
+                    if (count($is_unique) > 0) {
+                        return response()->json(["success" => false, "index" => $index, "message" => "Serial number must be unique."]);
+                    }
                 }
-                $isOk = 1;
             }
-
         }
-        if ($isOk == 1) {
-            $size = 0;
-            DB::beginTransaction();
-            foreach ($nrnumber as $sr) {
-
-                $iscp = ContractUnderProduct::create([
-                    'contractId' => $request->contractId,
-                    'product_name' => $request->product_name,
-                    'product_type' => $request->product_type,
-                    'product_price' => $request->product_price,
-                    'product_description' => $request->product_description,
-                    'nrnumber' => $sr,
-                    'branch' => $request->branch,
-                    'remark' => $request->remark,
-                    'service_period' => $request->service_period,
-                    'no_of_service' => 0,
-                    'serviceDay' => 0,
-                    'updated_by' => Auth::user()->id,
-                ]);
-                if ($iscp) {
-                    $size++;
-                }
+        
+        // If no serial numbers provided, create a single product with null serial number
+        if (empty($nrnumber) || !is_array($nrnumber) || count($nrnumber) == 0) {
+            $nrnumber = [null];
+        }
+        
+        $size = 0;
+        DB::beginTransaction();
+        foreach ($nrnumber as $sr) {
+            $iscp = ContractUnderProduct::create([
+                'contractId' => $request->contractId,
+                'product_name' => $request->product_name,
+                'product_type' => $request->product_type,
+                'product_price' => $request->product_price,
+                'product_description' => $request->product_description,
+                'nrnumber' => $sr ?? null,
+                'branch' => $request->branch,
+                'remark' => $request->remark,
+                'service_period' => $request->service_period,
+                'no_of_service' => 0,
+                'serviceDay' => 0,
+                'updated_by' => Auth::user()->id,
+            ]);
+            if ($iscp) {
+                $size++;
             }
-            if ($size == sizeof($nrnumber)) {
-                DB::commit();
-                return response()->json(['success' => true, 'message' => 'Product Added']);
-            } else {
-                DB::rollBack();
-                return response()->json(['success' => false, 'message' => 'Something went wrong,try again']);
-            }
+        }
+        if ($size == sizeof($nrnumber)) {
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Product Added']);
         } else {
-            return response()->json(['success' => false, 'message' => 'Serial number should not be blank.']);
-
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => 'Something went wrong,try again']);
         }
 
     }
@@ -1093,7 +1090,7 @@ class ContractController extends Controller
             ->leftJoin("master_contract_status", "master_contract_status.id", "contracts.CNRT_Status")
             ->leftJoin("clients", "clients.CST_ID", "contracts.CNRT_CustomerID")
             ->leftJoin("master_site_area", "master_site_area.id", "contracts.CNRT_Site")
-            ->orderBy('contracts.updated_at', "DESC")
+            ->orderBy('contracts.created_at', "DESC")
             ->filter($request->only('search', 'trashed', 'search_field', 'filter_status'))
             ->where("CNRT_Status", "!=", 0)
             ->when($filter_site_type, function ($query) use($filter_site_type) {

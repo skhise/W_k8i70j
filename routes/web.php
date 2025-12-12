@@ -253,6 +253,8 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
     Route::middleware('auth')->group(function () {
         // Define specific routes BEFORE resource route to avoid route conflicts
         Route::get('/repairinwards/get-tickets', [RepairInwardController::class, 'getTicketsByCustomer'])->name('repairinwards.get-tickets');
+        Route::get('/repairinwards/get-data', [RepairInwardController::class, 'getData'])->name('repairinwards.get-data');
+        Route::get('/repairinwards/export', [RepairInwardController::class, 'export'])->name('repairinwards.export');
         Route::post('/repairinwards/{repairinward}/update-status', [RepairInwardController::class, 'updateStatus'])->name('repairinwards.update-status');
         Route::resource('repairinwards', RepairInwardController::class);
     });

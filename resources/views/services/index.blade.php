@@ -46,7 +46,7 @@
                                             </div>
                                             <div class="d-flex float-right justify-space-between" style="width:45%;">
                                                 <select class="form-control select2 mr-2" id="dayFilter" name="dayFilter">
-                                                    <option value="" {{ $dayFilter == '' ? 'selected' : '' }}>Any</option>
+                                                    <option value="-1" {{ $dayFilter == -1 ? 'selected' : '' }}>Any</option>
                                                     <option value="0" {{ $dayFilter == 0 ? 'selected' : '' }}>Today</option>
                                                     <option value="1" {{ $dayFilter == 1 ? 'selected' : '' }}>Yesterday</option>
                                                     <option value="7" {{ $dayFilter == 7 ? 'selected' : '' }}>Last 7 Days</option>

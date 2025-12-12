@@ -18,6 +18,18 @@ class RepairInwardController extends Controller
 {
     public function index(Request $request)
     {
+        $repairStatuses = RepairStatus::where('is_active', true)->get();
+
+        return view('repairinward.index', [
+            'repairInwards' => null,
+            'search' => '',
+            'filter_status' => 'all',
+            'repairStatuses' => $repairStatuses,
+        ]);
+    }
+
+    public function getData(Request $request)
+    {
         $filter_status = $request->status ?? 'all';
         
         $repairInwards = RepairInward::select([
@@ -32,21 +44,60 @@ class RepairInwardController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        // Get status counts
-        $statusCounts = ['all' => RepairInward::count()];
-        $repairStatuses = RepairStatus::where('is_active', true)->get();
-        
-        foreach ($repairStatuses as $status) {
-            $statusCounts[$status->id] = RepairInward::where('status_id', $status->id)->count();
+        if ($request->ajax()) {
+            return view('repairinward.pagination', [
+                'repairInwards' => $repairInwards,
+            ])->render();
         }
 
         return view('repairinward.index', [
             'repairInwards' => $repairInwards,
             'search' => $request->search ?? '',
             'filter_status' => $filter_status,
-            'statusCounts' => $statusCounts,
-            'repairStatuses' => $repairStatuses,
+            'repairStatuses' => RepairStatus::where('is_active', true)->get(),
         ]);
+    }
+
+    public function export(Request $request)
+    {
+        try {
+            $repairInwards = RepairInward::select([
+                    'repair_inwards.*',
+                    'clients.CST_Name',
+                    'clients.CST_ID'
+                ])
+                ->leftJoin('clients', 'clients.CST_ID', '=', 'repair_inwards.customer_id')
+                ->with(['repairStatus', 'spareType'])
+                ->filter($request->only('search', 'status'))
+                ->orderBy('repair_inwards.id', 'desc')
+                ->get();
+
+            $items = [];
+            foreach ($repairInwards as $index => $inward) {
+                $items[] = [
+                    $index + 1,
+                    $inward->defective_no ?? '',
+                    $inward->defective_date ? date('d M Y', strtotime($inward->defective_date)) : '',
+                    $inward->CST_Name ?? 'N/A',
+                    $inward->ticket_no ?? 'N/A',
+                    $inward->repairStatus->status_name ?? 'N/A',
+                    $inward->spareType->type_name ?? 'N/A',
+                    $inward->part_model_name ?? 'N/A',
+                    $inward->spare_description ?? 'N/A',
+                    $inward->current_product_location ?? 'N/A',
+                    $inward->remark ?? 'N/A',
+                ];
+            }
+
+            $timestamp = date('Y-m-d_H-i-s');
+            $fileName = 'repair_inward_' . $timestamp . '.csv';
+
+            return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\RepairInwardExport($items), $fileName)->deleteFileAfterSend(true);
+
+        } catch (Exception $exp) {
+            \Log::error('Repair Inward Export Error: ' . $exp->getMessage());
+            return response()->json(['success' => false, 'message' => 'Export failed: ' . $exp->getMessage()], 500);
+        }
     }
 
     public function create()

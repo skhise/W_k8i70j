@@ -14,27 +14,33 @@
                                 </div>
                             </div>
                             <div class="card-body">
-                                <form action="{{ route('repairinwards.index') }}" id="search_form" method="GET">
-                                    <div class="row mb-3">
-                                        <div class="col-lg-4">
-                                            <div class="input-group">
-                                                <input type="text" class="form-control" value="{{ $search }}" id="search" name="search" placeholder="Search">
-                                                <div class="input-group-append">
-                                                    <button class="btn btn-primary" type="submit">SEARCH</button>
-                                                    <button class="btn btn-secondary btn-reset" type="button">RESET</button>
+                                <div class="form-horizontal">
+                                    <form id="repair_inward_filter">
+                                        <div class="form-group">
+                                            <div class="row mb-2">
+                                                <div class="col-md-3">
+                                                    <label>Search</label>
+                                                    <input type="text" class="form-control" value="{{ $search }}" id="search" name="search" placeholder="Search">
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label>Select Status</label>
+                                                    <select class="select2 form-control" id="status_filter" name="status">
+                                                        <option value="all" {{ $filter_status == 'all' ? 'selected' : '' }}>All</option>
+                                                        @foreach($repairStatuses as $status)
+                                                            <option value="{{ $status->id }}" {{ $filter_status == $status->id ? 'selected' : '' }}>{{ $status->status_name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <div class="d-flex mt-4">
+                                                        <button class="action-btn btn-fetch-report btn btn-primary" type="button">Generate</button>
+                                                        <button class="action-btn btn-light btn-export btn" type="button">Export</button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-lg-2">
-                                            <select class="form-control select2" id="status_filter" name="status" onchange="this.form.submit()">
-                                                <option value="all" {{ $filter_status == 'all' ? 'selected' : '' }}>All</option>
-                                                @foreach($repairStatuses as $status)
-                                                    <option value="{{ $status->id }}" {{ $filter_status == $status->id ? 'selected' : '' }}>{{ $status->status_name }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-                                </form>
+                                    </form>
+                                </div>
                                 <div class="table-responsive">
                                     <table class="table table-striped" id="repair-inward-table">
                                         <thead>
@@ -47,56 +53,17 @@
                                                 <th>Status/Actions</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
-                                            @if ($repairInwards->count() == 0)
-                                                <tr>
-                                                    <td colspan="6" class="text-center">No defective items found</td>
-                                                </tr>
+                                        <tbody id="repairInwardList">
+                                            @if (isset($repairInwards) && $repairInwards)
+                                                @include('repairinward.pagination')
                                             @else
-                                                @foreach ($repairInwards as $repairInward)
-                                                    <tr>
-                                                        <td>{{ $repairInward->defective_no }}</td>
-                                                        <td>
-                                                            <i class="far fa-calendar-alt"></i>
-                                                            {{ $repairInward->defective_date ? date('d M Y', strtotime($repairInward->defective_date)) : 'N/A' }}
-                                                        </td>
-                                                        <td>{{ $repairInward->CST_Name ?? 'N/A' }}</td>
-                                                        <td>{{ $repairInward->part_model_name ?? 'N/A' }}</td>
-                                                        <td>{{ $repairInward->ticket_no ?? 'N/A' }}</td>
-                                                        <td>
-                                                            <div class="d-flex align-items-center">
-                                                                <span class="badge badge-{{ $repairInward->repairStatus && $repairInward->repairStatus->id == 1 ? 'primary' : 'success' }} mr-2">
-                                                                    {{ $repairInward->repairStatus->status_name ?? 'N/A' }}
-                                                                </span>
-                                                                <a href="{{ route('repairinwards.show', $repairInward->id) }}" class="btn btn-sm btn-info mr-1" title="View">
-                                                                    <i class="far fa-file-alt"></i>
-                                                                </a>
-                                                                <a href="{{ route('repairinwards.edit', $repairInward->id) }}" class="btn btn-sm btn-warning mr-1" title="Edit">
-                                                                    <i class="fas fa-sync-alt"></i>
-                                                                </a>
-                                                                <form action="{{ route('repairinwards.destroy', $repairInward->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this repair inward?');">
-                                                                    @csrf
-                                                                    @method('DELETE')
-                                                                    <button type="submit" class="btn btn-sm btn-danger" title="Delete">
-                                                                        <i class="fa fa-trash"></i>
-                                                                    </button>
-                                                                </form>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
+                                                <tr>
+                                                    <td colspan="6" class="text-center">Click Generate to load data</td>
+                                                </tr>
                                             @endif
                                         </tbody>
                                     </table>
                                 </div>
-                                <div class="float-right mt-3">
-                                    {{ $repairInwards->links() }}
-                                </div>
-                                @if ($repairInwards->total())
-                                    <div class="float-left mt-3">
-                                        <p>Showing {{ $repairInwards->firstItem() }} to {{ $repairInwards->lastItem() }} of {{ $repairInwards->total() }} entries</p>
-                                    </div>
-                                @endif
                             </div>
                         </div>
                     </div>
@@ -106,8 +73,84 @@
     </div>
     @section('script')
     <script>
-        $(document).on('click', '.btn-reset', function() {
-            window.location.href = "{{ route('repairinwards.index') }}";
+        function fetchRepairInwardData(page = null) {
+            var search = $("#search").val();
+            var status = $("#status_filter option:selected").val();
+            var data = {
+                search: search,
+                status: status,
+            };
+            
+            if (page) {
+                data.page = page;
+            }
+            
+            $.ajax({
+                type: "GET",
+                url: "{{ route('repairinwards.get-data') }}",
+                data: data,
+                beforeSend: function() {
+                    $(".loader").show();
+                },
+                success: function(html) {
+                    $("#repairInwardList").empty();
+                    $("#repairInwardList").append(html);
+                    $(".loader").hide();
+                },
+                error: function(error) {
+                    $(".loader").hide();
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Something went wrong, try again',
+                        dangerMode: true,
+                        icon: 'warning',
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                    });
+                }
+            });
+        }
+
+        $(document).on("click", ".btn-fetch-report", function() {
+            fetchRepairInwardData();
+        });
+
+        $(document).on("click", ".btn-export", function() {
+            var search = $("#search").val();
+            var status = $("#status_filter option:selected").val();
+            
+            // Build URL with query parameters
+            var url = "{{ route('repairinwards.export') }}";
+            var params = [];
+            if (search) {
+                params.push('search=' + encodeURIComponent(search));
+            }
+            if (status && status !== 'all') {
+                params.push('status=' + encodeURIComponent(status));
+            }
+            if (params.length > 0) {
+                url += '?' + params.join('&');
+            }
+            
+            // Create a temporary form to submit
+            var form = document.createElement('form');
+            form.method = 'GET';
+            form.action = url;
+            document.body.appendChild(form);
+            form.submit();
+            document.body.removeChild(form);
+        });
+
+        // Handle pagination links
+        $(document).on("click", ".pagination a", function(e) {
+            e.preventDefault();
+            var url = $(this).attr('href');
+            if (url) {
+                // Extract page number from URL
+                var match = url.match(/page=(\d+)/);
+                var page = match ? match[1] : null;
+                fetchRepairInwardData(page);
+            }
         });
     </script>
     @stop

@@ -1020,7 +1020,8 @@ class ServiceController extends Controller
     }
     public function index(Request $request)
     {
-        $dayFilter = $request->dayFilter ?? 180;
+        // dd($request->dayFilter);
+        $dayFilter = $request->dayFilter ?? 30;
         $filter_type = $request->filter_type ?? '';
         $filter_service_type = $request->filter_service_type ?? '';
         $filter_issue_type = $request->filter_issue_type ?? '';
@@ -1034,6 +1035,7 @@ class ServiceController extends Controller
             $todate = date('Y-m-d', strtotime($todate . '-1 days'));
             $fromdate = date('Y-m-d', strtotime($todate . '-1 days'));
         }
+        // dd($fromdate, $todate,$dayFilter);
         // dd(Auth::user()->id);
         $services = Service::select("*", "services.id as service_id", "services.updated_at as last_updated")
             ->join("master_service_status", "master_service_status.Status_Id", "services.service_status")
@@ -1043,7 +1045,9 @@ class ServiceController extends Controller
             ->join("clients", "clients.CST_ID", "services.customer_id")
             ->leftJoin("users", "users.id", "services.assigned_to")
             ->orderby("services.updated_at", "DESC")
-            ->whereBetween(DB::raw('DATE_FORMAT(services.updated_at, "%Y-%m-%d")'), [$fromdate, $todate])
+            ->when($dayFilter != -1, function ($query) use($fromdate, $todate) {
+                $query->whereBetween(DB::raw('DATE_FORMAT(services.updated_at, "%Y-%m-%d")'), [$fromdate, $todate]);
+            })
             ->orderBy('services.updated_at', "DESC")
             ->filter($request->only('search', 'trashed', 'search_field', 'filter_status'))
             ->when(Auth::user()->role == 3, function ($query) {

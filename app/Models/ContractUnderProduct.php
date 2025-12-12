@@ -15,7 +15,6 @@ class ContractUnderProduct extends Model
         'product_type',
         'product_price',
         'product_description',
-        'nrnumber',
         'other',
         'branch',
         'updated_by',

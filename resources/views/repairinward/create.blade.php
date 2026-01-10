@@ -7,6 +7,11 @@
                         <div class="card">
                             <div class="card-header">
                                 <h4>Defective/Repair Inward</h4>
+                                <div class="card-header-action">
+                                    <a href="{{ route('repairinwards.index') }}" class="btn btn-icon icon-left btn-secondary">
+                                        <i class="fas fa-arrow-left"></i> Back
+                                    </a>
+                                </div>
                             </div>
                             <div class="card-body">
                                 @if(session('success'))
@@ -146,7 +151,7 @@
                                                 <i class="fas fa-spinner fa-spin"></i> Saving...
                                             </span>
                                         </button>
-                                        <a href="{{ route('repairinwards.index') }}" class="btn btn-secondary">Cancel</a>
+                                        <a href="{{ route('repairinwards.index') }}" class="btn btn-danger float-right mr-2">Cancel</a>
                                     </div>
                                 </form>
                             </div>

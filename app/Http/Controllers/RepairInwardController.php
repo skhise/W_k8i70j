@@ -24,6 +24,7 @@ class RepairInwardController extends Controller
             'repairInwards' => null,
             'search' => '',
             'filter_status' => 'all',
+            'days_filter' => '30',
             'repairStatuses' => $repairStatuses,
         ]);
     }
@@ -31,6 +32,18 @@ class RepairInwardController extends Controller
     public function getData(Request $request)
     {
         $filter_status = $request->status ?? 'all';
+        $daysFilter = $request->days_filter ?? '30';
+        
+        // Calculate date range based on days filter
+        $filters = $request->only('search', 'status');
+        
+        if ($daysFilter && $daysFilter !== 'any') {
+            $days = (int) $daysFilter;
+            $endDate = now()->format('Y-m-d');
+            $startDate = now()->subDays($days)->format('Y-m-d');
+            $filters['start_date'] = $startDate;
+            $filters['end_date'] = $endDate;
+        }
         
         $repairInwards = RepairInward::select([
                 'repair_inwards.*',
@@ -39,7 +52,7 @@ class RepairInwardController extends Controller
             ])
             ->leftJoin('clients', 'clients.CST_ID', '=', 'repair_inwards.customer_id')
             ->with(['repairStatus', 'spareType'])
-            ->filter($request->only('search', 'status'))
+            ->filter($filters)
             ->orderBy('repair_inwards.id', 'desc')
             ->paginate(10)
             ->withQueryString();
@@ -54,6 +67,7 @@ class RepairInwardController extends Controller
             'repairInwards' => $repairInwards,
             'search' => $request->search ?? '',
             'filter_status' => $filter_status,
+            'days_filter' => $daysFilter,
             'repairStatuses' => RepairStatus::where('is_active', true)->get(),
         ]);
     }
@@ -61,6 +75,19 @@ class RepairInwardController extends Controller
     public function export(Request $request)
     {
         try {
+            $daysFilter = $request->days_filter ?? '30';
+            
+            // Calculate date range based on days filter
+            $filters = $request->only('search', 'status');
+            
+            if ($daysFilter && $daysFilter !== 'any') {
+                $days = (int) $daysFilter;
+                $endDate = now()->format('Y-m-d');
+                $startDate = now()->subDays($days)->format('Y-m-d');
+                $filters['start_date'] = $startDate;
+                $filters['end_date'] = $endDate;
+            }
+            
             $repairInwards = RepairInward::select([
                     'repair_inwards.*',
                     'clients.CST_Name',
@@ -68,7 +95,7 @@ class RepairInwardController extends Controller
                 ])
                 ->leftJoin('clients', 'clients.CST_ID', '=', 'repair_inwards.customer_id')
                 ->with(['repairStatus', 'spareType'])
-                ->filter($request->only('search', 'status'))
+                ->filter($filters)
                 ->orderBy('repair_inwards.id', 'desc')
                 ->get();
 

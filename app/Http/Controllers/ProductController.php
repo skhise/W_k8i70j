@@ -289,7 +289,7 @@ class ProductController extends Controller
                 $product = Product::create([
                     'Product_Name' => $request->Product_Name,
                     'Product_Description' => $request->Product_Description,
-                    'Product_Price' => $request->Product_Price,
+                    'Product_Price' => $request->Product_Price || 0,
                     'Product_Type' => $request->Product_Type,
                 ]);
                 if ($product) {

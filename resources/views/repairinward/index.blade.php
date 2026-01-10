@@ -14,15 +14,44 @@
                                 </div>
                             </div>
                             <div class="card-body">
+                                <!-- Success/Error Messages -->
+                                @if (session('success'))
+                                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                        {{ session('success') }}
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                @endif
+
+                                @if (session('error'))
+                                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                        {{ session('error') }}
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                @endif
+
                                 <div class="form-horizontal">
                                     <form id="repair_inward_filter">
                                         <div class="form-group">
                                             <div class="row mb-2">
-                                                <div class="col-md-3">
+                                                <div class="col-md-2">
+                                                    <label>Days Filter</label>
+                                                    <select class="form-control" id="days_filter" name="days_filter">
+                                                        <option value="any" {{ (isset($days_filter) && $days_filter == 'any') ? 'selected' : '' }}>Any</option>
+                                                        <option value="30" {{ (!isset($days_filter) || $days_filter == '30') ? 'selected' : '' }}>Last 30 Days</option>
+                                                        <option value="60" {{ (isset($days_filter) && $days_filter == '60') ? 'selected' : '' }}>Last 60 Days</option>
+                                                        <option value="90" {{ (isset($days_filter) && $days_filter == '90') ? 'selected' : '' }}>Last 90 Days</option>
+                                                        <option value="180" {{ (isset($days_filter) && $days_filter == '180') ? 'selected' : '' }}>Last 180 Days</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-2">
                                                     <label>Search</label>
                                                     <input type="text" class="form-control" value="{{ $search }}" id="search" name="search" placeholder="Search">
                                                 </div>
-                                                <div class="col-md-3">
+                                                <div class="col-md-2">
                                                     <label>Select Status</label>
                                                     <select class="select2 form-control" id="status_filter" name="status">
                                                         <option value="all" {{ $filter_status == 'all' ? 'selected' : '' }}>All</option>
@@ -31,10 +60,10 @@
                                                         @endforeach
                                                     </select>
                                                 </div>
-                                                <div class="col-md-3">
+                                                <div class="col-md-6">
                                                     <div class="d-flex mt-4">
                                                         <button class="action-btn btn-fetch-report btn btn-primary" type="button">Generate</button>
-                                                        <button class="action-btn btn-light btn-export btn" type="button">Export</button>
+                                                        <button class="action-btn btn-light btn-export btn ml-2" type="button">Export</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -76,9 +105,11 @@
         function fetchRepairInwardData(page = null) {
             var search = $("#search").val();
             var status = $("#status_filter option:selected").val();
+            var daysFilter = $("#days_filter option:selected").val();
             var data = {
                 search: search,
                 status: status,
+                days_filter: daysFilter,
             };
             
             if (page) {
@@ -118,10 +149,14 @@
         $(document).on("click", ".btn-export", function() {
             var search = $("#search").val();
             var status = $("#status_filter option:selected").val();
+            var daysFilter = $("#days_filter option:selected").val();
             
             // Build URL with query parameters
             var url = "{{ route('repairinwards.export') }}";
             var params = [];
+            if (daysFilter) {
+                params.push('days_filter=' + encodeURIComponent(daysFilter));
+            }
             if (search) {
                 params.push('search=' + encodeURIComponent(search));
             }
@@ -151,6 +186,12 @@
                 var page = match ? match[1] : null;
                 fetchRepairInwardData(page);
             }
+        });
+
+        // Auto-load data on page load with default last 30 days
+        $(document).ready(function() {
+            // Always load data on page load (with default last 30 days)
+            fetchRepairInwardData();
         });
     </script>
     @stop

@@ -72,5 +72,14 @@ class RepairInward extends Model
                 $query->where('status_id', $status);
             }
         });
+
+        // Date range filtering
+        $query->when($filters['start_date'] ?? null, function ($query, $startDate) {
+            $query->whereDate('defective_date', '>=', $startDate);
+        });
+
+        $query->when($filters['end_date'] ?? null, function ($query, $endDate) {
+            $query->whereDate('defective_date', '<=', $endDate);
+        });
     }
 }

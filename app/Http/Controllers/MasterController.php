@@ -393,7 +393,7 @@ class MasterController extends Controller
         $subStatus = array();
         $status  =array();
         try {
-            $subStatus = ServiceSubStatus::join("master_service_status","master_service_status.Status_Id","master_service_sub_status.status_id")->orderBy("Sub_Status_Id")->paginate(10)
+            $subStatus = ServiceSubStatus::join("master_service_status","master_service_status.Status_Id","master_service_sub_status.status_id")->orderBy("master_service_status.status_id")->paginate(10)
                 ->withQueryString();
             $status = ServiceStatus::all();
         } catch (Exception $ex) {

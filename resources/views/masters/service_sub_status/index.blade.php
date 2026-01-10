@@ -17,9 +17,8 @@
                                                 <th>
                                                     #
                                                 </th>
-                                                <th>Status</th>
                                                 <th>Sub Status</th>
-                                                
+                                                <th>Status</th>
                                                 <th style="text-align:end;">Action</th>
                                             </tr>
                                         </thead>
@@ -32,8 +31,8 @@
                                             @foreach($serviceSubStatus as $index=>$subStatus)
                                             <tr key="{{$subStatus['Sub_Status_Id']}}">
                                                 <td>{{$index+1}}</td>
-                                                <td>{{$subStatus['Status_Name']}}</td>
                                                 <td>{{$subStatus['Sub_Status_Name']}}</td>
+                                                <td>{{$subStatus['Status_Name']}}</td>
                                                 <td>
                                                     <div class="d-flex float-right">
                                                     <button data-statusid="{{$subStatus['status_id']}}" data-name="{{$subStatus['Sub_Status_Name']}}"

@@ -50,7 +50,7 @@
                                     <li class="nav-item">
                                         <a class="nav-link {{ session('contract_activeTab') === 'services' ? ' active' : '' }}"
                                             id="services" data-toggle="tab" href="#ContractServices" role="tab"
-                                            aria-selected="false" aria-controls="services">Services&nbsp;&nbsp;<span
+                                            aria-selected="false" aria-controls="services">Schedules Services&nbsp;&nbsp;<span
                                                 class="badge badge-light">{{ $services->count() }}</span></a>
                                     </li>
                                     <li class="nav-item">
@@ -370,6 +370,16 @@
 
                 })
             });
+            
+            // Handle Add Product button click - ensure it shows Add mode
+            $(document).on("click", "#btn_cp_add", function() {
+                // Reset to Add mode
+                $("#myLargeModalLabel").text("Add Contract Products");
+                $("#btn_save_product .btn-text").text("Save");
+                $("#product_id").val("");
+                $(".add_form_field").show();
+            });
+            
             $(document).on("click", "#showEditModal", function() {
                 $("#btn_cp_add").trigger('click');
                 $("#product_name").val($(this).data('product_name'));
@@ -382,16 +392,30 @@
                 $("#remark").val($(this).data('remark'));
                 $("#product_id").val($(this).data('product_id'));
                 $(".add_form_field").hide();
+                
+                // Update modal header and button text for edit mode
+                $("#myLargeModalLabel").text("Update Contract Product");
+                $("#btn_save_product .btn-text").text("Update");
 
             });
 
             function SaveContractProduct() {
+                var saveBtn = $("#btn_save_product");
+                var btnText = saveBtn.find('.btn-text');
+                var btnLoader = saveBtn.find('.btn-loader');
+                
+                // Show loading state
+                saveBtn.prop('disabled', true);
+                btnText.hide();
+                btnLoader.show();
+                
                 $('.text-danger-error').html('');
                 $(".nrnumber").removeClass("error_border");
                 var product_id = $("#product_id").val();
-                var url = 'add_product';
+                var contractId = $("#contractId").val();
+                var url = '{{ route("contracts.add_product", $contract["CNRT_ID"]) }}';
                 if (product_id != "") {
-                    url = 'update_product';
+                    url = '{{ route("contracts.update_product", $contract["CNRT_ID"]) }}';
                 }
                 $.ajax({
                     url: url,
@@ -401,8 +425,14 @@
                         //  var obj = JSON.parse(response);
                         if (response.success) {
                             CancelModelBox();
-                            window.location.reload();
+                            // Reload only the products tab instead of the whole page
+                            reloadProductsTab();
                         } else {
+                            // Hide loading state on error
+                            saveBtn.prop('disabled', false);
+                            btnText.show();
+                            btnLoader.hide();
+                            
                             $('.errorMsgntainer').html("");
                             if (typeof response.validation_error != 'undefined') {
                                 $.each(response.validation_error, function(index, value) {
@@ -427,14 +457,57 @@
 
                     },
                     error: function(error) {
+                        // Hide loading state on error
+                        saveBtn.prop('disabled', false);
+                        btnText.show();
+                        btnLoader.hide();
                         alert("something went wrong, try again.");
                     }
                 })
             }
 
+            function reloadProductsTab() {
+                var contractId = $("#contractId").val();
+                $.ajax({
+                    url: '{{ route("contracts.get-products-tab", $contract["CNRT_ID"]) }}',
+                    type: "GET",
+                    beforeSend: function() {
+                        // Show loading indicator if needed
+                        $("#ContractProduct").html('<div class="text-center"><i class="fa fa-spinner fa-spin"></i> Loading...</div>');
+                    },
+                    success: function(html) {
+                        // Replace only the products tab content
+                        $("#ContractProduct").html(html);
+                        // Update the product count badge
+                        // Count rows that don't have colspan (actual product rows)
+                        var productRows = $("#ContractProduct table tbody tr").filter(function() {
+                            return $(this).find("td[colspan]").length === 0;
+                        });
+                        var productCount = productRows.length;
+                        $("#contract_product .badge").text(productCount);
+                    },
+                    error: function(error) {
+                        console.error("Error loading products:", error);
+                        alert("Failed to reload products. Please refresh the page.");
+                    }
+                });
+            }
+
             function CancelModelBox() {
+                // Reset button state
+                var saveBtn = $("#btn_save_product");
+                var btnText = saveBtn.find('.btn-text');
+                var btnLoader = saveBtn.find('.btn-loader');
+                saveBtn.prop('disabled', false);
+                btnText.show();
+                btnLoader.hide();
+                
+                // Reset modal header and button text to default
+                $("#myLargeModalLabel").text("Add Contract Products");
+                $("#btn_save_product .btn-text").text("Save");
+                
+                $(".add_form_field").show();
                 $("#product_id").val("");
-                $(".add_form_field").hide();
                 $('.text-danger-error').html('');
                 $(".nrnumber").removeClass("error_border");
                 $("#form_cp")[0].reset();
@@ -446,6 +519,7 @@
                 $("#btn_checklist_add").trigger('click');
                 $("#description").val($(this).data('description'));
                 $("#checklist_id").val($(this).data('id'));
+                
 
             });
             $(document).on("click", "#btn_checklist_save", function() {
@@ -464,7 +538,8 @@
                         //  var obj = JSON.parse(response);
                         if (response.success) {
                             CancelModelBoxChecklist();
-                            window.location.reload();
+                            // Reload only the checklist tab instead of the whole page
+                            reloadChecklistTab();
                         } else {
                             $("#btn_checklist_save").attr("disabled", false);
                             $("#btn_checklist_save").html("Save");
@@ -534,7 +609,8 @@
                             //  var obj = JSON.parse(response);
                             if (response.success) {
                                 CancelModelBoxService();
-                                window.location.reload();
+                                // Reload only the services tab instead of the whole page
+                                reloadServicesTab();
                             } else {
                                 $("#btn_service_save").attr("disabled", false);
                                 $("#btn_service_save").html("Save");
@@ -585,7 +661,8 @@
 
                             if (response.success) {
                                 CancelModelBoxServiceEdit();
-                                window.location.reload();
+                                // Reload only the services tab instead of the whole page
+                                reloadServicesTab();
                             } else {
                                 $('.errorMsgntainer').html("");
                                 if (typeof response.validation_error != 'undefined') {
@@ -640,26 +717,50 @@
                 $("#btn_close_service_edit").trigger('click');
             }
             $(document).on('click', "#add_servies_rows", function() {
+                $('#service_div').empty();
                 var n = $("#number_of_services").val();
                 var rowCount = 0; // Initialize row count
 
 
+                // Get contract start and end dates
+                var startDateStr = "{{ date('Y-m-d', strtotime($contract['CNRT_StartDate'])) }}";
+                var endDateStr = "{{ date('Y-m-d', strtotime($contract['CNRT_EndDate'])) }}";
+                
+                var startDate = new Date(startDateStr);
+                var endDate = new Date(endDateStr);
+                
+                // Calculate total period in months
+                var totalMonths = (endDate.getFullYear() - startDate.getFullYear()) * 12 + 
+                                  (endDate.getMonth() - startDate.getMonth());
+                
+                // Calculate interval: Divide period by (totalServices + 1)
+                // Example: 12 months / (1 + 1) = 6 months, 12 months / (3 + 1) = 3 months
+                var intervalMonths = totalMonths / (parseInt(n) + 1);
+
                 for (var i = 0; i < n; i++) {
-                    var myDate = new Date("{{ $contract['CNRT_StartDate'] }}");
-                    var result1 = myDate.setMonth(myDate.getMonth() + i);
-                    var result2 = formatDate(new Date(result1));
+                    // Calculate service date based on interval
+                    var serviceDate = new Date(startDate);
+                    var monthsToAdd = Math.round(intervalMonths * (i + 1));
+                    serviceDate.setMonth(serviceDate.getMonth() + monthsToAdd);
+                    
+                    // Make sure we don't exceed end date
+                    if (serviceDate > endDate) {
+                        serviceDate = new Date(endDate);
+                    }
+                    
+                    var result2 = formatDate(serviceDate);
                     rowCount++; // Increment row count
                     var newRow = '<div class="form-group row service_row_add">' +
                         '<span class="service_rowserial">' + rowCount + '. </span>' +
-                        '<input class="required input-item form-control" value="' + result2 +
+                        '<input class="required col-md-3 input-item form-control" value="' + result2 +
                         '"  type="date" name="schedule[' + i + '][Schedule_Date]">' +
-                        '<select class="input-item form-control select2" name="schedule[' + i +
+                        '<select class="input-item form-control col-md-3" name="schedule[' + i +
                         '][service_product]">{!! $productOption !!}</select>' +
-                        '<select class="required input-item form-control" name="schedule[' + i +
+                        '<select class="required input-item form-control col-md-3" name="schedule[' + i +
                         '][issue_type]">{!! $issueType !!}</select>' +
-                        '<select  class="required input-item form-control" name="schedule[' + i +
+                        '<select  class="required input-item form-control col-md-3" name="schedule[' + i +
                         '][service_type]">{!! $serviceType !!}</select>' +
-                        '<textarea  class="input-item form-control" name="schedule[' + i +
+                        '<textarea  class="input-item form-control col-md-3" name="schedule[' + i +
                         '][descriptions]"></textarea>' +
                         '<button class="btn btn-sm btn-icon btn-danger removeRow">x</button>' +
                         '</div>';
@@ -694,6 +795,126 @@
 
                 return year + '-' + month + '-' + day;
             }
+
+            function reloadServicesTab() {
+                $.ajax({
+                    url: '{{ route("contracts.get-services-tab", $contract["CNRT_ID"]) }}',
+                    type: "GET",
+                    beforeSend: function() {
+                        // Show loading indicator if needed
+                        $("#ContractServices").html('<div class="text-center"><i class="fa fa-spinner fa-spin"></i> Loading...</div>');
+                    },
+                    success: function(html) {
+                        // Replace only the services tab content
+                        $("#ContractServices").html(html);
+                        // Update the service count badge
+                        // Count rows that don't have colspan (actual service rows)
+                        var serviceRows = $("#ContractServices table tbody tr").filter(function() {
+                            return $(this).find("td[colspan]").length === 0;
+                        });
+                        var serviceCount = serviceRows.length;
+                        $("#services .badge").text(serviceCount);
+                    },
+                    error: function(error) {
+                        console.error("Error loading services:", error);
+                        alert("Failed to reload services. Please refresh the page.");
+                    }
+                });
+            }
+
+            function reloadChecklistTab() {
+                $.ajax({
+                    url: '{{ route("contracts.get-checklist-tab", $contract["CNRT_ID"]) }}',
+                    type: "GET",
+                    beforeSend: function() {
+                        // Show loading indicator if needed
+                        $("#ContractCheckList").html('<div class="text-center"><i class="fa fa-spinner fa-spin"></i> Loading...</div>');
+                    },
+                    success: function(html) {
+                        // Replace only the checklist tab content
+                        $("#ContractCheckList").html(html);
+                        // Update the checklist count badge
+                        // Count rows that don't have colspan (actual checklist rows)
+                        var checklistRows = $("#ContractCheckList table tbody tr").filter(function() {
+                            return $(this).find("td[colspan]").length === 0;
+                        });
+                        var checklistCount = checklistRows.length;
+                        $("#checklist .badge").text(checklistCount);
+                    },
+                    error: function(error) {
+                        console.error("Error loading checklist:", error);
+                        alert("Failed to reload checklist. Please refresh the page.");
+                    }
+                });
+            }
+
+            // Handle delete service with AJAX
+            $(document).on("click", ".delete-service-btn", function(e) {
+                e.preventDefault();
+                var serviceId = $(this).data('service-id');
+                var deleteUrl = '{{ route("contract_service.delete", ":id") }}'.replace(':id', serviceId);
+                var row = $(this).closest('tr');
+
+                // Confirm deletion
+                if (confirm('Are you sure you want to delete this service?')) {
+                    $.ajax({
+                        url: deleteUrl,
+                        type: "GET",
+                        beforeSend: function() {
+                            // Show loading on the row
+                            row.css('opacity', '0.5');
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                // Reload only the services tab instead of the whole page
+                                reloadServicesTab();
+                            } else {
+                                row.css('opacity', '1');
+                                alert(response.message || 'Failed to delete service. Please try again.');
+                            }
+                        },
+                        error: function(error) {
+                            row.css('opacity', '1');
+                            console.error("Error deleting service:", error);
+                            alert("Failed to delete service. Please refresh the page and try again.");
+                        }
+                    });
+                }
+            });
+
+            // Handle delete checklist with AJAX
+            $(document).on("click", ".delete-checklist-btn", function(e) {
+                e.preventDefault();
+                var checklistId = $(this).data('checklist-id');
+                var deleteUrl = '{{ route("checklist.delete", ":id") }}'.replace(':id', checklistId);
+                var row = $(this).closest('tr');
+
+                // Confirm deletion
+                if (confirm('Are you sure you want to delete this checklist note?')) {
+                    $.ajax({
+                        url: deleteUrl,
+                        type: "GET",
+                        beforeSend: function() {
+                            // Show loading on the row
+                            row.css('opacity', '0.5');
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                // Reload only the checklist tab instead of the whole page
+                                reloadChecklistTab();
+                            } else {
+                                row.css('opacity', '1');
+                                alert(response.message || 'Failed to delete checklist. Please try again.');
+                            }
+                        },
+                        error: function(error) {
+                            row.css('opacity', '1');
+                            console.error("Error deleting checklist:", error);
+                            alert("Failed to delete checklist. Please refresh the page and try again.");
+                        }
+                    });
+                }
+            });
         </script>
     @stop
 </x-app-layout>

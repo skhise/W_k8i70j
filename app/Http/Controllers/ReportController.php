@@ -11,6 +11,7 @@ use App\Exports\ServiceStatusExport;
 use App\Exports\SweviceExport;
 use App\Exports\UsersExport;
 use App\Exports\RepairInwardExport;
+use App\Exports\RenewalExport;
 use App\Models\RepairInward;
 use App\Models\RepairStatus;
 use App\Models\Attendance;
@@ -18,6 +19,7 @@ use App\Models\Client;
 use App\Models\ContractScheduleService;
 use App\Models\ContractStatus;
 use App\Models\ContractUnderProduct;
+use App\Models\ContractRenewalHistory;
 use App\Models\DcType;
 use App\Models\ProductType;
 use App\Models\Quotation;
@@ -1718,6 +1720,130 @@ class ReportController extends Controller
             $fileName = 'repair_inward_report_' . $timestamp . '.csv';
 
             return Excel::download(new RepairInwardExport($items), $fileName)->deleteFileAfterSend(true);
+
+        } catch (Exception $exp) {
+            return back()->withErrors("Export failed: " . $exp->getMessage());
+        }
+    }
+
+    public function renewal_index(Request $request)
+    {
+        $clients = Client::all();
+        $status = $this->status;
+        return view(
+            'reports.renewal_report',
+            [
+                "clients" => $clients,
+                "customer" => "",
+                "renewals" => array(),
+                "date_range" => "",
+                "status" => $status
+            ]
+        );
+    }
+
+    public function renewal_data(Request $request)
+    {
+        $renewals = null;
+        try {
+            $date_range = $request->date_range;
+            $customer = $request->customer;
+            $today = date("Y-m-d");
+            $fromdate = date("Y-m-d");
+            $todate = date('Y-m-d', strtotime($fromdate . '+' . $date_range . ' days'));
+            if ($date_range == 0) {
+                $fromdate = $todate;
+            }
+            
+            $renewals = ContractRenewalHistory::join("contracts", "contracts.CNRT_ID", "contract_renewal_history.contract_id")
+                ->join("master_contract_type", "master_contract_type.id", "contracts.CNRT_Type")
+                ->leftJoin("clients", "clients.CST_ID", "contracts.CNRT_CustomerID")
+                ->when($date_range != "" && $date_range != -1, function ($query) use ($todate, $fromdate) {
+                    return $query->whereBetween(DB::raw('DATE_FORMAT(contract_renewal_history.created_at, "%Y-%m-%d")'), [$fromdate, $todate]);
+                })
+                ->when($customer != 0 && $customer != "", function ($query) use ($customer) {
+                    $query->where("contracts.CNRT_CustomerID", $customer);
+                })
+                ->orderBy('contract_renewal_history.created_at', "DESC")
+                ->select([
+                    'contract_renewal_history.id',
+                    'contract_renewal_history.contract_id',
+                    'contract_renewal_history.created_at as renewal_date',
+                    'contract_renewal_history.new_start_date',
+                    'contract_renewal_history.new_expiry_date',
+                    'contract_renewal_history.amount',
+                    'contract_renewal_history.renewal_note',
+                    'contracts.CNRT_Number',
+                    'master_contract_type.contract_type_name',
+                    'clients.CST_Name'
+                ])
+                ->paginate(10);
+        } catch (Exception $exp) {
+
+        }
+
+        $status = $this->status;
+        if ($request->ajax()) {
+            return view('reports.renewal_pagination', compact('renewals', 'status'));
+        }
+        $clients = Client::all();
+        return view('reports.renewal_report', compact('renewals', 'status', "clients", "customer", "date_range"));
+    }
+
+    public function renewal_export(Request $request)
+    {
+        $renewals = null;
+        try {
+            $date_range = $request->date_range;
+            $customer = $request->customer;
+            $today = date("Y-m-d");
+            $fromdate = date("Y-m-d");
+            $todate = date('Y-m-d', strtotime($fromdate . '+' . $date_range . ' days'));
+            if ($date_range == 0) {
+                $fromdate = $todate;
+            }
+            
+            $renewals = ContractRenewalHistory::join("contracts", "contracts.CNRT_ID", "contract_renewal_history.contract_id")
+                ->join("master_contract_type", "master_contract_type.id", "contracts.CNRT_Type")
+                ->leftJoin("clients", "clients.CST_ID", "contracts.CNRT_CustomerID")
+                ->when($date_range != "" && $date_range != -1, function ($query) use ($todate, $fromdate) {
+                    return $query->whereBetween(DB::raw('DATE_FORMAT(contract_renewal_history.created_at, "%Y-%m-%d")'), [$fromdate, $todate]);
+                })
+                ->when($customer != 0 && $customer != "", function ($query) use ($customer) {
+                    $query->where("contracts.CNRT_CustomerID", $customer);
+                })
+                ->orderBy('contract_renewal_history.created_at', "DESC")
+                ->select([
+                    'contract_renewal_history.id',
+                    'contract_renewal_history.contract_id',
+                    'contract_renewal_history.created_at as renewal_date',
+                    'contract_renewal_history.new_start_date',
+                    'contract_renewal_history.new_expiry_date',
+                    'contract_renewal_history.amount',
+                    'contract_renewal_history.renewal_note',
+                    'contracts.CNRT_Number',
+                    'master_contract_type.contract_type_name',
+                    'clients.CST_Name'
+                ])
+                ->get();
+
+            $items = [];
+            foreach ($renewals as $renewal) {
+                $items[] = [
+                    $renewal->CNRT_Number ?? 'N/A',
+                    $renewal->contract_type_name ?? 'N/A',
+                    $renewal->CST_Name ?? 'N/A',
+                    $renewal->new_start_date ? date('d-M-Y', strtotime($renewal->new_start_date)) : 'N/A',
+                    $renewal->new_expiry_date ? date('d-M-Y', strtotime($renewal->new_expiry_date)) : 'N/A',
+                    $renewal->amount ?? 'N/A',
+                    $renewal->renewal_note ?? 'N/A',
+                    $renewal->renewal_date ? date('d-M-Y', strtotime($renewal->renewal_date)) : 'N/A',
+                ];
+            }
+
+            $fileName = 'renewal_report_' . time() . '.csv';
+
+            return Excel::download(new RenewalExport($items), $fileName)->deleteFileAfterSend(true);
 
         } catch (Exception $exp) {
             return back()->withErrors("Export failed: " . $exp->getMessage());

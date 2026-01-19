@@ -203,7 +203,7 @@
                                                 </div>
                                                 <hr />
                                                 <div>
-                                                    <h6>Schedule Services</h6>
+                                                    <h6>Schedules Services</h6>
                                                 </div>
                                                 <hr />
                                                 <div class="row">

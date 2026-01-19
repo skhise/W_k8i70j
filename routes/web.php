@@ -74,6 +74,10 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
         Route::get('/reports/contract-due-report', [ReportController::class, 'crd_index'])->name('contract-due-report');
         Route::get('/reports/contract-due-report-data', [ReportController::class, 'crd_data'])->name('contract-due-report-data');
         Route::get('/reports/contract-due-report-export', [ReportController::class, 'crd_data_export'])->name('contract-due-report-data-export');
+        
+        Route::get('/reports/renewal-report', [ReportController::class, 'renewal_index'])->name('renewal-report');
+        Route::get('/reports/renewal-report-data', [ReportController::class, 'renewal_data'])->name('renewal-report-data');
+        Route::get('/reports/renewal-report-export', [ReportController::class, 'renewal_export'])->name('renewal-report-export');
 
 
         Route::get('/reports/service-ticket-report', [ReportController::class, 'str_index'])->name('service-ticket-report');
@@ -164,6 +168,9 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
         Route::post('/contracts', [ContractController::class, 'store'])->name('contracts.store');
         Route::post('/contracts/renewal', [ContractController::class, 'ContractRenew'])->name('contracts.renewal');
         Route::get('/contracts/{contract}/view', [ContractController::class, 'view'])->name('contracts.view');
+        Route::get('/contracts/{contract}/get-products-tab', [ContractController::class, 'getProductsTab'])->name('contracts.get-products-tab');
+        Route::get('/contracts/{contract}/get-services-tab', [ContractController::class, 'getServicesTab'])->name('contracts.get-services-tab');
+        Route::get('/contracts/{contract}/get-checklist-tab', [ContractController::class, 'getChecklistTab'])->name('contracts.get-checklist-tab');
         Route::get('/contracts/{contract}/edit', [ContractController::class, 'edit'])->name('contracts.edit');
         Route::get('/contracts/{contract}/delete', [ContractController::class, 'DeleteContract'])->name('contracts.delete');
         Route::post('/contracts/{contract}/update', [ContractController::class, 'update'])->name('contracts.update');

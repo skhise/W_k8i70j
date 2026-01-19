@@ -40,7 +40,7 @@
                                                         class="btn-edit btn btn-primary btn-sm btn-icon mr-2"><i
                                                             class="far fa-edit"></i></button>
                                                     <button data-name="{{$subStatus['Sub_Status_Name']}}"
-                                                        data-id="{{$subStatus['status_id']}}"
+                                                        data-id="{{$subStatus['Sub_Status_Id']}}"
                                                         class="btn-delete btn btn-danger btn-sm btn-icon mr-2"><i
                                                             class="fa fa-trash"></i></button>
                                                     </div>

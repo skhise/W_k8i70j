@@ -49,12 +49,12 @@
                                         </tbody>
                                     </table>
                                     <div class="float-left">
-                                        @if($productTypes->count())
-                                        <p>Found {{ $productTypes->count()}} records</p>
+                                        @if(count($productTypes) > 0)
+                                        <p>Found {{ count($productTypes)}} records</p>
                                         @endif
                                     </div>
                                     <div class="float-right">
-                                        {{ $productTypes->links()}}
+                                     
                                     </div>
                                 </div>
                             </div>

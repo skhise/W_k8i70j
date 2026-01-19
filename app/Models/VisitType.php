@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class VisitType extends Model
 {
-    use HasFactory;
+    use SoftDeletes, HasFactory;
     
     protected $table = 'master_visit_type';
    protected $fillable = [

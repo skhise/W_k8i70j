@@ -42,7 +42,7 @@
                                         {{ $product->product_name }}
                                     </td>
                                     <td>{{ $product['type_name'] }}</td>
-                                    <td>{{ $product['nrnumber'] }}</td>
+                                    <td>{{ !empty($product['nrnumber']) ? $product['nrnumber'] : 'N/A' }}</td>
                                     <td>{{ $product['product_description'] }}</td>
                                     <td>{{ $product['product_price'] }}</td>
                                     <td>{{ $product['branch'] }}</td>

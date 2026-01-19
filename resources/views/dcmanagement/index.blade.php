@@ -11,12 +11,23 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-lg-12">
-                                    <button class="action-btn btn-info btn-dc-export btn p-2"
-                                    type="button">Export</button>
-                                        <form action="{{ route('dcmanagements') }}" id="search_form">
-                                            <input type="hidden" name="search_field" value="{{ $search_field }}"
-                                                id="search_field" />
-                                            <div class="d-flex float-right justify-space-between" style="width:30%;">
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <div class="d-flex align-items-center">
+                                                <div class="mr-3">
+                                                    <label for="filter_days" class="mr-2" style="font-weight: 500;">Filter by Days:</label>
+                                                    <select class="select2" name="filter_days" id="filter_days" style="width: 150px;">
+                                                        <option value="">All Days</option>
+                                                        <option value="30" {{($filter_days ?? '30') == '30' ? 'selected':''}}>30 Days</option>
+                                                        <option value="60" {{($filter_days ?? '') == '60' ? 'selected':''}}>60 Days</option>
+                                                        <option value="90" {{($filter_days ?? '') == '90' ? 'selected':''}}>90 Days</option>
+                                                        <option value="180" {{($filter_days ?? '') == '180' ? 'selected':''}}>180 Days</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <form action="{{ route('dcmanagements') }}" id="search_form" class="d-flex">
+                                                <input type="hidden" name="search_field" value="{{ $search_field }}"
+                                                    id="search_field" />
+                                                <input type="hidden" name="filter_days" value="{{ $filter_days ?? '30' }}" id="filter_days_hidden" />
                                                 <div class="input-group">
                                                     <input type="text" class="filter_values form-control"
                                                         value="{{ $search }}" id="search" name="search"
@@ -45,11 +56,9 @@
                                                                 class="mt-2 filter-remove btn btn-danger btn-sm">Cancel</button>
                                                         </div>
                                                     </div>
-
                                                 </div>
-                                            </div>
-
-                                        </form>
+                                            </form>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="clearfix mb-3"></div>
@@ -110,52 +119,6 @@
  @section('script')
 
     <script>
-        $(document).on("click", ".btn-dc-export", function() {
-                var type = $("#type option:selected").val();
-                $.ajax({
-                        type: "GET",
-                        url: "reports/dec-report-export",
-                        data: {
-                            type:type
-                        },
-                        beforeSend: function() {
-                            $(".loader").show();
-                        },
-                        success: function(result, status, xhr) {
-                            console.log(result);
-                            $(".loader").hide();
-                            var disposition = xhr.getResponseHeader('content-disposition');
-                            var matches = /"([^"]*)"/.exec(disposition);
-                            var timestamp = new Date().toISOString().replace(/[:\-T]/g, '').slice(0, 15);
-
-                            var filename = (matches != null && matches[1] ? matches[1] : `dc_report_${timestamp}.csv`);
-
-                            // The actual download
-                            var blob = new Blob([result], {
-                                type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                            });
-                            var link = document.createElement('a');
-                            link.href = window.URL.createObjectURL(blob);
-                            link.download = filename;
-
-                            document.body.appendChild(link);
-
-                            link.click();
-                            document.body.removeChild(link);
-                        },
-                        error: function(error) {
-                            $(".loader").hide();
-                            Swal.fire({
-                                title: 'Error!',
-                                text: 'Something went wrong, try again',
-                                dangerMode: true,
-                                icon: 'warning',
-                                confirmButtonColor: '#d33',
-                                cancelButtonColor: '#3085d6',
-                            });
-                        }
-                    });
-            });
         $(document).on('click', ".dropdown-item", function () {
             $(".dropdown-item").removeClass("active");
             var text = $(this).text();
@@ -172,6 +135,13 @@
                 $("#search_form")[0].submit();
             }
         });
+        // Handle days filter change - auto submit form
+        $(document).on('change', '#filter_days', function() {
+            var selectedDays = $(this).val();
+            $('#filter_days_hidden').val(selectedDays);
+            $('#search_form').submit();
+        });
+
         $(document).ready(function () {
             $(".filter-dropdown, .text-button").click(function () {
                 $(".edit-filter-modal").toggleClass("hidden");
@@ -187,6 +157,8 @@
                 $("#search_field").val("");
                 $("#search").val("");
                 $("#filter_type").val("");
+                $("#filter_days").val("");
+                $("#filter_days_hidden").val("");
                 window.location.replace("/dcmanagements");
                 $(".edit-filter-modal").toggleClass("hidden");
             });
@@ -194,6 +166,8 @@
                 $("#search_field").val("");
                 $("#search").val("");
                 $("#filter_type").val("");
+                $("#filter_days").val("");
+                $("#filter_days_hidden").val("");
                 window.location.replace("dcmanagements");
             });
 

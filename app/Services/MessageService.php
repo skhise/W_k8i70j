@@ -1,56 +1,89 @@
 <?php
 
 namespace App\Services;
-use App\Models\ProfileSetup;
-use Auth;
+
+use Illuminate\Support\Facades\Log;
 
 class MessageService
 {
-    public static function sendMessage($number,$message)
+    public static function sendMessage($number, $message)
     {
-// Base URL
-$baseUrl = 'https://int.chatway.in/api/send-msg';
+        $baseUrl = 'https://int.chatway.in/api/send-msg';
 
-// Parameters
-$username = 'AMCMANAGE';
-$number = '+91'.$number;
-$token = 'U0d4dXUxWkhVS2FZdXVENlUrU29xQT09';
-// $message = 'hello test'; // Example message
+        $username = 'AMCMANAGE';
+        $number   = '91' . $number;
+        $token    = 'U0d4dXUxWkhVS2FZdXVENlUrU29xQT09';
 
-// Construct the URL with encoded parameters
-$url = $baseUrl . '?username=' . urlencode($username) . 
-                  '&number=' . urlencode($number) . 
-                  '&token=' . urlencode($token) . 
-                  '&message=' . urlencode($message);
+        $url = $baseUrl . '?username=' . urlencode($username)
+            . '&number=' . urlencode($number)
+            . '&token=' . urlencode($token)
+            . '&message=' . urlencode($message);
 
-// Initialize cURL session
-$ch = curl_init($url);
+        $ch = curl_init();
 
-// Set cURL options
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Return the response as a string
-curl_setopt($ch, CURLOPT_HTTPGET, true); // Set to GET method
+        curl_setopt_array($ch, [
+            CURLOPT_URL            => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPGET        => true,
 
-// Execute the request
-$response = curl_exec($ch);
+            // 🔑 Timeout handling
+            CURLOPT_CONNECTTIMEOUT => 5,   // seconds to wait while connecting
+            CURLOPT_TIMEOUT        => 10,  // max execution time
 
-// Check for errors
-if ($response === false) {
-    echo 'cURL Error: ' . curl_error($ch);
-} else {
-    // Check HTTP status code
-    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    if ($http_code == 200) {
-        // Process the response
-        $data = json_decode($response, true);
-        // print_r($data);/
+            // Optional but recommended
+            CURLOPT_FAILONERROR    => true,
+        ]);
 
-    } else {
-        // echo "HTTP Error: " . $http_code . " - " . $response;
-    }
-}
+        $response = curl_exec($ch);
 
-// Close the cURL session
-curl_close($ch);
+        if ($response === false) {
+            $errorNo  = curl_errno($ch);
+            $errorMsg = curl_error($ch);
 
+            // Handle timeout separately
+            if ($errorNo === CURLE_OPERATION_TIMEDOUT) {
+                Log::error('Message API Timeout', [
+                    'number' => $number,
+                    'error'  => $errorMsg
+                ]);
+
+                return [
+                    'status'  => false,
+                    'message' => 'Request timed out'
+                ];
+            }
+
+            // Other cURL errors
+            Log::error('Message API cURL Error', [
+                'number' => $number,
+                'error'  => $errorMsg
+            ]);
+
+            return [
+                'status'  => false,
+                'message' => $errorMsg
+            ];
+        }
+
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpCode !== 200) {
+            Log::error('Message API HTTP Error', [
+                'number'   => $number,
+                'httpCode' => $httpCode,
+                'response' => $response
+            ]);
+
+            return [
+                'status'  => false,
+                'message' => 'HTTP Error: ' . $httpCode
+            ];
+        }
+
+        return [
+            'status' => true,
+            'data'   => json_decode($response, true)
+        ];
     }
 }

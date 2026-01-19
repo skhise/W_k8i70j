@@ -209,6 +209,8 @@
                         <li class="{{ Request::is(patterns: 'reports/contract-due-report') ? 'active' : '' }}"><a
                                 class="nav-link active" href="{{ route('contract-due-report') }}">Contract Due Reports</a>
                         </li>
+                        <li class="{{ Request::is('reports/renewal-report') ? 'active' : '' }}"><a class="nav-link"
+                                href="{{ route('renewal-report') }}">Renewal Report</a></li>
                         <li class="{{ Request::is('reports/service-status-report') ? 'active' : '' }}"><a class="nav-link"
                                 href="{{ route('service-status-report') }}">Service Status Reports</a></li>
 

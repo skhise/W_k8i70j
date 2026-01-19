@@ -11,7 +11,7 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header">
-                                <h4>Contracts Schedule Services</h4>
+                                <h4>Contracts Schedules Services</h4>
 
                             </div>
                             <div class="card-body">

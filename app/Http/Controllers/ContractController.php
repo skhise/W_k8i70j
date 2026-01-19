@@ -661,12 +661,20 @@ class ContractController extends Controller
             return response()->json(["success" => false, "message" => "action failed, try again."]);
         }
     }
-    public function servicedelete(ContractScheduleService $contractScheduleService)
+    public function servicedelete(Request $request, ContractScheduleService $contractScheduleService)
     {
         try {
             $contractScheduleService->delete();
+            
+            if ($request->ajax()) {
+                return response()->json(['success' => true, 'message' => 'Service deleted successfully']);
+            }
+            
             return Redirect()->back()->with("success", "Deleted!");
         } catch (Exception $exp) {
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'message' => 'Something went wrong, try again.']);
+            }
             return Redirect()->back()->with("error", "Something went wrong, try again.");
         }
 
@@ -937,6 +945,10 @@ class ContractController extends Controller
     }
     public function AddContractProduct(Request $request, Contract $contract)
     {
+        // Check if user is authenticated
+        if (!Auth::check()) {
+            return response()->json(["success" => false, "message" => "Authentication required. Please login again."]);
+        }
 
         $messages = array(
             'nrnumber.*' => 'Serial number must be unique',
@@ -958,7 +970,23 @@ class ContractController extends Controller
         if ($validator->fails()) {
             return response()->json(["success" => false, "message" => "all * marked fields required.", "validation_error" => $validator->errors()]);
         }
+        
+        // Process nrnumber array - trim whitespace and filter out empty values
         $nrnumber = $request->nrnumber ?? [];
+        if (!empty($nrnumber) && is_array($nrnumber)) {
+            // Trim whitespace from each serial number and filter out empty strings
+            $nrnumber = array_map(function($sr) {
+                return trim($sr ?? '');
+            }, $nrnumber);
+            
+            // Remove empty strings but keep null values
+            $nrnumber = array_filter($nrnumber, function($sr) {
+                return $sr !== '';
+            });
+            
+            // Re-index array after filtering
+            $nrnumber = array_values($nrnumber);
+        }
         
         // Check for uniqueness only for non-empty serial numbers
         if (!empty($nrnumber) && is_array($nrnumber)) {
@@ -979,34 +1007,142 @@ class ContractController extends Controller
         
         $size = 0;
         DB::beginTransaction();
-        foreach ($nrnumber as $sr) {
-            $iscp = ContractUnderProduct::create([
-                'contractId' => $request->contractId,
-                'product_name' => $request->product_name,
-                'product_type' => $request->product_type,
-                'product_price' => $request->product_price,
-                'product_description' => $request->product_description,
-                'nrnumber' => $sr ?? null,
-                'branch' => $request->branch,
-                'remark' => $request->remark,
-                'service_period' => $request->service_period,
-                'no_of_service' => 0,
-                'serviceDay' => 0,
-                'updated_by' => Auth::user()->id,
-            ]);
-            if ($iscp) {
-                $size++;
+        try {
+            
+            foreach ($nrnumber as $sr) {
+                // Trim and validate serial number before saving
+                
+                $serialNumber = !empty($sr) ? trim($sr) : null;
+                $iscp = ContractUnderProduct::create([
+                    'contractId' => $request->contractId,
+                    'product_name' => $request->product_name,
+                    'product_type' => $request->product_type,
+                    'product_price' => $request->product_price ?? null,
+                    'product_description' => $request->product_description ?? null,
+                    'nrnumber' => $serialNumber,
+                    'branch' => $request->branch ?? null,
+                    'remark' => $request->remark ?? null,
+                    'service_period' => $request->service_period ?? null,
+                    'no_of_service' => 0,
+                    'serviceDay' => 0,
+                    'updated_by' => Auth::user()->id,
+                ]);
+                if ($iscp) {
+                    $size++;
+                }
             }
-        }
-        if ($size == sizeof($nrnumber)) {
-            DB::commit();
-            return response()->json(['success' => true, 'message' => 'Product Added']);
-        } else {
+            
+            if ($size == sizeof($nrnumber)) {
+                DB::commit();
+                return response()->json(['success' => true, 'message' => 'Product Added']);
+            } else {
+                DB::rollBack();
+                return response()->json(['success' => false, 'message' => 'Some products failed to save, try again']);
+            }
+        } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['success' => false, 'message' => 'Something went wrong,try again']);
+            \Log::error('AddContractProduct Error: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Something went wrong: ' . $e->getMessage()]);
         }
 
     }
+    public function getProductsTab(Request $request, Contract $contract)
+    {
+        try {
+            $addedproducts = ContractUnderProduct::join("master_product_type", "master_product_type.id", "contract_under_product.product_type")
+                ->where("contractId", $contract->CNRT_ID)
+                ->select("contract_under_product.id as cup_id", "master_product_type.*", "contract_under_product.*")
+                ->orderBy('contract_under_product.id', 'desc')
+                ->get();
+            if ($request->ajax()) {
+                return view('contracts.products_tab', [
+                    'products' => $addedproducts,
+                ])->render();
+            }
+
+            return view('contracts.products_tab', [
+                'products' => $addedproducts,
+            ]);
+        } catch (\Exception $e) {
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'message' => 'Failed to load products: ' . $e->getMessage()], 500);
+            }
+            return view('contracts.products_tab', [
+                'products' => collect(),
+            ]);
+        }
+    }
+
+    public function getServicesTab(Request $request, Contract $contract)
+    {
+        try {
+            $services = ContractScheduleService::select(
+                "master_service_status.*",
+                "contract_under_product.*",
+                "contract_schedule_service.id as cupId",
+                "contract_schedule_service.*",
+                "master_issue_type.*",
+                "master_service_type.*"
+            )
+            ->where("contract_schedule_service.contractId", $contract->CNRT_ID)
+            ->where(function($query) {
+                $query->where("contract_schedule_service.Service_Call_Id", 0)
+                      ->orWhereExists(function($sub) {
+                          $sub->select(DB::raw(1))
+                              ->from("services")
+                              ->whereRaw("services.id = contract_schedule_service.Service_Call_Id")
+                              ->whereNull("services.deleted_at");
+                      });
+            })
+            ->leftJoin("master_issue_type", "master_issue_type.id", "contract_schedule_service.issueType")
+            ->leftJoin("contract_under_product", "contract_under_product.id", "contract_schedule_service.product_Id")
+            ->leftJoin("master_service_type", "master_service_type.id", "contract_schedule_service.serviceType")
+            ->leftJoin("master_service_status", "master_service_status.Status_Id", "contract_schedule_service.Schedule_Status")
+            ->get();
+
+            if ($request->ajax()) {
+                return view('contracts.services_tab', [
+                    'services' => $services,
+                ])->render();
+            }
+
+            return view('contracts.services_tab', [
+                'services' => $services,
+            ]);
+        } catch (\Exception $e) {
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'message' => 'Failed to load services: ' . $e->getMessage()], 500);
+            }
+            return view('contracts.services_tab', [
+                'services' => collect(),
+            ]);
+        }
+    }
+
+    public function getChecklistTab(Request $request, Contract $contract)
+    {
+        try {
+            $checklists = $contract->checklist;
+
+            if ($request->ajax()) {
+                return view('contracts.checklist_tab', [
+                    'checklists' => $checklists,
+                ])->render();
+            }
+
+            return view('contracts.checklist_tab', [
+                'checklists' => $checklists,
+            ]);
+        } catch (\Exception $e) {
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'message' => 'Failed to load checklist: ' . $e->getMessage()], 500);
+            }
+            return view('contracts.checklist_tab', [
+                'checklists' => collect(),
+            ]);
+        }
+    }
+
     public function CheckContractProduct($ContractId, $productId)
     {
 
@@ -1176,10 +1312,12 @@ class ContractController extends Controller
 
 
         // dd($contract_obj);
-        $addedproducts = ContractUnderProduct::join("master_product_type", "master_product_type.id", "contract_under_product.product_type")
+        $addedproductsRaw = ContractUnderProduct::join("master_product_type", "master_product_type.id", "contract_under_product.product_type")
                         ->where("contractId", $contract->CNRT_ID)
                         ->select("contract_under_product.id as cup_id", "master_product_type.*", "contract_under_product.*")
+                        ->orderBy('contract_under_product.id', 'desc')
                         ->get();
+        
         return view('contracts.view', [
             'contract' => $contract_obj,
             'project_count' => 0,
@@ -1190,7 +1328,7 @@ class ContractController extends Controller
             'checklists' => $contract->checklist,
             'renewals' => $contract->renewals,
             'productOption' => $productOptions,
-            'products' => $addedproducts,
+            'products' => $addedproductsRaw,
             'services' => $services
 
         ]);
@@ -1269,12 +1407,20 @@ class ContractController extends Controller
 
 
     }
-    public function checklistdelete(Checklist $checklist)
+    public function checklistdelete(Request $request, Checklist $checklist)
     {
         try {
             $checklist->delete();
+            
+            if ($request->ajax()) {
+                return response()->json(['success' => true, 'message' => 'Checklist deleted successfully']);
+            }
+            
             return Redirect()->back()->with("success", "Deleted!");
         } catch (Exception $exp) {
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'message' => 'Something went wrong, try again.']);
+            }
             return Redirect()->back()->withErrors("Something went wrong,try again!");
         }
 

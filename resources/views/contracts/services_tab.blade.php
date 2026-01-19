@@ -2,7 +2,7 @@
     <div class="col-12">
         <div class="card card-primary">
             <div class="card-header">
-                <h4>Schedule Services</h4>
+                <h4>Schedules Services</h4>
                 <div class="card-header-action">
                     <input type="button" id="btn_service_add" value="Add Service" class="btn btn-primary"
                         data-toggle="modal" data-target=".bd-RefService-modal-lg" />
@@ -62,8 +62,8 @@
                                                     class="action-btn btn btn-icon btn-sm btn-primary"><i
                                                         class="far fa-edit"></i></a>
 
-                                                <a href="{{ route('contract_service.delete', $service['cupId']) }}"
-                                                    class="action-btn delete-btn btn-icon btn btn-sm btn-danger"><i
+                                                <a href="#" data-service-id="{{ $service['cupId'] }}"
+                                                    class="action-btn delete-service-btn btn-icon btn btn-sm btn-danger"><i
                                                         class="fa fa-trash"></i></a>
 
                                                 <a title="lock ticket"

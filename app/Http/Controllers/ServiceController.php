@@ -1519,7 +1519,7 @@ class ServiceController extends Controller
                 $status_options .= "<option data-sub_status='" . $sub_status . "' value=" . $st->Status_Id . " " . $selected . ">" . $st->Status_Name . "</option>";
             }
         }
-        $employees = Employee::where(["EMP_Status"=>1,"Access_Role"=>4,'deleted_at'=>null])
+        $employees = Employee::where(["EMP_Status"=>1,"Access_Role"=>4,'employees.deleted_at'=>null])
         ->join("master_role_access","master_role_access.id","employees.Access_Role")
         ->join("master_designation","master_designation.id","employees.EMP_Designation")
         ->get();

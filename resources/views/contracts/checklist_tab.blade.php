@@ -36,8 +36,8 @@
                                             data-description="{{ $checklist['description'] }}"
                                             data-cid="{{ $checklist['contactId'] }}" data-id="{{ $checklist['id'] }}"
                                             class="btn btn-icon btn-sm btn-primary"><i class="far fa-edit"></i></a>
-                                        <a type="submit" href="{{ route('checklist.delete', $checklist['id']) }}"
-                                            class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></a< /td>
+                                        <a href="#" data-checklist-id="{{ $checklist['id'] }}"
+                                            class="delete-checklist-btn btn btn-sm btn-danger"><i class="fa fa-trash"></i></a></td>
                                 </tr>
                             @endforeach
                         </tbody>

@@ -23,13 +23,13 @@
                                         <label for="first">Total Services</label>
                                 </div>
                                 <div class="col-md-3 floating-label">
-                                    <input class="disabled form-control text-box single-line" id="description"
-                                        name="description" placeholder="" type="text" value="{{date("d-M-Y", strtotime($contract['CNRT_StartDate']))}}" required/>
+                                    <input class="disabled form-control text-box single-line" id="service_start_date"
+                                        name="service_start_date" placeholder="" type="text" value="{{date("d-M-Y", strtotime($contract['CNRT_StartDate']))}}" readonly/>
                                         <label for="first">Start Date</label>
                                 </div>
                                 <div class="col-md-3 floating-label">
-                                    <input class="disabled form-control text-box single-line" id="description"
-                                        name="description" placeholder="" type="text" value="{{date("d-M-Y", strtotime($contract['CNRT_EndDate']))}}" required/>
+                                    <input class="disabled form-control text-box single-line" id="service_end_date"
+                                        name="service_end_date" placeholder="" type="text" value="{{date("d-M-Y", strtotime($contract['CNRT_EndDate']))}}" readonly/>
                                         <label for="first">End Date</label>
                                 </div>
                                 <div class="col-md-2">

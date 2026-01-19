@@ -159,23 +159,34 @@
                             response = JSON.parse(response);
                             if (response.code == 200) {
                                 // currentRow.remove();
-                                alert("Deleted!");
+                                showalert("Deleted","Success",false);
                                 window.location.reload();
                             } else {
-                                alert("action failed, try again");
+                                showalert("action failed, try again","Error",true);
                             }
                         },
                         error: function (error) {
-                            sweet("Something went wrong, try again.");
+                            showalert("Something went wrong, try again.","Error",true);
                         }
                     })
                 } else {
-                    alert("Something went wrong, try again");
+                    showalert("Something went wrong, try again","Error",true);
                 }
             }
 
 
         });
+
+        function showalert(message,flag,flag1){
+ Swal.fire({
+                                title: flag+'!',
+                                text: message,
+                                dangerMode: flag1,
+                                icon: flag1 ? 'error' :'success',
+                                confirmButtonColor: '#d33',
+                                cancelButtonColor: '#3085d6',
+                            });
+                        }
 
     </script>
 

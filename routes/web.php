@@ -184,6 +184,7 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
         Route::post('/contracts/service/{contract}/store', [ContractController::class, 'serviceStore'])->name('contract_service.store');
         Route::post('/contracts/service/{contract}/update', [ContractController::class, 'serviceUpdate'])->name('contract_service.update');
         Route::get('/contracts/service/{contractScheduleService}/delete', [ContractController::class, 'servicedelete'])->name('contract_service.delete');
+        Route::get('/contract-products', [ContractController::class, 'index_products'])->name('contracts.products');
     });
 
     /*end contractt*/

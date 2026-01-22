@@ -1807,7 +1807,78 @@ class ContractController extends Controller
         return $recursive_iterator->getArrayCopy();
     }
 
+    public function index_products(Request $request)
+    {
+        $search = $request->search ?? '';
+        $filter_customer = $request->filter_customer ?? '';
 
+        $products = ContractUnderProduct::join("contracts", "contracts.CNRT_ID", "contract_under_product.contractId")
+            ->leftJoin("clients", "clients.CST_ID", "contracts.CNRT_CustomerID")
+            ->leftJoin("master_product_type", "master_product_type.id", "contract_under_product.product_type")
+            ->leftJoin("master_contract_status", "master_contract_status.id", "contracts.CNRT_Status")
+            ->select(
+                "contract_under_product.*",
+                "contracts.CNRT_Number",
+                "contracts.CNRT_ID",
+                "contracts.CNRT_StartDate",
+                "contracts.CNRT_EndDate",
+                "contracts.CNRT_Phone1",
+                "clients.CST_Name",
+                "clients.CST_ID",
+                "master_product_type.type_name",
+                "master_contract_status.contract_status_name",
+                "master_contract_status.status_color"
+            )
+            ->where("contracts.CNRT_Status", "!=", 0)
+            ->when($search, function ($query) use ($search) {
+                return $query->where(function ($q) use ($search) {
+                    $q->where("contract_under_product.product_name", "like", "%{$search}%")
+                        ->orWhere("contract_under_product.nrnumber", "like", "%{$search}%")
+                        ->orWhere("contracts.CNRT_Number", "like", "%{$search}%")
+                        ->orWhere("clients.CST_Name", "like", "%{$search}%");
+                });
+            })
+            ->when($filter_customer, function ($query) use ($filter_customer) {
+                return $query->where("clients.CST_ID", $filter_customer);
+            })
+            ->orderBy('contract_under_product.created_at', 'DESC')
+            ->paginate(15)
+            ->withQueryString();
+
+        $customers = Client::where("CST_Status", "1")
+            ->orderBy('CST_Name', 'ASC')
+            ->get(['CST_ID', 'CST_Name']);
+
+        // If AJAX request, return only the table content
+        if ($request->ajax()) {
+            $tableHtml = '<table class="table table-striped" id="table-1">';
+            $tableHtml .= '<thead><tr>';
+            $tableHtml .= '<th>Sr. No.</th><th>Contract Number</th><th>Customer Name</th>';
+            $tableHtml .= '<th>Product Name</th><th>Product Type</th><th>Serial Number</th>';
+            $tableHtml .= '<th>Price</th><th>Contract Status</th><th>Action</th>';
+            $tableHtml .= '</tr></thead>';
+            $tableHtml .= view('contracts.products_table', ['products' => $products])->render();
+            $tableHtml .= '</table>';
+            $tableHtml .= '<div class="float-left">';
+            if ($products->total()) {
+                $tableHtml .= '<p>Found ' . $products->total() . ' records</p>';
+            }
+            $tableHtml .= '</div>';
+            $tableHtml .= '<div class="float-right">' . $products->links()->toHtml() . '</div>';
+            
+            return response()->json([
+                'html' => $tableHtml,
+                'total' => $products->total()
+            ]);
+        }
+
+        return view('contracts.products_index', [
+            'products' => $products,
+            'customers' => $customers,
+            'search' => $search,
+            'filter_customer' => $filter_customer,
+        ]);
+    }
 
 }
 

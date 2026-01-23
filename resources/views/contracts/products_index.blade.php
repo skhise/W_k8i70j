@@ -121,7 +121,7 @@
             $(document).ready(function() {
                 // Initialize select2 for customer dropdown
                 $('#filter_customer').select2({
-                    placeholder: 'Select Customer',
+                    placeholder: 'Select Clinet',
                     allowClear: true
                 });
 

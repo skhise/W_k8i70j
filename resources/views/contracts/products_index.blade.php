@@ -21,7 +21,7 @@
                                                 <div class="col-md-4">
                                                     <select class="form-control select2" name="filter_customer"
                                                         id="filter_customer">
-                                                        <option value="">All Customers</option>
+                                                        <option value="">All Clients</option>
                                                         @foreach($customers as $customer)
                                                             <option value="{{$customer->CST_ID}}" {{$filter_customer == $customer->CST_ID ? "selected" : ""}}>{{$customer->CST_Name}}</option>
                                                         @endforeach
@@ -31,7 +31,7 @@
                                                     <div class="input-group">
                                                         <input type="text" class="form-control"
                                                             value="{{ $search }}" id="search" name="search"
-                                                            placeholder="Search by product name, serial number, contract number, or customer name">
+                                                            placeholder="Search by product name, serial number, contract number, or client name">
                                                         <div class="input-group-append">
                                                             <button class="btn btn-primary" type="button" id="search-btn"><i class="fas fa-search"></i></button>
                                                             <button type="button" class="btn btn-danger" id="clear-btn" style="display: {{($search || $filter_customer) ? 'block' : 'none'}};">
@@ -56,7 +56,7 @@
                                                     <th>Product Name</th>
                                                     <th>Product Type</th>
                                                     <th>Serial Number</th>
-                                                    <th>Price</th>
+                                                    <th>Branch/Location</th>
                                                     <th>Contract Status</th>
                                                     <th>Action</th>
                                                 </tr>
@@ -84,7 +84,7 @@
                                                         <td>{{ $product->product_name }}</td>
                                                         <td>{{ $product->type_name ?? 'N/A' }}</td>
                                                         <td>{{ $product->nrnumber ?? 'N/A' }}</td>
-                                                        <td>{{ $product->product_price ?? 'N/A' }}</td>
+                                                        <td>{{ $product->branch ?? 'N/A' }}</td>
                                                         <td>
                                                             <span class="text-white badge badge-shadow {{ $product->status_color ?? 'bg-light' }}">
                                                                 {{ $product->contract_status_name ?? 'N/A' }}

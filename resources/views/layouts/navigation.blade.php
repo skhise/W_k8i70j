@@ -158,7 +158,7 @@
                     <a href="{{ route('contracts') }}" class="nav-link"><i data-feather="edit"></i><span>Contract</span></a>
                 </li>
                 <li class="dropdown {{ Request::is('contract-products') ? 'active' : '' }}">
-                    <a href="{{ route('contracts.products') }}" class="nav-link"><i data-feather="edit"></i><span>AMC Products</span></a>
+                    <a href="{{ route('contracts.products') }}" class="nav-link"><i data-feather="package"></i><span>AMC Products</span></a>
                 </li>
                 <li class="dropdown {{ Request::is('services') || Request::is('services/*') ? 'active' : '' }}">
                     <a href="{{ route('services') }}" class="nav-link"><i

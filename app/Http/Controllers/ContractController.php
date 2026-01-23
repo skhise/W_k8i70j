@@ -1855,7 +1855,7 @@ class ContractController extends Controller
             $tableHtml .= '<thead><tr>';
             $tableHtml .= '<th>Sr. No.</th><th>Contract Number</th><th>Customer Name</th>';
             $tableHtml .= '<th>Product Name</th><th>Product Type</th><th>Serial Number</th>';
-            $tableHtml .= '<th>Price</th><th>Contract Status</th><th>Action</th>';
+            $tableHtml .= '<th>Branch/Location</th><th>Contract Status</th><th>Action</th>';
             $tableHtml .= '</tr></thead>';
             $tableHtml .= view('contracts.products_table', ['products' => $products])->render();
             $tableHtml .= '</table>';

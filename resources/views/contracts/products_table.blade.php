@@ -21,7 +21,7 @@
             <td>{{ $product->product_name }}</td>
             <td>{{ $product->type_name ?? 'N/A' }}</td>
             <td>{{ $product->nrnumber ?? 'N/A' }}</td>
-            <td>{{ $product->product_price ?? 'N/A' }}</td>
+            <td>{{ $product->branch ?? 'N/A' }}</td>
             <td>
                 <span class="text-white badge badge-shadow {{ $product->status_color ?? 'bg-light' }}">
                     {{ $product->contract_status_name ?? 'N/A' }}

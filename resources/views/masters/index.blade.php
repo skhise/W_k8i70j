@@ -46,6 +46,9 @@
                                             <li class="list-group-item clickMenu"
                                                 data-route="{{route('masters.designation')}}"><i class="fa fa-info"></i><a
                                                     class="btn" href="masters/designation">Designations</a></li>
+                                            <li class="list-group-item clickMenu"
+                                                data-route="{{route('masters.dc-type')}}"><i class="fa fa-info"></i><a
+                                                    class="btn" href="masters/dc-type">DC Type</a></li>
                                            
                                             
                                         </ul>

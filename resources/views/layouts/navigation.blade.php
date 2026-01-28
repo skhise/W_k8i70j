@@ -224,6 +224,8 @@
 
                         <li class="{{ Request::is('reports/dc-report') ? 'active' : '' }}"><a class="nav-link"
                                 href="{{ route('dc-report') }}">Dc Report</a></li>
+                        <li class="{{ Request::is('reports/utilized-product-report') ? 'active' : '' }}"><a class="nav-link"
+                                href="{{ route('utilized-product-report') }}">Utilized Product Report</a></li>
                         <li class="{{ Request::is('reports/inward-report') ? 'active' : '' }}"><a class="nav-link"
                                 href="{{ route('inward-report') }}">Repair Inward Report</a></li>
                         <!-- <li class="{{ Request::is('reports/quotation-report') ? 'active' : '' }}"><a class="nav-link"

@@ -23,7 +23,7 @@ use App\Models\AccessMaster;
 use App\Models\StoreProductCategory;
 use Illuminate\Support\Facades\Hash;
 use App\Models\SystemLog;
-
+use App\Models\DcType;
 
 class MasterController extends Controller
 {
@@ -987,6 +987,81 @@ class MasterController extends Controller
         }
     }
 
+    public function dc_type_index(Request $request)
+    {
+        $area = array();
+        try {
+            $dc_types = DcType::paginate(10)
+                ->withQueryString();
+
+        } catch (Exception $ex) {
+            // return $ex->errorInfo;
+        }
+        return view("masters.dc_type.index", ["dc_types" => $dc_types]);
+    }
+    public function dc_type_delete(Request $request)
+    {
+        $id = $request->id ?? 0;
+        $res['message'] = 'action failed, try again';
+        $res['code'] = 400;
+        try {
+            $delete = DcType::where('id', $id)->delete();
+            if ($delete) {
+                $res['message'] = 'Deleted';
+                $res['code'] = 200;
+            }
+        } catch (Exception $ex) {
+            // return $ex->getMessage();
+            $res['message'] = 'action failed, try again' . $ex->getMessage();
+            $res['code'] = 400;
+        }
+        return json_encode($res);
+    }
+    public function dc_type_saveupdate(Request $request)
+    {
+        $validator = Validator::make(
+            $request->all(),
+            [
+                "id" => "required",
+                "name" => "required",
+                "flag" => "required",
+            ]
+        );
+        if ($validator->fails()) {
+            return response()->json(["success" => false, "message" => "data missing, try again.", "validation_error" => $validator->errors()]);
+        }
+        if ($request->flag == 1) {
+            $checkName =   DcType::where('dc_type_name', $request->name)
+                ->where('id', "!=", $request->id)->get();
+            if ($checkName->count() > 0) {
+                return response()->json(["success" => false, "message" => "duplicate dc type.", "validation_error" => $validator->errors()]);
+            } else {
+                $update = DcType::where('id', $request->id)->update([
+                    'dc_type_name' => $request->name
+                ]);
+                if ($update) {
+                    return response()->json(["success" => true, "message" => "DC type updated.", "validation_error" => $validator->errors()]);
+                } else {
+                    return response()->json(["success" => false, "message" => "action failed, try again.", "validation_error" => $validator->errors()]);
+                }
+            }
+
+        } else {
+            $checkName = DcType::where('dc_type_name', $request->name)->get();
+            if ($checkName->count() == 0) {
+                $create = DcType::create([
+                    'dc_type_name' => $request->name
+                ]);
+                if ($create) {
+                    return response()->json(["success" => true, "message" => "Created", "validation_error" => $validator->errors()]);
+                } else {
+                    return response()->json(["success" => false, "message" => "action failed, try again.", "validation_error" => $validator->errors()]);
+                }
+            } else {
+                return response()->json(["success" => false, "message" => "duplicate dc type.", "validation_error" => $validator->errors()]);
+            }
+        }
+    }
 
 
 }

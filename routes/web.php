@@ -103,6 +103,10 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
         Route::get('/reports/inward-report', [ReportController::class, 'inward_report_index'])->name('inward-report');
         Route::get('/reports/inward-report-export', [ReportController::class, 'inward_report_export'])->name('inward-report-export');
 
+        Route::get('/reports/utilized-product-report', [ReportController::class, 'utilized_product_index'])->name('utilized-product-report');
+        Route::get('/reports/utilized-product-report-data', [ReportController::class, 'utilized_product_data'])->name('utilized-product-report-data');
+        Route::get('/reports/utilized-product-report-export', [ReportController::class, 'utilized_product_export'])->name('utilized-product-report-export');
+
         Route::get('/attendance', [ReportController::class, 'Attendance'])->name('attendance');
         Route::get('/attendance/atte_data', [ReportController::class, 'Atte_Data'])->name('atte_data');
     });
@@ -252,6 +256,11 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
         Route::get('/masters/designation', [MasterController::class, 'designation_index'])->name('masters.designation');
         Route::post('/masters/designation', [MasterController::class, 'designation_saveupdate'])->name('masters.designation-store');
         Route::delete('/masters/designation', [MasterController::class, 'designation_delete'])->name('masters.designation-delete');
+    });
+    Route::middleware('auth')->group(function () {
+        Route::get('/masters/dc-type', [MasterController::class, 'dc_type_index'])->name('masters.dc-type');
+        Route::post('/masters/dc-type', [MasterController::class, 'dc_type_saveupdate'])->name('masters.dc-type-store');
+        Route::delete('/masters/dc-type', [MasterController::class, 'dc_type_delete'])->name('masters.dc-type-delete');
     });
     /*end master routes*/
 

@@ -79,20 +79,7 @@
 
                                                     @endif
                                                 </div>
-                                                <div class="col-md-3 floating-label">
-                                                    <input
-                                                        class="form-control text-box single-line @error('Product_Price') is-invalid @enderror"
-                                                        data-val="true" id="Product_Price" name="Product_Price"
-                                                        placeholder="" required="required" type="number"
-                                                        value="{{old('Product_Price') ?? $product->Product_Price}}" />
-                                                    <label for="Product_Price">Price</label>
-                                                    @if($errors->has('Product_Price'))
-                                                    <span class="text-danger field-validation-valid"
-                                                        data-valmsg-for="Product_Price" data-valmsg-replace="true">{{
-        $errors->first('Product_Price') }}</span>
-
-                                                    @endif
-                                                </div>
+                                                
 
                                             </div>
                                         </div>
@@ -124,10 +111,10 @@
                            
                             <div class="row">
                             <div class="col-md-2">
-                            <span style="float:right ;font-weight:bold">Sr. Number</span>
-                                    
-                                </div>
-                                <div class="col-md-10">
+                                <p></p>
+                                <span style="float:right ;font-weight:bold">Sr. Number</span>
+                            </div>
+                            <div class="col-md-6">
                                 <p><span class="text-danger-error text-danger srnumber-field-validation-valid"
                                     data-valmsg-replace="true"></span></p>
                                     <div class="input-group">
@@ -137,12 +124,27 @@
                                                 class="fa fa-plus" aria-hidden="true"></i></span>
 
                                     </div>
-                                </div>
-                                <div class="col-md-12 mb-2" id="multipeInput">
+                                    <div class="col-md-12 mb-2" id="multipeInput">
 
                                 </div>
+                                </div>
+                                <p></p>
+                                <div class="col-md-3 floating-label mt-3">
+                                <input class="form-control text-box single-line @error('Product_Price') is-invalid @enderror"
+                                                        data-val="true" id="Product_Price" name="Product_Price"
+                                                        placeholder="" required="required" type="number"
+                                                        value="{{old('Product_Price') ?? $product->Product_Price}}" />
+                                                    <label for="Product_Price">Price</label>
+                                                    @if($errors->has('Product_Price'))
+                                                    <span class="text-danger field-validation-valid"
+                                                        data-valmsg-for="Product_Price" data-valmsg-replace="true">{{
+        $errors->first('Product_Price') }}</span>
 
+                                                    @endif
                             </div>
+                                
+                            </div>
+                            
 
                         </div>
                         <div class="form-group">

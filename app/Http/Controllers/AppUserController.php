@@ -1150,6 +1150,105 @@ class AppUserController extends Controller
 
     }
 
+    /**
+     * Get all products used under DC
+     * API endpoint: GET /api/v1/GetAllDcProducts
+     * Query parameters (optional):
+     * - service_id: Filter by service ID
+     * - dc_id: Filter by DC ID
+     * - customer_id: Filter by customer ID
+     * - dc_type: Filter by DC type
+     * - from_date: Filter from date (Y-m-d format)
+     * - to_date: Filter to date (Y-m-d format)
+     */
+    public function GetAllDcProducts(Request $request)
+    {
+        try {
+            $query = ServiceDcProduct::select([
+                'service_dc_product.id as dc_product_id',
+                'service_dc_product.dc_id',
+                'service_dc_product.product_id',
+                'service_dc_product.serial_no',
+                'service_dc_product.amount',
+                'service_dc_product.description',
+                'service_dc_product.created_at',
+                'service_dc.id as service_dc_id',
+                'service_dc.service_id',
+                'service_dc.dc_type',
+                'service_dc.dc_status',
+                'service_dc.issue_date',
+                'service_dc.dc_amount',
+                'service_dc.dc_remark',
+                'products.Product_ID',
+                'products.Product_Name',
+                'products.Product_Type',
+                'products.Product_Description',
+                'product_serial_numbers.sr_number as serial_number',
+                'master_product_type.type_name as product_type_name',
+                'dc_type.dc_type_name',
+                'services.service_no',
+                'services.service_date',
+                'clients.CST_ID',
+                'clients.CST_Name as client_name',
+                'contracts.CNRT_ID',
+                'contracts.CNRT_Number as contract_number'
+            ])
+            ->join('service_dc', 'service_dc.id', '=', 'service_dc_product.dc_id')
+            ->join('services', 'services.id', '=', 'service_dc.service_id')
+            ->leftJoin('products', 'products.Product_ID', '=', 'service_dc_product.product_id')
+            ->leftJoin('product_serial_numbers', 'product_serial_numbers.id', '=', 'service_dc_product.serial_no')
+            ->leftJoin('master_product_type', 'master_product_type.id', '=', 'products.Product_Type')
+            ->leftJoin('dc_type', 'dc_type.id', '=', 'service_dc.dc_type')
+            ->leftJoin('clients', 'clients.CST_ID', '=', 'services.customer_id')
+            ->leftJoin('contracts', 'contracts.CNRT_ID', '=', 'services.contract_id');
+
+            // Apply filters
+            if ($request->has('service_id') && $request->service_id != '') {
+                $query->where('service_dc.service_id', $request->service_id);
+            }
+
+            if ($request->has('dc_id') && $request->dc_id != '') {
+                $query->where('service_dc_product.dc_id', $request->dc_id);
+            }
+
+            if ($request->has('customer_id') && $request->customer_id != '') {
+                $query->where('services.customer_id', $request->customer_id);
+            }
+
+            if ($request->has('dc_type') && $request->dc_type != '') {
+                $query->where('service_dc.dc_type', $request->dc_type);
+            }
+
+            if ($request->has('from_date') && $request->from_date != '') {
+                $query->whereDate('service_dc.issue_date', '>=', $request->from_date);
+            }
+
+            if ($request->has('to_date') && $request->to_date != '') {
+                $query->whereDate('service_dc.issue_date', '<=', $request->to_date);
+            }
+
+            $dc_products = $query->orderBy('service_dc.issue_date', 'desc')
+                ->orderBy('service_dc_product.id', 'desc')
+                ->get();
+
+            return response()->json([
+                'status' => 'success',
+                'status_code' => $this->status_code,
+                'message' => 'DC products retrieved successfully',
+                'data' => $dc_products,
+                'count' => $dc_products->count()
+            ], $this->status_code);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'status_code' => 500,
+                'message' => 'Error retrieving DC products: ' . $e->getMessage(),
+                'data' => []
+            ], 500);
+        }
+    }
+
     public function GetTickets(Request $request)
     {
 

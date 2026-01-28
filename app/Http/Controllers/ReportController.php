@@ -12,8 +12,10 @@ use App\Exports\SweviceExport;
 use App\Exports\UsersExport;
 use App\Exports\RepairInwardExport;
 use App\Exports\RenewalExport;
+use App\Exports\UtilizedProductExport;
 use App\Models\RepairInward;
 use App\Models\RepairStatus;
+use App\Models\ServiceDcProduct;
 use App\Models\Attendance;
 use App\Models\Client;
 use App\Models\ContractScheduleService;
@@ -1323,13 +1325,17 @@ class ReportController extends Controller
         $date_range = $request->date_range;
         $today = date("Y-m-d");
         $todate = date("Y-m-d");
-        $fromdate = date('Y-m-d', strtotime($todate . '-' . $date_range . ' days'));
-        if ($date_range == 0) {
-            $fromdate = $todate;
-        }
-        if ($date_range == 1) {
-            $todate = date('Y-m-d', strtotime($today . '-1 days'));
-            $fromdate = date('Y-m-d', strtotime($today . '-1 days'));
+        $fromdate = date("Y-m-d");
+        
+        if ($date_range != "" && $date_range != -1) {
+            if ($date_range == 0) {
+                $fromdate = $todate;
+            } elseif ($date_range == 1) {
+                $todate = date('Y-m-d', strtotime($today . '-1 days'));
+                $fromdate = date('Y-m-d', strtotime($today . '-1 days'));
+            } else {
+                $fromdate = date('Y-m-d', strtotime($todate . '-' . $date_range . ' days'));
+            }
         }
 
         $services = array();
@@ -1844,6 +1850,174 @@ class ReportController extends Controller
             $fileName = 'renewal_report_' . time() . '.csv';
 
             return Excel::download(new RenewalExport($items), $fileName)->deleteFileAfterSend(true);
+
+        } catch (Exception $exp) {
+            return back()->withErrors("Export failed: " . $exp->getMessage());
+        }
+    }
+
+    public function utilized_product_index(Request $request)
+    {
+        return view('reports.utilized_product_report', [
+            'clients' => Client::all(),
+            'dc_types' => DcType::all(),
+            'customer_id' => $request->customer_id ?? 0,
+            'dc_type' => $request->dc_type ?? 0,
+            'date_range' => $request->date_range ?? '',
+            'utilized_products' => []
+        ]);
+    }
+
+    public function utilized_product_data(Request $request)
+    {
+        try {
+            $customer_id = $request->customer_id ?? 0;
+            $dc_type = $request->dc_type ?? 0;
+            $date_range = $request->date_range ?? '';
+            
+            $today = date("Y-m-d");
+            $todate = date("Y-m-d");
+            $fromdate = date('Y-m-d', strtotime($todate . '-' . $date_range . ' days'));
+            
+            if ($date_range == "" || $date_range == "-1") {
+                $fromdate = "";
+                $todate = "";
+            } elseif ($date_range == 0) {
+                $fromdate = $todate;
+            } elseif ($date_range == 1) {
+                $todate = date('Y-m-d', strtotime($today . '-1 days'));
+                $fromdate = date('Y-m-d', strtotime($today . '-1 days'));
+            }
+
+            $utilized_products = ServiceDcProduct::select([
+                'service_dc_product.*',
+                'products.Product_Name',
+                'products.Product_ID',
+                'product_serial_numbers.sr_number',
+                'dc_type.dc_type_name',
+                'clients.CST_Name',
+                'services.service_no',
+                'contracts.CNRT_Number',
+                'service_dc.issue_date',
+                'service_dc.dc_type'
+            ])
+            ->join('service_dc', 'service_dc.id', '=', 'service_dc_product.dc_id')
+            ->join('services', 'services.id', '=', 'service_dc.service_id')
+            ->leftJoin('products', 'products.Product_ID', '=', 'service_dc_product.product_id')
+            ->leftJoin('product_serial_numbers', 'product_serial_numbers.id', '=', 'service_dc_product.serial_no')
+            ->leftJoin('dc_type', 'dc_type.id', '=', 'service_dc.dc_type')
+            ->leftJoin('clients', 'clients.CST_ID', '=', 'services.customer_id')
+            ->leftJoin('contracts', 'contracts.CNRT_ID', '=', 'services.contract_id')
+            ->when($customer_id != 0 && $customer_id != '', function ($query) use ($customer_id) {
+                return $query->where('services.customer_id', $customer_id);
+            })
+            ->when($dc_type != 0 && $dc_type != '', function ($query) use ($dc_type) {
+                return $query->where('service_dc.dc_type', $dc_type);
+            })
+            ->when($date_range != "" && $date_range != "-1", function ($query) use ($fromdate, $todate) {
+                return $query->whereBetween(DB::raw('DATE_FORMAT(service_dc.issue_date, "%Y-%m-%d")'), [$fromdate, $todate]);
+            })
+            ->orderBy('service_dc.issue_date', 'desc')
+            ->orderBy('service_dc_product.id', 'desc')
+            ->paginate(10)
+            ->withQueryString();
+
+            if ($request->ajax()) {
+                return view('reports.utilized_product_pagination', [
+                    'utilized_products' => $utilized_products
+                ]);
+            }
+
+            return view('reports.utilized_product_report', [
+                'clients' => Client::all(),
+                'dc_types' => DcType::all(),
+                'customer_id' => $customer_id,
+                'dc_type' => $dc_type,
+                'date_range' => $date_range,
+                'utilized_products' => $utilized_products
+            ]);
+
+        } catch (Exception $exp) {
+            if ($request->ajax()) {
+                return response()->json(['error' => 'Error fetching data: ' . $exp->getMessage()], 500);
+            }
+            return back()->withErrors("Error: " . $exp->getMessage());
+        }
+    }
+
+    public function utilized_product_export(Request $request)
+    {
+        try {
+            $customer_id = $request->customer_id ?? 0;
+            $dc_type = $request->dc_type ?? 0;
+            $date_range = $request->date_range ?? '';
+            
+            $today = date("Y-m-d");
+            $todate = date("Y-m-d");
+            $fromdate = date('Y-m-d', strtotime($todate . '-' . $date_range . ' days'));
+            
+            if ($date_range == "" || $date_range == "-1") {
+                $fromdate = "";
+                $todate = "";
+            } elseif ($date_range == 0) {
+                $fromdate = $todate;
+            } elseif ($date_range == 1) {
+                $todate = date('Y-m-d', strtotime($today . '-1 days'));
+                $fromdate = date('Y-m-d', strtotime($today . '-1 days'));
+            }
+
+            $utilized_products = ServiceDcProduct::select([
+                'service_dc_product.*',
+                'products.Product_Name',
+                'products.Product_ID',
+                'product_serial_numbers.sr_number',
+                'dc_type.dc_type_name',
+                'clients.CST_Name',
+                'services.service_no',
+                'contracts.CNRT_Number',
+                'service_dc.issue_date',
+                'service_dc.dc_type'
+            ])
+            ->join('service_dc', 'service_dc.id', '=', 'service_dc_product.dc_id')
+            ->join('services', 'services.id', '=', 'service_dc.service_id')
+            ->leftJoin('products', 'products.Product_ID', '=', 'service_dc_product.product_id')
+            ->leftJoin('product_serial_numbers', 'product_serial_numbers.id', '=', 'service_dc_product.serial_no')
+            ->leftJoin('dc_type', 'dc_type.id', '=', 'service_dc.dc_type')
+            ->leftJoin('clients', 'clients.CST_ID', '=', 'services.customer_id')
+            ->leftJoin('contracts', 'contracts.CNRT_ID', '=', 'services.contract_id')
+            ->when($customer_id != 0 && $customer_id != '', function ($query) use ($customer_id) {
+                return $query->where('services.customer_id', $customer_id);
+            })
+            ->when($dc_type != 0 && $dc_type != '', function ($query) use ($dc_type) {
+                return $query->where('service_dc.dc_type', $dc_type);
+            })
+            ->when($date_range != "" && $date_range != "-1", function ($query) use ($fromdate, $todate) {
+                return $query->whereBetween(DB::raw('DATE_FORMAT(service_dc.issue_date, "%Y-%m-%d")'), [$fromdate, $todate]);
+            })
+            ->orderBy('service_dc.issue_date', 'desc')
+            ->orderBy('service_dc_product.id', 'desc')
+            ->get();
+
+            $items = [];
+            foreach ($utilized_products as $index => $product) {
+                $items[] = [
+                    $index + 1,
+                    $product->CST_Name ?? 'N/A',
+                    $product->CNRT_Number ?? 'N/A',
+                    $product->service_no ?? 'N/A',
+                    $product->Product_Name ?? 'N/A',
+                    $product->sr_number ?? 'N/A',
+                    $product->dc_type_name ?? 'N/A',
+                    $product->amount ?? '0.00',
+                    $product->description ?? 'N/A',
+                    $product->issue_date ? date('d-M-Y', strtotime($product->issue_date)) : 'N/A',
+                ];
+            }
+
+            $timestamp = date('Y-m-d_H-i-s');
+            $fileName = 'utilized_product_report_' . $timestamp . '.csv';
+
+            return Excel::download(new UtilizedProductExport($items), $fileName)->deleteFileAfterSend(true);
 
         } catch (Exception $exp) {
             return back()->withErrors("Export failed: " . $exp->getMessage());

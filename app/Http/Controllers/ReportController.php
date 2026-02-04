@@ -363,6 +363,7 @@ class ReportController extends Controller
     {
         $customer = $request->customer;
         $status = $request->status;
+        $contract_type = $request->contract_type ?? "0";
 
         $contracts = Contract::join("master_contract_type", "master_contract_type.id", "contracts.CNRT_Type")
             ->join("master_site_type", "master_site_type.id", "contracts.CNRT_SiteType")
@@ -374,6 +375,9 @@ class ReportController extends Controller
             })
             ->when($status != 0 && $status != "", function ($query) use ($status) {
                 $query->where("CNRT_Status", $status);
+            })
+            ->when($contract_type != 0 && $contract_type != "", function ($query) use ($contract_type) {
+                $query->where("contracts.CNRT_Type", $contract_type);
             })
             ->orderBy('contracts.updated_at', "DESC")->get(['CNRT_Number', "contract_type_name", "CST_Name", "CNRT_RefNumber", "SiteAreaName", "CNRT_Charges", "CNRT_Charges_Paid", "CNRT_Charges_Pending", "CNRT_StartDate", "CNRT_EndDate", "contract_status_name"]);
         $items[] = $contracts;
@@ -442,14 +446,17 @@ class ReportController extends Controller
     {
         $clients = Client::all();
         $status = ContractStatus::all();
+        $contract_types = ContractType::all();
         return view(
             'reports.contract',
             [
                 "clients" => $clients,
                 "status" => $status,
+                "contract_types" => $contract_types,
                 "customer" => "",
                 "contracts" => array(),
-                "sstatus" => ""
+                "sstatus" => "",
+                "contract_type" => "0"
             ]
         );
     }
@@ -458,8 +465,8 @@ class ReportController extends Controller
         $contracts = null;
         try {
             $customer = $request->customer;
-            // dd($customer);
             $status = $request->status;
+            $contract_type = $request->contract_type ?? "0";
             $sstatus = $status;
             $contracts = Contract::join("master_contract_type", "master_contract_type.id", "contracts.CNRT_Type")
                 ->join("master_site_type", "master_site_type.id", "contracts.CNRT_SiteType")
@@ -472,11 +479,11 @@ class ReportController extends Controller
                 ->when($status != 0 && $status != "", function ($query) use ($status) {
                     $query->where("CNRT_Status", $status);
                 })
+                ->when($contract_type != 0 && $contract_type != "", function ($query) use ($contract_type) {
+                    $query->where("contracts.CNRT_Type", $contract_type);
+                })
                 ->orderBy('contracts.updated_at', "DESC")
                 ->paginate(10);
-            // ->toSql();
-            // echo $contracts;
-            // die;
         } catch (Exception $exp) {
 
         }
@@ -487,7 +494,8 @@ class ReportController extends Controller
         }
         $clients = Client::all();
         $status = ContractStatus::all();
-        return view('reports.contract', compact('contracts', 'status', "clients", "customer", "sstatus"));
+        $contract_types = ContractType::all();
+        return view('reports.contract', compact('contracts', 'status', "clients", "customer", "sstatus", "contract_types", "contract_type"));
     }
     public function crd_index(Request $request)
     {

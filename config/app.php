@@ -18,6 +18,10 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
+    'company_address' => env('COMPANY_ADDRESS', ''),
+    'company_phone' => env('COMPANY_PHONE', ''),
+    'company_gstin' => env('COMPANY_GSTIN', ''),
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment

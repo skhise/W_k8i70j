@@ -1,21 +1,61 @@
 <x-app-layout>
     <style>
         @media print {
-            @page {
-                size: A4;
-                margin: 5mm;
-                /* Set custom margin */
+            @page { size: A4; margin: 12mm; }
+            .no-print, .card-header, .card-header-action, .main-sidebar, .navbar, .main-footer { display: none !important; }
+            .summary-screen { display: none !important; }
+            .summary-print { display: block !important; }
+            body { background: #fff !important; }
+            /* Font: Arial only, 14pt base */
+            .contract-print-wrap {
+                font-family: Arial, sans-serif !important;
+                font-size: 14pt !important;
+                color: #000;
+                line-height: 1.25;
+                text-align: left;
             }
-            .row{
-                display: block;
-                flex-wrap: wrap;
-                background-color: red !important;    
-                width: 100%;
-            }
-            #summary_div_print {
-                margin: 0;
-                /* Ensure no extra margins from the body */
-            }
+            .contract-print-wrap * { font-family: Arial, sans-serif !important; box-sizing: border-box; }
+            .summary-print.contract-print-wrap { width: 100%; max-width: none; }
+            /* Tables: left-aligned */
+            .contract-print-wrap table { width: 100%; border-collapse: collapse; margin-bottom: 10pt; page-break-inside: auto; font-family: Arial, sans-serif !important; font-size: 14pt !important; text-align: left; }
+            .contract-print-wrap thead { display: table-header-group; text-align: left; }
+            .contract-print-wrap tr { page-break-inside: avoid; page-break-after: auto; }
+            .contract-print-wrap th, .contract-print-wrap td { border: 1px solid #000; padding: 5px 8px; text-align: left !important; font-family: Arial, sans-serif !important; font-size: 14pt !important; line-height: 1.25; }
+            .contract-print-wrap th { background: #f5f5f5; font-weight: bold; }
+            /* Company block: left-aligned */
+            .contract-print-wrap .company-block { text-align: left !important; margin-bottom: 0; font-family: Arial, sans-serif !important; font-size: 14pt !important; }
+            .contract-print-wrap .company-name { font-family: Arial, sans-serif !important; font-size: 15pt !important; font-weight: bold; margin-bottom: 3pt; line-height: 1.2; text-align: left !important; }
+            .contract-print-wrap .company-address { font-family: Arial, sans-serif !important; font-size: 14pt !important; margin-bottom: 2pt; line-height: 1.25; text-align: left !important; }
+            .contract-print-wrap .company-gstin-line { font-family: Arial, sans-serif !important; font-size: 14pt !important; margin-bottom: 2pt; line-height: 1.25; text-align: left !important; }
+            .contract-print-wrap .company-gstin-label { font-family: Arial, sans-serif !important; font-size: 14pt !important; margin-bottom: 14pt; line-height: 1.25; text-align: left !important; }
+            /* Title: full-page center, bold, underlined */
+            .contract-print-wrap .doc-title { display: block; width: 100%; text-align: center !important; font-family: Arial, sans-serif !important; font-size: 16pt !important; font-weight: bold; text-decoration: underline; margin: 0 0 6pt 0; line-height: 1.2; page-break-after: avoid; }
+            .contract-print-wrap .doc-contract-type { display: block; width: 100%; text-align: center !important; font-family: Arial, sans-serif !important; font-size: 14pt !important; margin: 0 0 12pt 0; line-height: 1.2; page-break-after: avoid; }
+            /* Two columns */
+            .contract-print-wrap .print-two-col { display: flex; justify-content: space-between; align-items: flex-start; gap: 24pt; margin-bottom: 12pt; width: 100%; }
+            .contract-print-wrap .print-col-left { flex: 1; min-width: 0; text-align: left !important; }
+            .contract-print-wrap .print-col-right { flex: 1; min-width: 0; text-align: right !important; }
+            .contract-print-wrap .customer-title { font-family: Arial, sans-serif !important; font-size: 15pt !important; font-weight: bold; margin-bottom: 4pt; line-height: 1.25; text-align: left !important; }
+            .contract-print-wrap .customer-details-inner { padding-left: 12pt; font-family: Arial, sans-serif !important; font-size: 14pt !important; line-height: 1.25; text-align: left !important; }
+            .contract-print-wrap .customer-name { font-family: Arial, sans-serif !important; font-size: 14pt !important; font-weight: bold; margin: 0 0 2pt 0; line-height: 1.25; text-align: left !important; }
+            .contract-print-wrap .customer-addr { font-family: Arial, sans-serif !important; font-size: 14pt !important; margin: 0 0 6pt 0; line-height: 1.25; text-align: left !important; }
+            /* Customer detail rows: label right (colons align), value left */
+            .contract-print-wrap .detail-row { display: table; width: 100%; max-width: 260px; margin: 1pt 0; font-family: Arial, sans-serif !important; font-size: 14pt !important; line-height: 1.25; }
+            .contract-print-wrap .detail-label { display: table-cell; width: 1%; white-space: nowrap; text-align: right !important; padding-right: 4px; vertical-align: top; font-family: Arial, sans-serif !important; font-size: 14pt !important; }
+            .contract-print-wrap .detail-value { display: table-cell; text-align: left !important; font-family: Arial, sans-serif !important; font-size: 14pt !important; }
+            /* Contract block: right-aligned (each line right-aligned) */
+            .contract-print-wrap .contract-row { display: block; margin: 1pt 0; font-family: Arial, sans-serif !important; font-size: 14pt !important; line-height: 1.25; text-align: right !important; }
+            .contract-print-wrap .contract-label { display: inline; font-family: Arial, sans-serif !important; font-size: 14pt !important; }
+            .contract-print-wrap .contract-value { display: inline; font-family: Arial, sans-serif !important; font-size: 14pt !important; }
+            /* Section titles: left-aligned */
+            .contract-print-wrap .section-title { font-family: Arial, sans-serif !important; font-size: 15pt !important; font-weight: bold; margin: 12pt 0 6pt 0; padding-bottom: 2pt; page-break-after: avoid; border-bottom: 1px solid #000; line-height: 1.25; text-align: left !important; }
+            .contract-print-wrap .print-section { page-break-inside: avoid; margin-bottom: 0; }
+            .contract-print-wrap .terms-block { margin-top: 8pt; white-space: pre-line; font-family: Arial, sans-serif !important; font-size: 14pt !important; line-height: 1.3; text-align: left !important; page-break-inside: avoid; }
+            .contract-print-wrap .signature-block { margin-top: 20pt; padding-top: 6pt; text-align: right !important; font-family: Arial, sans-serif !important; font-size: 14pt !important; page-break-inside: avoid; }
+            .contract-print-wrap tr.validity-row td { border-top: none; padding-top: 0; padding-bottom: 4px; font-family: Arial, sans-serif !important; font-size: 12pt !important; text-align: left !important; }
+        }
+        @media screen {
+            .summary-print { display: none !important; }
         }
     </style>
     <div class="main-content">
@@ -33,6 +73,197 @@
                             </div>
 
                             <div class="card-body" id="summary_div_print">
+                                {{-- Print layout: identical to reference (Warranty Contract style) --}}
+                                <div class="summary-print contract-print-wrap">
+                                    {{-- 1. Company block (left-aligned) --}}
+                                    <div class="company-block">
+                                        <div class="company-name">{{ config('app.name', 'AMC') }}</div>
+                                        <div class="company-address">{{ config('app.company_address', '') }}{{ config('app.company_phone', '') ? ' Phone ' . config('app.company_phone') : '' }}</div>
+                                        <div class="company-gstin-line">{{ config('app.company_gstin', '') ? 'GSTIN ' . config('app.company_gstin') : '' }}</div>
+                                        <div class="company-gstin-label">GSTIN :</div>
+                                    </div>
+                                    {{-- 2. Document title: centered, bold, underlined --}}
+                                    <div class="doc-title">Contract Summary</div>
+                                    <div class="doc-contract-type">Contract Type : {{ $contract->contract_type_name ?? 'N/A' }}</div>
+                                    {{-- 3. Two columns: LEFT = Customer Details (indented, colons aligned), RIGHT = Contract info (colons aligned) --}}
+                                    <div class="print-two-col">
+                                        <div class="print-col-left">
+                                            <div class="customer-title">Customer Details :</div>
+                                            <div class="customer-details-inner">
+                                                <div class="customer-name">{{ $contract->CST_Name ?? '' }}</div>
+                                                <div class="customer-addr">, {{ $contract->SiteAreaName ?? '' }}, {{ $contract->CNRT_OfficeAddress ?? '' }}</div>
+                                                <div class="detail-row"><span class="detail-label">Mobile No</span><span class="detail-value"> : {{ $contract->CCP_Mobile ?? $contract->CNRT_Phone1 ?? '' }}</span></div>
+                                                <div class="detail-row"><span class="detail-label">Email</span><span class="detail-value"> : {{ $contract->CCP_Email ?? $contract->CNRT_CustomerEmail ?? '' }}</span></div>
+                                                <div class="detail-row"><span class="detail-label">GSTIN</span><span class="detail-value"> : {{ $contract->CST_GSTIN ?? '' }}</span></div>
+                                            </div>
+                                        </div>
+                                        <div class="print-col-right">
+                                            <div class="contract-row"><span class="contract-label">Contract No.</span><span class="contract-value"> : {{ $contract->CNRT_Number ?? '' }}</span></div>
+                                            <div class="contract-row"><span class="contract-label">Ref. No./Po No.</span><span class="contract-value"> : {{ $contract->CNRT_RefNumber ?? '' }}</span></div>
+                                            <div class="contract-row"><span class="contract-label">Created Date</span><span class="contract-value"> : {{ $contract->CNRT_Date ? date('d M Y', strtotime($contract->CNRT_Date)) : '' }}</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="print-section">
+                                    <div class="section-title">Product Details</div>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Sr No.</th>
+                                                <th>Particulars</th>
+                                                <th>Serial No</th>
+                                                <th>No of Service</th>
+                                                <th>Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($products as $index => $product)
+                                            <tr>
+                                                <td>{{ $index + 1 }}</td>
+                                                <td>{{ $product->no_of_service ?? '0' }} Service / Year {{ $product->product_price ?? '0.00' }}</td>
+                                                <td>{{ $product->product_name ?? '' }} - {{ $product->nrnumber ?? '' }}</td>
+                                                <td>{{ $product->no_of_service ?? '0' }}</td>
+                                                <td>{{ $product->product_price ?? '0.00' }}</td>
+                                            </tr>
+                                            <tr class="validity-row">
+                                                <td colspan="5">Validity : {{ $contract->CNRT_StartDate ? date('d M Y', strtotime($contract->CNRT_StartDate)) : '' }} to {{ $contract->CNRT_EndDate ? date('d M Y', strtotime($contract->CNRT_EndDate)) : '' }}</td>
+                                            </tr>
+                                            @endforeach
+                                            @if ($products->count() == 0)
+                                            <tr><td colspan="5" class="text-center">No products added yet.</td></tr>
+                                            @endif
+                                        </tbody>
+                                    </table>
+                                    </div>
+                                    <div class="print-section">
+                                    <div class="section-title">Service Calendar</div>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Sr No.</th>
+                                                <th>Particulars</th>
+                                                <th>Serial No</th>
+                                                <th>Service Count</th>
+                                                <th>Service Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($services as $index => $service)
+                                            <tr>
+                                                <td>{{ $index + 1 }}</td>
+                                                <td>{{ $index + 1 }} Service</td>
+                                                <td>{{ $service->product_name ?? '' }} - {{ $service->nrnumber ?? '' }}</td>
+                                                <td>{{ $index + 1 }}</td>
+                                                <td>{{ $service->Schedule_Date ? date('d M Y', strtotime($service->Schedule_Date)) : '' }}</td>
+                                            </tr>
+                                            <tr class="validity-row">
+                                                <td colspan="5">Validity : {{ $contract->CNRT_StartDate ? date('d M Y', strtotime($contract->CNRT_StartDate)) : '' }} to {{ $contract->CNRT_EndDate ? date('d M Y', strtotime($contract->CNRT_EndDate)) : '' }}</td>
+                                            </tr>
+                                            @endforeach
+                                            @if ($services->count() == 0)
+                                            <tr><td colspan="5" class="text-center">No schedule service added yet.</td></tr>
+                                            @endif
+                                        </tbody>
+                                    </table>
+                                    </div>
+                                    <div class="print-section">
+                                    <div class="section-title">Ongoing Services</div>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Sr No.</th>
+                                                <th>Schedule Date</th>
+                                                <th>Issue Type</th>
+                                                <th>Service Type</th>
+                                                <th>Product</th>
+                                                <th>Issue Description</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($ongoing_services as $index => $ongoing_service)
+                                            <tr>
+                                                <td>{{ $index + 1 }}</td>
+                                                <td>{{ $ongoing_service->service_date ? date('d M Y', strtotime($ongoing_service->service_date)) : '' }}</td>
+                                                <td>{{ $ongoing_service->issue_name ?? '' }}</td>
+                                                <td>{{ $ongoing_service->type_name ?? '' }}</td>
+                                                <td>{{ ($ongoing_service->nrnumber ?? '') . ' / ' . ($ongoing_service->product_name ?? '') }}</td>
+                                                <td>{{ $ongoing_service->service_note ?? '' }}</td>
+                                                <td>{{ $ongoing_service->Status_Name ?? '' }}</td>
+                                            </tr>
+                                            @endforeach
+                                            @if ($ongoing_services->count() == 0)
+                                            <tr><td colspan="7" class="text-center">No ongoing service added yet.</td></tr>
+                                            @endif
+                                        </tbody>
+                                    </table>
+                                    </div>
+                                    <div class="print-section">
+                                    <div class="section-title">Checklist Note</div>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Sr No.</th>
+                                                <th>Description</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($checklists as $index => $checklist)
+                                            <tr>
+                                                <td>{{ $index + 1 }}</td>
+                                                <td>{{ $checklist->description ?? $checklist['description'] ?? '' }}</td>
+                                            </tr>
+                                            @endforeach
+                                            @if ($checklists->count() == 0)
+                                            <tr><td colspan="2" class="text-center">No checklist added yet.</td></tr>
+                                            @endif
+                                        </tbody>
+                                    </table>
+                                    </div>
+                                    <div class="print-section">
+                                    <div class="section-title">Renewal History</div>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Sr No.</th>
+                                                <th>Start Date</th>
+                                                <th>Expiry Date</th>
+                                                <th>Cost</th>
+                                                <th>Note</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($renewals as $index => $renewal)
+                                            @php $r = is_array($renewal) ? (object) $renewal : $renewal; @endphp
+                                            <tr>
+                                                <td>{{ $index + 1 }}</td>
+                                                <td>{{ !empty($r->new_start_date) ? date('d M Y', strtotime($r->new_start_date)) : 'NA' }}</td>
+                                                <td>{{ !empty($r->new_expiry_date) ? date('d M Y', strtotime($r->new_expiry_date)) : 'NA' }}</td>
+                                                <td>{{ $r->amount ?? '' }}</td>
+                                                <td>{{ $r->renewal_note ?? '' }}</td>
+                                            </tr>
+                                            @endforeach
+                                            @if ($renewals->count() == 0)
+                                            <tr><td colspan="5" class="text-center">No renewal history yet.</td></tr>
+                                            @endif
+                                        </tbody>
+                                    </table>
+                                    </div>
+                                    <div class="print-section">
+                                    <div class="section-title">TERMS & CONDITIONS</div>
+                                    <div class="terms-block">{{ $contract->CNRT_TNC ?? 'Contract – Terms & Conditions
+1. Contract period as mentioned in agreement.
+2. Services limited to scope defined in contract only.
+3. Breakdown due to misuse, voltage fluctuation or external damage not covered.
+4. Payment to be made as per agreed schedule.
+5. Jurisdiction subject to local court only' }}</div>
+                                    <div class="signature-block">
+                                        <div>For {{ config('app.name', 'AMC') }}</div>
+                                        <div style="margin-top: 24px;">Authorized Signatory</div>
+                                    </div>
+                                    </div>
+                                </div>
+                                {{-- Screen layout (existing) --}}
+                                <div class="summary-screen">
                                 <h4 class="card-title" id="#summary_title" style="display: none;">Contract Summary</h4>
                                 <div class="row">
                                     <div class="col-md-12">
@@ -386,6 +617,7 @@
                                 </div>
 
                                 <hr />
+                                </div>{{-- end summary-screen --}}
                             </div>
                         </div>
                     </div>
@@ -401,11 +633,8 @@
     @section('script')
     <script>
         function printDiv() {
-            var restorepage = document.body.innerHTML;
-            var printcontent = document.getElementById("summary_div_print").innerHTML;
-            document.body.innerHTML = printcontent;
+            // Use print media: only summary-print is visible when printing
             window.print();
-            document.body.innerHTML = restorepage;
         }
     </script>
     @stop

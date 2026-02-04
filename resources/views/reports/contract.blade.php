@@ -9,35 +9,46 @@
                     <div class="card-body">
                         <div class="form-horizontal">
                             <div class="row">
-                                <div class="col-lg-4">
+                                <div class="col-lg-3">
                                     <select name="client" id="client" class="form-control select2">
                                         <option value="">Select Customer</option>
-                                        <option value="0" {{ $customer == 0 ? 'selected' : '' }}>All
+                                        <option value="0" {{ ($customer ?? 0) == 0 ? 'selected' : '' }}>All
                                         </option>
                                         @foreach ($clients as $client)
                                             <option value="{{ $client->CST_ID }}"
-                                                {{ $client->CST_ID == $customer ? 'selected' : '' }}>
+                                                {{ $client->CST_ID == ($customer ?? '') ? 'selected' : '' }}>
                                                 {{ $client->CST_Name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
                                 <div class="col-lg-2">
-
-
+                                    <select name="report_contract_type" id="report_contract_type"
+                                        class="form-control select2">
+                                        <option value="">Contract Type</option>
+                                        <option value="0" {{ ($contract_type ?? '0') == '0' ? 'selected' : '' }}>All</option>
+                                        @foreach (($contract_types ?? []) as $ctype)
+                                            <option value="{{ $ctype->id }}"
+                                                {{ $ctype->id == ($contract_type ?? '') ? 'selected' : '' }}>
+                                                {{ $ctype->contract_type_name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-lg-2">
                                     <select name="report_contract_status" id="report_contract_status"
                                         class="form-control select2">
                                         <option value="">Select Status</option>
-                                        <option value="0" {{ $sstatus == 0 ? 'selected' : '' }}>All
+                                        <option value="0" {{ ($sstatus ?? 0) == 0 ? 'selected' : '' }}>All
                                         </option>
                                         @foreach ($status as $status)
                                             <option value="{{ $status->id }}"
-                                                {{ $status->id == $sstatus ? 'selected' : '' }}>
+                                                {{ $status->id == ($sstatus ?? '') ? 'selected' : '' }}>
                                                 {{ $status->contract_status_name }}
                                             </option>
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="col-lg-4 d-flex">
+                                <div class="col-lg-3 d-flex">
                                     <button class="btn btn-primary ml-2 btn-fetch-report">Generate</button>
                                     <button type="submit" class="btn-export-report btn btn-light ml-2">Export</button>
                                     <button class="btn btn-danger ml-2 btn-reset">Reset</button>
@@ -84,13 +95,15 @@
                 var cust_id = $("#client option:selected").val();
                 var cust_Name = $("#client option:selected").text();
                 var status = $("#report_contract_status option:selected").val();
+                var contract_type = $("#report_contract_type option:selected").val();
                 if (cust_id != "" && status != "") {
                     $.ajax({
                         type: "GET",
                         url: "contract-report-data",
                         data: {
                             status: status,
-                            customer: cust_id
+                            customer: cust_id,
+                            contract_type: contract_type
                         },
                         beforeSend: function() {
                             $(".loader").show();
@@ -128,13 +141,15 @@
                 var cust_id = $("#client option:selected").val();
                 var cust_Name = $("#client option:selected").text();
                 var status = $("#report_contract_status option:selected").val();
+                var contract_type = $("#report_contract_type option:selected").val();
                 if (cust_id != "" && status != "") {
                     $.ajax({
                         type: "GET",
                         url: "contract-report-export",
                         data: {
                             status: status,
-                            customer: cust_id
+                            customer: cust_id,
+                            contract_type: contract_type
                         },
                         beforeSend: function() {
                             $(".loader").show();

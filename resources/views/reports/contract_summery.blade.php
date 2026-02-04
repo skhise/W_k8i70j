@@ -30,7 +30,7 @@
             .contract-print-wrap .company-gstin-label { font-family: Arial, sans-serif !important; font-size: 14pt !important; margin-bottom: 14pt; line-height: 1.25; text-align: left !important; }
             /* Title: full-page center, bold, underlined */
             .contract-print-wrap .doc-title { display: block; width: 100%; text-align: center !important; font-family: Arial, sans-serif !important; font-size: 16pt !important; font-weight: bold; text-decoration: underline; margin: 0 0 6pt 0; line-height: 1.2; page-break-after: avoid; }
-            .contract-print-wrap .doc-contract-type { display: block; width: 100%; text-align: center !important; font-family: Arial, sans-serif !important; font-size: 14pt !important; margin: 0 0 12pt 0; line-height: 1.2; page-break-after: avoid; }
+            .contract-print-wrap .doc-contract-type { display: block; width: 100%; text-align: left !important; font-family: Arial, sans-serif !important; font-size: 14pt !important; margin: 0 0 12pt 0; line-height: 1.2; page-break-after: avoid; }
             /* Two columns */
             .contract-print-wrap .print-two-col { display: flex; justify-content: space-between; align-items: flex-start; gap: 24pt; margin-bottom: 12pt; width: 100%; }
             .contract-print-wrap .print-col-left { flex: 1; min-width: 0; text-align: left !important; }
@@ -105,6 +105,10 @@
                                         </div>
                                     </div>
                                     <div class="print-section">
+                                        <div class="doc-contract-type">Contract Type : {{ $contract->contract_type_name ?? 'N/A' }}</div>
+                                    </div>
+                                    <div class="print-section">
+                                    
                                     <div class="section-title">Product Details</div>
                                     <table>
                                         <thead>

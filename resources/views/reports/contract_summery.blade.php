@@ -84,7 +84,7 @@
                                     </div>
                                     {{-- 2. Document title: centered, bold, underlined --}}
                                     <div class="doc-title">Contract Summary</div>
-                                    <div class="doc-contract-type">Contract Type : {{ $contract->contract_type_name ?? 'N/A' }}</div>
+                                    
                                     {{-- 3. Two columns: LEFT = Customer Details (indented, colons aligned), RIGHT = Contract info (colons aligned) --}}
                                     <div class="print-two-col">
                                         <div class="print-col-left">
@@ -99,6 +99,7 @@
                                         </div>
                                         <div class="print-col-right">
                                             <div class="contract-row"><span class="contract-label">Contract No.</span><span class="contract-value"> : {{ $contract->CNRT_Number ?? '' }}</span></div>
+                                            <div class="doc-contract-type">Contract Type : {{ $contract->contract_type_name ?? 'N/A' }}</div>
                                             <div class="contract-row"><span class="contract-label">Ref. No./Po No.</span><span class="contract-value"> : {{ $contract->CNRT_RefNumber ?? '' }}</span></div>
                                             <div class="contract-row"><span class="contract-label">Created Date</span><span class="contract-value"> : {{ $contract->CNRT_Date ? date('d M Y', strtotime($contract->CNRT_Date)) : '' }}</span></div>
                                         </div>
@@ -124,9 +125,9 @@
                                                 <td>{{ $product->no_of_service ?? '0' }}</td>
                                                 <td>{{ $product->product_price ?? '0.00' }}</td>
                                             </tr>
-                                            <tr class="validity-row">
+                                            <!-- <tr class="validity-row">
                                                 <td colspan="5">Validity : {{ $contract->CNRT_StartDate ? date('d M Y', strtotime($contract->CNRT_StartDate)) : '' }} to {{ $contract->CNRT_EndDate ? date('d M Y', strtotime($contract->CNRT_EndDate)) : '' }}</td>
-                                            </tr>
+                                            </tr> -->
                                             @endforeach
                                             @if ($products->count() == 0)
                                             <tr><td colspan="5" class="text-center">No products added yet.</td></tr>

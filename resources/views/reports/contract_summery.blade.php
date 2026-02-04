@@ -99,7 +99,6 @@
                                         </div>
                                         <div class="print-col-right">
                                             <div class="contract-row"><span class="contract-label">Contract No.</span><span class="contract-value"> : {{ $contract->CNRT_Number ?? '' }}</span></div>
-                                            <div class="contract-row"><span class="contract-label">Contract Type</span><span class="contract-value"> : {{ $contract->contract_type_name ?? 'N/A' }}</span></div>
                                             <div class="contract-row"><span class="contract-label">Ref. No./Po No.</span><span class="contract-value"> : {{ $contract->CNRT_RefNumber ?? '' }}</span></div>
                                             <div class="contract-row"><span class="contract-label">Created Date</span><span class="contract-value"> : {{ $contract->CNRT_Date ? date('d M Y', strtotime($contract->CNRT_Date)) : '' }}</span></div>
                                         </div>

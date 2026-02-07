@@ -57,4 +57,9 @@ class Employee extends Model
             $query->where('EMP_Status', 'like', '%' . $search . '%');
         });
     }
+
+    public function productAssignments()
+    {
+        return $this->hasMany(ProductAssignment::class, 'employee_id', 'EMP_ID');
+    }
 }

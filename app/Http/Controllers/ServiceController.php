@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use App\Models\User;
 use App\Models\Contract;
@@ -150,6 +151,7 @@ class ServiceController extends Controller
                 'dc_type' => 'required',
                 'product_id.*' => 'required',
                 'serial_no.*' => 'required',
+                'quantity.*' => 'nullable|integer|min:1',
                 'amount.*' => 'required',
                 'description.*' => 'required',
             ]
@@ -160,6 +162,24 @@ class ServiceController extends Controller
         $size = 0;
         $data = $request->data;
         DB::beginTransaction();
+
+        // Validate sufficient stock before creating DC (avoids BIGINT UNSIGNED out of range)
+        if (Schema::hasColumn('products', 'quantity')) {
+            foreach ($data as $key => $name) {
+                $qty = isset($data[$key]['quantity']) ? (int) $data[$key]['quantity'] : 1;
+                $product = Product::find($data[$key]['product_id']);
+                $available = $product ? (int) $product->quantity : 0;
+                if ($available < $qty) {
+                    DB::rollBack();
+                    $pname = $product ? $product->Product_Name : 'Product #' . $data[$key]['product_id'];
+                    return response()->json([
+                        'status' => false,
+                        'message' => "Insufficient quantity for \"{$pname}\". Available: {$available}, required: {$qty}.",
+                    ]);
+                }
+            }
+        }
+
         $dc = ServiceDc::create([
             'service_id' => $service->id,
             'dc_type' => $request->dc_type,
@@ -171,14 +191,19 @@ class ServiceController extends Controller
         if ($dc->id > 0) {
             foreach ($data as $key => $name) {
 
+                $qty = isset($data[$key]['quantity']) ? (int) $data[$key]['quantity'] : 1;
                 $create = ServiceDcProduct::create([
                     'dc_id' => $dc->id,
                     'product_id' => $data[$key]['product_id'],
                     'serial_no' => $data[$key]['serial_no'] != "" ? $data[$key]['serial_no'] : 0,
+                    'quantity' => $qty,
                     'amount' => $data[$key]['amount'],
                     'description' => $data[$key]['description'] ?? "",
                 ]);
                 if ($create) {
+                    if (Schema::hasColumn('products', 'quantity')) {
+                        Product::where('Product_ID', $data[$key]['product_id'])->decrement('quantity', $qty);
+                    }
                     $size++;
                 }
             }

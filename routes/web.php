@@ -21,6 +21,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocMasterController;
 use App\Http\Controllers\ProductDashboardController;
 use App\Http\Controllers\ProductPurchaseController;
+use App\Http\Controllers\ProductAssignmentController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -311,6 +312,14 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
         Route::get('/products', [ProductController::class, 'index'])->name("products");
         Route::get('/purchases', [ProductPurchaseController::class, 'index'])->name('purchases');
         Route::post('/purchases', [ProductPurchaseController::class, 'store'])->name('purchases.store');
+
+        Route::get('/product-assignments', [ProductAssignmentController::class, 'index'])->name('product-assignments');
+        Route::post('/product-assignments', [ProductAssignmentController::class, 'store'])->name('product-assignments.store');
+        Route::get('/product-assignments/product-quantity', [ProductAssignmentController::class, 'productQuantity'])->name('product-assignments.product-quantity');
+        Route::get('/product-assignments/{product_assignment}', [ProductAssignmentController::class, 'show'])->name('product-assignments.show');
+        Route::post('/product-assignments/update-item', [ProductAssignmentController::class, 'updateItem'])->name('product-assignments.update-item');
+        Route::post('/product-assignments/remove-item', [ProductAssignmentController::class, 'removeItem'])->name('product-assignments.remove-item');
+        Route::post('/product-assignments/add-item', [ProductAssignmentController::class, 'addItem'])->name('product-assignments.add-item');
         Route::get('/products/create', [ProductController::class, 'create'])->name("products.create");
         Route::get('/products/{product}/view', [ProductController::class, 'view'])->name("products.view");
         Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name("products.edit");

@@ -193,6 +193,9 @@
                 <li class="dropdown {{ Request::is('purchases') || Request::is('purchases/*') ? 'active' : '' }}">
                     <a href="{{ route('purchases') }}" class="nav-link"><i data-feather="shopping-cart"></i><span>Purchases</span></a>
                 </li>
+                <li class="dropdown {{ Request::is('product-assignments') || Request::is('product-assignments/*') ? 'active' : '' }}">
+                    <a href="{{ route('product-assignments') }}" class="nav-link"><i data-feather="user-check"></i><span>Assign Product</span></a>
+                </li>
                 <li class="dropdown {{ Request::is('utilized-product-report') ? 'active' : '' }}">
                     <a href="{{ route('utilized-product-report') }}" class="nav-link"><i data-feather="package"></i><span>Utilized Product Report</span></a>
                 </li>

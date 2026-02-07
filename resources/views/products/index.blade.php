@@ -53,19 +53,18 @@
                                     <table class="table table-striped" id="table-1">
                                         <thead>
                                             <tr>
-                                                <th>
-                                                    #
-                                                </th>
+                                                <th>#</th>
                                                 <th>Name</th>
                                                 <th>Product/Spare Type</th>
                                                 <th>Description</th>
+                                                <th>Quantity</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             @if(count($products) == 0)
                                             <tr class="text-center">
-                                                <td colspan="6">No products / spares added yet.</td>
+                                                <td colspan="7">No products / spares added yet.</td>
                                             </tr>
                                             @else
                                             @foreach($products as $index => $product)
@@ -73,9 +72,8 @@
                                                 <td>{{$index + 1}}</td>
                                                 <td>{{$product['Product_Name']}}</td>
                                                 <td>{{$product['type_name']}}</td>
-                                                <td title="{{$product['Product_Description']}}">{!!
-            Str::limit($product['Product_Description'], 50, ' ...') !!}
-                                                </td>
+                                                <td title="{{$product['Product_Description']}}">{!! Str::limit($product['Product_Description'], 50, ' ...') !!}</td>
+                                                <td>{{ $product['quantity'] ?? 0 }}</td>
                                                 <td>
                                                     <div class="">
                                                     <a href="{{route('products.view', $product['Product_ID'])}}"

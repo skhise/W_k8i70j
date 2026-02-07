@@ -12,6 +12,7 @@ class ServiceDcProduct extends Model
         "dc_id",
         "product_id",
         "serial_no",
+        "quantity",
         "amount",
         "description",
     ];

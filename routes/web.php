@@ -19,6 +19,8 @@ use App\Http\Controllers\PDFExportController;
 use App\Http\Controllers\MasterController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DocMasterController;
+use App\Http\Controllers\ProductDashboardController;
+use App\Http\Controllers\ProductPurchaseController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -37,6 +39,7 @@ Route::get('/generate', [ProfileController::class, 'master_setup'])->name('gener
 Route::middleware(['prevent-back-history', 'menu.permission'])->group(function () {
     Route::middleware('auth')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/product-dashboard', [ProductDashboardController::class, 'index'])->name('product-dashboard');
         Route::get('/', function() {
             // Redirect role 0 users to customers page
             if (Auth::user()->role == 0) {
@@ -103,9 +106,9 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
         Route::get('/reports/inward-report', [ReportController::class, 'inward_report_index'])->name('inward-report');
         Route::get('/reports/inward-report-export', [ReportController::class, 'inward_report_export'])->name('inward-report-export');
 
-        Route::get('/reports/utilized-product-report', [ReportController::class, 'utilized_product_index'])->name('utilized-product-report');
-        Route::get('/reports/utilized-product-report-data', [ReportController::class, 'utilized_product_data'])->name('utilized-product-report-data');
-        Route::get('/reports/utilized-product-report-export', [ReportController::class, 'utilized_product_export'])->name('utilized-product-report-export');
+        Route::get('/utilized-product-report', [ReportController::class, 'utilized_product_index'])->name('utilized-product-report');
+        Route::get('/utilized-product-report-data', [ReportController::class, 'utilized_product_data'])->name('utilized-product-report-data');
+        Route::get('/utilized-product-report-export', [ReportController::class, 'utilized_product_export'])->name('utilized-product-report-export');
 
         Route::get('/attendance', [ReportController::class, 'Attendance'])->name('attendance');
         Route::get('/attendance/atte_data', [ReportController::class, 'Atte_Data'])->name('atte_data');
@@ -306,6 +309,8 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
     });
     Route::middleware('auth')->group(function () {
         Route::get('/products', [ProductController::class, 'index'])->name("products");
+        Route::get('/purchases', [ProductPurchaseController::class, 'index'])->name('purchases');
+        Route::post('/purchases', [ProductPurchaseController::class, 'store'])->name('purchases.store');
         Route::get('/products/create', [ProductController::class, 'create'])->name("products.create");
         Route::get('/products/{product}/view', [ProductController::class, 'view'])->name("products.view");
         Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name("products.edit");

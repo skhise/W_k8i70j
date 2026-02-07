@@ -186,6 +186,16 @@
                 <li class="dropdown {{ Request::is('products/*') || Request::is('products') ? 'active' : '' }}">
                     <a href="{{ route('products') }}" class="nav-link"><i data-feather="box"></i><span>Products / Spares</span></a>
                 </li>
+                
+                <li class="dropdown {{ Request::is('product-dashboard') ? 'active' : '' }}">
+                    <a href="{{ route('product-dashboard') }}" class="nav-link"><i data-feather="bar-chart-2"></i><span>Product Dashboard</span></a>
+                </li>
+                <li class="dropdown {{ Request::is('purchases') || Request::is('purchases/*') ? 'active' : '' }}">
+                    <a href="{{ route('purchases') }}" class="nav-link"><i data-feather="shopping-cart"></i><span>Purchases</span></a>
+                </li>
+                <li class="dropdown {{ Request::is('utilized-product-report') ? 'active' : '' }}">
+                    <a href="{{ route('utilized-product-report') }}" class="nav-link"><i data-feather="package"></i><span>Utilized Product Report</span></a>
+                </li>
                 <li class="dropdown {{ Request::is('location-report') || Request::is('attendance') || Request::is('location') ? 'active' : '' }}">
                     <a href="#"
                         class="menu-toggle nav-link has-dropdown {{ Request::is('location-report') || Request::is('attendance') || Request::is('location') ? 'toggled' : '' }}"><i
@@ -224,8 +234,6 @@
 
                         <li class="{{ Request::is('reports/dc-report') ? 'active' : '' }}"><a class="nav-link"
                                 href="{{ route('dc-report') }}">Dc Report</a></li>
-                        <li class="{{ Request::is('reports/utilized-product-report') ? 'active' : '' }}"><a class="nav-link"
-                                href="{{ route('utilized-product-report') }}">Utilized Product Report</a></li>
                         <li class="{{ Request::is('reports/inward-report') ? 'active' : '' }}"><a class="nav-link"
                                 href="{{ route('inward-report') }}">Repair Inward Report</a></li>
                         <!-- <li class="{{ Request::is('reports/quotation-report') ? 'active' : '' }}"><a class="nav-link"

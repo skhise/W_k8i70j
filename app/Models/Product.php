@@ -15,6 +15,7 @@ class Product extends Model
         'Product_Name',
         'Product_Description',
         'Product_Price',
+        'quantity',
         'Image_Path',
         'Status',
         'Product_Type'

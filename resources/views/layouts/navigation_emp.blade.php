@@ -97,6 +97,11 @@
                 <a href="{{ route(name: 'services') }}" class="nav-link"><i
                         data-feather="figma"></i><span>Services</span></a>
             </li>
+            <!-- <li class="menu-header">Spares Management</li>
+            <li class="dropdown {{ Request::is('employee-spare-utilized-report') ? 'active' : '' }}">
+                <a href="{{ route('employee-spare-utilized-report') }}" class="nav-link"><i
+                        data-feather="bar-chart"></i><span>Spare Utilized Report</span></a>
+            </li> -->
         </ul>
     </aside>
 </div>

@@ -68,10 +68,8 @@
                                                 <th>Contract No.</th>
                                                 <th>Service No.</th>
                                                 <th>Product Name</th>
-                                                <th>Serial Number</th>
+                                                <th>Used Qty</th>
                                                 <th>DC Type</th>
-                                                <th>Amount</th>
-                                                <th>Description</th>
                                                 <th>Issue Date</th>
                                             </tr>
                                         </thead>

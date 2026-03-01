@@ -44,12 +44,17 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header d-flex justify-content-between align-items-center">
-                                <h4 class="mb-0">Add DC Product</h4>
+                                <h4 class="mb-0">{{ isset($is_employee_reserved) && $is_employee_reserved ? 'Add DC (Reserved Quantity)' : 'Add DC Product' }}</h4>
                                 <a href="{{ route('services.view', $service->id) }}" class="btn btn-outline-secondary btn-sm">
                                     <i class="fas fa-arrow-left"></i> Back to Service
                                 </a>
                             </div>
                             <div class="card-body">
+                                @if (isset($is_employee_reserved) && $is_employee_reserved)
+                                    <div class="alert alert-info py-2 mb-3 small">
+                                        <i class="fas fa-info-circle mr-1"></i> You are adding spares from your <strong>reserved/assigned stock</strong>. Quantity will be deducted from your assignment and recorded under this service DC.
+                                    </div>
+                                @endif
                                 <form id="myForm" onsubmit="return false;">
                                     {{-- DC details --}}
                                     <div class="mb-4 p-3 rounded" style="background-color: #f8f9fa;">
@@ -181,6 +186,7 @@
 
     @section('script')
     <script>
+        var reservedByProduct = @json($reserved_by_product ?? []);
         function updateTableUI() {
             var rowCount = $('#myTable tbody tr').not('#tableEmptyRow').length;
             $('#tableEmptyRow').toggle(rowCount === 0);
@@ -269,7 +275,11 @@
             var products = selectedOption.data('product') || [];
             $('#standby_product').empty().append($('<option>', { value: '', text: 'Select Product' }));
             $.each(products, function(i, option) {
-                $('#standby_product').append($('<option>', { value: option.Product_ID, text: option.Product_Name }).data("serialnumbers", option.serial_numbers || []));
+                var label = option.Product_Name || ('Product #' + option.Product_ID);
+                if (reservedByProduct[option.Product_ID]) {
+                    label += ' (Reserved: ' + reservedByProduct[option.Product_ID] + ')';
+                }
+                $('#standby_product').append($('<option>', { value: option.Product_ID, text: label }).data("serialnumbers", option.serial_numbers || []));
             });
         });
 

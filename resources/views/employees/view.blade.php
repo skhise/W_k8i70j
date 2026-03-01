@@ -23,6 +23,7 @@
                                 <h4>Employee Details</h4>
                                 <div class="card-header-action">
                                     <a href="{{ route('employees') }}" class="btn btn-icon btn-sm btn-danger">Back</a>
+                                    @if (auth()->user()->role == 1)
                                     <div class="dropdown d-inline  ml-2">
 
                                         <button class="btn btn-light dropleft  dropdown-toggle" type="button"
@@ -32,7 +33,7 @@
                                         </button>
                                         <div class="dropdown-menu dropdown-menu-right" x-placement="top-start"
                                             style="position: absolute; transform: translate3d(0px, -133px, 0px); top: 0px; left: 0px; will-change: transform;">
-                                            @if (auth()->user()->role == 1)
+                                            
                                                 <a class="dropdown-item has-icon"
                                                     href="{{ route('employees.edit', $employee['EMP_ID']) }}"><i
                                                         class="far fa-edit"></i> Edit</a>
@@ -40,11 +41,11 @@
                                                     href="{{ route('employees.delete', $employee['EMP_ID']) }}"><i
                                                         class="fa fa-trash"></i>
                                                     Delete</a>
-                                            @endif
+                                            
 
                                         </div>
                                     </div>
-
+                                    @endif
                                 </div>
                             </div>
                             <div class="card-body">

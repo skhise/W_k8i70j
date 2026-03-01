@@ -210,6 +210,20 @@ class ProductController extends Controller
     {
         $product_type = ProductType::all();
         $filter_type  = $request->filter_type ?? "";
+        $products = Product::leftJoin("master_product_type", "master_product_type.id", "products.Product_Type")
+            ->select(
+                'products.*',
+                'master_product_type.type_name',
+                DB::raw('COALESCE((SELECT SUM(quantity) FROM product_assignment_items WHERE product_assignment_items.product_id = products.Product_ID), 0) as reserved_quantity')
+            )
+            ->orderBy('products.updated_at', "DESC")
+            ->filter($request->only('search', 'trashed', 'search_field', 'filter_status'))
+            ->when($request->filter_type != "", function ($query) use ($request) {
+                $query->where("products.Product_Type", $request->filter_type);
+            })
+            ->paginate(10)
+            ->withQueryString();
+
         return view("products.index", [
             'filters' => $request->all('search', 'trashed', 'search_field', 'filter_status'),
             'search_field' => $request->search_field ?? '',
@@ -217,16 +231,7 @@ class ProductController extends Controller
             'product_type'=>$product_type,
             'filter_type'=>$filter_type,
             'search' => $request->search ?? '',
-            'products' => Product::leftJoin("master_product_type", "master_product_type.id", "products.Product_Type")
-                ->orderBy('products.updated_at', "DESC")
-                ->filter($request->only('search', 'trashed', 'search_field', 'filter_status'))
-                ->when($request->filter_type !="", function ($query) use ($request) {
-                    $query->where("products.Product_Type", $request->filter_type);
-                })
-                ->paginate(10)
-                ->withQueryString()
-
-
+            'products' => $products,
         ]);
     }
     public function create(Request $request)

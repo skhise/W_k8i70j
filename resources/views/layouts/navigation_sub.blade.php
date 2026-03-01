@@ -224,8 +224,7 @@
                     <a href="{{ route('spares-utilized-report') }}" class="nav-link"><i data-feather="bar-chart"></i><span>Spares Utilized Report</span></a>
                 </li>
                 <li class="dropdown {{ Request::is('employee-spare-utilized-report') ? 'active' : '' }}">
-                    <a href="{{ route('employee-spare-utilized-report') }}" class="nav-link"><i
-                        data-feather="bar-chart"></i><span>Employee Spare Utilized</span></a>
+                    <a href="{{ route('employee-spare-utilized-report') }}" class="nav-link"><i data-feather="bar-chart"></i><span>Spare Utilized Report</span></a>
                 </li>
                     </ul>
                 </li>
@@ -252,7 +251,7 @@
                                 href="{{ route('attendance') }}">Attendance</a></li>
                     </ul>
                 </li>
-                <li class="dropdown {{ Request::is('reports/*') || Request::is('reports') ? 'active' : '' }}">
+                <!-- <li class="dropdown {{ Request::is('reports/*') || Request::is('reports') ? 'active' : '' }}">
                     <a href="#"
                         class="menu-toggle nav-link has-dropdown {{ Request::is('reports/*') || Request::is('reports') ? 'toggled' : '' }}"><i
                             data-feather="pie-chart"></i><span>System Reports</span></a>
@@ -276,19 +275,19 @@
                                 href="{{ route('dc-report') }}">Dc Report</a></li>
                         <li class="{{ Request::is('reports/inward-report') ? 'active' : '' }}"><a class="nav-link"
                                 href="{{ route('inward-report') }}">Repair Inward Report</a></li>
-                        <!-- <li class="{{ Request::is('reports/quotation-report') ? 'active' : '' }}"><a class="nav-link"
-                                href="{{ route('quotation-report') }}">Quotation Report</a></li> -->
+                         <li class="{{ Request::is('reports/quotation-report') ? 'active' : '' }}"><a class="nav-link"
+                                href="{{ route('quotation-report') }}">Quotation Report</a></li>
                         <li class="{{ Request::is('reports/logs') ? 'active' : '' }}"><a class="nav-link"
                                 href="{{ route('logs') }}">Logs</a></li>
 
                     </ul>
-                </li>
+                </li> -->
                 
 
-                <li class="dropdown {{ Request::is('masters/*') || Request::is('masters') ? 'active' : '' }}">
+                <!-- <li class="dropdown {{ Request::is('masters/*') || Request::is('masters') ? 'active' : '' }}">
                     <a href="{{ route('masters') }}" class="nav-link"><i data-feather="settings"></i><span>Master
                             Settings</span></a>
-                </li>
+                </li> -->
             @endif
         </ul>
     </aside>

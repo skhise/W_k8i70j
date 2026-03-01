@@ -58,6 +58,7 @@
                                                 <th>Product/Spare Type</th>
                                                 <th>Description</th>
                                                 <th>Quantity</th>
+                                                <th>Reserved Qty</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -74,12 +75,15 @@
                                                 <td>{{$product['type_name']}}</td>
                                                 <td title="{{$product['Product_Description']}}">{!! Str::limit($product['Product_Description'], 50, ' ...') !!}</td>
                                                 <td>{{ $product['quantity'] ?? 0 }}</td>
+                                                <td>{{ $product['reserved_quantity'] ?? 0 }}</td>
                                                 <td>
                                                     <div class="">
                                                     <a href="{{route('products.view', $product['Product_ID'])}}"
                                                         class="action-btn btn btn-icon btn-sm btn-primary"><i
                                                             class="far fa-eye"></i></a>
-                                                    
+                                                    <a href="{{route('products.delete', $product['Product_ID'])}}"
+                                                        class="delete-btn action-btn btn btn-icon btn-sm btn-danger"><i
+                                                            class="fa fa-trash"></i></a>
                                                     </div>
                                                     
                                                 </td>

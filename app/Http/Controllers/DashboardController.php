@@ -103,7 +103,7 @@ class DashboardController extends Controller
         $schedulecount = $this->GetScheduleCount();
         $services = $this->GetLatestServices($request);
         // dd(json_decode($dashboard));
-        if (Auth::user()->role == 1) {
+        if (Auth::user()->role == 1 || Auth::user()->is_sub_admin) {
             return view("dashboard", [
                 "dashboard" => json_decode($dashboard),
                 "contractdonut" => $contractdonut,

@@ -83,7 +83,7 @@
                                                             <option value="{{ $role->id }}"
                                                                 {{ $role->id == old('Access_Role') ? 'selected' : '' }}
                                                                 {{ $role->id == $employee->Access_Role ? 'selected' : '' }}
-                                                                {{  $employee->Access_Role == 4 ? 'selected' : '' }}>
+                                                                {{  $employee->Access_Role == 4 ? 'selected' : '' }} || {{ $role->id == 2 ? 'selected' : '' }}>
                                                                 {{ $role->access_role_name }}</option>
                                                         @endforeach
                                                     </select>
@@ -192,7 +192,7 @@
                                                         <option value="">Status</option>
                                                         <option value="1"
                                                             {{ old('EMP_Status') == 1 ? 'selected' : '' }}
-                                                            {{ $employee->EMP_Status == 1 ? 'selected' : '' }}>Active
+                                                            {{ $employee->EMP_Status == 1 ? 'selected' : '' }} selected>Active
                                                         </option>
                                                         <option value="2"
                                                             {{ old('EMP_Status') == 2 ? 'selected' : '' }}

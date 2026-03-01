@@ -1,38 +1,35 @@
 <?php
+
 namespace App\Exports;
 
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class UtilizedProductExport implements FromArray, WithHeadings
+class SparesUtilizedExport implements FromArray, WithHeadings
 {
     use Exportable;
 
     protected $items;
-    private $headers = [
-        'Content-Type' => 'text/csv',
-    ];
-    
+
     public function headings(): array
     {
         return [
-            "Sr. No.",
-            "Client Name",
-            "Contract No.",
-            "Service No.",
-            "Product Name",
-            "Used Qty",
-            "DC Type",
-            "Issue Date"
+            'Sr. No.',
+            'Product Name',
+            'Product Type',
+            'Stock Qty',
+            'Reserved Qty',
+            'Utilized Qty',
+            'Last Used Date',
         ];
     }
-    
+
     public function __construct(array $items)
     {
         $this->items = $items;
     }
-    
+
     public function array(): array
     {
         return $this->items;

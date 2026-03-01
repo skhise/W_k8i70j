@@ -306,6 +306,7 @@ class AppUserController extends Controller
                     'dc_amount' => $request->amount,
                     'issue_date' => NOW(),
                     'dc_status' => 1,
+                    'created_by' => Auth::id(),
                 ]);
             } else {
                 $dc->dc_amount = $dc->dc_amount + $request->amount;

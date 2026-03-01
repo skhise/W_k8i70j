@@ -24,6 +24,8 @@ use App\Models\User;
 use App\Models\Contract;
 use App\Models\Customer;
 use App\Models\Product;
+use App\Models\ProductAssignment;
+use App\Models\ProductAssignmentItem;
 use App\Models\ContractSiteType;
 use App\Models\ContractType;
 use App\Models\Schedule;
@@ -125,21 +127,48 @@ class ServiceController extends Controller
     }
     public function ProductCreate(Request $request, Service $service)
     {
+        $isEmployeeReserved = Auth::check() && Auth::user()->role == 3;
+        $reservedByProduct = [];
+
+        if ($isEmployeeReserved) {
+            if ((int) $service->assigned_to !== (int) Auth::id()) {
+                return redirect()->route('services.view', $service->id)
+                    ->with('error', 'You can add reserved quantity only for services assigned to you.');
+            }
+            $assignment = ProductAssignment::where('employee_id', Auth::id())->with('items.product')->first();
+            if (!$assignment || $assignment->items->isEmpty()) {
+                return redirect()->route('services.view', $service->id)
+                    ->with('error', 'You have no reserved/assigned products. Contact admin for product assignment.');
+            }
+            foreach ($assignment->items as $item) {
+                if ($item->product_id && (int) ($item->quantity ?? 0) > 0) {
+                    $reservedByProduct[$item->product_id] = (int) $item->quantity;
+                }
+            }
+        }
+
         $product_types = ProductType::all();
         foreach ($product_types as $i => $type) {
-
             $products = Product::where("Product_Type", $type->id)->get();
-            $product_types[$i]['products'] = $products;
-            foreach ($products as $index => $product) {
-                $srnumbers = ProductSerialNumber::where(["product_id" => $product->Product_ID])->get();
-                $products[$index]['serial_numbers'] = $srnumbers;
+            if ($isEmployeeReserved && !empty($reservedByProduct)) {
+                $products = $products->filter(fn ($p) => isset($reservedByProduct[$p->Product_ID]));
             }
-
+            $product_types[$i]['products'] = $products->values();
+            foreach ($product_types[$i]['products'] as $index => $product) {
+                $srnumbers = ProductSerialNumber::where(["product_id" => $product->Product_ID])->get();
+                $product_types[$i]['products'][$index]['serial_numbers'] = $srnumbers;
+            }
         }
+        if ($isEmployeeReserved) {
+            $product_types = $product_types->filter(fn ($pt) => $pt['products']->isNotEmpty());
+        }
+
         return view("services.product_add", [
             'service' => $service,
             'dctype' => DcType::all(),
             'productType' => $product_types,
+            'is_employee_reserved' => $isEmployeeReserved,
+            'reserved_by_product' => $reservedByProduct,
         ]);
     }
     public function AddServiceProduct(Request $request, Service $service)
@@ -159,23 +188,54 @@ class ServiceController extends Controller
         if ($validator->fails()) {
             return response()->json(["success" => false, "message" => "Product information missing.", "validation_error" => $validator->errors()]);
         }
-        $size = 0;
         $data = $request->data;
+        $isEmployeeReserved = Auth::check() && Auth::user()->role == 3;
+
+        if ($isEmployeeReserved) {
+            if ((int) $service->assigned_to !== (int) Auth::id()) {
+                return response()->json(['status' => false, 'message' => 'You can add reserved quantity only for services assigned to you.']);
+            }
+            $assignment = ProductAssignment::where('employee_id', Auth::id())->first();
+            if (!$assignment) {
+                return response()->json(['status' => false, 'message' => 'You have no product assignment. Contact admin.']);
+            }
+        }
+
         DB::beginTransaction();
 
-        // Validate sufficient stock before creating DC (avoids BIGINT UNSIGNED out of range)
-        if (Schema::hasColumn('products', 'quantity')) {
-            foreach ($data as $key => $name) {
+        if ($isEmployeeReserved) {
+            // Validate reserved quantity per product for this employee
+            foreach ($data as $key => $row) {
+                $productId = $data[$key]['product_id'] ?? null;
                 $qty = isset($data[$key]['quantity']) ? (int) $data[$key]['quantity'] : 1;
-                $product = Product::find($data[$key]['product_id']);
-                $available = $product ? (int) $product->quantity : 0;
+                $item = ProductAssignmentItem::where('product_assignment_id', $assignment->id)
+                    ->where('product_id', $productId)
+                    ->first();
+                $available = $item ? (int) $item->quantity : 0;
                 if ($available < $qty) {
                     DB::rollBack();
-                    $pname = $product ? $product->Product_Name : 'Product #' . $data[$key]['product_id'];
+                    $pname = Product::where('Product_ID', $productId)->value('Product_Name') ?: 'Product #' . $productId;
                     return response()->json([
                         'status' => false,
-                        'message' => "Insufficient quantity for \"{$pname}\". Available: {$available}, required: {$qty}.",
+                        'message' => "Insufficient reserved quantity for \"{$pname}\". Your reserved: {$available}, required: {$qty}.",
                     ]);
+                }
+            }
+        } else {
+            // Validate main product stock (admin flow)
+            if (Schema::hasColumn('products', 'quantity')) {
+                foreach ($data as $key => $name) {
+                    $qty = isset($data[$key]['quantity']) ? (int) $data[$key]['quantity'] : 1;
+                    $product = Product::find($data[$key]['product_id']);
+                    $available = $product ? (int) $product->quantity : 0;
+                    if ($available < $qty) {
+                        DB::rollBack();
+                        $pname = $product ? $product->Product_Name : 'Product #' . $data[$key]['product_id'];
+                        return response()->json([
+                            'status' => false,
+                            'message' => "Insufficient quantity for \"{$pname}\". Available: {$available}, required: {$qty}.",
+                        ]);
+                    }
                 }
             }
         }
@@ -187,22 +247,28 @@ class ServiceController extends Controller
             'dc_amount' => array_sum(array_column($data, "amount")),
             'issue_date' => date('Y-m-d', strtotime($request->issue_date)),
             'dc_status' => 1,
+            'created_by' => Auth::id(),
         ]);
+        $size = 0;
         if ($dc->id > 0) {
             foreach ($data as $key => $name) {
-
                 $qty = isset($data[$key]['quantity']) ? (int) $data[$key]['quantity'] : 1;
+                $productId = $data[$key]['product_id'];
                 $create = ServiceDcProduct::create([
                     'dc_id' => $dc->id,
-                    'product_id' => $data[$key]['product_id'],
+                    'product_id' => $productId,
                     'serial_no' => $data[$key]['serial_no'] != "" ? $data[$key]['serial_no'] : 0,
                     'quantity' => $qty,
                     'amount' => $data[$key]['amount'],
                     'description' => $data[$key]['description'] ?? "",
                 ]);
                 if ($create) {
-                    if (Schema::hasColumn('products', 'quantity')) {
-                        Product::where('Product_ID', $data[$key]['product_id'])->decrement('quantity', $qty);
+                    if ($isEmployeeReserved) {
+                        ProductAssignmentItem::where('product_assignment_id', $assignment->id)
+                            ->where('product_id', $productId)
+                            ->decrement('quantity', $qty);
+                    } elseif (Schema::hasColumn('products', 'quantity')) {
+                        Product::where('Product_ID', $productId)->decrement('quantity', $qty);
                     }
                     $size++;
                 }
@@ -212,10 +278,9 @@ class ServiceController extends Controller
         if ($size == count($data)) {
             DB::commit();
             return response()->json(["status" => true, 'message' => 'Saved successfully']);
-        } else {
-            DB::rollBack();
-            return response()->json(["status" => false, 'message' => 'Something went wrong, try again.']);
         }
+        DB::rollBack();
+        return response()->json(["status" => false, 'message' => 'Something went wrong, try again.']);
     }
     public function AddUpdateUnderServiceProduct(Request $request)
     {
@@ -1116,7 +1181,7 @@ class ServiceController extends Controller
         $resolved = $this->service_status_count(4, $fromdate, $todate);
         $closed = $this->service_status_count(5, $fromdate, $todate);
         $assigned = $this->service_status_count(6, $fromdate, $todate);
-         if (Auth::user()->role == 1) {
+         if (Auth::user()->role == 1 || Auth::user()->is_sub_admin) {
             return view(
             'services.index',
             [
@@ -1472,15 +1537,21 @@ class ServiceController extends Controller
             ->join("services", "services.id", "service_dc.service_id")
             ->leftJoin("dc_type", "dc_type.id", "service_dc.dc_type")
             ->leftJoin("clients", "clients.CST_ID", "services.customer_id")
-            ->where("service_dc.service_id", $service->id)->get();
+            ->where("service_dc.service_id", $service->id)
+            ->when(Auth::user()->role == 3, function ($q) {
+                $q->where('service_dc.created_by', Auth::id());
+            })
+            ->get();
 
         $DCProducts = ServiceDcProduct::select("product_serial_numbers.*", "master_product_type.*", "service_dc_product.id as sdp", "service_dc_product.*", "products.*")
-        
             ->join("products", "products.Product_ID", "service_dc_product.product_id")
             ->join("service_dc", "service_dc.id", "service_dc_product.dc_id")
             ->leftJoin("master_product_type", "master_product_type.id", "products.Product_Type")
             ->leftJoin("product_serial_numbers", "product_serial_numbers.id", "service_dc_product.serial_no")
             ->where(['service_dc.service_id' => $service->id])
+            ->when(Auth::user()->role == 3, function ($q) {
+                $q->where('service_dc.created_by', Auth::id());
+            })
             ->get();
 
         // dd($DCProducts);
@@ -1562,7 +1633,11 @@ class ServiceController extends Controller
             ->join("services", "services.id", "service_dc.service_id")
             ->leftJoin("dc_type", "dc_type.id", "service_dc.dc_type")
             ->leftJoin("clients", "clients.CST_ID", "services.customer_id")
-            ->where("service_dc.service_id", $service->id)->get();
+            ->where("service_dc.service_id", $service->id)
+            ->when(Auth::user()->role == 3, function ($q) {
+                $q->where('service_dc.created_by', Auth::id());
+            })
+            ->get();
             // dd($services);
 
         return view("services.view", [

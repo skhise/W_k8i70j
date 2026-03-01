@@ -1898,21 +1898,19 @@ class ReportController extends Controller
             }
 
             $utilized_products = ServiceDcProduct::select([
-                'service_dc_product.*',
-                'products.Product_Name',
                 'products.Product_ID',
-                'product_serial_numbers.sr_number',
-                'dc_type.dc_type_name',
-                'clients.CST_Name',
+                'products.Product_Name',
+                'services.id as service_id',
                 'services.service_no',
+                'clients.CST_Name',
                 'contracts.CNRT_Number',
-                'service_dc.issue_date',
-                'service_dc.dc_type'
+                'dc_type.dc_type_name',
+                DB::raw('SUM(COALESCE(service_dc_product.quantity, 1)) as used_quantity'),
+                DB::raw('MAX(service_dc.issue_date) as issue_date'),
             ])
             ->join('service_dc', 'service_dc.id', '=', 'service_dc_product.dc_id')
             ->join('services', 'services.id', '=', 'service_dc.service_id')
             ->leftJoin('products', 'products.Product_ID', '=', 'service_dc_product.product_id')
-            ->leftJoin('product_serial_numbers', 'product_serial_numbers.id', '=', 'service_dc_product.serial_no')
             ->leftJoin('dc_type', 'dc_type.id', '=', 'service_dc.dc_type')
             ->leftJoin('clients', 'clients.CST_ID', '=', 'services.customer_id')
             ->leftJoin('contracts', 'contracts.CNRT_ID', '=', 'services.contract_id')
@@ -1925,8 +1923,9 @@ class ReportController extends Controller
             ->when($date_range != "" && $date_range != "-1", function ($query) use ($fromdate, $todate) {
                 return $query->whereBetween(DB::raw('DATE_FORMAT(service_dc.issue_date, "%Y-%m-%d")'), [$fromdate, $todate]);
             })
-            ->orderBy('service_dc.issue_date', 'desc')
-            ->orderBy('service_dc_product.id', 'desc')
+            ->groupBy('products.Product_ID', 'products.Product_Name', 'services.id', 'services.service_no', 'clients.CST_Name', 'contracts.CNRT_Number', 'dc_type.id', 'dc_type.dc_type_name')
+            ->orderBy('products.Product_Name')
+            ->orderBy('services.service_no')
             ->paginate(10)
             ->withQueryString();
 
@@ -1975,21 +1974,19 @@ class ReportController extends Controller
             }
 
             $utilized_products = ServiceDcProduct::select([
-                'service_dc_product.*',
-                'products.Product_Name',
                 'products.Product_ID',
-                'product_serial_numbers.sr_number',
-                'dc_type.dc_type_name',
-                'clients.CST_Name',
+                'products.Product_Name',
+                'services.id as service_id',
                 'services.service_no',
+                'clients.CST_Name',
                 'contracts.CNRT_Number',
-                'service_dc.issue_date',
-                'service_dc.dc_type'
+                'dc_type.dc_type_name',
+                DB::raw('SUM(COALESCE(service_dc_product.quantity, 1)) as used_quantity'),
+                DB::raw('MAX(service_dc.issue_date) as issue_date'),
             ])
             ->join('service_dc', 'service_dc.id', '=', 'service_dc_product.dc_id')
             ->join('services', 'services.id', '=', 'service_dc.service_id')
             ->leftJoin('products', 'products.Product_ID', '=', 'service_dc_product.product_id')
-            ->leftJoin('product_serial_numbers', 'product_serial_numbers.id', '=', 'service_dc_product.serial_no')
             ->leftJoin('dc_type', 'dc_type.id', '=', 'service_dc.dc_type')
             ->leftJoin('clients', 'clients.CST_ID', '=', 'services.customer_id')
             ->leftJoin('contracts', 'contracts.CNRT_ID', '=', 'services.contract_id')
@@ -2002,23 +1999,22 @@ class ReportController extends Controller
             ->when($date_range != "" && $date_range != "-1", function ($query) use ($fromdate, $todate) {
                 return $query->whereBetween(DB::raw('DATE_FORMAT(service_dc.issue_date, "%Y-%m-%d")'), [$fromdate, $todate]);
             })
-            ->orderBy('service_dc.issue_date', 'desc')
-            ->orderBy('service_dc_product.id', 'desc')
+            ->groupBy('products.Product_ID', 'products.Product_Name', 'services.id', 'services.service_no', 'clients.CST_Name', 'contracts.CNRT_Number', 'dc_type.id', 'dc_type.dc_type_name')
+            ->orderBy('products.Product_Name')
+            ->orderBy('services.service_no')
             ->get();
 
             $items = [];
-            foreach ($utilized_products as $index => $product) {
+            foreach ($utilized_products as $index => $row) {
                 $items[] = [
                     $index + 1,
-                    $product->CST_Name ?? 'N/A',
-                    $product->CNRT_Number ?? 'N/A',
-                    $product->service_no ?? 'N/A',
-                    $product->Product_Name ?? 'N/A',
-                    $product->sr_number ?? 'N/A',
-                    $product->dc_type_name ?? 'N/A',
-                    $product->amount ?? '0.00',
-                    $product->description ?? 'N/A',
-                    $product->issue_date ? date('d-M-Y', strtotime($product->issue_date)) : 'N/A',
+                    $row->CST_Name ?? 'N/A',
+                    $row->CNRT_Number ?? 'N/A',
+                    $row->service_no ?? 'N/A',
+                    $row->Product_Name ?? 'N/A',
+                    (int) $row->used_quantity,
+                    $row->dc_type_name ?? 'N/A',
+                    $row->issue_date ? date('d-M-Y', strtotime($row->issue_date)) : 'N/A',
                 ];
             }
 
@@ -2029,6 +2025,347 @@ class ReportController extends Controller
 
         } catch (Exception $exp) {
             return back()->withErrors("Export failed: " . $exp->getMessage());
+        }
+    }
+
+    /**
+     * Spares Utilized Report – based on products under Spares Management.
+     * Lists each product/spare with total utilized quantity (from service DC).
+     */
+    public function spares_utilized_index(Request $request)
+    {
+        return view('reports.spares_utilized_report', [
+            'product_types' => ProductType::all(),
+            'date_range' => $request->date_range ?? '',
+            'filter_type' => $request->filter_type ?? '',
+            'report_data' => collect(),
+        ]);
+    }
+
+    public function spares_utilized_data(Request $request)
+    {
+        try {
+            $date_range = $request->date_range ?? '';
+            $filter_type = $request->filter_type ?? '';
+
+            $today = date("Y-m-d");
+            $todate = date("Y-m-d");
+            if ($date_range === '' || $date_range === '-1') {
+                $fromdate = null;
+                $todateParam = null;
+            } elseif ($date_range === '0') {
+                $fromdate = $todate;
+                $todateParam = $todate;
+            } elseif ($date_range === '1') {
+                $fromdate = date('Y-m-d', strtotime($today . ' -1 days'));
+                $todateParam = $fromdate;
+            } else {
+                $fromdate = date('Y-m-d', strtotime($todate . ' -' . (int) $date_range . ' days'));
+                $todateParam = $todate;
+            }
+
+            $subQuery = DB::table('service_dc_product')
+                ->join('service_dc', 'service_dc.id', '=', 'service_dc_product.dc_id')
+                ->select('service_dc_product.product_id', DB::raw('SUM(COALESCE(service_dc_product.quantity, 1)) as used_quantity'), DB::raw('MAX(service_dc.issue_date) as last_used_date'))
+                ->groupBy('service_dc_product.product_id');
+
+            if ($fromdate !== null && $todateParam !== null) {
+                $subQuery->whereBetween(DB::raw('DATE(service_dc.issue_date)'), [$fromdate, $todateParam]);
+            }
+
+            $reservedSubQuery = DB::table('product_assignment_items')
+                ->select('product_id', DB::raw('SUM(COALESCE(quantity, 0)) as reserved_quantity'))
+                ->groupBy('product_id');
+
+            $report_data = Product::withoutGlobalScopes()
+                ->from('products as p')
+                ->leftJoin('master_product_type', 'master_product_type.id', '=', 'p.Product_Type')
+                ->leftJoinSub($subQuery, 'util', function ($join) {
+                    $join->on('p.Product_ID', '=', 'util.product_id');
+                })
+                ->leftJoinSub($reservedSubQuery, 'reserved', function ($join) {
+                    $join->on('p.Product_ID', '=', 'reserved.product_id');
+                })
+                ->select(
+                    'p.Product_ID',
+                    'p.Product_Name',
+                    'master_product_type.type_name as product_type_name',
+                    DB::raw('COALESCE(p.quantity, 0) as stock_quantity'),
+                    DB::raw('COALESCE(reserved.reserved_quantity, 0) as reserved_quantity'),
+                    DB::raw('COALESCE(util.used_quantity, 0) as utilized_quantity'),
+                    'util.last_used_date'
+                )
+                ->when($filter_type !== '' && $filter_type !== '0', function ($q) use ($filter_type) {
+                    $q->where('p.Product_Type', $filter_type);
+                })
+                ->orderBy('p.Product_Name')
+                ->paginate(15)
+                ->withQueryString();
+
+            if ($request->ajax()) {
+                return view('reports.spares_utilized_pagination', ['report_data' => $report_data]);
+            }
+
+            return view('reports.spares_utilized_report', [
+                'product_types' => ProductType::all(),
+                'date_range' => $date_range,
+                'filter_type' => $filter_type,
+                'report_data' => $report_data,
+            ]);
+        } catch (Exception $exp) {
+            if ($request->ajax()) {
+                return response()->json(['error' => 'Error fetching data: ' . $exp->getMessage()], 500);
+            }
+            return back()->withErrors("Error: " . $exp->getMessage());
+        }
+    }
+
+    public function spares_utilized_export(Request $request)
+    {
+        try {
+            $date_range = $request->date_range ?? '';
+            $filter_type = $request->filter_type ?? '';
+
+            $today = date("Y-m-d");
+            $todate = date("Y-m-d");
+            if ($date_range === '' || $date_range === '-1') {
+                $fromdate = null;
+                $todateParam = null;
+            } elseif ($date_range === '0') {
+                $fromdate = $todate;
+                $todateParam = $todate;
+            } elseif ($date_range === '1') {
+                $fromdate = date('Y-m-d', strtotime($today . ' -1 days'));
+                $todateParam = $fromdate;
+            } else {
+                $fromdate = date('Y-m-d', strtotime($todate . ' -' . (int) $date_range . ' days'));
+                $todateParam = $todate;
+            }
+
+            $subQuery = DB::table('service_dc_product')
+                ->join('service_dc', 'service_dc.id', '=', 'service_dc_product.dc_id')
+                ->select('service_dc_product.product_id', DB::raw('SUM(COALESCE(service_dc_product.quantity, 1)) as used_quantity'), DB::raw('MAX(service_dc.issue_date) as last_used_date'))
+                ->groupBy('service_dc_product.product_id');
+
+            if ($fromdate !== null && $todateParam !== null) {
+                $subQuery->whereBetween(DB::raw('DATE(service_dc.issue_date)'), [$fromdate, $todateParam]);
+            }
+
+            $reservedSubQuery = DB::table('product_assignment_items')
+                ->select('product_id', DB::raw('SUM(COALESCE(quantity, 0)) as reserved_quantity'))
+                ->groupBy('product_id');
+
+            $report_data = Product::withoutGlobalScopes()
+                ->from('products as p')
+                ->leftJoin('master_product_type', 'master_product_type.id', '=', 'p.Product_Type')
+                ->leftJoinSub($subQuery, 'util', function ($join) {
+                    $join->on('p.Product_ID', '=', 'util.product_id');
+                })
+                ->leftJoinSub($reservedSubQuery, 'reserved', function ($join) {
+                    $join->on('p.Product_ID', '=', 'reserved.product_id');
+                })
+                ->select(
+                    'p.Product_ID',
+                    'p.Product_Name',
+                    'master_product_type.type_name as product_type_name',
+                    DB::raw('COALESCE(p.quantity, 0) as stock_quantity'),
+                    DB::raw('COALESCE(reserved.reserved_quantity, 0) as reserved_quantity'),
+                    DB::raw('COALESCE(util.used_quantity, 0) as utilized_quantity'),
+                    'util.last_used_date'
+                )
+                ->when($filter_type !== '' && $filter_type !== '0', function ($q) use ($filter_type) {
+                    $q->where('p.Product_Type', $filter_type);
+                })
+                ->orderBy('p.Product_Name')
+                ->get();
+
+            $items = [];
+            foreach ($report_data as $index => $row) {
+                $items[] = [
+                    $index + 1,
+                    $row->Product_Name ?? 'N/A',
+                    $row->product_type_name ?? 'N/A',
+                    (int) ($row->stock_quantity ?? 0),
+                    (int) ($row->reserved_quantity ?? 0),
+                    (int) ($row->utilized_quantity ?? 0),
+                    $row->last_used_date ? date('d-M-Y', strtotime($row->last_used_date)) : 'N/A',
+                ];
+            }
+
+            $timestamp = date('Y-m-d_H-i-s');
+            $fileName = 'spares_utilized_report_' . $timestamp . '.csv';
+            return Excel::download(new \App\Exports\SparesUtilizedExport($items), $fileName)->deleteFileAfterSend(true);
+        } catch (Exception $exp) {
+            return back()->withErrors("Export failed: " . $exp->getMessage());
+        }
+    }
+
+    /**
+     * Spare utilized report – DCs added by current user (employee) or by selected employee (admin).
+     * Shows line-level utilization: date, service no, product, qty, dc type.
+     */
+    public function employee_spare_utilized_index(Request $request)
+    {
+        $isEmployee = (int) Auth::user()->role === 3;
+        $employees = [];
+        if (!$isEmployee) {
+            $employees = User::where('role', 3)->orderBy('name')->get(['id', 'name']);
+        }
+        return view('reports.employee_spare_utilized_report', [
+            'date_range' => $request->date_range ?? '',
+            'report_data' => collect(),
+            'is_employee' => $isEmployee,
+            'employees' => $employees,
+            'selected_employee_id' => $request->employee_id ?? '',
+        ]);
+    }
+
+    public function employee_spare_utilized_data(Request $request)
+    {
+        try {
+            $isEmployee = (int) Auth::user()->role === 3;
+            $createdBy = $isEmployee ? (int) Auth::id() : (int) $request->employee_id;
+            if (!$createdBy) {
+                if ($request->ajax()) {
+                    return response()->json(['error' => 'Please select an employee.'], 400);
+                }
+                return back()->withErrors('Please select an employee.');
+            }
+
+            $date_range = $request->date_range ?? '';
+            $today = date('Y-m-d');
+            $todate = date('Y-m-d');
+            if ($date_range === '' || $date_range === '-1') {
+                $fromdate = null;
+                $todateParam = null;
+                if (!$isEmployee) {
+                    $fromdate = date('Y-m-d', strtotime($todate . ' -30 days'));
+                    $todateParam = $todate;
+                }
+            } elseif ($date_range === '0') {
+                $fromdate = $todate;
+                $todateParam = $todate;
+            } elseif ($date_range === '1') {
+                $fromdate = date('Y-m-d', strtotime($today . ' -1 days'));
+                $todateParam = $fromdate;
+            } else {
+                $fromdate = date('Y-m-d', strtotime($todate . ' -' . (int) $date_range . ' days'));
+                $todateParam = $todate;
+            }
+
+            $query = DB::table('service_dc_product')
+                ->join('service_dc', 'service_dc.id', '=', 'service_dc_product.dc_id')
+                ->join('services', 'services.id', '=', 'service_dc.service_id')
+                ->leftJoin('products', 'products.Product_ID', '=', 'service_dc_product.product_id')
+                ->leftJoin('dc_type', 'dc_type.id', '=', 'service_dc.dc_type')
+                ->where('service_dc.created_by', $createdBy);
+
+            if ($fromdate !== null && $todateParam !== null) {
+                $query->whereBetween(DB::raw('DATE(service_dc.issue_date)'), [$fromdate, $todateParam]);
+            }
+
+            $report_data = $query
+                ->select(
+                    'service_dc.issue_date',
+                    'services.service_no',
+                    'products.Product_Name as product_name',
+                    DB::raw('COALESCE(service_dc_product.quantity, 1) as quantity'),
+                    'dc_type.dc_type_name'
+                )
+                ->orderByDesc('service_dc.issue_date')
+                ->orderBy('services.service_no')
+                ->paginate(15)
+                ->withQueryString();
+
+            if ($request->ajax()) {
+                return view('reports.employee_spare_utilized_pagination', ['report_data' => $report_data]);
+            }
+            $isEmployee = (int) Auth::user()->role === 3;
+            $employees = $isEmployee ? [] : User::where('role', 3)->orderBy('name')->get(['id', 'name']);
+            return view('reports.employee_spare_utilized_report', [
+                'date_range' => $date_range,
+                'report_data' => $report_data,
+                'is_employee' => $isEmployee,
+                'employees' => $employees,
+                'selected_employee_id' => $request->employee_id ?? '',
+            ]);
+        } catch (Exception $exp) {
+            if ($request->ajax()) {
+                return response()->json(['error' => 'Error fetching data: ' . $exp->getMessage()], 500);
+            }
+            return back()->withErrors('Error: ' . $exp->getMessage());
+        }
+    }
+
+    public function employee_spare_utilized_export(Request $request)
+    {
+        try {
+            $isEmployee = (int) Auth::user()->role === 3;
+            $createdBy = $isEmployee ? (int) Auth::id() : (int) $request->employee_id;
+            if (!$createdBy) {
+                return back()->withErrors('Please select an employee.');
+            }
+
+            $date_range = $request->date_range ?? '';
+            $today = date('Y-m-d');
+            $todate = date('Y-m-d');
+            if ($date_range === '' || $date_range === '-1') {
+                $fromdate = null;
+                $todateParam = null;
+                if (!$isEmployee) {
+                    $fromdate = date('Y-m-d', strtotime($todate . ' -30 days'));
+                    $todateParam = $todate;
+                }
+            } elseif ($date_range === '0') {
+                $fromdate = $todate;
+                $todateParam = $todate;
+            } elseif ($date_range === '1') {
+                $fromdate = date('Y-m-d', strtotime($today . ' -1 days'));
+                $todateParam = $fromdate;
+            } else {
+                $fromdate = date('Y-m-d', strtotime($todate . ' -' . (int) $date_range . ' days'));
+                $todateParam = $todate;
+            }
+
+            $query = DB::table('service_dc_product')
+                ->join('service_dc', 'service_dc.id', '=', 'service_dc_product.dc_id')
+                ->join('services', 'services.id', '=', 'service_dc.service_id')
+                ->leftJoin('products', 'products.Product_ID', '=', 'service_dc_product.product_id')
+                ->leftJoin('dc_type', 'dc_type.id', '=', 'service_dc.dc_type')
+                ->where('service_dc.created_by', $createdBy);
+
+            if ($fromdate !== null && $todateParam !== null) {
+                $query->whereBetween(DB::raw('DATE(service_dc.issue_date)'), [$fromdate, $todateParam]);
+            }
+
+            $rows = $query
+                ->select(
+                    'service_dc.issue_date',
+                    'services.service_no',
+                    'products.Product_Name as product_name',
+                    DB::raw('COALESCE(service_dc_product.quantity, 1) as quantity'),
+                    'dc_type.dc_type_name'
+                )
+                ->orderByDesc('service_dc.issue_date')
+                ->orderBy('services.service_no')
+                ->get();
+
+            $items = [];
+            foreach ($rows as $index => $row) {
+                $items[] = [
+                    $index + 1,
+                    $row->issue_date ? date('d-M-Y', strtotime($row->issue_date)) : 'N/A',
+                    $row->service_no ?? 'N/A',
+                    $row->product_name ?? 'N/A',
+                    (int) ($row->quantity ?? 0),
+                    $row->dc_type_name ?? 'N/A',
+                ];
+            }
+            $timestamp = date('Y-m-d_H-i-s');
+            $fileName = 'employee_spare_utilized_report_' . $timestamp . '.csv';
+            return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\EmployeeSpareUtilizedExport($items), $fileName)->deleteFileAfterSend(true);
+        } catch (Exception $exp) {
+            return back()->withErrors('Export failed: ' . $exp->getMessage());
         }
     }
 

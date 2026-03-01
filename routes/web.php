@@ -37,7 +37,7 @@ use Illuminate\Support\Facades\Route;
 // Route::get('/master_setup_api', [ProfileController::class, 'master_setup'])->name('master_setup_api');
 Route::get('/generate', [ProfileController::class, 'master_setup'])->name('generate');
 
-Route::middleware(['prevent-back-history', 'menu.permission'])->group(function () {
+Route::middleware(['prevent-back-history', 'menu.permission', 'prevent.subadmin.delete'])->group(function () {
     Route::middleware('auth')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/product-dashboard', [ProductDashboardController::class, 'index'])->name('product-dashboard');
@@ -110,6 +110,14 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
         Route::get('/utilized-product-report', [ReportController::class, 'utilized_product_index'])->name('utilized-product-report');
         Route::get('/utilized-product-report-data', [ReportController::class, 'utilized_product_data'])->name('utilized-product-report-data');
         Route::get('/utilized-product-report-export', [ReportController::class, 'utilized_product_export'])->name('utilized-product-report-export');
+
+        Route::get('/spares-utilized-report', [ReportController::class, 'spares_utilized_index'])->name('spares-utilized-report');
+        Route::get('/spares-utilized-report-data', [ReportController::class, 'spares_utilized_data'])->name('spares-utilized-report-data');
+        Route::get('/spares-utilized-report-export', [ReportController::class, 'spares_utilized_export'])->name('spares-utilized-report-export');
+
+        Route::get('/employee-spare-utilized-report', [ReportController::class, 'employee_spare_utilized_index'])->name('employee-spare-utilized-report');
+        Route::get('/employee-spare-utilized-report-data', [ReportController::class, 'employee_spare_utilized_data'])->name('employee-spare-utilized-report-data');
+        Route::get('/employee-spare-utilized-report-export', [ReportController::class, 'employee_spare_utilized_export'])->name('employee-spare-utilized-report-export');
 
         Route::get('/attendance', [ReportController::class, 'Attendance'])->name('attendance');
         Route::get('/attendance/atte_data', [ReportController::class, 'Atte_Data'])->name('atte_data');
@@ -309,9 +317,12 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
 
     });
     Route::middleware('auth')->group(function () {
-        Route::get('/products', [ProductController::class, 'index'])->name("products");
+        Route::get('/spares', [ProductController::class, 'index'])->name("products");
         Route::get('/purchases', [ProductPurchaseController::class, 'index'])->name('purchases');
         Route::post('/purchases', [ProductPurchaseController::class, 'store'])->name('purchases.store');
+        Route::get('/purchases/{purchase}/edit', [ProductPurchaseController::class, 'edit'])->name('purchases.edit');
+        Route::match(['put', 'patch'], '/purchases/{purchase}', [ProductPurchaseController::class, 'update'])->name('purchases.update');
+        Route::get('/purchases/{purchase}/delete', [ProductPurchaseController::class, 'destroy'])->name('purchases.destroy');
 
         Route::get('/product-assignments', [ProductAssignmentController::class, 'index'])->name('product-assignments');
         Route::post('/product-assignments', [ProductAssignmentController::class, 'store'])->name('product-assignments.store');
@@ -330,6 +341,12 @@ Route::middleware(['prevent-back-history', 'menu.permission'])->group(function (
         Route::get('/products/product_by_id', [ProductController::class, 'product_by_id'])->name("products.product_by_id");
         Route::get('/products/{productSerialNumber}/sr/delete', [ProductController::class, 'DeleteProductSrNo'])->name("product_srno.delete");
         Route::post('/products/{product}/add-sn', [ProductController::class, 'AddProductSrNo'])->name("products.add-sn");
+        Route::get('/product-returns', [ProductReturnController::class, 'index'])->name('product-returns');
+        Route::post('/product-returns', [ProductReturnController::class, 'store'])->name('product-returns.store');      
+        Route::get('/product-returns/{product-return}', [ProductReturnController::class, 'show'])->name('product-returns.show');
+        Route::post('/product-returns/update-item', [ProductReturnController::class, 'updateItem'])->name('product-returns.update-item');
+        Route::post('/product-returns/remove-item', [ProductReturnController::class, 'removeItem'])->name('product-returns.remove-item');
+        Route::post('/product-returns/add-item', [ProductReturnController::class, 'addItem'])->name('product-returns.add-item');
     });
 
 

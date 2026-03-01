@@ -119,17 +119,132 @@
             vertical-align: top !important;
             padding: 10px !important;
         }
+
+        /* Sidebar: background #3b4452, text white */
+        .main-sidebar {
+            background-color: #3b4452 !important;
+        }
+        .sidebar-mini .main-sidebar:after {
+            background-color: #3b4452 !important;
+        }
+        .main-sidebar .sidebar-brand,
+        .main-sidebar .sidebar-brand a,
+        .main-sidebar .sidebar-brand a .logo-name {
+            color: #fff !important;
+        }
+        .main-sidebar .sidebar-menu li.menu-header {
+            color: rgba(255, 255, 255, 0.85) !important;
+        }
+        .main-sidebar .sidebar-menu li a,
+        .main-sidebar .sidebar-menu li a span,
+        .main-sidebar .sidebar-menu li ul.dropdown-menu li a {
+            color: #fff !important;
+        }
+        .main-sidebar .sidebar-menu li a i,
+        .main-sidebar .sidebar-menu li a .feather,
+        .main-sidebar .sidebar-menu li ul.dropdown-menu li a i {
+            color: #fff !important;
+            fill: rgba(255, 255, 255, 0.9) !important;
+        }
+        .main-sidebar .sidebar-menu li a:hover,
+        .main-sidebar .sidebar-menu li.active a,
+        .main-sidebar .sidebar-menu li.active ul.dropdown-menu {
+            background-color: rgba(0, 0, 0, 0.2) !important;
+            color: #fff !important;
+        }
+        .main-sidebar .sidebar-menu li ul.dropdown-menu li a:hover {
+            color: #fff !important;
+            background-color: rgba(0, 0, 0, 0.15) !important;
+        }
+        .main-sidebar .sidebar-menu li a.has-dropdown:after {
+            color: #fff !important;
+        }
+
+        /* Sidebar sub-menus: dark background #3b4452 (override template #fcfcfd / white) */
+        #sidebar-wrapper .sidebar-menu li ul.dropdown-menu,
+        #sidebar-wrapper .sidebar-menu li.active ul.dropdown-menu,
+        #sidebar-wrapper .sidebar-menu li.active > ul.dropdown-menu,
+        .main-sidebar .sidebar-menu li ul.dropdown-menu,
+        .main-sidebar .sidebar-menu li.active ul.dropdown-menu,
+        .main-sidebar .sidebar-menu li.active > ul.dropdown-menu,
+        .main-sidebar .sidebar-menu li.dropdown ul.dropdown-menu {
+            background-color: #3b4452 !important;
+            background: #3b4452 !important;
+        }
+        .sidebar-mini .main-sidebar .sidebar-menu > li ul.dropdown-menu,
+        .sidebar-mini .main-sidebar .sidebar-menu li ul.dropdown-menu {
+            background-color: #3b4452 !important;
+            background: #3b4452 !important;
+        }
+        #sidebar-wrapper .sidebar-menu li ul.dropdown-menu li,
+        #sidebar-wrapper .sidebar-menu li ul.dropdown-menu li a,
+        .main-sidebar .sidebar-menu li ul.dropdown-menu li a,
+        .main-sidebar .sidebar-menu li.active ul.dropdown-menu li a,
+        .main-sidebar .sidebar-menu li ul.dropdown-menu li a:before,
+        .sidebar-mini .main-sidebar .sidebar-menu > li ul.dropdown-menu li a,
+        .sidebar-mini .main-sidebar .sidebar-menu li ul.dropdown-menu li a {
+            background-color: #3b4452 !important;
+            background: #3b4452 !important;
+            color: #fff !important;
+        }
+        .main-sidebar .sidebar-menu li ul.dropdown-menu li.active > a,
+        .main-sidebar .sidebar-menu li ul.dropdown-menu li.active > a:before {
+            color: #fff !important;
+        }
+        .main-sidebar .sidebar-menu li ul.dropdown-menu li a i,
+        .main-sidebar .sidebar-menu li ul.dropdown-menu li a .feather {
+            color: #fff !important;
+            fill: rgba(255, 255, 255, 0.9) !important;
+        }
+        .sidebar-mini .main-sidebar .sidebar-menu > li ul.dropdown-menu,
+        .sidebar-mini .main-sidebar .sidebar-menu li ul.dropdown-menu li a {
+            background-color: #3b4452 !important;
+            background: #3b4452 !important;
+            color: #fff !important;
+        }
+        .sidebar-mini .main-sidebar .sidebar-menu li:hover > ul.dropdown-menu,
+        .sidebar-mini .main-sidebar .sidebar-menu li:hover > ul.dropdown-menu li a {
+            background-color: #3b4452 !important;
+            background: #3b4452 !important;
+            color: #fff !important;
+        }
+        .sidebar-mini .main-sidebar .sidebar-menu li:hover > ul.dropdown-menu li:hover > a {
+            background-color: rgba(0, 0, 0, 0.2) !important;
+            color: #fff !important;
+        }
+
+        /* Sidebar fixed: always visible, no slide/open/close effect */
+        .main-sidebar {
+            left: 0 !important;
+        }
+        body.sidebar-gone .main-sidebar {
+            left: 0 !important;
+        }
+        .main-sidebar,
+        .main-sidebar:after,
+        body .navbar,
+        body .main-content,
+        body .main-footer {
+            transition: none !important;
+        }
+        .sidebar-mini .main-sidebar:after {
+            animation: none !important;
+            opacity: 1 !important;
+        }
     </style>
 
 
 </head>
 
-<body  id="main-body" class="sidebar-gone">
+<body id="main-body" class="">
     <div class="loader"></div>
     <div id="app">
         <div class="main-wrapper main-wrapper-1">
             @if (auth()->user()->role == 3)
                 @include('layouts.navigation_emp')
+            @endif
+            @if (auth()->user()->is_sub_admin)
+                @include('layouts.navigation_sub')
             @endif
             @if (auth()->user()->role == 1 || auth()->user()->role == 0)
                 @include('layouts.navigation')

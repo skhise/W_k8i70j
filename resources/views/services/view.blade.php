@@ -65,7 +65,7 @@
                                             aria-selected="true">Timeline</a>
                                     </li>
                                     
-                                    @if (auth()->user()->role == 1)
+                                    @if (auth()->user()->role == 1 || auth()->user()->role == 3 && !auth()->user()->is_sub_admin)
                                         <li class="nav-item">
                                             <a class="nav-link" id="ServiceProductDC-tab5" data-toggle="tab"
                                                 href="#serviceproductdc" role="tab"

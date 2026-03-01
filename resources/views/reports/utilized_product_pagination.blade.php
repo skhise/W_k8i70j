@@ -12,7 +12,7 @@
 
 @unless ($hasRecords)
     <tr>
-        <td colspan="10" class="text-center">No products found.</td>
+        <td colspan="8" class="text-center">No products found.</td>
     </tr>
 @endunless
 
@@ -23,24 +23,22 @@
             $startIndex = $utilized_products->firstItem() ?? 1;
         }
     @endphp
-    @foreach ($utilized_products as $index => $product)
+    @foreach ($utilized_products as $index => $row)
     <tr>
         <td>{{ $startIndex + $index }}</td>
-        <td>{{ $product->CST_Name ?? 'N/A' }}</td>
-        <td>{{ $product->CNRT_Number ?? 'N/A' }}</td>
-        <td>{{ $product->service_no ?? 'N/A' }}</td>
-        <td>{{ $product->Product_Name ?? 'N/A' }}</td>
-        <td>{{ $product->sr_number ?? 'N/A' }}</td>
-        <td>{{ $product->dc_type_name ?? 'N/A' }}</td>
-        <td>{{ number_format($product->amount ?? 0, 2) }}</td>
-        <td>{{ $product->description ?? 'N/A' }}</td>
-        <td>{{ $product->issue_date ? date('d-M-Y', strtotime($product->issue_date)) : 'N/A' }}</td>
+        <td>{{ $row->CST_Name ?? 'N/A' }}</td>
+        <td>{{ $row->CNRT_Number ?? 'N/A' }}</td>
+        <td>{{ $row->service_no ?? 'N/A' }}</td>
+        <td>{{ $row->Product_Name ?? 'N/A' }}</td>
+        <td>{{ (int) ($row->used_quantity ?? 0) }}</td>
+        <td>{{ $row->dc_type_name ?? 'N/A' }}</td>
+        <td>{{ $row->issue_date ? date('d-M-Y', strtotime($row->issue_date)) : 'N/A' }}</td>
     </tr>
     @endforeach
     
     @if (method_exists($utilized_products, 'links'))
     <tr>
-        <td colspan="10" class="text-center">
+        <td colspan="8" class="text-center">
             {{ $utilized_products->links() }}
         </td>
     </tr>

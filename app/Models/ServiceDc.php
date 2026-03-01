@@ -15,7 +15,8 @@ class ServiceDc extends Model
         "dc_status",
         'dc_remark',
         'dc_amount',
-        "issue_date"
+        "issue_date",
+        "created_by",
     ];
 
     public function totalProduct($id)

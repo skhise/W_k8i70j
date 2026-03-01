@@ -3,17 +3,21 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Symfony\Component\HttpFoundation\Response;
 
 class CheckMenuPermission
 {
-    public function handle($request, Closure $next)
+    public function handle(Request $request, Closure $next): Response
     {
-        // Get the user's role
-        $role = Auth::user()->role ?? 0; // Assuming you have a 'role' field on your User model
+        if (! Auth::check()) {
+            return $next($request);
+        }
 
-        // Get the current route name
+        $user = Auth::user();
+        $role = $user->role ?? 0;
         $currentRouteName = Route::currentRouteName();
 
         // Role 0 (Super Admin) - Only allow customer-related routes
@@ -30,10 +34,10 @@ class CheckMenuPermission
                 'profile.change-password',
                 'profile.destroy',
                 'logout',
-                null // Allow null route name (for root /)
+                null, // Allow null route name (for root /)
             ];
-            
-            if (!in_array($currentRouteName, $allowedRoutes) && !str_contains($currentRouteName, 'generated')) {
+
+            if (! in_array($currentRouteName, $allowedRoutes) && ! str_contains((string) $currentRouteName, 'generated')) {
                 abort(403, 'Unauthorized access.');
             }
         }
@@ -43,10 +47,12 @@ class CheckMenuPermission
             abort(403);
         }
 
-        // Role 3 - Employee role restrictions
+        // Role 3 - Employee role restrictions (sub-admins get all menus)
         if ($role == 3) {
-            $allowedMenus = config("roles.$role");
-            if (!in_array($currentRouteName, $allowedMenus) && !str_contains($currentRouteName, 'generated')) {
+            
+            $allowedMenus = auth()->user()->is_sub_admin ? config("roles.sub_admin") : config("roles.{$role}", []);
+            
+            if (! is_array($allowedMenus) || (! in_array($currentRouteName, $allowedMenus) && ! str_contains((string) $currentRouteName, 'generated'))) {
                 abort(403);
             }
         }

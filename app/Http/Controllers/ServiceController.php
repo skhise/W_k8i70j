@@ -376,11 +376,77 @@ class ServiceController extends Controller
             ->join("services", "services.id", "service_dc.service_id")
             ->join("clients", "clients.CST_ID", "services.customer_id")
             ->first();
+
+        $spare_type_ids = ProductType::where('type_name', 'like', '%spare%')->pluck('id');
+        $spare_products = $spare_type_ids->isNotEmpty()
+            ? Product::whereIn('Product_Type', $spare_type_ids)->where('Status', 1)->orderBy('Product_Name')->get(['Product_ID', 'Product_Name', 'Product_Type', 'Product_Price'])
+            : Product::where('Status', 1)->orderBy('Product_Name')->get(['Product_ID', 'Product_Name', 'Product_Type', 'Product_Price']);
+
         return view("services.dc_view", [
             "service_dc" => $serviceDc,
             "dc_products" => $dc_products,
+            "spare_products" => $spare_products,
             'flag' => $request->flag ?? 0,
         ]);
+    }
+
+    public function DcAddSpareProduct(Request $request, ServiceDc $serviceDc)
+    {
+        $request->validate([
+            'product_id' => 'required|exists:products,Product_ID',
+            'quantity'   => 'required|integer|min:1',
+            'amount'     => 'required|numeric|min:0',
+            'description' => 'nullable|string|max:500',
+        ]);
+
+        $spare_type_ids = ProductType::where('type_name', 'like', '%spare%')->pluck('id');
+        $product = Product::where('Product_ID', $request->product_id)->first();
+        if (!$product) {
+            return redirect()->route('services.dc_view', $serviceDc->id)->with('error', 'Selected product not found.');
+        }
+        if ($spare_type_ids->isNotEmpty() && !$spare_type_ids->contains($product->Product_Type)) {
+            return redirect()->route('services.dc_view', $serviceDc->id)->with('error', 'Selected product is not a valid spare.');
+        }
+
+        $qty = (int) $request->quantity;
+        $amount = (float) $request->amount;
+        $description = $request->description ?? '';
+
+        if (Schema::hasColumn('products', 'quantity')) {
+            $available = (int) $product->quantity;
+            if ($available < $qty) {
+                return redirect()->route('services.dc_view', $serviceDc->id)->with('error', "Insufficient stock for \"{$product->Product_Name}\". Available: {$available}, required: {$qty}.");
+            }
+        }
+
+        DB::beginTransaction();
+        try {
+            $insert = [
+                'dc_id'       => $serviceDc->id,
+                'product_id'  => $request->product_id,
+                'serial_no'   => 0,
+                'quantity'    => $qty,
+                'amount'      => $amount,
+                'description' => $description,
+            ];
+            ServiceDcProduct::create($insert);
+            ServiceDc::where('id', $serviceDc->id)->increment('dc_amount', $amount);
+            if (Schema::hasColumn('products', 'quantity')) {
+                Product::where('Product_ID', $request->product_id)->decrement('quantity', $qty);
+            }
+            DB::commit();
+            return redirect()->route('services.dc_view', $serviceDc->id)->with('success', 'Spare product added to DC successfully.');
+        } catch (\Illuminate\Database\QueryException $e) {
+            DB::rollBack();
+            $msg = $e->getMessage();
+            if (str_contains($msg, 'Column not found') || str_contains($msg, 'Unknown column')) {
+                return redirect()->route('services.dc_view', $serviceDc->id)->with('error', 'Database structure error. Please contact support.');
+            }
+            return redirect()->route('services.dc_view', $serviceDc->id)->with('error', 'Failed to add spare: ' . $msg);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->route('services.dc_view', $serviceDc->id)->with('error', 'Failed to add spare: ' . $e->getMessage());
+        }
     }
     public function DcpDelete(ServiceDcProduct $serviceDcProduct)
     { 
@@ -734,13 +800,112 @@ class ServiceController extends Controller
 
 
     }
+
+    /**
+     * Create a new service call from contract (e.g. from products index "Lock call").
+     * Does not link to a schedule; optionally links to a contract product via product_id (contract_under_product id).
+     */
+    public function storeFromContract(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'contract_id' => 'required|integer',
+            'service_type' => 'required',
+            'issue_type' => 'required',
+            'service_priority' => 'required',
+            'contact_person' => 'required|string',
+            'service_date' => 'nullable|date',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'message' => 'Required fields missing.', 'validation_error' => $validator->errors()]);
+        }
+        $contractId = (int) $request->contract_id;
+        $Customer = $this->getCustomer($contractId);
+        if (!$Customer) {
+            return response()->json(['success' => false, 'message' => 'Customer details missing for this contract.']);
+        }
+        try {
+            $serviceNo = $this->GetServiceNumberM($request);
+            $serviceDate = $request->service_date ? date('Y-m-d H:i:s', strtotime($request->service_date)) : now();
+            $userId = Auth::check() ? Auth::id() : 0;
+
+            $service = Service::create([
+                'service_no' => $serviceNo,
+                'service_date' => $serviceDate,
+                'customer_id' => $Customer->CST_ID,
+                'contract_id' => $contractId,
+                'contact_person' => $request->contact_person,
+                'contact_number1' => $request->contact_number1 ?? $Customer->CCP_Mobile ?? '',
+                'contact_number2' => $request->contact_number2 ?? $Customer->CCP_Phone1 ?? '',
+                'contact_email' => $request->contact_email ?? $Customer->CCP_Email ?? '',
+                'site_address' => $request->site_address ?? '',
+                'site_google_link' => $request->site_google_link ?? '',
+                'areaId' => $request->areaId ?: null,
+                'issue_type' => $request->issue_type,
+                'service_type' => $request->service_type,
+                'service_priority' => $request->service_priority,
+                'service_status' => 2,
+                'service_category' => 1,
+                'service_note' => $request->service_note ?? '',
+                'assigned_to' => $request->assigned_to ? (int) $request->assigned_to : 0,
+            ]);
+            if (!$service) {
+                return response()->json(['success' => false, 'message' => 'Failed to create service.']);
+            }
+            $this->AddServiceHistoryM($service->id, 1, $userId, 1, 'ticket created from contract.');
+            if (!empty($request->assigned_to) && (int) $request->assigned_to > 0) {
+                $this->AddServiceHistoryM($service->id, 2, $userId, 1, 'ticket assigned to engineer.');
+                try {
+                    $push = new PushNotificationService();
+                    $push->sendServiceAssignmentNotification(
+                        (int) $request->assigned_to,
+                        $service->service_no,
+                        $Customer->CST_Name,
+                        date('d-m-Y', strtotime($serviceDate))
+                    );
+                } catch (Exception $e) {
+                    \Log::error('Push notification in storeFromContract: ' . $e->getMessage());
+                }
+            }
+            if (!empty($request->product_id)) {
+                $cup = ContractUnderProduct::where('id', (int) $request->product_id)->where('contractId', $contractId)->first();
+                if ($cup) {
+                    ServiceUnderProduct::create([
+                        'serviceId' => $service->id,
+                        'contractId' => $contractId,
+                        'productId' => $cup->id,
+                        'product_name' => $cup->product_name ?? '',
+                        'product_type' => $cup->product_type ?? '',
+                        'product_price' => 0,
+                        'product_description' => $cup->product_description ?? '',
+                        'nrnumber' => $cup->nrnumber ?? '',
+                        'other' => '',
+                        'branch' => $cup->branch ?? '',
+                        'updated_by' => $userId,
+                    ]);
+                }
+            }
+            if (!empty($request->send_whatsapp) && !empty($request->contact_number1)) {
+                try {
+                    $message = "Dear Customer, We have received your request. Service No: " . $service->service_no . ", Service Date: " . date('d-m-Y', strtotime($serviceDate)) . ". We will get back to you soon. Thank You.";
+                    MessageService::sendMessage($request->contact_number1, $message);
+                } catch (Exception $e) {
+                    \Log::error('WhatsApp in storeFromContract: ' . $e->getMessage());
+                }
+            }
+            return response()->json(['success' => true, 'message' => 'Service call created.', 'service_id' => $service->id, 'service_no' => $service->service_no]);
+        } catch (Exception $e) {
+            \Log::error('storeFromContract: ' . $e->getMessage() . ' | ' . $e->getTraceAsString());
+            $message = config('app.debug') ? $e->getMessage() : 'Action failed. Please try again.';
+            return response()->json(['success' => false, 'message' => $message]);
+        }
+    }
+
     public function AddServiceHistoryM($serviceId, $actionId, $engineerId, $reasonId, $note)
     {
 
         $create = ServiceHistory::create([
             'service_id' => $serviceId,
             'status_id' => $actionId,
-            'sttus_status_id' => $reasonId,
             'user_id' => $engineerId,
             'action_description' => $note,
 
@@ -771,28 +936,29 @@ class ServiceController extends Controller
         $accountsetting = Account_Setting::where("id", 1)->first();
         return $accountsetting;
     }
+    /**
+     * Generate service number: prefix (from DB serviceno_ins) + year + sequence.
+     * e.g. Call2026001, Call2026002 (prefix from account_setting, then 4-digit year, then 3-digit number per year).
+     */
     public function GetServiceNumberM(Request $request)
     {
-
-        $serviceId = "";
         $accountsetting = $this->GetAccountSettings($request);
-        $call_ins = $accountsetting->serviceno_ins;
-        if (!isset($call_ins)) {
-            $call_ins = "Call";
+        $prefix = ($accountsetting && isset($accountsetting->serviceno_ins)) ? trim($accountsetting->serviceno_ins) : 'Call';
+        if ($prefix === '') {
+            $prefix = 'Call';
         }
-        $last = Service::latest()->first();
-        if (is_null($last)) {
-            $serviceId = $call_ins . "001";
-        } else {
-            $lastNumber = $last->service_no;
-            $array = explode($call_ins, $lastNumber);
-            $num = $array[1];
-            $num = $num + 1;
-            $serviceId = $call_ins . "00" . $num;
+        $year = date('Y');
 
-        }
-        return $serviceId;
+        $pattern = $prefix . $year;
+        $startPos = strlen($pattern) + 1; // 1-based position for MySQL SUBSTRING
 
+        $maxNum = Service::where('service_no', 'like', $pattern . '%')
+            ->selectRaw('MAX(CAST(SUBSTRING(service_no, ?) AS UNSIGNED)) as max_num', [$startPos])
+            ->value('max_num');
+
+        $num = $maxNum ? (int) $maxNum + 1 : 1;
+
+        return $prefix . $year . str_pad($num, 3, '0', STR_PAD_LEFT);
     }
     public function GetServiceProduct(Request $request)
     {

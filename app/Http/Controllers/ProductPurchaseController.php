@@ -166,6 +166,18 @@ class ProductPurchaseController extends Controller
 
     public function destroy(ProductPurchase $purchase)
     {
+        if (Schema::hasColumn('products', 'quantity')) {
+            $product = $purchase->product;
+            $dbQty = $product ? (int) $product->quantity : 0;
+            $purchasedQty = (int) $purchase->quantity;
+            if ($dbQty < $purchasedQty) {
+                return redirect()->route('purchases')->with(
+                    'error',
+                    'This purchase cannot be deleted because the product\'s current stock (' . $dbQty . ') is less than the purchased quantity (' . $purchasedQty . '). You need at least the same quantity in stock to delete this purchase.'
+                );
+            }
+        }
+
         DB::beginTransaction();
         try {
             if (Schema::hasColumn('products', 'quantity')) {

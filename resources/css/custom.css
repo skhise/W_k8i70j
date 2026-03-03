@@ -94,6 +94,26 @@
     color: #fff !important;
 }
 
+/* Selected submenu item – background only */
+.main-sidebar .sidebar-menu ul.dropdown-menu li.active > a,
+#sidebar-wrapper .sidebar-menu ul.dropdown-menu li.active > a {
+    background-color: rgba(0, 0, 0, 0.25) !important;
+}
+.main-sidebar .sidebar-menu ul.dropdown-menu li.active > a i,
+.main-sidebar .sidebar-menu ul.dropdown-menu li.active > a .feather,
+#sidebar-wrapper .sidebar-menu ul.dropdown-menu li.active > a i,
+#sidebar-wrapper .sidebar-menu ul.dropdown-menu li.active > a .feather {
+    background-color: transparent !important;
+    color: #fff !important;
+}
+.main-sidebar .sidebar-menu ul.dropdown-menu li.active > a::before,
+#sidebar-wrapper .sidebar-menu ul.dropdown-menu li.active > a::before,
+.main-sidebar .sidebar-menu ul.dropdown-menu li.active > a::after,
+#sidebar-wrapper .sidebar-menu ul.dropdown-menu li.active > a::after {
+    color: #fff !important;
+    background-color: transparent !important;
+}
+
 /* Remove sidebar slide-in effect – show/hide instantly */
 .main-sidebar,
 .main-sidebar:after,

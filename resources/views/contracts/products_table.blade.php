@@ -29,7 +29,19 @@
             </td>
             <td>
                 <a href="{{ route('contracts.view', $product->CNRT_ID) }}"
-                    class="btn btn-primary btn-sm"><i class="far fa-eye"></i></a>
+                    class="btn btn-primary btn-sm" title="View contract"><i class="far fa-eye"></i></a>
+                @if(!empty($product->latest_service_id) && (int)$product->latest_service_id > 0)
+                    <a href="{{ route('services.view', $product->latest_service_id) }}"
+                        class="btn btn-success btn-sm ml-1" title="View recent call"><i class="fas fa-phone-alt"></i> View call</a>
+                @else
+                    <button type="button" class="btn btn-info btn-sm btn-service-call ml-1" title="New service call"
+                        data-contract-id="{{ $product->CNRT_ID }}"
+                        data-product-id="{{ $product->id }}"
+                        data-product-name="{{ $product->product_name ?? '' }}"
+                        data-contract-number="{{ $product->CNRT_Number ?? '' }}">
+                        <i class="fa fa-lock"></i>
+                    </button>
+                @endif
             </td>
         </tr>
     @endforeach

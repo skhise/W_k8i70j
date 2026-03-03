@@ -184,6 +184,7 @@ Route::middleware(['prevent-back-history', 'menu.permission', 'prevent.subadmin.
         Route::post('/contracts', [ContractController::class, 'store'])->name('contracts.store');
         Route::post('/contracts/renewal', [ContractController::class, 'ContractRenew'])->name('contracts.renewal');
         Route::get('/contracts/{contract}/view', [ContractController::class, 'view'])->name('contracts.view');
+        Route::get('/contracts/product-names', [ContractController::class, 'getProductNames'])->name('contracts.product-names');
         Route::get('/contracts/{contract}/get-products-tab', [ContractController::class, 'getProductsTab'])->name('contracts.get-products-tab');
         Route::get('/contracts/{contract}/get-services-tab', [ContractController::class, 'getServicesTab'])->name('contracts.get-services-tab');
         Route::get('/contracts/{contract}/get-checklist-tab', [ContractController::class, 'getChecklistTab'])->name('contracts.get-checklist-tab');
@@ -201,6 +202,7 @@ Route::middleware(['prevent-back-history', 'menu.permission', 'prevent.subadmin.
         Route::post('/contracts/service/{contract}/update', [ContractController::class, 'serviceUpdate'])->name('contract_service.update');
         Route::get('/contracts/service/{contractScheduleService}/delete', [ContractController::class, 'servicedelete'])->name('contract_service.delete');
         Route::get('/contract-products', [ContractController::class, 'index_products'])->name('contracts.products');
+        Route::get('/contracts/contract-details-for-service-call', [ContractController::class, 'getContractDetailsForServiceCall'])->name('contracts.contract-details-for-service-call');
     });
 
     /*end contractt*/
@@ -219,11 +221,13 @@ Route::middleware(['prevent-back-history', 'menu.permission', 'prevent.subadmin.
         Route::get('/services/{service}/product_create', [ServiceController::class, 'ProductCreate'])->name('services.product_create');
         Route::get('/services/{serviceDc}/product_delete', [ServiceController::class, 'DeleteServiceDc'])->name('services.dc_delete');
         Route::get('/services/{serviceDc}/dc-view', [ServiceController::class, 'DcView'])->name('services.dc_view');
+        Route::post('/services/dc/{serviceDc}/add-spare', [ServiceController::class, 'DcAddSpareProduct'])->name('services.dc_add_spare');
         Route::get('/services/{serviceDc}/dc-print', [ServiceController::class, 'DcPrint'])->name('services.dc_print');
         Route::get('/services/{serviceDcProduct}/dcp-delete', [ServiceController::class, 'DcpDelete'])->name('service_dcp.delete');
         Route::post('/services/{service}/status', [ServiceController::class, 'ApplyServiceAction'])->name('service_status.store');
         Route::post('/services/{service}/assign', [ServiceController::class, 'AssignEngineer'])->name('service_status.assign');
         Route::post('/services/{service}/accept-reject-call', [ServiceController::class, 'AcceptRejectCall'])->name('services.accept-reject-call');
+        Route::post('/services/store-from-contract', [ServiceController::class, 'storeFromContract'])->name('services.store-from-contract');
 
     });
     //services end

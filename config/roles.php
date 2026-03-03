@@ -36,6 +36,7 @@ return [
         'contracts.add_product',
         'contracts.update_product',
         'contracts.get-products-tab',
+        'contracts.product-names',
         'contracts.get-services-tab',
         'contracts.get-checklist-tab',
         'contract_product.delete',

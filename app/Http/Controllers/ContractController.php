@@ -34,6 +34,7 @@ use App\Models\ContractStatus;
 use App\Models\Attachment;
 use App\Models\ProductImage;
 use App\Models\ContractUnderProduct;
+use App\Models\Priority;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
@@ -1046,6 +1047,34 @@ class ContractController extends Controller
         }
 
     }
+    /**
+     * Return product names (and details for auto-fill) from products table for autocomplete.
+     * Used in Add Contract Product: suggest by name; if not found, user's text is used as product name.
+     */
+    public function getProductNames(Request $request)
+    {
+        $q = $request->input('q', '');
+        $q = trim($q);
+        if (strlen($q) < 1) {
+            return response()->json(['items' => []]);
+        }
+        $products = Product::withoutGlobalScopes()
+            ->where('Product_Name', 'like', '%' . $q . '%')
+            ->orderBy('Product_Name')
+            ->limit(20)
+            ->get(['Product_ID', 'Product_Name', 'Product_Type', 'Product_Description', 'Product_Price']);
+        $items = $products->map(function ($p) {
+            return [
+                'id' => $p->Product_ID,
+                'name' => $p->Product_Name,
+                'type' => $p->Product_Type,
+                'description' => $p->Product_Description ?? '',
+                'price' => $p->Product_Price ?? '',
+            ];
+        });
+        return response()->json(['items' => $items->toArray()]);
+    }
+
     public function getProductsTab(Request $request, Contract $contract)
     {
         try {
@@ -1827,7 +1856,8 @@ class ContractController extends Controller
                 "clients.CST_ID",
                 "master_product_type.type_name",
                 "master_contract_status.contract_status_name",
-                "master_contract_status.status_color"
+                "master_contract_status.status_color",
+                DB::raw('(SELECT sup.serviceId FROM service_under_product sup WHERE sup.productId = contract_under_product.id AND sup.contractId = contract_under_product.contractId ORDER BY sup.serviceId DESC LIMIT 1) as latest_service_id')
             )
             ->where("contracts.CNRT_Status", "!=", 0)
             ->when($search, function ($query) use ($search) {
@@ -1872,11 +1902,67 @@ class ContractController extends Controller
             ]);
         }
 
+        $issue_types = IssueType::orderBy('issue_name')->get();
+        $service_types = ServiceType::orderBy('type_name')->get();
+        $priorities = Priority::orderBy('priority_name')->get();
+        $sitelocation = AreaName::orderBy('SiteAreaName')->get();
+        $employees = Employee::where(['EMP_Status' => 1, 'Access_Role' => 4])
+            ->whereNull('deleted_at')
+            ->orderBy('EMP_Name')
+            ->get(['EMP_ID', 'EMP_Name']);
+
         return view('contracts.products_index', [
             'products' => $products,
             'customers' => $customers,
             'search' => $search,
             'filter_customer' => $filter_customer,
+            'issue_types' => $issue_types,
+            'service_types' => $service_types,
+            'priorities' => $priorities,
+            'sitelocation' => $sitelocation,
+            'employees' => $employees,
+        ]);
+    }
+
+    /**
+     * Get contract and client details for pre-filling the Service Call modal (from products index).
+     */
+    public function getContractDetailsForServiceCall(Request $request)
+    {
+        $request->validate(['contract_id' => 'required|integer']);
+        $contract = Contract::leftJoin('clients', 'clients.CST_ID', '=', 'contracts.CNRT_CustomerID')
+            ->where('contracts.CNRT_ID', $request->contract_id)
+            ->select(
+                'contracts.CNRT_ID',
+                'contracts.CNRT_Number',
+                'contracts.CNRT_CustomerID',
+                'contracts.CNRT_Phone1',
+                'contracts.CNRT_Phone2',
+                'contracts.CNRT_CustomerEmail',
+                'contracts.CNRT_CustomerContactPerson',
+                'contracts.CNRT_SiteAddress',
+                'contracts.CNRT_SiteLocation',
+                'contracts.CNRT_Site',
+                'clients.CCP_Name',
+                'clients.CCP_Mobile',
+                'clients.CCP_Phone1',
+                'clients.CCP_Email'
+            )
+            ->first();
+        if (!$contract) {
+            return response()->json(['success' => false, 'message' => 'Contract not found.']);
+        }
+        return response()->json([
+            'success' => true,
+            'contact_person' => $contract->CNRT_CustomerContactPerson ?: $contract->CCP_Name,
+            'contact_number1' => $contract->CNRT_Phone1 ?: $contract->CCP_Mobile,
+            'contact_number2' => $contract->CNRT_Phone2 ?: $contract->CCP_Phone1,
+            'contact_email' => $contract->CNRT_CustomerEmail ?: $contract->CCP_Email,
+            'site_address' => $contract->CNRT_SiteAddress,
+            'site_google_link' => $contract->CNRT_SiteLocation,
+            'site_location' => $contract->CNRT_Site,
+            'customer_id' => $contract->CNRT_CustomerID,
+            'contract_number' => $contract->CNRT_Number,
         ]);
     }
 

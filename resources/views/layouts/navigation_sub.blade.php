@@ -203,7 +203,7 @@
                     <a href="{{ route('product-dashboard') }}" class="nav-link"><i data-feather="bar-chart-2"></i><span>Dashboard</span></a>
                 </li>
 
-                    <li class="dropdown {{ Request::is('products/*') || Request::is('products') ? 'active' : '' }}">
+                    <li class="dropdown {{ Request::is('spares/*') || Request::is('spares') ? 'active' : '' }}">
                     <a href="{{ route('products') }}" class="nav-link"><i data-feather="box"></i><span>Spares</span></a>
                 </li>
 

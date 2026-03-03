@@ -194,16 +194,17 @@
                             Management</span></a>
                 </li> -->
 
-                <li class="dropdown {{ Request::is('spares') || Request::is('utilized-product-report') || Request::is('spares-utilized-report') || Request::is('employee-spare-utilized-report') || Request::is('product-returns') || Request::is('product-dashboard') || Request::is('purchases') || Request::is('product-assignments') || Request::is('products/*') || Request::is('products') ? 'active' : '' }}">
+                @php $sparesMenuActive = Request::is('spares') || Request::is('utilized-product-report') || Request::is('spares-utilized-report') || Request::is('employee-spare-utilized-report') || Request::is('product-returns') || Request::is('product-dashboard') || Request::is('purchases') || Request::is('product-assignments') || Request::is('products/*') || Request::is('products'); @endphp
+                <li class="dropdown {{ $sparesMenuActive ? 'active' : '' }}">
                     <a href="#"
-                        class="menu-toggle nav-link has-dropdown {{ Request::is('spares/*') ? 'toggled' : '' }}"><i
+                        class="menu-toggle nav-link has-dropdown {{ $sparesMenuActive ? 'toggled' : '' }}"><i
                             data-feather="map"></i><span>Spares Management</span></a>
                     <ul class="dropdown-menu">
                     <li class="dropdown {{ Request::is('product-dashboard') ? 'active' : '' }}">
                     <a href="{{ route('product-dashboard') }}" class="nav-link"><i data-feather="bar-chart-2"></i><span>Dashboard</span></a>
                 </li>
 
-                    <li class="dropdown {{ Request::is('products/*') || Request::is('products') ? 'active' : '' }}">
+                    <li class="dropdown {{ Request::is('spares/*') || Request::is('spares') ? 'active' : '' }}">
                     <a href="{{ route('products') }}" class="nav-link"><i data-feather="box"></i><span>Spares</span></a>
                 </li>
 

@@ -67,9 +67,20 @@
                                                         <a href="{{ route('purchases.edit', $purchase) }}" class="btn btn-sm btn-primary btn-purchase-edit" title="Edit">
                                                             <i class="far fa-edit"></i>
                                                         </a>
-                                                        <a href="{{ route('purchases.destroy', $purchase) }}" class="delete-btn btn btn-sm btn-danger" title="Delete">
-                                                            <i class="fa fa-trash"></i>
-                                                        </a>
+                                                        @php
+                                                            $dbQty = $purchase->product ? (int)($purchase->product->quantity ?? 0) : 0;
+                                                            $purchasedQty = (int)$purchase->quantity;
+                                                            $canDelete = ($dbQty >= $purchasedQty);
+                                                        @endphp
+                                                        @if($canDelete)
+                                                            <a href="{{ route('purchases.destroy', $purchase) }}" class="delete-btn btn btn-sm btn-danger" title="Delete">
+                                                                <i class="fa fa-trash"></i>
+                                                            </a>
+                                                        @else
+                                                            <span class="btn btn-sm btn-secondary" title="Cannot delete — current stock ({{ $dbQty }}) is less than this purchase quantity ({{ $purchasedQty }}). You need at least {{ $purchasedQty }} in stock." style="cursor: not-allowed; opacity: 0.7;">
+                                                                <i class="fa fa-trash"></i>
+                                                            </span>
+                                                        @endif
                                                     </td>
                                                 </tr>
                                             @empty

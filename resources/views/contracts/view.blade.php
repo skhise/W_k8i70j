@@ -219,7 +219,7 @@
                                                                     Person
                                                                 </span>
                                                             </div>
-                                                            <div class="col-md-9">{{ $contract->CCP_Name ?? '' }}
+                                                            <div class="col-md-9">{{ $contract->CNRT_CustomerContactPerson ?? '' }}
                                                             </div>
                                                         </div>
                                                         <div class="row">
@@ -228,7 +228,7 @@
                                                                     Number
                                                                 </span>
                                                             </div>
-                                                            <div class="col-md-9">{{ $contract->CCP_Mobile ?? '' }}
+                                                            <div class="col-md-9">{{ $contract->CNRT_Phone1 ?? '' }}
                                                             </div>
                                                         </div>
                                                         <div class="row">
@@ -237,7 +237,7 @@
                                                                     Number
                                                                 </span>
                                                             </div>
-                                                            <div class="col-md-9">{{ $contract->CCP_Phone1 ?? '' }}
+                                                            <div class="col-md-9">{{ $contract->CNRT_Phone2 ?? '' }}
                                                             </div>
                                                         </div>
                                                         <div class="row">
@@ -246,7 +246,7 @@
                                                                     Email
                                                                 </span>
                                                             </div>
-                                                            <div class="col-md-9">{{ $contract->CCP_Email ?? '' }}
+                                                            <div class="col-md-9">{{ $contract->CNRT_CustomerEmail ?? '' }}
                                                             </div>
                                                         </div>
                                                         <hr />
@@ -378,6 +378,7 @@
                 $("#btn_save_product .btn-text").text("Save");
                 $("#product_id").val("");
                 $(".add_form_field").show();
+                $("#product_name_autocomplete").hide().empty();
             });
             
             $(document).on("click", "#showEditModal", function() {
@@ -392,11 +393,52 @@
                 $("#remark").val($(this).data('remark'));
                 $("#product_id").val($(this).data('product_id'));
                 $(".add_form_field").hide();
-                
+                $("#product_name_autocomplete").hide();
                 // Update modal header and button text for edit mode
                 $("#myLargeModalLabel").text("Update Contract Product");
                 $("#btn_save_product .btn-text").text("Update");
 
+            });
+
+            // Product name autocomplete from products table; if not found, typed text is used as product name
+            function escapeAttr(s) { return (s || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+            function escapeHtml(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+            var productNameAcTimeout;
+            $(document).on("input", "#product_name", function() {
+                var q = $(this).val().trim();
+                var $list = $("#product_name_autocomplete");
+                $list.hide().empty();
+                if (q.length < 1) return;
+                clearTimeout(productNameAcTimeout);
+                productNameAcTimeout = setTimeout(function() {
+                    $.get("{{ route('contracts.product-names') }}", { q: q }, function(res) {
+                        $list.empty();
+                        if (res.items && res.items.length) {
+                            res.items.forEach(function(item) {
+                                var name = item.name || '', type = item.type || '', desc = item.description || '', price = item.price !== undefined && item.price !== null ? item.price : '';
+                                $list.append(
+                                    '<a href="#" class="list-group-item list-group-item-action product-name-ac-item" data-name="' + escapeAttr(name) + '" data-type="' + escapeAttr(String(type)) + '" data-desc="' + escapeAttr(desc) + '" data-price="' + escapeAttr(String(price)) + '">' + escapeHtml(name) + '</a>'
+                                );
+                            });
+                            $list.show();
+                        }
+                    });
+                }, 250);
+            });
+            $(document).on("mousedown", ".product-name-ac-item", function(e) {
+                e.preventDefault();
+                var name = $(this).text().trim();
+                var type = $(this).data("type");
+                var desc = $(this).data("desc");
+                var price = $(this).data("price");
+                $("#product_name").val(name);
+                if (type) $("#product_type").val(type);
+                if (desc !== undefined && desc !== null && desc !== "") $("#product_description").val(desc);
+                if (price !== undefined && price !== null && price !== "") $("#product_price").val(price);
+                $("#product_name_autocomplete").hide().empty();
+            });
+            $(document).on("blur", "#product_name", function() {
+                setTimeout(function() { $("#product_name_autocomplete").hide(); }, 200);
             });
 
             function SaveContractProduct() {

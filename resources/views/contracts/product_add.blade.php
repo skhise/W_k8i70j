@@ -31,12 +31,14 @@
                                     <span class="text-danger-error text-danger product_type-field-validation-valid"
                                         data-valmsg-replace="true"></span>
                                 </div>
-                                <div class="col-md-6 floating-label">
-                                    <input class="form-control text-box single-line" id="product_name"
-                                        name="product_name" placeholder="" type="text" value="" />
-                                    <label for="first">Name<span class="text-danger">*</span></label>
+                                <div class="col-md-6 floating-label position-relative">
+                                    <input class="form-control text-box single-line" value="" id="product_name"
+                                        name="product_name"  type="text" value="" autocomplete="off" />
+                                    <label for="product_name">Type to search or enter product name<span class="text-danger">*</span></label>
+                                    <div id="product_name_autocomplete" class="list-group position-absolute w-100 shadow" style="z-index: 1050; display: none; max-height: 220px; overflow-y: auto;"></div>
                                     <span class="text-danger-error text-danger product_name-field-validation-valid"
                                         data-valmsg-replace="true"></span>
+                                    <!-- <small class="form-text text-muted">Suggestions from products; if not found, your text is saved as product name.</small> -->
                                 </div>
                             </div>
                         </div>

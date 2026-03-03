@@ -32,7 +32,7 @@
                                 {{ $dc_product->Product_Name }}
                             </td>
                             <td>
-                                {{ $dc_product->sr_number }}
+                                {{ $dc_product->sr_number ?? '—' }}
                             </td>
                             <td>
                                 {{ $dc_product->type_name }}

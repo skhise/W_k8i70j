@@ -18,7 +18,7 @@
                         <div class="row">
                             <div class="col-md-12">
 
-                                <label for="first">Select Employee *</label>
+                                <label for="first">Select Employee <span class="text-danger">*</span></label>
                                 <select class="required form-control text-box single-line select2" id="employee_id"
                                     name="employee_id" placeholder="">
                                     {!! $employee_options !!}

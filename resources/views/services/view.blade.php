@@ -853,6 +853,7 @@
             });
             $(document).on("click", "#btn_service_assign_save", function() {
                 $('.text-danger-error').html('');
+                $('.errorMsgntainer').html("");
                 $(this).attr("disabled", true);
                 $(this).html("Saving...");
                 $(".nrnumber").removeClass("error_border");
@@ -861,13 +862,17 @@
                 var isValid = true;
 
                 // Loop through each input field and validate
-                $('#form_service_assign .required').each(function() {
-                    if (!validateInput($(this))) {
-                        isValid = false;
-                        $("#btn_service_assign_save").attr("disabled", false);
-                        $("#btn_service_assign_save").html("Save");
-                    }
-                });
+                var assigned_employee_id = $("#employee_id option:selected").val();
+
+                if (assigned_employee_id == 0) {
+                    isValid = false;
+                    $("#btn_service_assign_save").attr("disabled", false);
+                    $("#btn_service_assign_save").html("Save");
+                    $('.errorMsgntainer').html("Please select an employee");
+                    return;
+                }
+
+                
                 if (isValid) {
                     $.ajax({
                         url: url,

@@ -25,7 +25,6 @@
                                         <label>Date Range (utilization)</label>
                                         <select class="form-control select2" id="date-range">
                                             <option value="">Date Range</option>
-                                            <option value="-1" {{ ($date_range ?? '-1') == '-1' ? 'selected' : '' }}>Any</option>
                                             <option value="0" {{ ($date_range ?? '') == '0' ? 'selected' : '' }}>Today</option>
                                             <option value="1" {{ ($date_range ?? '') == '1' ? 'selected' : '' }}>Yesterday</option>
                                             <option value="7" {{ ($date_range ?? '') == '7' ? 'selected' : '' }}>Last 7 Days</option>
@@ -53,7 +52,7 @@
                                                 <th>Sr. No.</th>
                                                 <th>Product Name</th>
                                                 <th>Product Type</th>
-                                                <th>Stock Qty</th>
+                                                <th>Available Qty</th>
                                                 <th>Reserved Qty</th>
                                                 <th>Utilized Qty</th>
                                                 <th>Last Used Date</th>
